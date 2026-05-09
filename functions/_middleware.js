@@ -1,0 +1,31 @@
+/* Global middleware: security headers + JSON error envelope.
+   Runs on every Pages Function and every static asset request. */
+
+const SECURITY_HEADERS = {
+  'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(self), payment=(self)',
+  'X-Frame-Options': 'DENY',
+};
+
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' https://js.stripe.com https://static.cloudflareinsights.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' https://fonts.gstatic.com data:",
+  "img-src 'self' data: blob: https:",
+  "connect-src 'self' https://api.stripe.com https://cloudflareinsights.com",
+  "frame-src https://js.stripe.com https://hooks.stripe.com",
+  "form-action 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+].join('; ');
+
+export const onRequest = async (context) => {
+  const res = await context.next();
+  const h = new Headers(res.headers);
+  for (const [k, v] of Object.entries(SECURITY_HEADERS)) h.set(k, v);
+  if (!h.has('Content-Security-Policy')) h.set('Content-Security-Policy', CSP);
+  return new Response(res.body, { status: res.status, statusText: res.statusText, headers: h });
+};

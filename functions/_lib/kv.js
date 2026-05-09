@@ -1,0 +1,65 @@
+/* Tiny KV helpers. We use:
+   - ORDERS_KV         keyed orders:<id>; metadata for index queries
+   - MARKETING_KV      keyed email:<addr> / sms:<phone> for opt-in records
+   - SLOTS_KV          keyed slot:<isoTimestamp>:count for capacity tracking */
+
+export async function putOrder(order, env) {
+  const key = `orders:${order.id}`;
+  await env.ORDERS_KV.put(key, JSON.stringify(order), {
+    metadata: {
+      status: order.status,
+      createdAt: order.createdAt,
+      fulfillment: order.fulfillment,
+    },
+  });
+}
+
+export async function getOrder(id, env) {
+  const raw = await env.ORDERS_KV.get(`orders:${id}`);
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch { return null; }
+}
+
+export async function listActiveOrders(env, { limit = 100 } = {}) {
+  const list = await env.ORDERS_KV.list({ prefix: 'orders:', limit });
+  const active = [];
+  for (const k of list.keys) {
+    const status = k.metadata?.status;
+    if (status && status !== 'completed' && status !== 'cancelled' && status !== 'failed') {
+      const raw = await env.ORDERS_KV.get(k.name);
+      if (raw) {
+        try { active.push(JSON.parse(raw)); } catch {}
+      }
+    }
+  }
+  active.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  return active;
+}
+
+export async function incrSlotCount(slotIso, env) {
+  const key = `slot:${slotIso}`;
+  const raw = await env.SLOTS_KV.get(key);
+  const n = (raw ? Number(raw) : 0) + 1;
+  await env.SLOTS_KV.put(key, String(n), { expirationTtl: 60 * 60 * 48 });
+  return n;
+}
+
+export async function getSlotCount(slotIso, env) {
+  const raw = await env.SLOTS_KV.get(`slot:${slotIso}`);
+  return raw ? Number(raw) : 0;
+}
+
+export async function recordOptIn({ kind, value, source }, env) {
+  if (!value) return;
+  const key = `${kind}:${value.toLowerCase()}`;
+  await env.MARKETING_KV.put(key, JSON.stringify({
+    value, source: source || null, optedInAt: new Date().toISOString(),
+  }));
+}
+
+export function newOrderId() {
+  // 7-char base32 (Crockford) — readable on a printed receipt.
+  const alphabet = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+  const buf = crypto.getRandomValues(new Uint8Array(7));
+  return [...buf].map(b => alphabet[b % alphabet.length]).join('');
+}
