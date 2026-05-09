@@ -992,6 +992,10 @@
   });
 })();
 </script>
+
+<!-- Stripe.js for live card payments. Mounted into #payment-element when
+     the customer reaches the payment step. -->
+<script src="https://js.stripe.com/v3/" defer></script>
 </head>
 <body>
 
@@ -1552,9 +1556,9 @@ function removeFromCart(key) {
   saveState();
   renderCart();
 }
-/* Per-order service fee paid to the web platform.
-   30p per order. Adjust here if your contract changes. */
-const SERVICE_FEE = 0.30;
+/* No per-order service fee. The server is the source of truth for totals;
+   this constant is kept at zero so client-side display matches the charge. */
+const SERVICE_FEE = 0;
 
 function cartTotals() {
   const sub = state.cart.reduce((s, l) => s + l.price * l.qty, 0);
@@ -1887,6 +1891,123 @@ document.getElementById('openCartMobile').addEventListener('click', () => openMo
 let checkoutStep = 'contact';   // contact → address → payment → success
 let checkoutData = {};
 
+/* Stripe instance + Elements are reused across re-renders of the payment
+   step so the customer doesn't lose what they've typed. */
+let stripeInstance = null;
+let stripeElements = null;
+
+/* Build the JSON request body for POST /api/order. The server is the
+   source of truth for prices — we only send item ids + qty + flags. */
+function buildOrderRequest() {
+  const payMethod = document.querySelector('input[name="payMethod"]:checked')?.value || 'card';
+  return {
+    items: state.cart.map(l => ({
+      id: l.itemId,
+      qty: l.qty,
+      meal: !!l.meal,
+      modifiers: [],
+    })),
+    fulfillment: state.mode === 'deliver' ? 'delivery' : 'collection',
+    deliveryAddress: state.mode === 'deliver' ? {
+      line1: checkoutData.line1 || '',
+      line2: checkoutData.line2 || '',
+      postcode: state.postcode,
+      notes: checkoutData.notes || '',
+    } : null,
+    schedule: 'asap',
+    customer: {
+      name: checkoutData.name,
+      email: checkoutData.email,
+      phone: checkoutData.phone,
+    },
+    marketing: {
+      email: !!document.getElementById('optEmail')?.checked,
+      sms:   !!document.getElementById('optSms')?.checked,
+    },
+    paymentMethod: payMethod,
+  };
+}
+
+/* Place an order. Two paths:
+     card → POST /api/order → mount Stripe with the returned clientSecret →
+            confirmPayment → /thank-you on success.
+     cash → POST /api/order → /thank-you immediately (kitchen accepts on
+            tablet, customer pays at handover). */
+async function placeOrder() {
+  const payBtn = document.getElementById('coPay');
+  const errEl  = document.getElementById('paymentError');
+  if (errEl) errEl.textContent = '';
+
+  const req = buildOrderRequest();
+  const isCard = req.paymentMethod === 'card';
+
+  payBtn.disabled = true;
+  payBtn.textContent = isCard ? 'Confirming card…' : 'Placing order…';
+
+  try {
+    const res = await fetch('/api/order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const msg = data.error || `Couldn't place the order (${res.status}).`;
+      if (errEl) errEl.textContent = msg; else alert(msg);
+      payBtn.disabled = false;
+      payBtn.textContent = `Pay ${fmt(cartTotals().total)}`;
+      return;
+    }
+
+    if (!isCard) {
+      // Cash flow: we're done, redirect to confirmation.
+      state.cart = [];
+      saveState();
+      window.location.href = `/thank-you?ref=${encodeURIComponent(data.orderId)}`;
+      return;
+    }
+
+    // Card flow: confirm with the real clientSecret.
+    if (!stripeInstance || !stripeElements) {
+      if (errEl) errEl.textContent = 'Card service not ready. Please try again.';
+      payBtn.disabled = false;
+      payBtn.textContent = `Pay ${fmt(cartTotals().total)}`;
+      return;
+    }
+    // Submit the Element first so Stripe can validate input.
+    const sub = await stripeElements.submit();
+    if (sub.error) {
+      if (errEl) errEl.textContent = sub.error.message || 'Please check your card details.';
+      payBtn.disabled = false;
+      payBtn.textContent = `Pay ${fmt(cartTotals().total)}`;
+      return;
+    }
+    const result = await stripeInstance.confirmPayment({
+      elements: stripeElements,
+      clientSecret: data.clientSecret,
+      confirmParams: {
+        return_url: `${location.origin}/thank-you?ref=${encodeURIComponent(data.orderId)}`,
+      },
+      redirect: 'if_required',
+    });
+    if (result.error) {
+      if (errEl) errEl.textContent = result.error.message || 'Payment failed.';
+      payBtn.disabled = false;
+      payBtn.textContent = `Pay ${fmt(cartTotals().total)}`;
+      return;
+    }
+    // Payment succeeded without a redirect (Apple Pay etc.) — go ourselves.
+    state.cart = [];
+    saveState();
+    window.location.href = `/thank-you?ref=${encodeURIComponent(data.orderId)}`;
+  } catch (e) {
+    console.error(e);
+    if (errEl) errEl.textContent = 'Network error — please try again.';
+    payBtn.disabled = false;
+    payBtn.textContent = `Pay ${fmt(cartTotals().total)}`;
+  }
+}
+
 document.getElementById('checkoutBtn').addEventListener('click', startCheckout);
 document.getElementById('mCheckoutBtn').addEventListener('click', () => {
   closeModal('cartOverlay');
@@ -1969,9 +2090,9 @@ function renderCheckout() {
         <input id="coName" type="text" value="${escapeHTML(checkoutData.name || '')}" autocomplete="name" />
       </div>
       <div class="field">
-        <label for="coPhone">Phone number</label>
-        <input id="coPhone" type="tel" value="${escapeHTML(checkoutData.phone || '')}" autocomplete="tel" placeholder="07…" />
-        <div class="hint">We'll text you when your order's ready.</div>
+        <label for="coPhone">UK mobile number</label>
+        <input id="coPhone" type="tel" value="${escapeHTML(checkoutData.phone || '')}" autocomplete="tel" placeholder="07…" inputmode="tel" />
+        <div class="hint">Only used if the kitchen or driver needs to reach you.</div>
       </div>
       <div class="field">
         <label for="coEmail">Email (for receipt)</label>
@@ -2045,6 +2166,12 @@ function renderCheckout() {
     const linesHTML = state.cart.map(l =>
       `<div class="line"><span><span class="qx">${l.qty}×</span>${escapeHTML(l.name)}${l.spice ? ' · '+escapeHTML(l.spice) : ''}${l.meal ? ' · '+escapeHTML(l.meal) : ''}</span><span>${fmt(l.price * l.qty)}</span></div>`
     ).join('');
+
+    const cashLabel = state.mode === 'deliver'
+      ? 'Cash on delivery (driver collects)'
+      : 'Cash on collection';
+    const cashValue = state.mode === 'deliver' ? 'cash_delivery' : 'cash_collection';
+
     body.innerHTML = `
       ${checkoutProgressHTML('payment')}
       <h4 style="font-family:var(--display);font-size:1.1rem;margin:0 0 1rem">Payment</h4>
@@ -2055,55 +2182,43 @@ function renderCheckout() {
         <div class="line"><span>Subtotal</span><span>${fmt(t.sub)}</span></div>
         <div class="line"><span style="color:var(--success)">Online discount (10%)</span><span style="color:var(--success)">-${fmt(t.discount)}</span></div>
         ${state.mode==='deliver' ? `<div class="line"><span>Delivery</span><span>${t.delivery===0?'FREE':fmt(t.delivery)}</span></div>` : ''}
-        <div class="line"><span>Service fee</span><span>${fmt(t.serviceFee)}</span></div>
         <div class="line total"><span>Total</span><span>${fmt(t.total)}</span></div>
       </div>
 
-      <div class="pay-banner">
-        <span class="pill">Stripe</span>
-        Secure checkout. Pay with card, Apple Pay or Google Pay.
-        <br><strong>Demo mode:</strong> the card field below is a placeholder. Before going live, replace with Stripe Elements (see code comments).
+      <fieldset style="border:2px solid var(--ink);border-radius:12px;padding:10px 14px;margin:14px 0 10px">
+        <legend style="padding:0 6px;font-weight:700">How would you like to pay?</legend>
+        <label style="display:flex;align-items:center;gap:8px;padding:6px 0">
+          <input type="radio" name="payMethod" value="card" checked>
+          <span>Card / Apple Pay / Google Pay</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px dashed var(--line)">
+          <input type="radio" name="payMethod" value="${cashValue}">
+          <span>${cashLabel}</span>
+        </label>
+      </fieldset>
+
+      <div id="payment-element-wrap">
+        <div id="payment-element" style="background:#fff;border:2px solid var(--ink);border-radius:12px;padding:14px;min-height:48px">
+          <div style="color:var(--grey);font-size:0.9rem">Loading secure payment…</div>
+        </div>
+        <div id="paymentError" style="color:var(--error);font-size:0.9rem;margin-top:6px;min-height:18px"></div>
       </div>
 
-      <!-- SWAP-ME — replace this block with Stripe Elements
-           See docs at https://stripe.com/docs/payments/elements
-           1) Load Stripe.js: <script src="https://js.stripe.com/v3/"></script>
-           2) const stripe = Stripe('pk_live_YOUR_KEY')
-           3) const elements = stripe.elements({ clientSecret })
-           4) const payment = elements.create('payment')
-           5) payment.mount('#payment-element')
-           6) On submit: stripe.confirmPayment({ elements, confirmParams: { return_url } })
+      <div style="background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:0.92rem">
+        <strong>Allergens:</strong> for allergens please contact the restaurant on
+        <a id="allergyPhone" href="tel:" style="color:var(--red);font-weight:600">our shop</a>
+        before ordering.
+      </div>
 
-           SERVICE FEE ROUTING (£SERVICE_FEE per order, paid to platform/dev):
-           Two options for how the service fee reaches your account:
-
-           OPTION A (simple): single Stripe account on the restaurant.
-             The full t.total (food + delivery + service fee) charges to
-             the restaurant's account. You then invoice the restaurant
-             weekly: orders × SERVICE_FEE + £10 weekly fee. They pay
-             you by bank transfer. No extra Stripe setup needed.
-
-           OPTION B (auto-split): Stripe Connect with application_fee_amount.
-             You register as a Stripe Connect platform, restaurant onboards
-             as a connected account, then on PaymentIntent creation:
-               application_fee_amount: Math.round(SERVICE_FEE * 100),  // pence
-               transfer_data: { destination: 'acct_RESTAURANT_ID' }
-             Stripe routes the fee to your platform account automatically.
-             More setup but no invoicing.
-      -->
-      <div class="card-mock" id="payment-element">
-        <div class="card-row">
-          <span class="card-icon">CARD</span>
-          <input id="ccNum" type="text" inputmode="numeric" placeholder="1234 1234 1234 1234" maxlength="19" autocomplete="cc-number" />
-        </div>
-        <div class="card-row split">
-          <div><input id="ccExp" type="text" inputmode="numeric" placeholder="MM / YY" maxlength="7" autocomplete="cc-exp" /></div>
-          <div><input id="ccCvc" type="text" inputmode="numeric" placeholder="CVC" maxlength="4" autocomplete="cc-csc" /></div>
-        </div>
-        <div class="card-row">
-          <span class="card-icon">UK</span>
-          <input id="ccPostcode" type="text" placeholder="Billing postcode" value="${escapeHTML(state.postcode)}" />
-        </div>
+      <div style="margin:12px 0;display:flex;flex-direction:column;gap:6px">
+        <label style="display:flex;align-items:flex-start;gap:8px;font-size:0.92rem">
+          <input type="checkbox" id="optEmail" style="margin-top:3px">
+          <span>Email me about offers and new menu items</span>
+        </label>
+        <label style="display:flex;align-items:flex-start;gap:8px;font-size:0.92rem">
+          <input type="checkbox" id="optSms" style="margin-top:3px">
+          <span>Text me about offers (we won't spam — a few per month, max)</span>
+        </label>
       </div>
 
       <div style="display:flex;gap:0.6rem;margin-top:0.6rem">
@@ -2111,81 +2226,74 @@ function renderCheckout() {
         <button class="btn-form" id="coPay" style="flex:2">Pay ${fmt(t.total)}</button>
       </div>
       <p style="text-align:center;font-size:0.78rem;color:var(--grey);margin-top:0.8rem">
-        🔒 Your card never touches our servers — handled securely by Stripe.
+        🔒 Card details never touch our servers — handled securely by Stripe.
       </p>
     `;
 
-    // basic input formatting
-    const ccNum = document.getElementById('ccNum');
-    ccNum.addEventListener('input', () => {
-      const v = ccNum.value.replace(/\D/g, '').slice(0, 16);
-      ccNum.value = v.replace(/(.{4})/g, '$1 ').trim();
+    // Allergens phone number from public config (loaded on boot).
+    const phone = window.RICOS_CONFIG?.business?.phone;
+    if (phone && phone !== 'TBD') {
+      const a = document.getElementById('allergyPhone');
+      a.textContent = phone;
+      a.href = 'tel:' + phone.replace(/\s/g, '');
+    } else {
+      document.getElementById('allergyPhone').textContent = 'the shop number on the home page';
+    }
+
+    // Prepare Stripe Elements only when card is selected. Mounted lazily so
+    // cash-only customers don't pay the JS cost.
+    let cardMounted = false;
+    async function ensureCardMounted() {
+      if (cardMounted) return;
+      const pk = window.RICOS_CONFIG?.stripe?.publishableKey;
+      if (!window.Stripe || !pk) {
+        document.getElementById('payment-element').innerHTML =
+          '<div style="color:var(--error);font-size:0.9rem">Card payments are unavailable right now. Please choose cash, or refresh the page.</div>';
+        return;
+      }
+      // We get a real clientSecret only after POST /api/order. So here we
+      // just create a deferred-init Elements: pass mode/amount/currency.
+      stripeInstance = stripeInstance || window.Stripe(pk);
+      stripeElements = stripeInstance.elements({
+        mode: 'payment',
+        amount: Math.round(t.total * 100),
+        currency: 'gbp',
+        appearance: { theme: 'stripe' },
+      });
+      const paymentEl = stripeElements.create('payment', { layout: 'tabs' });
+      const mount = document.getElementById('payment-element');
+      mount.innerHTML = '';
+      paymentEl.mount(mount);
+      cardMounted = true;
+    }
+
+    // Mount immediately (default selection is card).
+    ensureCardMounted();
+
+    document.querySelectorAll('input[name="payMethod"]').forEach(r => {
+      r.addEventListener('change', () => {
+        const isCard = document.querySelector('input[name="payMethod"]:checked').value === 'card';
+        document.getElementById('payment-element-wrap').style.display = isCard ? '' : 'none';
+        if (isCard) ensureCardMounted();
+      });
     });
-    const ccExp = document.getElementById('ccExp');
-    ccExp.addEventListener('input', () => {
-      const v = ccExp.value.replace(/\D/g, '').slice(0, 4);
-      ccExp.value = v.length > 2 ? `${v.slice(0,2)} / ${v.slice(2)}` : v;
-    });
-    const ccCvc = document.getElementById('ccCvc');
-    ccCvc.addEventListener('input', () => { ccCvc.value = ccCvc.value.replace(/\D/g,'').slice(0,4); });
 
     document.getElementById('coBack').addEventListener('click', () => {
       checkoutStep = state.mode === 'deliver' ? 'address' : 'contact';
       renderCheckout();
     });
-    document.getElementById('coPay').addEventListener('click', () => {
-      const num = document.getElementById('ccNum').value.replace(/\s/g,'');
-      const exp = document.getElementById('ccExp').value;
-      const cvc = document.getElementById('ccCvc').value;
-      if (num.length < 12 || !exp.includes('/') || cvc.length < 3) {
-        alert('Please fill in your card details.');
-        return;
-      }
-      // SWAP-ME: real Stripe call would go here.
-      // For demo: simulate processing then show success.
-      const btn = document.getElementById('coPay');
-      btn.disabled = true;
-      btn.textContent = 'Processing…';
-      setTimeout(() => {
-        checkoutStep = 'success';
-        renderCheckout();
-      }, 1100);
-    });
+    document.getElementById('coPay').addEventListener('click', placeOrder);
   }
 
   else if (checkoutStep === 'success') {
-    const t = cartTotals();
-    const ref = 'R' + Math.random().toString(36).slice(2, 7).toUpperCase();
-    const eta = state.mode === 'collect' ? 'about 15 minutes' : 'around 30–45 minutes';
+    // Fallback only — the normal success path redirects to /thank-you.
     body.innerHTML = `
-      <div style="text-align:center">
+      <div style="text-align:center;padding:18px">
         <div class="success-icon">✓</div>
-        <h3 style="font-family:var(--display);font-size:1.5rem;margin:0 0 0.4rem">Order placed!</h3>
-        <p style="margin:0 0 1rem;color:var(--ink-soft)">
-          Reference <strong>${ref}</strong> · Total <strong>${fmt(t.total)}</strong>
-        </p>
-        <p style="font-family:var(--hand);font-size:1.4rem;color:var(--red);margin:0 0 1.2rem">
-          ${state.mode === 'collect' ? 'pick up in ' : 'delivery in '}${eta}
-        </p>
-        <p style="font-size:0.92rem;color:var(--ink-soft);margin:0 0 1.5rem">
-          We've sent confirmation to <strong>${escapeHTML(checkoutData.email)}</strong>
-          and we'll text <strong>${escapeHTML(checkoutData.phone)}</strong> with updates.
-        </p>
-        <div class="notice warn" style="text-align:left">
-          <strong>Demo:</strong> No payment was processed and no email/SMS was sent.
-          Wire to Stripe + a transactional email service (e.g. Resend, Postmark) before launch.
-        </div>
-        <button class="btn-form" id="coDone">Back to menu</button>
-      </div>
-    `;
-    document.getElementById('coDone').addEventListener('click', () => {
-      // clear cart and close
-      state.cart = [];
-      saveState();
-      renderCart();
-      closeModal('checkoutOverlay');
-      checkoutData = {};
-    });
+        <h3 style="font-family:var(--display);font-size:1.4rem;margin:0 0 0.4rem">Order placed</h3>
+        <p>Redirecting…</p>
+      </div>`;
+    setTimeout(() => closeModal('checkoutOverlay'), 800);
   }
 }
 
@@ -2195,6 +2303,13 @@ renderCart();
 applyMode(state.mode);
 refreshPCMessage();
 updateAccountButton();
+
+/* Pull live config (Stripe publishable key, opening hours, contact info,
+   allowed postcodes) so the checkout flow is data-driven. Cached for 30s
+   on the edge; safe to call on every page load. */
+fetch('/api/config').then(r => r.ok ? r.json() : null).then(cfg => {
+  if (cfg) window.RICOS_CONFIG = cfg;
+}).catch(() => { /* fall back to defaults baked into the page */ });
 </script>
 </body>
 </html>

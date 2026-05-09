@@ -20,12 +20,19 @@ export async function getOrder(id, env) {
   try { return JSON.parse(raw); } catch { return null; }
 }
 
+const KITCHEN_VISIBLE_STATUSES = new Set([
+  'pending_accept',     // paid (or cash) — waiting for staff to accept
+  'accepted',           // staff accepted with a ready time
+  'ready',              // collection-ready
+  'out_for_delivery',   // driver out
+]);
+
 export async function listActiveOrders(env, { limit = 100 } = {}) {
   const list = await env.ORDERS_KV.list({ prefix: 'orders:', limit });
   const active = [];
   for (const k of list.keys) {
     const status = k.metadata?.status;
-    if (status && status !== 'completed' && status !== 'cancelled' && status !== 'failed') {
+    if (status && KITCHEN_VISIBLE_STATUSES.has(status)) {
       const raw = await env.ORDERS_KV.get(k.name);
       if (raw) {
         try { active.push(JSON.parse(raw)); } catch {}
