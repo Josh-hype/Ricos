@@ -47,6 +47,7 @@ export function orderReceivedEmail(order, config) {
           <tr><td>Subtotal</td><td style="text-align:right">£${(order.totals.subtotalP/100).toFixed(2)}</td></tr>
           ${order.totals.discountP ? `<tr><td>${escapeHtml(order.totals.discountLabel || 'Discount')}</td><td style="text-align:right">−£${(order.totals.discountP/100).toFixed(2)}</td></tr>` : ''}
           ${order.totals.deliveryFeeP ? `<tr><td>Delivery</td><td style="text-align:right">£${(order.totals.deliveryFeeP/100).toFixed(2)}</td></tr>` : ''}
+          ${order.totals.serviceFeeP ? `<tr><td>Service fee</td><td style="text-align:right">£${(order.totals.serviceFeeP/100).toFixed(2)}</td></tr>` : ''}
           <tr><td><strong>Total</strong></td><td style="text-align:right"><strong>£${(order.totals.totalP/100).toFixed(2)}</strong></td></tr>
         </table>
         <p style="margin-top:24px;font-size:0.9em;color:#555">Allergens? Call ${phone || 'the restaurant'} before collecting.</p>

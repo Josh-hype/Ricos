@@ -1550,9 +1550,10 @@ function removeFromCart(key) {
   saveState();
   renderCart();
 }
-/* No per-order service fee. The server is the source of truth for totals;
-   this constant is kept at zero so client-side display matches the charge. */
-const SERVICE_FEE = 0;
+/* Per-order platform/service fee. Kept by the platform per the agreement
+   with the venue. Customer-visible at checkout. Keep in sync with
+   serviceFeePence in data/config.json. */
+const SERVICE_FEE = 0.35;
 
 function cartTotals() {
   const sub = state.cart.reduce((s, l) => s + l.price * l.qty, 0);
@@ -2176,6 +2177,7 @@ function renderCheckout() {
         <div class="line"><span>Subtotal</span><span>${fmt(t.sub)}</span></div>
         <div class="line"><span style="color:var(--success)">Online discount (10%)</span><span style="color:var(--success)">-${fmt(t.discount)}</span></div>
         ${state.mode==='deliver' ? `<div class="line"><span>Delivery</span><span>${t.delivery===0?'FREE':fmt(t.delivery)}</span></div>` : ''}
+        ${t.serviceFee > 0 ? `<div class="line"><span>Service fee</span><span>${fmt(t.serviceFee)}</span></div>` : ''}
         <div class="line total"><span>Total</span><span>${fmt(t.total)}</span></div>
       </div>
 

@@ -61,6 +61,9 @@ export function computeTotals(input, config) {
     deliveryFeeP = config.fulfillment.delivery.feePence;
   }
 
+  // Per-order platform/service fee (kept by the platform operator).
+  const serviceFeeP = config.serviceFeePence || 0;
+
   // Minimum order check (applied to subtotal less discount).
   const netSubtotalP = subtotalP - discountP;
   if (fulfillment === 'delivery' && netSubtotalP < config.fulfillment.delivery.minimumOrderPence) {
@@ -70,7 +73,7 @@ export function computeTotals(input, config) {
     };
   }
 
-  const totalP = netSubtotalP + deliveryFeeP;
+  const totalP = netSubtotalP + deliveryFeeP + serviceFeeP;
   if (totalP <= 0) {
     return { ok: false, reason: 'Cart is empty.' };
   }
@@ -82,6 +85,7 @@ export function computeTotals(input, config) {
     discountP,
     discountLabel,
     deliveryFeeP,
+    serviceFeeP,
     totalP,
     fulfillment,
   };
