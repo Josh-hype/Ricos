@@ -1,0 +1,39 @@
+name = "ricos"
+compatibility_date = "2026-05-01"
+pages_build_output_dir = "public"
+
+# KV namespaces. Create these in the Cloudflare dashboard or via:
+#   npx wrangler kv namespace create ORDERS_KV
+#   npx wrangler kv namespace create MARKETING_KV
+#   npx wrangler kv namespace create SLOTS_KV
+#   npx wrangler kv namespace create STAFF_LOGIN_KV
+# Then paste the returned ids below and re-deploy.
+
+[[kv_namespaces]]
+binding = "ORDERS_KV"
+id = "PASTE_ORDERS_KV_ID_HERE"
+
+[[kv_namespaces]]
+binding = "MARKETING_KV"
+id = "PASTE_MARKETING_KV_ID_HERE"
+
+[[kv_namespaces]]
+binding = "SLOTS_KV"
+id = "PASTE_SLOTS_KV_ID_HERE"
+
+[[kv_namespaces]]
+binding = "STAFF_LOGIN_KV"
+id = "PASTE_STAFF_LOGIN_KV_ID_HERE"
+
+# Secrets are set with `wrangler pages secret put NAME --project-name=ricos`
+# (or in the Cloudflare dashboard). They MUST NOT live in this file.
+#   STRIPE_SECRET_KEY
+#   STRIPE_PUBLISHABLE_KEY
+#   STRIPE_WEBHOOK_SECRET
+#   RESEND_API_KEY
+#   RESEND_FROM_EMAIL
+#   TWILIO_ACCOUNT_SID
+#   TWILIO_AUTH_TOKEN
+#   TWILIO_FROM_NUMBER
+#   STAFF_PIN_HASH        (sha256 of the 4–8 digit PIN, lowercase hex)
+#   SESSION_SECRET        (random 32+ char string)

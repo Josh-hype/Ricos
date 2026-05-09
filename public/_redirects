@@ -1,0 +1,10 @@
+# Cloudflare Pages redirects.
+# https://developers.cloudflare.com/pages/configuration/redirects/
+
+# Trailing-slash normalisation.
+/order/   /order   301
+/staff/   /staff   301
+
+# Friendly URLs.
+/menu     /order   302
+/book     /order   302

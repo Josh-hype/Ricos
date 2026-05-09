@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Terms & conditions — Rico's Peri Peri</title>
+<meta name="description" content="The terms governing orders placed with Rico's Peri Peri." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root { --red:#c8261c; --yellow:#f5b71e; --cream:#fff5d8; --ink:#181210; }
+  *,*::before,*::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  .wrap { width: min(820px, 92vw); margin: 0 auto; padding: 32px 0 64px; }
+  header { padding: 16px 0; border-bottom: 3px solid var(--ink); margin-bottom: 32px; }
+  header a { color: inherit; text-decoration: none; font-weight: 700; }
+  h1 { font-family: 'Archivo Black', sans-serif; font-size: 2rem; margin: 0 0 6px; }
+  h2 { font-family: 'Archivo Black', sans-serif; font-size: 1.1rem; margin: 32px 0 8px; }
+  .meta { color: #6b5e58; font-size: 0.9rem; margin-bottom: 24px; }
+  p, li { margin: 10px 0; }
+  ul { padding-left: 20px; }
+  a { color: var(--red); }
+  footer { margin-top: 64px; padding-top: 24px; border-top: 1px solid #d8c98f; font-size: 0.9rem; color: #6b5e58; }
+</style>
+</head>
+<body>
+  <header><div class="wrap"><a href="/">← Rico's Peri Peri</a></div></header>
+  <main class="wrap">
+    <h1>Terms & conditions</h1>
+    <p class="meta">Last updated: <span id="updated"></span>.</p>
+
+    <p>These terms govern orders you place with <strong>Rico's Peri Peri</strong> through this website. By placing an order you confirm that you accept them.</p>
+
+    <h2>1. Who we are</h2>
+    <p>Rico's Peri Peri is the trading name of a UK limited company. Trading address: 49 Blossom Street, York YO24 1AZ.</p>
+
+    <h2>2. Ordering</h2>
+    <ul>
+      <li>You must be at least 18 to place an order.</li>
+      <li>Prices on the website are in pounds sterling and include VAT where applicable.</li>
+      <li>Submitting an order is an offer to buy; the order is not accepted until our kitchen confirms it. You'll receive a confirmation email with a ready time once accepted.</li>
+      <li>If we cannot fulfil an item we'll contact you and offer either a substitute or a refund.</li>
+    </ul>
+
+    <h2>3. Payment</h2>
+    <ul>
+      <li>Card payments are processed by Stripe; we do not store your card number.</li>
+      <li>Cash is accepted on collection or on delivery, payable in full at the time of handover.</li>
+      <li>If a card payment fails the order is not placed.</li>
+    </ul>
+
+    <h2>4. Collection and delivery</h2>
+    <ul>
+      <li>Collection orders should be picked up at the time stated in your acceptance email. Orders left longer than 30 minutes past the ready time may be discarded for food safety reasons; we cannot offer a refund in that case.</li>
+      <li>Delivery is offered to addresses inside the York outer ring road only. Our driver will attempt delivery once at the address provided. If no one is available we may leave the order at the door at our discretion.</li>
+      <li>Estimated times are best-effort and can be affected by traffic and order volume.</li>
+    </ul>
+
+    <h2>5. Cancellations and refunds</h2>
+    <ul>
+      <li>You can cancel a card-paid order any time before our kitchen accepts it for a full refund — call us on the phone number in your confirmation email.</li>
+      <li>Once an order has been accepted and preparation has started, we cannot offer a refund except where required by law (e.g. the food is not as described or unfit to eat).</li>
+      <li>If your order is wrong or unfit, please contact us within 24 hours so we can put it right.</li>
+    </ul>
+
+    <h2>6. Allergens</h2>
+    <p>All of our food is prepared in a kitchen that handles the 14 named allergens. We cannot guarantee that any item is free from cross-contamination. <strong>If you have a food allergy or intolerance, please call the restaurant before ordering</strong> — we'll talk you through what's safe.</p>
+
+    <h2>7. Promotional discounts</h2>
+    <p>The 10% online discount is applied automatically to the subtotal of qualifying online orders. We may change or end the offer at any time.</p>
+
+    <h2>8. Liability</h2>
+    <p>Nothing in these terms limits our liability for fraud, death or personal injury caused by our negligence, or for breach of your statutory rights as a consumer.</p>
+
+    <h2>9. Governing law</h2>
+    <p>These terms are governed by the law of England & Wales. The courts of England & Wales have exclusive jurisdiction.</p>
+
+    <h2>10. Contact</h2>
+    <p>Email and phone are shown on the home page.</p>
+
+    <footer>© <span id="yr"></span> Rico's Peri Peri.</footer>
+  </main>
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+  document.getElementById('updated').textContent = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+</script>
+</body>
+</html>
