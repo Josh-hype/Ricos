@@ -101,17 +101,26 @@ export const onRequestPost = async ({ request, env }) => {
     history: [{ at: createdAt, event: 'created' }],
   };
 
-  // Card flow: create PaymentIntent, attach clientSecret.
+  // Card flow: create PaymentIntent on the venue's connected Stripe
+  // account (Stripe Connect direct charge). The platform retains the
+  // service fee via application_fee_amount.
   if (paymentMethod === 'card') {
+    const connectedAccountId = config.stripe?.connectedAccountId;
+    if (!connectedAccountId || connectedAccountId === 'TBD') {
+      return errJson('Card payments are not configured yet. Please choose cash, or contact us.', 503);
+    }
     try {
       const pi = await createPaymentIntent({
         amountP: totals.totalP,
         currency: 'gbp',
         orderId: id,
         customerEmail: email,
+        connectedAccountId,
+        applicationFeeP: totals.serviceFeeP || 0,
       }, env);
       order.payment.intentId = pi.id;
       order.payment.clientSecret = pi.client_secret;
+      order.payment.connectedAccountId = connectedAccountId;
     } catch (e) {
       console.error('Stripe PI failed', e);
       return errJson('Payment service unavailable — please try again.', 502);

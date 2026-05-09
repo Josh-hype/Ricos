@@ -39,26 +39,83 @@ npx wrangler kv namespace create STAFF_LOGIN_KV
 
 Each command prints an `id`. In the Cloudflare dashboard, go to **your Pages project → Settings → Functions → KV namespace bindings** and add four bindings, matching the names above to the ids you just created. (Or paste them into `wrangler.toml` and let CI deploy from there.)
 
-## 3. Stripe
+## 3. Stripe (Connect)
 
-1. Create the account at https://dashboard.stripe.com/register. Pick **business type = Company** and provide the limited company details + UK bank account.
-2. While verification is pending, switch to **Test mode** (toggle top-right) so you can build and test.
-3. **Developers → API keys** → copy:
-   - **Publishable key** (starts `pk_test_...` then later `pk_live_...`)
-   - **Secret key** (starts `sk_test_...` / `sk_live_...`)
-4. **Developers → Webhooks → Add endpoint:**
-   - URL: `https://YOUR-DOMAIN/api/stripe-webhook`
-   - Events: `payment_intent.succeeded`, `payment_intent.payment_failed`
-   - Copy the **Signing secret** (`whsec_...`).
-5. Set the secrets on Cloudflare Pages:
+This site charges customers a £0.35 platform service fee on top of every order. That fee flows to a **platform Stripe account** (your developer entity) via Stripe Connect, with the rest going to the **venue's connected account** (RICOS CHICKEN LIMITED). Architecture:
 
-```sh
-npx wrangler pages secret put STRIPE_PUBLISHABLE_KEY  --project-name=ricos
-npx wrangler pages secret put STRIPE_SECRET_KEY       --project-name=ricos
-npx wrangler pages secret put STRIPE_WEBHOOK_SECRET   --project-name=ricos
+```
+customer card  →  PaymentIntent on venue's connected account
+                ├──  £14.86  →  RICOS CHICKEN LIMITED Stripe balance (food + delivery)
+                └──   £0.35  →  YOUR PLATFORM Stripe balance (application_fee_amount)
 ```
 
-Once Stripe verification passes (1–2 days), repeat with the live keys.
+You only need this set up once — every future venue you onboard becomes another connected account under the same platform.
+
+### 3a. Register your platform legal entity
+
+The platform Stripe account **cannot** be the same legal entity as the venue. Do these in order:
+
+1. **Companies House → Register a new limited company** (≈£12, usually approved same-day).
+   Suggested name: anything like *"Josh Tech Ltd"*, *"\<Yourname\> Software Ltd"*, etc. You're the sole director.
+2. **Open a UK business bank account** for that Ltd. Tide and Starling both do digital sole-director accounts in ~10 min.
+3. Note down: company number, registered address, your director details.
+
+### 3b. Sign up for Stripe as the platform
+
+1. https://dashboard.stripe.com/register — sign up with the new Ltd's details. **Business type = Company**.
+2. Complete the onboarding (KYC). Bank details point at the platform Ltd's bank account.
+3. Once your standard account is approved, go to **Connect** in the left sidebar → **Get started**.
+4. Pick **Standard** as the integration type. *(Standard = each venue gets their own Stripe dashboard. Best fit for takeaways.)*
+5. Fill in the platform profile Stripe asks for (the website URL — your future platform marketing site, OK to start with `https://ricosyork.co.uk` for now and update later).
+6. Submit the platform application. **Approval is usually instant for Standard, can take up to 48h.**
+
+### 3c. Onboard RICOS as the first connected account
+
+1. In your platform dashboard: **Connect → Accounts → Create**.
+2. Pick **Standard**, country **GB**.
+3. Enter the email of whoever runs RICOS day-to-day.
+4. Stripe sends them an onboarding link → they complete KYC for **RICOS CHICKEN LIMITED** (Companies House 16996733), bank details, etc.
+5. When complete, the account is enabled. Note the **account ID** — it looks like `acct_1XXXXXXXXXXXXXX` and is shown at the top of that account's view in your platform dashboard.
+
+> *Since you control both entities, you'll be doing both sides of this onboarding yourself.*
+
+### 3d. Wire the connected account ID into the codebase
+
+Open `data/config.json` and replace the `TBD` value:
+
+```json
+"stripe": {
+  "connectedAccountId": "acct_1XXXXXXXXXXXXXX"
+}
+```
+
+Commit and push. Cloudflare auto-redeploys.
+
+### 3e. Get the platform API keys
+
+In the platform dashboard:
+
+1. **Developers → API keys** → copy:
+   - **Publishable key** (`pk_test_...` → later `pk_live_...`)
+   - **Secret key** (`sk_test_...` → later `sk_live_...`)
+2. **Developers → Webhooks → Add endpoint** → choose **"Listen on Connected accounts"** *(this is the key step — without it, paid-order events never reach our webhook):*
+   - URL: `https://ricosyork.co.uk/api/stripe-webhook` *(once your domain is set up; use the `*.pages.dev` URL until then)*
+   - Events: `payment_intent.succeeded`, `payment_intent.payment_failed`
+   - Copy the **Signing secret** (`whsec_...`).
+
+### 3f. Set the secrets in Cloudflare
+
+In the Pages project: **Settings → Variables and Secrets → Add → Type = Secret**:
+
+| Name | Value |
+|---|---|
+| `STRIPE_PUBLISHABLE_KEY` | `pk_test_...` (the platform's, not the venue's) |
+| `STRIPE_SECRET_KEY` | `sk_test_...` (platform) |
+| `STRIPE_WEBHOOK_SECRET` | `whsec_...` (from the Connect webhook) |
+
+After saving, redeploy (push any commit, or use the **Create deployment** button).
+
+Once Stripe approves the platform for **live mode**, repeat with the `pk_live_...`, `sk_live_...`, and a fresh webhook secret from a webhook endpoint you create in live mode.
 
 ## 4. Resend (email)
 

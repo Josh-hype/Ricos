@@ -2242,14 +2242,16 @@ function renderCheckout() {
     async function ensureCardMounted() {
       if (cardMounted) return;
       const pk = window.RICOS_CONFIG?.stripe?.publishableKey;
-      if (!window.Stripe || !pk) {
+      const connectedAcct = window.RICOS_CONFIG?.stripe?.connectedAccountId;
+      if (!window.Stripe || !pk || !connectedAcct || connectedAcct === 'TBD') {
         document.getElementById('payment-element').innerHTML =
           '<div style="color:var(--error);font-size:0.9rem">Card payments are unavailable right now. Please choose cash, or refresh the page.</div>';
         return;
       }
-      // We get a real clientSecret only after POST /api/order. So here we
-      // just create a deferred-init Elements: pass mode/amount/currency.
-      stripeInstance = stripeInstance || window.Stripe(pk);
+      // Stripe Connect direct charge: Stripe.js must be told which connected
+      // account the PaymentIntent will live on, otherwise confirmPayment
+      // returns "No such payment_intent".
+      stripeInstance = stripeInstance || window.Stripe(pk, { stripeAccount: connectedAcct });
       stripeElements = stripeInstance.elements({
         mode: 'payment',
         amount: Math.round(t.total * 100),

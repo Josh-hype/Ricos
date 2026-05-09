@@ -34,8 +34,13 @@
     }
   },
 
-  "_comment_serviceFee": "Per-order developer/platform fee in pence. Charged to the customer at checkout, included in the Stripe charge or cash total. Reconciled separately with the venue per the platform agreement.",
+  "_comment_serviceFee": "Per-order developer/platform fee in pence. Charged to the customer at checkout, included in the Stripe charge or cash total. With Stripe Connect this is the application_fee_amount that flows to the platform; for cash orders the platform reconciles separately with the venue per the platform agreement.",
   "serviceFeePence": 35,
+
+  "_comment_stripe": "Stripe Connect: this site's PaymentIntents are created on the venue's connected account. connectedAccountId is the venue's acct_xxx string from Stripe Connect. Replace TBD once the venue has completed Connect onboarding under your platform Stripe account.",
+  "stripe": {
+    "connectedAccountId": "TBD"
+  },
 
   "hours": {
     "_comment": "24-hour format. Closes after midnight are written as 25:00 = 01:00 next day. lastOrderBeforeCloseMinutes is subtracted automatically for the cut-off.",

@@ -20,13 +20,18 @@ function form(obj, prefix = '') {
 }
 
 async function call(path, body, env, opts = {}) {
+  const headers = {
+    'Authorization': `Bearer ${env.STRIPE_SECRET_KEY}`,
+    'Content-Type': 'application/x-www-form-urlencoded',
+  };
+  if (opts.idempotencyKey) headers['Idempotency-Key'] = opts.idempotencyKey;
+  // Stripe-Account header makes this a "direct" call on the connected
+  // account. Required for Connect direct charges.
+  if (opts.stripeAccount) headers['Stripe-Account'] = opts.stripeAccount;
+
   const res = await fetch(`${STRIPE_BASE}${path}`, {
     method: opts.method || 'POST',
-    headers: {
-      'Authorization': `Bearer ${env.STRIPE_SECRET_KEY}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
-      ...(opts.idempotencyKey ? { 'Idempotency-Key': opts.idempotencyKey } : {}),
-    },
+    headers,
     body: body ? form(body).toString() : undefined,
   });
   const json = await res.json();
@@ -39,14 +44,32 @@ async function call(path, body, env, opts = {}) {
   return json;
 }
 
-export async function createPaymentIntent({ amountP, currency, orderId, customerEmail }, env) {
-  return call('/payment_intents', {
+/* Create a PaymentIntent.
+   In Stripe Connect mode (connectedAccountId set), this is a "direct
+   charge" — the PaymentIntent is created on the connected account, money
+   settles to the venue, and the platform automatically retains the
+   application_fee_amount (kept in the platform's Stripe balance). */
+export async function createPaymentIntent({
+  amountP,
+  currency,
+  orderId,
+  customerEmail,
+  connectedAccountId,
+  applicationFeeP,
+}, env) {
+  const body = {
     amount: amountP,
     currency,
     automatic_payment_methods: { enabled: true },
     receipt_email: customerEmail || undefined,
     metadata: { orderId },
-  }, env, { idempotencyKey: `pi_${orderId}` });
+  };
+  if (connectedAccountId && applicationFeeP) {
+    body.application_fee_amount = applicationFeeP;
+  }
+  const opts = { idempotencyKey: `pi_${orderId}` };
+  if (connectedAccountId) opts.stripeAccount = connectedAccountId;
+  return call('/payment_intents', body, env, opts);
 }
 
 export async function verifyWebhook(rawBody, sigHeader, env) {
