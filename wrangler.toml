@@ -2,31 +2,26 @@ name = "ricos"
 compatibility_date = "2026-05-01"
 pages_build_output_dir = "public"
 
-# KV namespaces. Create these in the Cloudflare dashboard or via:
-#   npx wrangler kv namespace create ORDERS_KV
-#   npx wrangler kv namespace create MARKETING_KV
-#   npx wrangler kv namespace create SLOTS_KV
-#   npx wrangler kv namespace create STAFF_LOGIN_KV
-# Then paste the returned ids below and re-deploy.
+# KV namespaces are bound in the Cloudflare Pages dashboard, NOT here.
+# The dashboard bindings are what production reads from.
+#
+# To create them:
+#   1. Cloudflare dashboard → Workers & Pages → KV → Create namespace
+#   2. Create FOUR namespaces:  ORDERS_KV, MARKETING_KV, SLOTS_KV, STAFF_LOGIN_KV
+#   3. Then in your Pages project: Settings → Functions → KV namespace bindings
+#      → Add binding for each, matching the variable name to the namespace.
+#
+# (Local development only — uncomment and paste real IDs after `wrangler kv
+# namespace create ...` if you want `npm run dev` to work locally:
+#
+# [[kv_namespaces]]
+# binding = "ORDERS_KV"
+# id = "..."
+# )
 
-[[kv_namespaces]]
-binding = "ORDERS_KV"
-id = "PASTE_ORDERS_KV_ID_HERE"
-
-[[kv_namespaces]]
-binding = "MARKETING_KV"
-id = "PASTE_MARKETING_KV_ID_HERE"
-
-[[kv_namespaces]]
-binding = "SLOTS_KV"
-id = "PASTE_SLOTS_KV_ID_HERE"
-
-[[kv_namespaces]]
-binding = "STAFF_LOGIN_KV"
-id = "PASTE_STAFF_LOGIN_KV_ID_HERE"
-
-# Secrets are set with `wrangler pages secret put NAME --project-name=ricos`
-# (or in the Cloudflare dashboard). They MUST NOT live in this file.
+# Secrets are set in the dashboard: Settings → Variables and Secrets.
+# Or via CLI: wrangler pages secret put NAME --project-name=ricos
+#
 #   STRIPE_SECRET_KEY
 #   STRIPE_PUBLISHABLE_KEY
 #   STRIPE_WEBHOOK_SECRET
