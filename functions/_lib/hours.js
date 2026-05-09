@@ -1,7 +1,11 @@
 /* Opening-hours and slot validation. All times are interpreted in
-   config.ordering.timezone (Europe/London). */
+   config.ordering.timezone (Europe/London).
 
-const DAYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+   Cross-midnight support: if a window's close > "24:00" (e.g. "25:00"), it
+   means close at 01:00 on the next day. This is needed for late-night
+   trading on Friday and Saturday. */
+
+const DAY_ORDER = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
 function nowInTz(tz) {
   const fmt = new Intl.DateTimeFormat('en-GB', {
@@ -14,8 +18,6 @@ function nowInTz(tz) {
     Thu:'thursday', Fri:'friday', Sat:'saturday' })[parts.weekday];
   return {
     dayName,
-    hh: Number(parts.hour),
-    mm: Number(parts.minute),
     minutesOfDay: Number(parts.hour) * 60 + Number(parts.minute),
   };
 }
@@ -25,15 +27,35 @@ function hhmmToMin(hhmm) {
   return h * 60 + m;
 }
 
+function prevDay(name) {
+  const i = DAY_ORDER.indexOf(name);
+  return DAY_ORDER[(i - 1 + 7) % 7];
+}
+
 export function isOpenNow(config) {
-  const { dayName, minutesOfDay } = nowInTz(config.ordering.timezone);
-  const day = config.hours[dayName];
-  if (!day || day.closed) return false;
-  for (const w of day.windows) {
-    const open = hhmmToMin(w.open);
-    const close = hhmmToMin(w.close) - (config.ordering.lastOrderBeforeCloseMinutes || 0);
-    if (minutesOfDay >= open && minutesOfDay <= close) return true;
+  const tz = config.ordering.timezone;
+  const { dayName, minutesOfDay } = nowInTz(tz);
+  const lastBuffer = config.ordering.lastOrderBeforeCloseMinutes || 0;
+
+  // Today's windows.
+  const today = config.hours[dayName];
+  if (today && !today.closed) {
+    for (const w of today.windows) {
+      const open = hhmmToMin(w.open);
+      const close = hhmmToMin(w.close) - lastBuffer;
+      if (minutesOfDay >= open && minutesOfDay <= close) return true;
+    }
   }
+
+  // Yesterday's windows that crossed midnight into today.
+  const yesterday = config.hours[prevDay(dayName)];
+  if (yesterday && !yesterday.closed) {
+    for (const w of yesterday.windows) {
+      const close = hhmmToMin(w.close) - lastBuffer;
+      if (close > 1440 && minutesOfDay <= (close - 1440)) return true;
+    }
+  }
+
   return false;
 }
 
@@ -49,38 +71,40 @@ export function listSlots(config) {
   const baseUtc = new Date();
   for (let d = 0; d < horizon; d++) {
     const day = new Date(baseUtc.getTime() + d * 86400000);
-    const dayKey = DAYS[Number(new Intl.DateTimeFormat('en-GB', { timeZone: tz, weekday: 'short' })
-      .format(day)
-      .replace('Sun','0').replace('Mon','1').replace('Tue','2').replace('Wed','3')
-      .replace('Thu','4').replace('Fri','5').replace('Sat','6'))];
+    const weekdayShort = new Intl.DateTimeFormat('en-GB', { timeZone: tz, weekday: 'short' }).format(day);
+    const dayKey = ({ Sun:'sunday', Mon:'monday', Tue:'tuesday', Wed:'wednesday',
+      Thu:'thursday', Fri:'friday', Sat:'saturday' })[weekdayShort];
     const conf = config.hours[dayKey];
     if (!conf || conf.closed) continue;
     for (const w of conf.windows) {
       const start = hhmmToMin(w.open);
       const end = hhmmToMin(w.close) - lastBuffer;
-      // Build slots aligned to the slot grid.
       const startAligned = Math.ceil(start / slotMin) * slotMin;
       for (let m = startAligned; m <= end; m += slotMin) {
         const slot = buildLocalIso(day, m, tz);
         if (!slot) continue;
-        // Skip slots earlier than now + lead minutes.
         if (slot.getTime() < Date.now() + lead * 60000) continue;
-        out.push(slot.toISOString());
+        const iso = slot.toISOString();
+        if (!out.includes(iso)) out.push(iso);
       }
     }
   }
   return out;
 }
 
-/* Construct a UTC Date that, when interpreted in tz, is on the given day at H:M. */
+/* Construct a UTC Date that, when interpreted in tz, is on the given day at
+   H:M. If minutes >= 1440 the slot rolls onto the next calendar day. */
 function buildLocalIso(day, minutes, tz) {
-  const yyyy = new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric' }).format(day);
-  const mm = new Intl.DateTimeFormat('en-CA', { timeZone: tz, month: '2-digit' }).format(day);
-  const dd = new Intl.DateTimeFormat('en-CA', { timeZone: tz, day: '2-digit' }).format(day);
+  const adjusted = new Date(day.getTime());
+  if (minutes >= 1440) {
+    adjusted.setUTCDate(adjusted.getUTCDate() + 1);
+    minutes = minutes - 1440;
+  }
+  const yyyy = new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric' }).format(adjusted);
+  const mm   = new Intl.DateTimeFormat('en-CA', { timeZone: tz, month: '2-digit' }).format(adjusted);
+  const dd   = new Intl.DateTimeFormat('en-CA', { timeZone: tz, day: '2-digit' }).format(adjusted);
   const h = String(Math.floor(minutes / 60)).padStart(2, '0');
   const min = String(minutes % 60).padStart(2, '0');
-  // Build a string and let Date parse it as if the wall-clock time is in tz.
-  // We approximate by computing the offset for that day.
   const local = new Date(`${yyyy}-${mm}-${dd}T${h}:${min}:00`);
   const localUtcGuess = new Date(local.toLocaleString('en-US', { timeZone: 'UTC' }));
   const localInTz = new Date(local.toLocaleString('en-US', { timeZone: tz }));
@@ -94,7 +118,6 @@ export function isSlotValid(slotIso, config) {
   if (Number.isNaN(slot.getTime())) return false;
   const lead = config.ordering.asapMinPrepMinutes;
   if (slot.getTime() < Date.now() + lead * 60000) return false;
-  // Check it's within an open window. Cheap check: compare to listSlots.
   const all = listSlots(config);
   return all.includes(slotIso);
 }

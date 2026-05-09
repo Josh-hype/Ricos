@@ -1237,16 +1237,13 @@ const SPICE_OPTIONS = [
 ];
 
 /* ---------- York postcode validation ----------
-   COLLECTION_DISTRICTS: any York post-town district can come in to collect.
-   DELIVERY_DISTRICTS:   only districts inside the A1237 ring road get delivery.
-   Note: at the postcode-district level a few districts (YO23, YO26) straddle
-   the ring road slightly. Edge-of-zone customers can still collect, or the
-   kitchen can call them to confirm. */
-const COLLECTION_DISTRICTS = [
-  '1','10','19','23','24','26','30','31','32','41','42','43','51','60','61','62'
-];
+   Collection: any valid YO* postcode (the customer is coming to us).
+   Delivery:   only outcodes inside the A1237 ring road. The list mirrors
+               data/config.json — keep them in sync. The server validates
+               again so an out-of-zone postcode that slips past the client
+               will still be rejected at /api/order. */
 const DELIVERY_DISTRICTS = [
-  '1','10','23','24','26','30','31'
+  '1','10','23','24','30','31'
 ];
 
 function validatePostcode(raw, mode) {
@@ -1255,9 +1252,6 @@ function validatePostcode(raw, mode) {
   const m = cleaned.match(/^YO(\d{1,2})(\d[A-Z]{2})$/);
   if (!m) return { ok: false, reason: "That doesn't look like a York postcode. We only serve YO postcodes." };
   const district = m[1];
-  if (!COLLECTION_DISTRICTS.includes(district)) {
-    return { ok: false, reason: "We don't serve that area — sorry!" };
-  }
   if (mode === 'deliver' && !DELIVERY_DISTRICTS.includes(district)) {
     return {
       ok: false,

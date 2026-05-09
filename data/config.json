@@ -1,19 +1,19 @@
 {
-  "_comment": "Edit this file to change shop hours, fees, postcodes, contact info. Redeploy after editing. Do NOT put secrets here — they go in Cloudflare environment variables.",
+  "_comment": "Edit this file to change shop hours, fees, postcodes, contact info. Redeploy after editing. Do NOT put secrets here — they go in Cloudflare environment variables. Hours support cross-midnight by setting close > 24:00 (e.g. \"25:00\" means 01:00 next day).",
 
   "business": {
     "tradingName": "Rico's Peri Peri",
-    "legalName": "TBD LIMITED COMPANY NAME",
-    "companyNumber": "TBD",
+    "legalName": "RICOS CHICKEN LIMITED",
+    "companyNumber": "16996733",
     "address": {
       "line1": "49 Blossom Street",
       "city": "York",
       "postcode": "YO24 1AZ",
       "country": "United Kingdom"
     },
-    "phone": "TBD",
-    "email": "TBD",
-    "domain": "TBD"
+    "phone": "01904 927050",
+    "email": "Orders@ricosyork.co.uk",
+    "domain": "ricosyork.co.uk"
   },
 
   "fulfillment": {
@@ -22,13 +22,12 @@
       "enabled": true,
       "feePence": 200,
       "minimumOrderPence": 1500,
-      "_comment_postcodes": "Outcodes inside the York outer ring road. Tighten or expand as needed. We match against the part before the space.",
+      "_comment_postcodes": "Outcodes inside the York outer ring road (A1237/A64). YO26 is intentionally excluded — Poppleton, Skelton, Knapton and Wigginton are all OUTSIDE the ring. YO23 and YO10 contain a few rural addresses outside the ring (Copmanthorpe, Stockton-on-the-Forest); the kitchen can decline those at acceptance time. Add YO26 here if you want to extend coverage.",
       "allowedOutcodes": [
         "YO1",
         "YO10",
         "YO23",
         "YO24",
-        "YO26",
         "YO30",
         "YO31"
       ]
@@ -36,14 +35,14 @@
   },
 
   "hours": {
-    "_comment": "24-hour format. Set 'closed': true for closed days. Multiple windows per day allowed.",
-    "monday":    { "closed": true,  "windows": [] },
-    "tuesday":   { "closed": false, "windows": [{ "open": "16:00", "close": "22:00" }] },
-    "wednesday": { "closed": false, "windows": [{ "open": "16:00", "close": "22:00" }] },
-    "thursday":  { "closed": false, "windows": [{ "open": "16:00", "close": "22:00" }] },
-    "friday":    { "closed": false, "windows": [{ "open": "16:00", "close": "23:00" }] },
-    "saturday":  { "closed": false, "windows": [{ "open": "16:00", "close": "23:00" }] },
-    "sunday":    { "closed": false, "windows": [{ "open": "16:00", "close": "21:30" }] }
+    "_comment": "24-hour format. Closes after midnight are written as 25:00 = 01:00 next day. lastOrderBeforeCloseMinutes is subtracted automatically for the cut-off.",
+    "monday":    { "closed": false, "windows": [{ "open": "13:00", "close": "22:45" }] },
+    "tuesday":   { "closed": false, "windows": [{ "open": "13:00", "close": "22:45" }] },
+    "wednesday": { "closed": false, "windows": [{ "open": "13:00", "close": "22:45" }] },
+    "thursday":  { "closed": false, "windows": [{ "open": "13:00", "close": "22:45" }] },
+    "friday":    { "closed": false, "windows": [{ "open": "13:00", "close": "25:00" }] },
+    "saturday":  { "closed": false, "windows": [{ "open": "14:00", "close": "25:00" }] },
+    "sunday":    { "closed": false, "windows": [{ "open": "14:00", "close": "22:45" }] }
   },
 
   "ordering": {
