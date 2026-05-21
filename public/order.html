@@ -2289,14 +2289,29 @@ function wirePostcodeLookup() {
       addresses.map((a, i) => `<option value="${i}">${escapeHTML(a.formatted)}</option>`).join('');
     pickWrap.style.display = 'block';
     showStatus('', false);
-    pick.onchange = () => {
+    pick.onchange = async () => {
       const idx = Number(pick.value);
       if (Number.isNaN(idx)) return;
-      const a = addresses[idx];
-      if (!a) return;
-      document.getElementById('coLine1').value = a.line1 || '';
-      document.getElementById('coLine2').value = a.line2 || '';
-      document.getElementById('coCity').value  = a.city  || 'York';
+      const sel = addresses[idx];
+      if (!sel) return;
+
+      // Resolve the picked suggestion to a structured address.
+      showStatus('Loading address…', false);
+      try {
+        const res = await fetch(`/api/postcode-lookup?id=${encodeURIComponent(sel.id)}`);
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.ok || !data.address) {
+          showStatus(data.reason || `Couldn't load that address (${res.status}). Please type it below.`, true);
+          return;
+        }
+        const a = data.address;
+        document.getElementById('coLine1').value = a.line1 || '';
+        document.getElementById('coLine2').value = a.line2 || '';
+        document.getElementById('coCity').value  = a.city  || 'York';
+        showStatus('', false);
+      } catch {
+        showStatus('Network error loading the address. Please type it below.', true);
+      }
     };
   };
 
