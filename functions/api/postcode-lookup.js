@@ -24,36 +24,43 @@ export const onRequestGet = async ({ request, env }) => {
     return errJson('Not a valid York postcode.', 400);
   }
 
-  const apiUrl = `https://api.getAddress.io/find/${encodeURIComponent(cleaned)}?api-key=${encodeURIComponent(env.GETADDRESS_API_KEY)}&expand=true&sort=true`;
+  const keyLen = (env.GETADDRESS_API_KEY || '').length;
+  // Try the modern lowercase host with the postcode untouched (with space).
+  const path = `/find/${encodeURIComponent(raw)}`;
+  const apiUrl = `https://api.getaddress.io${path}?expand=true&sort=true`;
   let upstream;
   try {
     upstream = await fetch(apiUrl, {
       headers: {
         Accept: 'application/json',
-        'api-key': env.GETADDRESS_API_KEY,
+        Authorization: `api-key ${env.GETADDRESS_API_KEY}`,
       },
     });
-  } catch {
-    return errJson('Address lookup is temporarily unavailable.', 502);
+  } catch (e) {
+    return errJson(`Address lookup network error: ${String(e).slice(0, 100)}`, 502);
   }
 
+  const upstreamBody = await safeText(upstream);
+
   if (upstream.status === 404) {
-    return Response.json({ ok: true, addresses: [], _debug: 'upstream 404' }, { headers: cacheHeaders() });
+    return Response.json({
+      ok: true,
+      addresses: [],
+      _debug: `upstream 404 host=api.getaddress.io path=${path} keyLen=${keyLen} body="${upstreamBody.slice(0, 200)}"`,
+    }, { headers: cacheHeaders() });
   }
   if (upstream.status === 401 || upstream.status === 403) {
-    const body = await safeText(upstream);
-    return errJson(`Address lookup misconfigured (${upstream.status}). ${body.slice(0, 140)}`, 503);
+    return errJson(`Lookup auth ${upstream.status}: ${upstreamBody.slice(0, 160)}`, 503);
   }
   if (upstream.status === 429) {
     return errJson('Daily address lookup limit reached. Please type the address manually.', 429);
   }
   if (!upstream.ok) {
-    const body = await safeText(upstream);
-    return errJson(`Address lookup failed (${upstream.status}). ${body.slice(0, 140)}`, 502);
+    return errJson(`Lookup ${upstream.status}: ${upstreamBody.slice(0, 160)}`, 502);
   }
 
   let data;
-  try { data = await upstream.json(); }
+  try { data = JSON.parse(upstreamBody); }
   catch { return errJson('Address lookup returned an invalid response.', 502); }
 
   const list = Array.isArray(data.addresses) ? data.addresses : [];
