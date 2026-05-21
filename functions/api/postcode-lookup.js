@@ -60,19 +60,37 @@ export const onRequestGet = async ({ request, env }) => {
   try { data = JSON.parse(body); }
   catch { return errJson('Lookup returned invalid JSON.', 502); }
 
-  const addresses = (Array.isArray(data.addresses) ? data.addresses : [])
-    .map(a => ({
-      line_1: a.line_1 || '',
-      line_2: a.line_2 || '',
-      line_3: a.line_3 || '',
-      line_4: a.line_4 || '',
-      town_or_city: a.town_or_city || '',
-      locality: a.locality || '',
-    }))
-    .filter(a => a.line_1 || a.line_2);
+  const raw = Array.isArray(data.addresses) ? data.addresses : [];
+  const addresses = raw.map(parseAddress).filter(a => a.line_1 || a.line_2);
 
   return Response.json({ addresses }, { headers: cacheHeaders() });
 };
+
+// /find returns objects when expand=true is honoured, but on the basic
+// tier (and historically) it returns an array of comma-separated strings
+// in the order: line_1, line_2, line_3, line_4, locality, town_or_city,
+// county. Handle both.
+function parseAddress(a) {
+  if (typeof a === 'string') {
+    const parts = a.split(',').map(p => p.trim());
+    return {
+      line_1: parts[0] || '',
+      line_2: parts[1] || '',
+      line_3: parts[2] || '',
+      line_4: parts[3] || '',
+      locality: parts[4] || '',
+      town_or_city: parts[5] || '',
+    };
+  }
+  return {
+    line_1: a.line_1 || '',
+    line_2: a.line_2 || '',
+    line_3: a.line_3 || '',
+    line_4: a.line_4 || '',
+    town_or_city: a.town_or_city || '',
+    locality: a.locality || '',
+  };
+}
 
 function cacheHeaders() {
   return {
