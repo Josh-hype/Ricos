@@ -1,9 +1,10 @@
 # Cloudflare Pages redirects.
 # https://developers.cloudflare.com/pages/configuration/redirects/
-
-# Trailing-slash normalisation.
-/order/   /order   301
-/staff/   /staff   301
+#
+# Note: do NOT add trailing-slash canonicalisation here. Cloudflare Pages
+# already serves /staff/index.html transparently; any /staff/ -> /staff
+# rule loops with Cloudflare's own /staff -> /staff/ behaviour and triggers
+# ERR_TOO_MANY_REDIRECTS.
 
 # Friendly URLs.
 /menu     /order   302
