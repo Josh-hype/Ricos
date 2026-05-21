@@ -259,38 +259,83 @@
     .cart-side { display: none; }
   }
 
-  /* category nav */
-  .cat-nav {
-    position: sticky;
-    top: 76px;
-    z-index: 20;
-    background: var(--cream);
-    padding: 0.6rem 0;
-    margin-bottom: 1.5rem;
-    border-bottom: 1px solid var(--line);
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+  /* CATEGORY GRID (default view) */
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.7rem;
+    margin-top: 0.4rem;
   }
-  .cat-nav-inner {
+  @media (min-width: 700px) { .cat-grid { grid-template-columns: repeat(3, 1fr); gap: 0.9rem; } }
+  @media (min-width: 1000px) { .cat-grid { grid-template-columns: repeat(4, 1fr); } }
+  .cat-card {
+    background: var(--white);
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    box-shadow: 3px 3px 0 var(--ink);
+    padding: 0.9rem 0.95rem;
     display: flex;
-    gap: 0.5rem;
-    width: max-content;
+    flex-direction: column;
+    gap: 0.3rem;
+    cursor: pointer;
+    text-align: left;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+    font: inherit;
+    color: inherit;
+    min-height: 92px;
   }
-  .cat-pill {
+  .cat-card:hover {
+    background: var(--yellow);
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+  .cat-card-top { display: flex; align-items: center; gap: 0.4rem; }
+  .cat-card-icon { font-size: 1.3rem; line-height: 1; }
+  .cat-card-name {
+    font-family: var(--display);
+    font-size: 1rem;
+    line-height: 1.15;
+    margin: 0;
+    flex: 1;
+  }
+  .cat-card-count {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    font-weight: 600;
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+  }
+  .cat-card-chev {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--yellow);
+    display: grid; place-items: center;
+    font-size: 0.85rem;
+    border: 2px solid var(--ink);
+  }
+  .cat-card:hover .cat-card-chev { background: var(--red); color: var(--white); }
+
+  /* BACK-TO-MENU button when inside a category */
+  .cat-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
     padding: 8px 14px;
     border-radius: 999px;
     background: var(--white);
     border: 2px solid var(--ink);
-    font-size: 0.85rem;
-    font-weight: 600;
-    white-space: nowrap;
-    transition: background 0.15s ease, color 0.15s ease;
+    box-shadow: 2px 2px 0 var(--ink);
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: var(--ink);
+    margin-bottom: 1rem;
+    transition: background 0.12s ease;
   }
-  .cat-pill:hover { background: var(--yellow); }
-  .cat-pill.active {
-    background: var(--ink);
-    color: var(--yellow);
-  }
+  .cat-back:hover { background: var(--yellow); }
 
   .cat-section {
     margin-bottom: 3rem;
@@ -1286,12 +1331,9 @@
 <div class="wrap">
   <div class="layout">
     <main>
-      <nav class="cat-nav" aria-label="Menu categories">
-        <div class="cat-nav-inner" id="catNav"></div>
-      </nav>
-      <div class="menu-notice" role="note">
+      <div class="menu-notice" role="note" id="menuNotice">
         <span class="tap">Tap</span>
-        <span>Tap any item to see the photo, pick spice and add to your order.</span>
+        <span>Pick a section, then tap an item to see its photo and add it.</span>
       </div>
       <div id="menuRoot"></div>
     </main>
@@ -1514,16 +1556,18 @@ const STORAGE_KEY = 'ricos.v1';
 const state = loadState();
 
 function loadState() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch (e) {}
-  return {
+  const defaults = {
     cart: [],
     mode: 'collect',
     postcode: null,
     user: null,
+    activeCategory: null,
   };
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return { ...defaults, ...JSON.parse(raw), activeCategory: null };
+  } catch (e) {}
+  return defaults;
 }
 function saveState() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
@@ -1531,53 +1575,70 @@ function saveState() {
 
 const fmt = (n) => '£' + n.toFixed(2);
 
-/* ---------- Render menu ---------- */
+/* ---------- Render menu ----------
+   Two views, swapped in place:
+   - activeCategory === null  -> grid of category cards
+   - activeCategory === id    -> items in that one category, with a Back button */
 function renderMenu() {
   const root = document.getElementById('menuRoot');
-  const nav  = document.getElementById('catNav');
+  const notice = document.getElementById('menuNotice');
   root.innerHTML = '';
-  nav.innerHTML = '';
+  window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
 
-  MENU_DATA.forEach((cat, i) => {
-    const pill = document.createElement('a');
-    pill.href = `#cat-${cat.id}`;
-    pill.className = 'cat-pill' + (i === 0 ? ' active' : '');
-    pill.dataset.cat = cat.id;
-    pill.textContent = `${cat.icon} ${cat.name}`;
-    nav.appendChild(pill);
+  if (!state.activeCategory) {
+    // Categories grid view
+    if (notice) notice.style.display = '';
+    const grid = document.createElement('div');
+    grid.className = 'cat-grid';
+    grid.innerHTML = MENU_DATA.map(cat => `
+      <button class="cat-card" type="button" data-cat="${cat.id}" aria-label="Browse ${escapeHTML(cat.name)}">
+        <div class="cat-card-top">
+          <span class="cat-card-icon" aria-hidden="true">${cat.icon}</span>
+          <h2 class="cat-card-name">${escapeHTML(cat.name)}</h2>
+        </div>
+        <div class="cat-card-count">
+          <span>${cat.items.length} item${cat.items.length === 1 ? '' : 's'}</span>
+          <span class="cat-card-chev" aria-hidden="true">›</span>
+        </div>
+      </button>
+    `).join('');
+    root.appendChild(grid);
+    grid.querySelectorAll('.cat-card').forEach(card => {
+      card.addEventListener('click', () => {
+        state.activeCategory = card.dataset.cat;
+        renderMenu();
+      });
+    });
+    return;
+  }
 
-    const section = document.createElement('section');
-    section.className = 'cat-section';
-    section.id = `cat-${cat.id}`;
-    section.innerHTML = `
-      <div class="cat-title">
-        <span class="icon">${cat.icon}</span>
-        <h2>${cat.name}</h2>
-      </div>
-      <div class="item-list">
-        ${cat.items.map(itemRowHTML).join('')}
-      </div>
-    `;
-    root.appendChild(section);
-  });
+  // Single category view
+  const cat = MENU_DATA.find(c => c.id === state.activeCategory);
+  if (!cat) { state.activeCategory = null; renderMenu(); return; }
+  if (notice) notice.style.display = 'none';
 
-  root.querySelectorAll('.item-row').forEach(row => {
+  const back = document.createElement('button');
+  back.type = 'button';
+  back.className = 'cat-back';
+  back.innerHTML = '← All sections';
+  back.addEventListener('click', () => { state.activeCategory = null; renderMenu(); });
+  root.appendChild(back);
+
+  const section = document.createElement('section');
+  section.className = 'cat-section';
+  section.innerHTML = `
+    <div class="cat-title">
+      <span class="icon">${cat.icon}</span>
+      <h2>${escapeHTML(cat.name)}</h2>
+    </div>
+    <div class="item-list">
+      ${cat.items.map(itemRowHTML).join('')}
+    </div>
+  `;
+  root.appendChild(section);
+  section.querySelectorAll('.item-row').forEach(row => {
     row.addEventListener('click', () => openItemDetail(row.dataset.id));
   });
-
-  // active pill on scroll
-  const sections = MENU_DATA.map(c => document.getElementById(`cat-${c.id}`));
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(en => {
-      if (en.isIntersecting) {
-        const id = en.target.id.replace('cat-', '');
-        nav.querySelectorAll('.cat-pill').forEach(p => {
-          p.classList.toggle('active', p.dataset.cat === id);
-        });
-      }
-    });
-  }, { rootMargin: '-30% 0px -60% 0px' });
-  sections.forEach(s => obs.observe(s));
 }
 
 function escapeHTML(s) {
