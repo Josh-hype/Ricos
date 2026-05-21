@@ -1915,6 +1915,11 @@ async function populateScheduleSelect() {
   const opts = [];
   if (isOpen) {
     opts.push(`<option value="asap">As soon as possible (~25 min)</option>`);
+  } else if (slots.length > 0) {
+    // Closed but slots exist — ASAP means "queued for when we open".
+    const d = new Date(slots[0]);
+    const time = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: tz });
+    opts.push(`<option value="asap">As soon as we open (${time})</option>`);
   }
   const today = new Date();
   const todayStr = today.toLocaleDateString('en-GB', { weekday: 'long', timeZone: tz });

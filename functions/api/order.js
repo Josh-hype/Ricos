@@ -10,7 +10,7 @@
 import { getConfig } from '../_lib/config.js';
 import { computeTotals } from '../_lib/totals.js';
 import { validateDeliveryPostcode } from '../_lib/postcode.js';
-import { isOpenNow, isSlotValid } from '../_lib/hours.js';
+import { isOpenNow, isSlotValid, listSlots } from '../_lib/hours.js';
 import { createPaymentIntent } from '../_lib/stripe.js';
 import { sendEmail, orderReceivedEmail } from '../_lib/email.js';
 import { putOrder, newOrderId, recordOptIn, incrSlotCount } from '../_lib/kv.js';
@@ -51,17 +51,21 @@ export const onRequestPost = async ({ request, env }) => {
   }
 
   // Schedule. 'asap' or an ISO timestamp string.
+  // ASAP outside opening hours silently maps to the next available slot —
+  // the customer doesn't need to know we're closed; we just queue them for
+  // opening time.
   let schedule = 'asap';
   if (input.schedule && input.schedule !== 'asap') {
     if (!isSlotValid(input.schedule, config)) {
       return errJson('That time slot is no longer available — please pick another.', 400);
     }
     schedule = input.schedule;
-  } else {
-    // ASAP requires the kitchen to currently be open.
-    if (!isOpenNow(config)) {
-      return errJson("We're closed for ASAP orders right now — pick a scheduled slot.", 400);
+  } else if (!isOpenNow(config)) {
+    const slots = listSlots(config);
+    if (slots.length === 0) {
+      return errJson("Sorry, we're not taking orders right now. Please call the shop.", 400);
     }
+    schedule = slots[0];
   }
 
   // Totals (server-side; client never trusted for prices).
