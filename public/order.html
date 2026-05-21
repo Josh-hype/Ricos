@@ -2312,8 +2312,8 @@ function wirePostcodeLookup() {
 
       showStatus('Loading address…', false);
       try {
-        const getUrl = `https://api.getAddress.io/get/${encodeURIComponent(sel.id)}?api-key=${encodeURIComponent(token)}`;
-        const res = await fetch(getUrl, { headers: { Accept: 'application/json' } });
+        const getUrl = `https://api.getaddress.io/get/${encodeURIComponent(sel.id)}?api-key=${encodeURIComponent(token)}`;
+        const res = await fetch(getUrl);
         if (!res.ok) {
           const body = await res.text().catch(() => '');
           showStatus(`Couldn't load that address (${res.status}). ${body.slice(0, 100)} — type it below.`, true);
@@ -2324,8 +2324,8 @@ function wirePostcodeLookup() {
         document.getElementById('coLine2').value = [a.line_3, a.line_4].filter(Boolean).join(', ');
         document.getElementById('coCity').value  = a.town_or_city || a.locality || 'York';
         showStatus('', false);
-      } catch {
-        showStatus('Network error loading the address. Please type it below.', true);
+      } catch (e) {
+        showStatus(`Network error loading address [${e.name || 'Err'}: ${(e.message || '').slice(0, 60)}]. Please type it below.`, true);
       }
     };
   };
@@ -2352,11 +2352,12 @@ function wirePostcodeLookup() {
         return;
       }
 
-      const url = `https://api.getAddress.io/autocomplete/${encodeURIComponent(postcode)}?api-key=${encodeURIComponent(token)}&all=true&top=20`;
-      const res = await fetch(url, { headers: { Accept: 'application/json' } });
+      // Lowercase host + no custom headers (avoids CORS preflight).
+      const url = `https://api.getaddress.io/autocomplete/${encodeURIComponent(postcode)}?api-key=${encodeURIComponent(token)}&all=true&top=20`;
+      const res = await fetch(url);
       if (!res.ok) {
         const body = await res.text().catch(() => '');
-        showStatus(`Lookup failed (${res.status}). ${body.slice(0, 120)} — type below.`, true);
+        showStatus(`Lookup ${res.status} from getaddress.io. ${body.slice(0, 140)} — type below.`, true);
         return;
       }
       const data = await res.json();
@@ -2365,7 +2366,12 @@ function wirePostcodeLookup() {
       _postcodeCache.set(postcode, suggestions);
       populate(suggestions, token);
     } catch (e) {
-      showStatus(`Network error: ${String(e).slice(0, 80)}. Please type the address below.`, true);
+      const origin = (typeof location !== 'undefined' && location.origin) || '?';
+      const tokenTail = token ? token.slice(-6) : 'none';
+      showStatus(
+        `Lookup network/CORS error from ${origin} [tokenTail=${tokenTail}, err=${e.name || 'Err'}: ${(e.message || '').slice(0, 80)}]. Please type the address below.`,
+        true,
+      );
     } finally {
       btn.disabled = false;
       btn.textContent = originalText;
