@@ -2261,10 +2261,26 @@ async function populateScheduleSelect() {
   }
 }
 
-/* Postcode → address dropdown. Fetches from our serverside proxy which
-   talks to getAddress.io. Cached for the page lifetime so re-opening
-   the address step with the same postcode doesn't burn another lookup. */
+/* Postcode → address dropdown.
+   Calls getAddress.io directly from the browser using a domain-restricted
+   token (loaded via /api/config). Two-step: /autocomplete returns
+   suggestions, /get/{id} resolves one to structured fields. */
 const _postcodeCache = new Map();
+
+async function getAddressToken() {
+  if (window.RICOS_CONFIG?.getAddressDomainToken !== undefined) {
+    return window.RICOS_CONFIG.getAddressDomainToken;
+  }
+  try {
+    const res = await fetch('/api/config');
+    if (res.ok) {
+      window.RICOS_CONFIG = await res.json();
+      return window.RICOS_CONFIG.getAddressDomainToken || null;
+    }
+  } catch {}
+  return null;
+}
+
 function wirePostcodeLookup() {
   const btn        = document.getElementById('coLookupBtn');
   const statusEl   = document.getElementById('coLookupStatus');
@@ -2278,36 +2294,35 @@ function wirePostcodeLookup() {
     statusEl.style.display = msg ? 'block' : 'none';
   };
 
-  const populate = (addresses, debug) => {
-    if (addresses.length === 0) {
+  const populate = (suggestions, token) => {
+    if (suggestions.length === 0) {
       pickWrap.style.display = 'none';
-      const dbg = debug ? ` [${debug}]` : '';
-      showStatus(`No addresses found for that postcode. Please type yours below.${dbg}`, true);
+      showStatus('No addresses found for that postcode. Please type yours below.', true);
       return;
     }
-    pick.innerHTML = `<option value="">— ${addresses.length} address${addresses.length === 1 ? '' : 'es'} found —</option>` +
-      addresses.map((a, i) => `<option value="${i}">${escapeHTML(a.formatted)}</option>`).join('');
+    pick.innerHTML = `<option value="">— ${suggestions.length} address${suggestions.length === 1 ? '' : 'es'} found —</option>` +
+      suggestions.map((s, i) => `<option value="${i}">${escapeHTML(s.address || '')}</option>`).join('');
     pickWrap.style.display = 'block';
     showStatus('', false);
     pick.onchange = async () => {
       const idx = Number(pick.value);
       if (Number.isNaN(idx)) return;
-      const sel = addresses[idx];
-      if (!sel) return;
+      const sel = suggestions[idx];
+      if (!sel || !sel.id) return;
 
-      // Resolve the picked suggestion to a structured address.
       showStatus('Loading address…', false);
       try {
-        const res = await fetch(`/api/postcode-lookup?id=${encodeURIComponent(sel.id)}`);
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok || !data.ok || !data.address) {
-          showStatus(data.reason || `Couldn't load that address (${res.status}). Please type it below.`, true);
+        const getUrl = `https://api.getAddress.io/get/${encodeURIComponent(sel.id)}?api-key=${encodeURIComponent(token)}`;
+        const res = await fetch(getUrl, { headers: { Accept: 'application/json' } });
+        if (!res.ok) {
+          const body = await res.text().catch(() => '');
+          showStatus(`Couldn't load that address (${res.status}). ${body.slice(0, 100)} — type it below.`, true);
           return;
         }
-        const a = data.address;
-        document.getElementById('coLine1').value = a.line1 || '';
-        document.getElementById('coLine2').value = a.line2 || '';
-        document.getElementById('coCity').value  = a.city  || 'York';
+        const a = await res.json();
+        document.getElementById('coLine1').value = [a.line_1, a.line_2].filter(Boolean).join(', ');
+        document.getElementById('coLine2').value = [a.line_3, a.line_4].filter(Boolean).join(', ');
+        document.getElementById('coCity').value  = a.town_or_city || a.locality || 'York';
         showStatus('', false);
       } catch {
         showStatus('Network error loading the address. Please type it below.', true);
@@ -2319,11 +2334,6 @@ function wirePostcodeLookup() {
     const postcode = state.postcode;
     if (!postcode) { showStatus('Enter a postcode first.', true); return; }
 
-    if (_postcodeCache.has(postcode)) {
-      populate(_postcodeCache.get(postcode));
-      return;
-    }
-
     btn.disabled = true;
     const originalText = btn.textContent;
     btn.textContent = 'Searching…';
@@ -2331,16 +2341,31 @@ function wirePostcodeLookup() {
     pickWrap.style.display = 'none';
 
     try {
-      const res = await fetch(`/api/postcode-lookup?postcode=${encodeURIComponent(postcode)}`);
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data.ok) {
-        showStatus(data.reason || `Lookup failed (${res.status}). Please type the address below.`, true);
+      const token = await getAddressToken();
+      if (!token) {
+        showStatus('Address lookup not set up yet. Please type the address below.', true);
         return;
       }
-      _postcodeCache.set(postcode, data.addresses);
-      populate(data.addresses, data._debug);
-    } catch {
-      showStatus('Network error. Please type the address below.', true);
+
+      if (_postcodeCache.has(postcode)) {
+        populate(_postcodeCache.get(postcode), token);
+        return;
+      }
+
+      const url = `https://api.getAddress.io/autocomplete/${encodeURIComponent(postcode)}?api-key=${encodeURIComponent(token)}&all=true&top=20`;
+      const res = await fetch(url, { headers: { Accept: 'application/json' } });
+      if (!res.ok) {
+        const body = await res.text().catch(() => '');
+        showStatus(`Lookup failed (${res.status}). ${body.slice(0, 120)} — type below.`, true);
+        return;
+      }
+      const data = await res.json();
+      const suggestions = (Array.isArray(data.suggestions) ? data.suggestions : [])
+        .filter(s => s && s.id && s.address);
+      _postcodeCache.set(postcode, suggestions);
+      populate(suggestions, token);
+    } catch (e) {
+      showStatus(`Network error: ${String(e).slice(0, 80)}. Please type the address below.`, true);
     } finally {
       btn.disabled = false;
       btn.textContent = originalText;
