@@ -1892,12 +1892,21 @@ let stripeInstance = null;
 let stripeElements = null;
 
 /* Build the "When?" dropdown on the payment step from the public config
-   loaded on page boot. We re-poll /api/config if the cached slots are
-   getting close to now — easy way to keep the list fresh without a
-   long-running interval. */
-function populateScheduleSelect() {
+   loaded on page boot. If the boot fetch hasn't finished yet (race
+   condition: user opens checkout before /api/config returns) we await it
+   here so the dropdown is never empty when the customer first sees it. */
+async function populateScheduleSelect() {
   const sel = document.getElementById('paySchedule');
   if (!sel) return;
+
+  // If the public config isn't loaded yet, load it now and block on it.
+  if (!window.RICOS_CONFIG) {
+    try {
+      const res = await fetch('/api/config');
+      if (res.ok) window.RICOS_CONFIG = await res.json();
+    } catch {}
+  }
+
   const cfg = window.RICOS_CONFIG || {};
   const slots = Array.isArray(cfg.slots) ? cfg.slots : [];
   const isOpen = !!cfg.isOpenNow;
@@ -1925,8 +1934,8 @@ function populateScheduleSelect() {
     opts.push(`<option value="">No times available — please call the shop.</option>`);
   }
   sel.innerHTML = opts.join('');
+
   if (!isOpen && slots.length > 0) {
-    // Closed — make it visually obvious by surfacing it just above.
     const errEl = document.getElementById('paymentError');
     if (errEl && !errEl.textContent) {
       errEl.style.color = 'var(--grey)';
