@@ -75,6 +75,67 @@ export function orderAcceptedEmail(order, config) {
   };
 }
 
+export function welcomeEmail({ name, contact }, config) {
+  const tradingName = escapeHtml(config.business.tradingName);
+  return {
+    subject: `Welcome to ${tradingName}`,
+    html: `
+      <div style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto">
+        <h2>Welcome, ${escapeHtml(name.split(' ')[0])}!</h2>
+        <p>Your ${tradingName} account is ready. Next time you order we'll
+           remember your contact and delivery address so checkout's just two taps.</p>
+        <p>You signed up with <strong>${escapeHtml(contact)}</strong>. If that wasn't you,
+           reply to this email and we'll sort it out.</p>
+        <p style="font-size:0.85em;color:#888;margin-top:24px">${tradingName}, 49 Blossom Street, York, YO24 1AZ.</p>
+      </div>`,
+  };
+}
+
+export function passwordResetEmail({ name, resetUrl }, config) {
+  const tradingName = escapeHtml(config.business.tradingName);
+  return {
+    subject: `${tradingName} — reset your password`,
+    html: `
+      <div style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto">
+        <h2>Reset your password</h2>
+        <p>Hi ${escapeHtml(name.split(' ')[0])}, click the button below to choose a new password.
+           The link expires in 1 hour.</p>
+        <p style="margin:24px 0">
+          <a href="${escapeHtml(resetUrl)}"
+             style="display:inline-block;background:#b81f23;color:#fff;padding:12px 22px;text-decoration:none;border-radius:8px;font-weight:600">
+            Choose a new password
+          </a>
+        </p>
+        <p style="font-size:0.85em;color:#555">Or copy this link: <br>${escapeHtml(resetUrl)}</p>
+        <p style="font-size:0.85em;color:#888;margin-top:24px">If you didn't ask for this, ignore this email — your password won't change.</p>
+      </div>`,
+  };
+}
+
+export function orderRejectedEmail(order, config, reason) {
+  const ref = order.id.toUpperCase();
+  const tradingName = escapeHtml(config.business.tradingName);
+  const phone = escapeHtml(config.business.phone || '');
+  const refundLine = order.paymentMethod === 'card'
+    ? `<p>Your card payment will be refunded automatically within 5–10 working days.</p>`
+    : '';
+  const reasonLine = reason
+    ? `<p><strong>Reason:</strong> ${escapeHtml(reason)}</p>`
+    : '';
+  return {
+    subject: `${tradingName} — order ${ref} couldn't be accepted`,
+    html: `
+      <div style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto">
+        <h2>Sorry, we couldn't accept your order</h2>
+        <p>Hi ${escapeHtml(order.customer.name.split(' ')[0])}, the kitchen wasn't able to take order <strong>${ref}</strong> this time.</p>
+        ${reasonLine}
+        ${refundLine}
+        <p>If you'd like to talk to us, call ${phone || 'the restaurant'} and we'll do what we can.</p>
+        <p style="font-size:0.85em;color:#888;margin-top:24px">${tradingName}, 49 Blossom Street, York, YO24 1AZ.</p>
+      </div>`,
+  };
+}
+
 function escapeHtml(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'

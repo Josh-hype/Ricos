@@ -128,3 +128,32 @@ export function customerCookieHeader(token) {
 export function clearCustomerCookieHeader() {
   return `${SESSION_COOKIE}=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax`;
 }
+
+const RESET_TTL_MS = 60 * 60 * 1000;
+
+// Reset tokens are HMAC-signed with SESSION_SECRET and bind to the current
+// password's hash fingerprint, so a token stops working the moment the
+// password is changed (single-use without needing KV state). They also
+// expire after RESET_TTL_MS.
+export async function makeResetToken(customer, env) {
+  const payload = b64url(enc.encode(JSON.stringify({
+    c: customer.contact,
+    fp: customer.hash.slice(0, 16),
+    exp: Date.now() + RESET_TTL_MS,
+  })));
+  const sig = await sign(payload, env.SESSION_SECRET);
+  return `${payload}.${sig}`;
+}
+
+export async function verifyResetToken(token, env) {
+  if (!token || !env.SESSION_SECRET) return null;
+  const [payload, sig] = String(token).split('.');
+  if (!payload || !sig) return null;
+  if (!(await verify(payload, sig, env.SESSION_SECRET))) return null;
+  try {
+    const { c, fp, exp } = JSON.parse(dec.decode(b64urlDecode(payload)));
+    if (!c || !fp || !exp) return null;
+    if (Date.now() > exp) return null;
+    return { contact: c, fp };
+  } catch { return null; }
+}

@@ -2096,9 +2096,14 @@ function renderAccountTab() {
       <button class="btn-form" id="doSignin">Sign in</button>
       <div id="signinError" style="display:none;margin-top:0.6rem;color:var(--error);font-size:0.88rem"></div>
       <p style="text-align:center;font-size:0.82rem;color:var(--grey);margin-top:0.8rem">
-        Forgot password? Call us on 01904 927 050.
+        <a href="#" id="forgotLink" style="color:var(--red);text-decoration:underline">Forgot password?</a>
       </p>
     `;
+    document.getElementById('forgotLink').addEventListener('click', (e) => {
+      e.preventDefault();
+      accountTab = 'forgot';
+      renderAccountTab();
+    });
     document.getElementById('doSignin').addEventListener('click', async () => {
       const btn = document.getElementById('doSignin');
       const errEl = document.getElementById('signinError');
@@ -2195,6 +2200,60 @@ function renderAccountTab() {
       } finally {
         btn.disabled = false;
         btn.textContent = 'Create account';
+      }
+    });
+  }
+
+  if (accountTab === 'forgot') {
+    tb.innerHTML = `
+      <p style="margin:0 0 0.8rem;font-size:0.92rem">
+        Enter the email address on your account. We'll send you a link to choose a new password.
+      </p>
+      <div class="field">
+        <label for="forgotContact">Email</label>
+        <input id="forgotContact" type="email" placeholder="you@example.com" autocomplete="email" />
+      </div>
+      <button class="btn-form" id="doForgot">Send reset link</button>
+      <div id="forgotMsg" style="display:none;margin-top:0.6rem;font-size:0.88rem"></div>
+      <p style="text-align:center;font-size:0.82rem;color:var(--grey);margin-top:0.8rem">
+        <a href="#" id="backToSignin" style="color:var(--red);text-decoration:underline">← Back to sign in</a>
+      </p>
+    `;
+    document.getElementById('backToSignin').addEventListener('click', (e) => {
+      e.preventDefault();
+      accountTab = 'signin';
+      renderAccountTab();
+    });
+    document.getElementById('doForgot').addEventListener('click', async () => {
+      const btn = document.getElementById('doForgot');
+      const msg = document.getElementById('forgotMsg');
+      const contact = document.getElementById('forgotContact').value.trim();
+      if (!contact) {
+        msg.textContent = 'Please enter your email.';
+        msg.style.color = 'var(--error)';
+        msg.style.display = 'block';
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      msg.style.display = 'none';
+      try {
+        const res = await fetch('/api/account/forgot-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contact }),
+        });
+        const body = await res.json().catch(() => ({}));
+        msg.textContent = body.message || "If we have an account for that contact and an email on file, we've sent you a reset link.";
+        msg.style.color = 'var(--grey)';
+        msg.style.display = 'block';
+      } catch {
+        msg.textContent = 'Network error — please try again.';
+        msg.style.color = 'var(--error)';
+        msg.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Send reset link';
       }
     });
   }

@@ -4,6 +4,8 @@
 
 import { normaliseContact, hashPassword, makeCustomerSession, customerCookieHeader } from '../../_lib/customer-auth.js';
 import { getCustomer, putCustomer, newCustomerId, publicProfile } from '../../_lib/customer.js';
+import { sendEmail, welcomeEmail } from '../../_lib/email.js';
+import { getConfig } from '../../_lib/config.js';
 
 export const onRequestPost = async ({ request, env }) => {
   if (!env.CUSTOMERS_KV) return errJson('Accounts are not configured yet.', 503);
@@ -40,6 +42,18 @@ export const onRequestPost = async ({ request, env }) => {
     addresses: [],
   };
   await putCustomer(customer, env);
+
+  // Welcome email — only if signup was via email. Phone-only signups don't
+  // get one (we'd need SMS for that, and the cost isn't worth it for a
+  // welcome message). Best-effort: never block signup on email failure.
+  if (contact.type === 'email') {
+    try {
+      const mail = welcomeEmail({ name, contact: contact.value }, getConfig());
+      await sendEmail({ to: contact.value, subject: mail.subject, html: mail.html }, env);
+    } catch (e) {
+      console.warn('welcome email failed', e);
+    }
+  }
 
   const token = await makeCustomerSession(customer.contact, env);
   return new Response(JSON.stringify({ user: publicProfile(customer) }), {
