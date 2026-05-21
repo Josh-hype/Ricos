@@ -2046,12 +2046,14 @@ function renderAccountModal() {
   const body = document.getElementById('accountBody');
 
   if (state.user) {
+    const addrCount = (state.user.addresses || []).length;
     body.innerHTML = `
       <p style="margin-top:0">Signed in as <strong>${escapeHTML(state.user.name || state.user.contact)}</strong></p>
-      <div class="notice ok">You'll get faster checkout and a record of your orders. (Demo only — see footer note.)</div>
+      <div class="notice ok">${addrCount ? `${addrCount} saved address${addrCount === 1 ? '' : 'es'} — we'll prefill your next order.` : "We'll save your delivery address after your first order."}</div>
       <button class="btn-form secondary" id="signOutBtn">Sign out</button>
     `;
-    document.getElementById('signOutBtn').addEventListener('click', () => {
+    document.getElementById('signOutBtn').addEventListener('click', async () => {
+      try { await fetch('/api/account/signout', { method: 'POST' }); } catch {}
       state.user = null;
       saveState();
       updateAccountButton();
@@ -2092,22 +2094,47 @@ function renderAccountTab() {
         <input id="signinPassword" type="password" autocomplete="current-password" />
       </div>
       <button class="btn-form" id="doSignin">Sign in</button>
+      <div id="signinError" style="display:none;margin-top:0.6rem;color:var(--error);font-size:0.88rem"></div>
       <p style="text-align:center;font-size:0.82rem;color:var(--grey);margin-top:0.8rem">
         Forgot password? Call us on 01904 927 050.
       </p>
     `;
-    document.getElementById('doSignin').addEventListener('click', () => {
+    document.getElementById('doSignin').addEventListener('click', async () => {
+      const btn = document.getElementById('doSignin');
+      const errEl = document.getElementById('signinError');
       const contact = document.getElementById('signinContact').value.trim();
       const pw = document.getElementById('signinPassword').value;
       if (!contact || !pw) {
-        alert('Please enter your email/phone and password.');
+        errEl.textContent = 'Please enter your email/phone and password.';
+        errEl.style.display = 'block';
         return;
       }
-      // DEMO: accept any credentials. Wire to real auth before launch.
-      state.user = { contact, name: contact.split('@')[0] || 'You' };
-      saveState();
-      updateAccountButton();
-      renderAccountModal();
+      btn.disabled = true;
+      btn.textContent = 'Signing in…';
+      errEl.style.display = 'none';
+      try {
+        const res = await fetch('/api/account/signin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contact, password: pw }),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          errEl.textContent = body.error || 'Sign-in failed. Please try again.';
+          errEl.style.display = 'block';
+          return;
+        }
+        state.user = body.user;
+        saveState();
+        updateAccountButton();
+        renderAccountModal();
+      } catch {
+        errEl.textContent = 'Network error — please try again.';
+        errEl.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Sign in';
+      }
     });
   }
 
@@ -2127,23 +2154,48 @@ function renderAccountTab() {
         <input id="signupPassword" type="password" autocomplete="new-password" minlength="6" />
       </div>
       <button class="btn-form" id="doSignup">Create account</button>
+      <div id="signupError" style="display:none;margin-top:0.6rem;color:var(--error);font-size:0.88rem"></div>
       <p style="text-align:center;font-size:0.78rem;color:var(--grey);margin-top:0.8rem">
         By creating an account you agree to our Terms and Privacy Policy.
       </p>
     `;
-    document.getElementById('doSignup').addEventListener('click', () => {
+    document.getElementById('doSignup').addEventListener('click', async () => {
+      const btn = document.getElementById('doSignup');
+      const errEl = document.getElementById('signupError');
       const name = document.getElementById('signupName').value.trim();
       const contact = document.getElementById('signupContact').value.trim();
       const pw = document.getElementById('signupPassword').value;
       if (!name || !contact || pw.length < 6) {
-        alert('Please fill in all fields. Password must be 6+ characters.');
+        errEl.textContent = 'Please fill in all fields. Password must be 6+ characters.';
+        errEl.style.display = 'block';
         return;
       }
-      // DEMO: store in localStorage. Wire to real backend before launch.
-      state.user = { contact, name };
-      saveState();
-      updateAccountButton();
-      renderAccountModal();
+      btn.disabled = true;
+      btn.textContent = 'Creating account…';
+      errEl.style.display = 'none';
+      try {
+        const res = await fetch('/api/account/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, contact, password: pw }),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          errEl.textContent = body.error || 'Sign-up failed. Please try again.';
+          errEl.style.display = 'block';
+          return;
+        }
+        state.user = body.user;
+        saveState();
+        updateAccountButton();
+        renderAccountModal();
+      } catch {
+        errEl.textContent = 'Network error — please try again.';
+        errEl.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create account';
+      }
     });
   }
 
@@ -2457,6 +2509,26 @@ function runCheckout() {
   if (state.user) {
     checkoutData.name = state.user.name;
     checkoutData.contact = state.user.contact;
+    if (state.user.contact && state.user.contact.includes('@')) {
+      checkoutData.email = state.user.contact;
+    } else if (state.user.contact) {
+      checkoutData.phone = state.user.contact;
+    }
+    // Prefill the most-recently-used saved address that matches the
+    // postcode the customer just entered. Falls back to the most recent
+    // address overall if no postcode match.
+    const saved = state.user.addresses || [];
+    const pcMatch = saved.find(a =>
+      (a.postcode || '').replace(/\s+/g, '').toUpperCase() ===
+      (state.postcode || '').replace(/\s+/g, '').toUpperCase()
+    );
+    const pick = pcMatch || saved[0];
+    if (pick) {
+      checkoutData.line1 = pick.line1;
+      checkoutData.line2 = pick.line2;
+      checkoutData.city  = pick.city;
+      checkoutData.notes = pick.notes;
+    }
   }
   renderCheckout();
   openModal('checkoutOverlay');
@@ -2764,6 +2836,19 @@ updateAccountButton();
 fetch('/api/config').then(r => r.ok ? r.json() : null).then(cfg => {
   if (cfg) window.RICOS_CONFIG = cfg;
 }).catch(() => { /* fall back to defaults baked into the page */ });
+
+/* Sync the customer session with the server on boot. The localStorage user
+   is just a UI hint — the cookie is the source of truth. If the cookie is
+   gone (expired / signed out from another tab) we drop the stale UI. */
+fetch('/api/account/me', { credentials: 'same-origin' })
+  .then(r => r.ok ? r.json() : null)
+  .then(body => {
+    if (!body) return;
+    state.user = body.user || null;
+    saveState();
+    updateAccountButton();
+  })
+  .catch(() => { /* offline boot — keep whatever was cached */ });
 </script>
 </body>
 </html>

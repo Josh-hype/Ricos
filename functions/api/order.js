@@ -15,6 +15,8 @@ import { createPaymentIntent } from '../_lib/stripe.js';
 import { sendEmail, orderReceivedEmail } from '../_lib/email.js';
 import { putOrder, newOrderId, recordOptIn, incrSlotCount } from '../_lib/kv.js';
 import { normalisePhoneE164UK } from '../_lib/sms.js';
+import { readCustomerSession } from '../_lib/customer-auth.js';
+import { getCustomer, putCustomer, upsertAddress } from '../_lib/customer.js';
 
 export const onRequestPost = async ({ request, env }) => {
   let input;
@@ -133,6 +135,25 @@ export const onRequestPost = async ({ request, env }) => {
 
   // Persist order.
   await putOrder(order, env);
+
+  // If a signed-in customer placed this order, save the delivery address to
+  // their profile for next-time prefill. Best-effort: never block the order
+  // response on this.
+  if (address) {
+    try {
+      const session = await readCustomerSession(request.headers.get('Cookie'), env);
+      if (session) {
+        const customer = await getCustomer(session.contact, env);
+        if (customer) {
+          upsertAddress(customer, address);
+          customer.lastOrderAt = createdAt;
+          await putCustomer(customer, env);
+        }
+      }
+    } catch (e) {
+      console.warn('saving customer address failed', e);
+    }
+  }
 
   // Reserve a slot (best-effort).
   if (schedule !== 'asap') {
