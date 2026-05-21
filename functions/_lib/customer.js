@@ -32,8 +32,19 @@ export function publicProfile(customer) {
     name: customer.name,
     contact: customer.contact,
     contactType: customer.contactType,
+    email: customer.email || (customer.contactType === 'email' ? customer.contact : null),
+    phone: customer.phone || (customer.contactType === 'phone' ? customer.contact : null),
     addresses,
   };
+}
+
+// Update the contact details on a customer record from whatever was entered
+// at checkout. The signup `contact` (email or phone) stays the login key
+// and never changes - we just fill in the *other* channel.
+export function updateContactDetails(customer, { email, phone }) {
+  if (email && email !== customer.email) customer.email = email;
+  if (phone && phone !== customer.phone) customer.phone = phone;
+  return customer;
 }
 
 // Add (or refresh) an address on a customer's record. Dedupes by lowercased

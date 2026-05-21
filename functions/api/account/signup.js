@@ -31,6 +31,8 @@ export const onRequestPost = async ({ request, env }) => {
     name,
     contact: contact.value,
     contactType: contact.type,
+    email: contact.type === 'email' ? contact.value : null,
+    phone: contact.type === 'phone' ? contact.value : null,
     salt: pw.salt,
     iterations: pw.iterations,
     hash: pw.hash,

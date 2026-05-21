@@ -2509,11 +2509,8 @@ function runCheckout() {
   if (state.user) {
     checkoutData.name = state.user.name;
     checkoutData.contact = state.user.contact;
-    if (state.user.contact && state.user.contact.includes('@')) {
-      checkoutData.email = state.user.contact;
-    } else if (state.user.contact) {
-      checkoutData.phone = state.user.contact;
-    }
+    if (state.user.email) checkoutData.email = state.user.email;
+    if (state.user.phone) checkoutData.phone = state.user.phone;
     // Prefill the most-recently-used saved address that matches the
     // postcode the customer just entered. Falls back to the most recent
     // address overall if no postcode match.
