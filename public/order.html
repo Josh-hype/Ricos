@@ -1933,6 +1933,16 @@ async function placeOrder() {
   const errEl  = document.getElementById('paymentError');
   if (errEl) errEl.textContent = '';
 
+  // Defensive: if the contact step's data isn't on the page for any reason
+  // (browser back, race condition, localStorage purge), bounce the customer
+  // back to it rather than POSTing an empty customer object to the server.
+  if (!checkoutData.name || !checkoutData.email || !checkoutData.phone) {
+    alert("We're missing your contact details — please fill them in before paying.");
+    checkoutStep = 'contact';
+    renderCheckout();
+    return;
+  }
+
   const req = buildOrderRequest();
   const isCard = req.paymentMethod === 'card';
 
@@ -1982,6 +1992,13 @@ async function placeOrder() {
       clientSecret: data.clientSecret,
       confirmParams: {
         return_url: `${location.origin}/thank-you?ref=${encodeURIComponent(data.orderId)}`,
+        payment_method_data: {
+          billing_details: {
+            name:  checkoutData.name,
+            email: checkoutData.email,
+            phone: checkoutData.phone,
+          },
+        },
       },
       redirect: 'if_required',
     });
@@ -2258,7 +2275,28 @@ function renderCheckout() {
         currency: 'gbp',
         appearance: { theme: 'stripe' },
       });
-      const paymentEl = stripeElements.create('payment', { layout: 'tabs' });
+      // Pre-fill the Element with the contact details we already collected
+      // and tell Stripe not to re-collect them. Disables Stripe Link too —
+      // its "save your info" prompt confuses customers who've just typed
+      // their name/email/phone on our own contact step.
+      const paymentEl = stripeElements.create('payment', {
+        layout: 'tabs',
+        defaultValues: {
+          billingDetails: {
+            name:  checkoutData.name  || '',
+            email: checkoutData.email || '',
+            phone: checkoutData.phone || '',
+          },
+        },
+        fields: {
+          billingDetails: {
+            name:  'never',
+            email: 'never',
+            phone: 'never',
+          },
+        },
+        wallets: { link: 'never' },
+      });
       const mount = document.getElementById('payment-element');
       mount.innerHTML = '';
       paymentEl.mount(mount);
