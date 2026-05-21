@@ -2278,10 +2278,11 @@ function wirePostcodeLookup() {
     statusEl.style.display = msg ? 'block' : 'none';
   };
 
-  const populate = (addresses) => {
+  const populate = (addresses, debug) => {
     if (addresses.length === 0) {
       pickWrap.style.display = 'none';
-      showStatus('No addresses found for that postcode. Please type yours below.', true);
+      const dbg = debug ? ` [${debug}]` : '';
+      showStatus(`No addresses found for that postcode. Please type yours below.${dbg}`, true);
       return;
     }
     pick.innerHTML = `<option value="">— ${addresses.length} address${addresses.length === 1 ? '' : 'es'} found —</option>` +
@@ -2322,7 +2323,7 @@ function wirePostcodeLookup() {
         return;
       }
       _postcodeCache.set(postcode, data.addresses);
-      populate(data.addresses);
+      populate(data.addresses, data._debug);
     } catch {
       showStatus('Network error. Please type the address below.', true);
     } finally {
