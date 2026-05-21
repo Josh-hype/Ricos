@@ -499,6 +499,214 @@
   .add-btn.added { background: var(--success); color: var(--white); }
 
   /* ============================================================
+     COMPACT MENU LIST (rows) + tap-to-reveal item detail modal
+     ============================================================ */
+  .menu-notice {
+    background: var(--yellow);
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    box-shadow: 3px 3px 0 var(--ink);
+    padding: 0.7rem 1rem;
+    margin: 0 0 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 0.95rem;
+  }
+  .menu-notice .tap {
+    font-family: var(--display-alt);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    background: var(--ink);
+    color: var(--yellow);
+    padding: 3px 9px 1px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+  }
+  .item-list {
+    background: var(--white);
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    box-shadow: 4px 4px 0 var(--ink);
+    overflow: hidden;
+  }
+  .item-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1.1rem;
+    border-bottom: 1px solid var(--line);
+    cursor: pointer;
+    transition: background 0.12s ease;
+    background: var(--white);
+    text-align: left;
+    width: 100%;
+    border-left: 0; border-right: 0; border-top: 0;
+    font: inherit;
+    color: inherit;
+  }
+  .item-row:last-child { border-bottom: 0; }
+  .item-row:hover { background: var(--paper); }
+  .item-row:focus-visible {
+    outline: 3px solid var(--red);
+    outline-offset: -3px;
+  }
+  .item-row-main {
+    flex: 1;
+    min-width: 0;
+  }
+  .item-row-name {
+    font-family: var(--display);
+    font-size: 1rem;
+    line-height: 1.2;
+    margin: 0 0 0.2rem;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+  .item-row-tag {
+    font-family: var(--display-alt);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    background: var(--red);
+    color: var(--white);
+    padding: 2px 6px 0;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+  .item-row-desc {
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    margin: 0;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+  }
+  .item-row-right {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    flex-shrink: 0;
+  }
+  .item-row-price {
+    font-family: var(--display-alt);
+    font-size: 1.05rem;
+    color: var(--red);
+    background: var(--yellow);
+    padding: 2px 9px 0;
+    border-radius: 6px;
+    border: 1.5px solid var(--ink);
+  }
+  .item-row-view {
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--yellow);
+    font-size: 1.3rem;
+    line-height: 1;
+    border: 2px solid var(--ink);
+    flex-shrink: 0;
+  }
+  .item-row:hover .item-row-view { background: var(--red); color: var(--white); }
+  @media (max-width: 480px) {
+    .item-row { padding: 0.8rem 0.9rem; gap: 0.7rem; }
+    .item-row-desc { display: none; }
+    .item-row-right { gap: 0.5rem; }
+  }
+
+  /* item detail modal */
+  .item-detail-photo {
+    aspect-ratio: 1 / 1;
+    background: var(--cream);
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+  .item-detail-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .item-detail-photo .placeholder {
+    font-family: var(--display-alt);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+    text-align: center;
+    padding: 1rem;
+  }
+  .item-detail-photo .drink-svg {
+    height: 86%;
+    width: auto;
+    max-width: 86%;
+    filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.12));
+  }
+  .item-detail-name {
+    font-family: var(--display);
+    font-size: 1.4rem;
+    margin: 0 0 0.4rem;
+    line-height: 1.15;
+    color: var(--ink);
+  }
+  .item-detail-price {
+    display: inline-block;
+    font-family: var(--display-alt);
+    font-size: 1.25rem;
+    color: var(--red);
+    background: var(--yellow);
+    padding: 2px 11px 0;
+    border-radius: 6px;
+    border: 1.5px solid var(--ink);
+    margin-bottom: 0.7rem;
+  }
+  .item-detail-desc {
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    margin: 0 0 1rem;
+    line-height: 1.5;
+  }
+  .item-detail-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .item-detail-controls .spice-select,
+  .item-detail-controls .meal-toggle {
+    flex: none;
+    width: 100%;
+  }
+  .item-detail-add {
+    margin-top: 0.4rem;
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--yellow);
+    font-weight: 700;
+    font-size: 1rem;
+    border: 2px solid var(--ink);
+    transition: background 0.15s ease;
+  }
+  .item-detail-add:hover { background: var(--red); }
+  .item-detail-add.added { background: var(--success); color: var(--white); }
+
+  /* ============================================================
      CART
      ============================================================ */
   .cart-side {
@@ -1057,6 +1265,10 @@
       <nav class="cat-nav" aria-label="Menu categories">
         <div class="cat-nav-inner" id="catNav"></div>
       </nav>
+      <div class="menu-notice" role="note">
+        <span class="tap">Tap</span>
+        <span>Tap any item to see the photo, pick spice and add to your order.</span>
+      </div>
       <div id="menuRoot"></div>
     </main>
 
@@ -1123,6 +1335,17 @@
       <button class="modal-close" data-close-modal aria-label="Close">✕</button>
     </div>
     <div class="modal-body" id="checkoutBody"></div>
+  </div>
+</div>
+
+<!-- ======== ITEM DETAIL MODAL (photo + spice + meal + add) ======== -->
+<div class="modal-overlay" id="itemDetailOverlay" role="dialog" aria-modal="true" aria-labelledby="itemDetailTitle">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="itemDetailTitle">Item</h3>
+      <button class="modal-close" data-close-modal aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body" id="itemDetailBody"></div>
   </div>
 </div>
 
@@ -1307,34 +1530,15 @@ function renderMenu() {
         <span class="icon">${cat.icon}</span>
         <h2>${cat.name}</h2>
       </div>
-      <div class="item-grid">
-        ${cat.items.map(itemCardHTML).join('')}
+      <div class="item-list">
+        ${cat.items.map(itemRowHTML).join('')}
       </div>
     `;
     root.appendChild(section);
   });
 
-  root.querySelectorAll('.add-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const card = btn.closest('.item-card');
-      const itemId = card.dataset.id;
-      const spiceSel = card.querySelector('.spice-select');
-      const mealCheck = card.querySelector('.meal-toggle input');
-      addToCart(itemId, {
-        spice: spiceSel ? spiceSel.value : null,
-        meal: mealCheck ? mealCheck.checked : false,
-      });
-      btn.classList.add('added');
-      const original = btn.innerHTML;
-      btn.innerHTML = '✓ Added';
-      setTimeout(() => { btn.classList.remove('added'); btn.innerHTML = original; }, 1000);
-    });
-  });
-
-  root.querySelectorAll('.meal-toggle input').forEach(inp => {
-    inp.addEventListener('change', () => {
-      inp.closest('.meal-toggle').classList.toggle('active', inp.checked);
-    });
+  root.querySelectorAll('.item-row').forEach(row => {
+    row.addEventListener('click', () => openItemDetail(row.dataset.id));
   });
 
   // active pill on scroll
@@ -1356,12 +1560,68 @@ function escapeHTML(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
 }
 
-function itemCardHTML(item) {
+function itemRowHTML(item) {
+  const tag = item.spicy ? `<span class="item-row-tag">spicy</span>` : '';
+  return `
+    <button class="item-row" type="button" data-id="${item.id}" aria-label="View ${escapeHTML(item.name)}">
+      <div class="item-row-main">
+        <h3 class="item-row-name">${escapeHTML(item.name)}${tag}</h3>
+        <p class="item-row-desc">${escapeHTML(item.desc)}</p>
+      </div>
+      <div class="item-row-right">
+        <span class="item-row-price">${fmt(item.price)}</span>
+        <span class="item-row-view" aria-hidden="true">+</span>
+      </div>
+    </button>
+  `;
+}
+
+/* Open the item detail modal: shows the photo (or drink SVG / placeholder),
+   description, spice picker, meal upgrade, and Add to cart button. */
+function openItemDetail(itemId) {
+  const item = findItem(itemId);
+  if (!item) return;
+  const body = document.getElementById('itemDetailBody');
+  document.getElementById('itemDetailTitle').textContent = item.name;
+  body.innerHTML = itemDetailHTML(item);
+  openModal('itemDetailOverlay');
+
+  const mealInput = body.querySelector('.meal-toggle input');
+  if (mealInput) {
+    mealInput.addEventListener('change', () => {
+      mealInput.closest('.meal-toggle').classList.toggle('active', mealInput.checked);
+    });
+  }
+
+  const addBtn = body.querySelector('.item-detail-add');
+  addBtn.addEventListener('click', () => {
+    const spiceSel = body.querySelector('.spice-select');
+    addToCart(itemId, {
+      spice: spiceSel ? spiceSel.value : null,
+      meal: mealInput ? mealInput.checked : false,
+    });
+    addBtn.classList.add('added');
+    addBtn.textContent = '✓ Added to cart';
+    setTimeout(() => closeModal('itemDetailOverlay'), 650);
+  });
+}
+
+function itemDetailHTML(item) {
+  let photo;
+  if (item.image) {
+    photo = `<img src="${item.image}" alt="${escapeHTML(item.name)}" />`;
+  } else if (item.drink) {
+    photo = drinkSVG(item.id, item.drink);
+  } else {
+    photo = `<span class="placeholder">Photo coming soon</span>`;
+  }
+
   const spiceField = item.spicy
-    ? `<select class="spice-select" aria-label="Spice level for ${escapeHTML(item.name)}">
+    ? `<select class="spice-select" aria-label="Spice level">
          ${SPICE_OPTIONS.map(s => `<option value="${s}">${s}</option>`).join('')}
        </select>`
     : '';
+
   const mealField = item.meal
     ? `<label class="meal-toggle">
          <input type="checkbox" />
@@ -1369,49 +1629,16 @@ function itemCardHTML(item) {
        </label>`
     : '';
 
-  // Image area priority:
-  //  1) real photo if item.image is a data URI / URL
-  //  2) drink card placeholder ("Photo coming soon") for drinks without a photo yet
-  //  3) generic placeholder for food items awaiting photos
-  let imgInner;
-  if (item.image) {
-    imgInner = `<img src="${item.image}" alt="${escapeHTML(item.name)}" loading="lazy" />`;
-  } else if (item.drink) {
-    imgInner = `<span class="item-img-label drink-pending">Photo coming soon</span>`;
-  } else {
-    imgInner = `<span class="item-img-label">photo · ${escapeHTML(item.name)}</span>`;
-  }
-
-  // Card class:
-  //  - drink-card:        drinks (16:10 image, brand cream background)
-  //  - food-photo-card:   food with photo (square image, neutral backdrop)
-  //  - default:           food without photo yet
-  let cardClass = 'item-card';
-  if (item.drink) {
-    cardClass = 'item-card drink-card';
-  } else if (item.image) {
-    cardClass = 'item-card food-photo-card';
-  }
-
   return `
-    <article class="${cardClass}" data-id="${item.id}">
-      <!-- SWAP-ME: when real food photos arrive, replace .item-img content with <img> -->
-      <div class="item-img">
-        ${imgInner}
-      </div>
-      <div class="item-body">
-        <div class="item-top">
-          <h3 class="item-name">${escapeHTML(item.name)}</h3>
-          <span class="item-price">${fmt(item.price)}</span>
-        </div>
-        <p class="item-desc">${escapeHTML(item.desc)}</p>
-        <div class="item-controls">
-          ${spiceField}
-          ${mealField}
-          <button class="add-btn" type="button">+ Add</button>
-        </div>
-      </div>
-    </article>
+    <div class="item-detail-photo">${photo}</div>
+    <h4 class="item-detail-name">${escapeHTML(item.name)}</h4>
+    <div class="item-detail-price">${fmt(item.price)}</div>
+    <p class="item-detail-desc">${escapeHTML(item.desc)}</p>
+    <div class="item-detail-controls">
+      ${spiceField}
+      ${mealField}
+      <button type="button" class="item-detail-add">+ Add to order</button>
+    </div>
   `;
 }
 
