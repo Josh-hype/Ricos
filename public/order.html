@@ -1891,6 +1891,50 @@ let checkoutData = {};
 let stripeInstance = null;
 let stripeElements = null;
 
+/* Build the "When?" dropdown on the payment step from the public config
+   loaded on page boot. We re-poll /api/config if the cached slots are
+   getting close to now — easy way to keep the list fresh without a
+   long-running interval. */
+function populateScheduleSelect() {
+  const sel = document.getElementById('paySchedule');
+  if (!sel) return;
+  const cfg = window.RICOS_CONFIG || {};
+  const slots = Array.isArray(cfg.slots) ? cfg.slots : [];
+  const isOpen = !!cfg.isOpenNow;
+  const tz = (cfg.ordering && cfg.ordering.timezone) || 'Europe/London';
+
+  const opts = [];
+  if (isOpen) {
+    opts.push(`<option value="asap">As soon as possible (~25 min)</option>`);
+  }
+  const today = new Date();
+  const todayStr = today.toLocaleDateString('en-GB', { weekday: 'long', timeZone: tz });
+  const tomorrow = new Date(today.getTime() + 86400000);
+  const tomorrowStr = tomorrow.toLocaleDateString('en-GB', { weekday: 'long', timeZone: tz });
+  for (const iso of slots) {
+    const d = new Date(iso);
+    const day = d.toLocaleDateString('en-GB', { weekday: 'long', timeZone: tz });
+    const time = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: tz });
+    let prefix;
+    if (day === todayStr)         prefix = 'Today';
+    else if (day === tomorrowStr) prefix = 'Tomorrow';
+    else                          prefix = d.toLocaleDateString('en-GB', { weekday: 'short', timeZone: tz });
+    opts.push(`<option value="${iso}">${prefix} · ${time}</option>`);
+  }
+  if (opts.length === 0) {
+    opts.push(`<option value="">No times available — please call the shop.</option>`);
+  }
+  sel.innerHTML = opts.join('');
+  if (!isOpen && slots.length > 0) {
+    // Closed — make it visually obvious by surfacing it just above.
+    const errEl = document.getElementById('paymentError');
+    if (errEl && !errEl.textContent) {
+      errEl.style.color = 'var(--grey)';
+      errEl.textContent = "We're closed right now — pick a scheduled time below.";
+    }
+  }
+}
+
 /* Build the JSON request body for POST /api/order. The server is the
    source of truth for prices — we only send item ids + qty + flags. */
 function buildOrderRequest() {
@@ -1909,7 +1953,7 @@ function buildOrderRequest() {
       postcode: state.postcode,
       notes: checkoutData.notes || '',
     } : null,
-    schedule: 'asap',
+    schedule: document.getElementById('paySchedule')?.value || 'asap',
     customer: {
       name: checkoutData.name,
       email: checkoutData.email,
@@ -2211,7 +2255,7 @@ function renderCheckout() {
         <input id="payName" type="text" value="${escapeHTML(checkoutData.name || '')}" autocomplete="name"
                placeholder="As shown on your bank card"
                style="width:100%;padding:8px 10px;border:1.5px solid var(--ink);border-radius:8px;margin:2px 0 8px;font-size:0.95rem" />
-        <div style="display:flex;gap:8px">
+        <div style="display:flex;gap:8px;margin-bottom:8px">
           <div style="flex:1.4">
             <label for="payEmail" style="display:block;font-size:0.85rem;color:var(--grey)">Email (for receipt)</label>
             <input id="payEmail" type="email" value="${escapeHTML(checkoutData.email || '')}" autocomplete="email"
@@ -2223,6 +2267,11 @@ function renderCheckout() {
                    placeholder="07…" style="width:100%;padding:8px 10px;border:1.5px solid var(--ink);border-radius:8px;margin-top:2px;font-size:0.95rem" />
           </div>
         </div>
+        <label for="paySchedule" style="display:block;font-size:0.85rem;color:var(--grey)">When?</label>
+        <select id="paySchedule"
+                style="width:100%;padding:8px 10px;border:1.5px solid var(--ink);border-radius:8px;margin-top:2px;font-size:0.95rem;background:white">
+          <option value="asap">Loading available times…</option>
+        </select>
       </fieldset>
 
       <div class="order-summary">
@@ -2289,6 +2338,11 @@ function renderCheckout() {
     } else {
       document.getElementById('allergyPhone').textContent = 'the shop number on the home page';
     }
+
+    // Populate the "When?" selector from /api/config slots. If the kitchen
+    // is open right now, "ASAP" tops the list. Otherwise the customer is
+    // forced to pick a future slot — the backend already enforces this.
+    populateScheduleSelect();
 
     // Prepare Stripe Elements only when card is selected. Mounted lazily so
     // cash-only customers don't pay the JS cost.
