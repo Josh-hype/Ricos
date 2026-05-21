@@ -77,7 +77,7 @@ export async function hashPassword(password) {
 export async function verifyPassword(password, record) {
   if (!record?.salt || !record?.hash || !record?.iterations) return false;
   const salt = hexToBytes(record.salt);
-  const computed = await pbkdf2(password, salt, record.iterations);
+  const computed = new Uint8Array(await pbkdf2(password, salt, record.iterations));
   return timingSafeEqualBytes(computed, hexToBytes(record.hash));
 }
 
