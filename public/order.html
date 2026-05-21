@@ -2261,89 +2261,6 @@ async function populateScheduleSelect() {
   }
 }
 
-/* Postcode → address dropdown.
-   Calls our own /api/postcode-lookup proxy, which forwards to getAddress.io
-   server-side. Same-origin from the browser's POV, so consumer DNS filters
-   and corporate firewalls that block api.getaddress.io don't matter. */
-const _postcodeCache = new Map();
-
-function formatAddressLabel(a) {
-  return [a.line_1, a.line_2, a.line_3, a.line_4, a.town_or_city]
-    .filter(Boolean).join(', ');
-}
-
-function wirePostcodeLookup() {
-  const btn        = document.getElementById('coLookupBtn');
-  const statusEl   = document.getElementById('coLookupStatus');
-  const pickWrap   = document.getElementById('coLookupPickWrap');
-  const pick       = document.getElementById('coLookupPick');
-  if (!btn || !statusEl || !pickWrap || !pick) return;
-
-  const showStatus = (msg, isError) => {
-    statusEl.textContent = msg;
-    statusEl.style.color = isError ? 'var(--error)' : 'var(--grey)';
-    statusEl.style.display = msg ? 'block' : 'none';
-  };
-
-  const populate = (addresses) => {
-    if (addresses.length === 0) {
-      pickWrap.style.display = 'none';
-      showStatus('No addresses found for that postcode. Please type yours below.', true);
-      return;
-    }
-    pick.innerHTML = `<option value="">— ${addresses.length} address${addresses.length === 1 ? '' : 'es'} found —</option>` +
-      addresses.map((a, i) => `<option value="${i}">${escapeHTML(formatAddressLabel(a))}</option>`).join('');
-    pickWrap.style.display = 'block';
-    showStatus('', false);
-    pick.onchange = () => {
-      const idx = Number(pick.value);
-      if (Number.isNaN(idx)) return;
-      const a = addresses[idx];
-      if (!a) return;
-      document.getElementById('coLine1').value = [a.line_1, a.line_2].filter(Boolean).join(', ');
-      document.getElementById('coLine2').value = [a.line_3, a.line_4].filter(Boolean).join(', ');
-      document.getElementById('coCity').value  = a.town_or_city || a.locality || 'York';
-      showStatus('', false);
-    };
-  };
-
-  btn.addEventListener('click', async () => {
-    const postcode = state.postcode;
-    if (!postcode) { showStatus('Enter a postcode first.', true); return; }
-
-    btn.disabled = true;
-    const originalText = btn.textContent;
-    btn.textContent = 'Searching…';
-    showStatus('', false);
-    pickWrap.style.display = 'none';
-
-    try {
-      if (_postcodeCache.has(postcode)) {
-        populate(_postcodeCache.get(postcode));
-        return;
-      }
-
-      const res = await fetch(`/api/postcode-lookup?postcode=${encodeURIComponent(postcode)}`);
-      const body = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        showStatus(`Lookup ${res.status}. ${(body.reason || '').slice(0, 140)} — type below.`, true);
-        return;
-      }
-      const addresses = Array.isArray(body.addresses) ? body.addresses : [];
-      _postcodeCache.set(postcode, addresses);
-      populate(addresses);
-    } catch (e) {
-      showStatus(
-        `Lookup network error [${e.name || 'Err'}: ${(e.message || '').slice(0, 80)}]. Please type the address below.`,
-        true,
-      );
-    } finally {
-      btn.disabled = false;
-      btn.textContent = originalText;
-    }
-  });
-}
-
 /* Build the JSON request body for POST /api/order. The server is the
    source of truth for prices — we only send item ids + qty + flags. */
 function buildOrderRequest() {
@@ -2604,16 +2521,6 @@ function renderCheckout() {
       <h4 style="font-family:var(--display);font-size:1.1rem;margin:0 0 1rem">Delivery address</h4>
       <div class="notice ok">Delivering to <strong>${state.postcode}</strong></div>
       <div class="field">
-        <button type="button" id="coLookupBtn" class="btn-form secondary" style="width:100%">
-          Find my address
-        </button>
-        <div id="coLookupStatus" style="display:none;margin-top:0.5rem;font-size:0.85rem;color:var(--grey)"></div>
-        <div id="coLookupPickWrap" style="display:none;margin-top:0.5rem">
-          <label for="coLookupPick" style="display:block;font-weight:600;font-size:0.88rem;margin-bottom:0.3rem">Pick your address</label>
-          <select id="coLookupPick" style="width:100%;padding:11px 14px;border:2px solid var(--ink);border-radius:8px;background:var(--white);font-size:0.95rem"></select>
-        </div>
-      </div>
-      <div class="field">
         <label for="coLine1">Address line 1</label>
         <input id="coLine1" type="text" value="${escapeHTML(checkoutData.line1 || '')}" autocomplete="address-line1" placeholder="House number and street" />
       </div>
@@ -2640,8 +2547,6 @@ function renderCheckout() {
         <button class="btn-form" id="coNext" style="flex:2">Continue →</button>
       </div>
     `;
-
-    wirePostcodeLookup();
 
     document.getElementById('coBack').addEventListener('click', () => { checkoutStep = 'contact'; renderCheckout(); });
     document.getElementById('coNext').addEventListener('click', () => {
