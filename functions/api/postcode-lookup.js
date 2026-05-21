@@ -63,6 +63,20 @@ export const onRequestGet = async ({ request, env }) => {
   const rawAddresses = Array.isArray(data.addresses) ? data.addresses : [];
   const addresses = rawAddresses.map(parseAddress).filter(a => a.line_1 || a.line_2);
 
+  // If the upstream said OK but we extracted nothing, surface what it
+  // actually returned so we can see why (wrong field name, "no credit"
+  // message, etc.) without having to dig through Cloudflare logs.
+  if (addresses.length === 0) {
+    const shape = {
+      keys: Object.keys(data || {}),
+      addressesType: Array.isArray(data.addresses) ? 'array' : typeof data.addresses,
+      addressesLen: Array.isArray(data.addresses) ? data.addresses.length : null,
+      firstItemType: Array.isArray(data.addresses) && data.addresses.length ? typeof data.addresses[0] : null,
+      sample: body.slice(0, 300),
+    };
+    return errJson(`No addresses parsed. upstream shape=${JSON.stringify(shape)}`, 404);
+  }
+
   return Response.json({ addresses }, { headers: cacheHeaders() });
 };
 
