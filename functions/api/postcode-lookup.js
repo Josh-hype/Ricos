@@ -60,8 +60,8 @@ export const onRequestGet = async ({ request, env }) => {
   try { data = JSON.parse(body); }
   catch { return errJson('Lookup returned invalid JSON.', 502); }
 
-  const raw = Array.isArray(data.addresses) ? data.addresses : [];
-  const addresses = raw.map(parseAddress).filter(a => a.line_1 || a.line_2);
+  const rawAddresses = Array.isArray(data.addresses) ? data.addresses : [];
+  const addresses = rawAddresses.map(parseAddress).filter(a => a.line_1 || a.line_2);
 
   return Response.json({ addresses }, { headers: cacheHeaders() });
 };
