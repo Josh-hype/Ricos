@@ -2340,8 +2340,10 @@ function wirePostcodeLookup() {
     showStatus('', false);
     pickWrap.style.display = 'none';
 
+    // Hoist token so the catch block can read its tail for diagnostics.
+    let token = null;
     try {
-      const token = await getAddressToken();
+      token = await getAddressToken();
       if (!token) {
         showStatus('Address lookup not set up yet. Please type the address below.', true);
         return;
