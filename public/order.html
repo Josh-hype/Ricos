@@ -2262,24 +2262,10 @@ async function populateScheduleSelect() {
 }
 
 /* Postcode → address dropdown.
-   Calls getAddress.io directly from the browser using a domain-restricted
-   token (loaded via /api/config). Two-step: /autocomplete returns
-   suggestions, /get/{id} resolves one to structured fields. */
+   Calls our own /api/postcode-lookup proxy, which forwards to getAddress.io
+   server-side. Same-origin from the browser's POV, so consumer DNS filters
+   and corporate firewalls that block api.getaddress.io don't matter. */
 const _postcodeCache = new Map();
-
-async function getAddressToken() {
-  if (window.RICOS_CONFIG?.getAddressDomainToken !== undefined) {
-    return window.RICOS_CONFIG.getAddressDomainToken;
-  }
-  try {
-    const res = await fetch('/api/config');
-    if (res.ok) {
-      window.RICOS_CONFIG = await res.json();
-      return window.RICOS_CONFIG.getAddressDomainToken || null;
-    }
-  } catch {}
-  return null;
-}
 
 function wirePostcodeLookup() {
   const btn        = document.getElementById('coLookupBtn');
@@ -2294,7 +2280,7 @@ function wirePostcodeLookup() {
     statusEl.style.display = msg ? 'block' : 'none';
   };
 
-  const populate = (suggestions, token) => {
+  const populate = (suggestions) => {
     if (suggestions.length === 0) {
       pickWrap.style.display = 'none';
       showStatus('No addresses found for that postcode. Please type yours below.', true);
@@ -2312,17 +2298,15 @@ function wirePostcodeLookup() {
 
       showStatus('Loading address…', false);
       try {
-        const getUrl = `https://api.getaddress.io/get/${encodeURIComponent(sel.id)}?api-key=${encodeURIComponent(token)}`;
-        const res = await fetch(getUrl);
+        const res = await fetch(`/api/postcode-lookup?id=${encodeURIComponent(sel.id)}`);
+        const body = await res.json().catch(() => ({}));
         if (!res.ok) {
-          const body = await res.text().catch(() => '');
-          showStatus(`Couldn't load that address (${res.status}). ${body.slice(0, 100)} — type it below.`, true);
+          showStatus(`Couldn't load that address (${res.status}). ${(body.reason || '').slice(0, 120)} — type it below.`, true);
           return;
         }
-        const a = await res.json();
-        document.getElementById('coLine1').value = [a.line_1, a.line_2].filter(Boolean).join(', ');
-        document.getElementById('coLine2').value = [a.line_3, a.line_4].filter(Boolean).join(', ');
-        document.getElementById('coCity').value  = a.town_or_city || a.locality || 'York';
+        document.getElementById('coLine1').value = [body.line_1, body.line_2].filter(Boolean).join(', ');
+        document.getElementById('coLine2').value = [body.line_3, body.line_4].filter(Boolean).join(', ');
+        document.getElementById('coCity').value  = body.town_or_city || body.locality || 'York';
         showStatus('', false);
       } catch (e) {
         showStatus(`Network error loading address [${e.name || 'Err'}: ${(e.message || '').slice(0, 60)}]. Please type it below.`, true);
@@ -2340,38 +2324,25 @@ function wirePostcodeLookup() {
     showStatus('', false);
     pickWrap.style.display = 'none';
 
-    // Hoist token so the catch block can read its tail for diagnostics.
-    let token = null;
     try {
-      token = await getAddressToken();
-      if (!token) {
-        showStatus('Address lookup not set up yet. Please type the address below.', true);
-        return;
-      }
-
       if (_postcodeCache.has(postcode)) {
-        populate(_postcodeCache.get(postcode), token);
+        populate(_postcodeCache.get(postcode));
         return;
       }
 
-      // Lowercase host + no custom headers (avoids CORS preflight).
-      const url = `https://api.getaddress.io/autocomplete/${encodeURIComponent(postcode)}?api-key=${encodeURIComponent(token)}&all=true&top=20`;
-      const res = await fetch(url);
+      const res = await fetch(`/api/postcode-lookup?postcode=${encodeURIComponent(postcode)}`);
+      const body = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const body = await res.text().catch(() => '');
-        showStatus(`Lookup ${res.status} from getaddress.io. ${body.slice(0, 140)} — type below.`, true);
+        showStatus(`Lookup ${res.status}. ${(body.reason || '').slice(0, 140)} — type below.`, true);
         return;
       }
-      const data = await res.json();
-      const suggestions = (Array.isArray(data.suggestions) ? data.suggestions : [])
+      const suggestions = (Array.isArray(body.suggestions) ? body.suggestions : [])
         .filter(s => s && s.id && s.address);
       _postcodeCache.set(postcode, suggestions);
-      populate(suggestions, token);
+      populate(suggestions);
     } catch (e) {
-      const origin = (typeof location !== 'undefined' && location.origin) || '?';
-      const tokenTail = token ? token.slice(-6) : 'none';
       showStatus(
-        `Lookup network/CORS error from ${origin} [tokenTail=${tokenTail}, err=${e.name || 'Err'}: ${(e.message || '').slice(0, 80)}]. Please type the address below.`,
+        `Lookup network error [${e.name || 'Err'}: ${(e.message || '').slice(0, 80)}]. Please type the address below.`,
         true,
       );
     } finally {
