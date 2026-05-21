@@ -24,46 +24,62 @@ export const onRequestGet = async ({ request, env }) => {
     return errJson('Not a valid York postcode.', 400);
   }
 
-  const keyLen = (env.GETADDRESS_API_KEY || '').length;
-  // getAddress.io API keys are usually domain-restricted. Send a Referer
-  // header pointing at our caller so their allow-list can recognise us.
-  const callerOrigin = new URL(request.url).origin;
-  // Cleaned postcode (no space) is the format their docs show.
-  const path = `/find/${encodeURIComponent(cleaned)}`;
-  const apiUrl = `https://api.getaddress.io${path}?expand=true&sort=true`;
-  let upstream;
-  try {
-    upstream = await fetch(apiUrl, {
-      headers: {
-        Accept: 'application/json',
-        'api-key': env.GETADDRESS_API_KEY,
-        Authorization: `api-key ${env.GETADDRESS_API_KEY}`,
-        Referer: `${callerOrigin}/order`,
-        Origin: callerOrigin,
-        'User-Agent': 'ricos-order/1.0',
-      },
-    });
-  } catch (e) {
-    return errJson(`Address lookup network error: ${String(e).slice(0, 100)}`, 502);
+  const key = env.GETADDRESS_API_KEY;
+  const keyLen = key.length;
+
+  // Try a sequence of getAddress.io endpoint variations. The first one
+  // that returns a 2xx wins. If they all 404, we report which was hit.
+  const attempts = [
+    // Modern v2 path with api-key in query
+    `https://api.getaddress.io/find/${encodeURIComponent(cleaned)}?api-key=${encodeURIComponent(key)}&expand=true`,
+    // Modern v2 path with space-formatted postcode
+    `https://api.getaddress.io/find/${encodeURIComponent(raw)}?api-key=${encodeURIComponent(key)}&expand=true`,
+    // Older v2 UK endpoint
+    `https://api.getaddress.io/v2/uk/${encodeURIComponent(cleaned)}?api-key=${encodeURIComponent(key)}&expand=true`,
+    // Capital-A host (DNS is case-insensitive but try anyway in case of cert mismatch)
+    `https://api.getAddress.io/find/${encodeURIComponent(cleaned)}?api-key=${encodeURIComponent(key)}&expand=true`,
+  ];
+
+  const tried = [];
+  let upstream = null;
+  let upstreamBody = '';
+  let winningUrl = '';
+  for (const url of attempts) {
+    let resp;
+    try {
+      resp = await fetch(url, {
+        headers: {
+          Accept: 'application/json',
+          'User-Agent': 'ricos-order/1.0',
+        },
+      });
+    } catch (e) {
+      tried.push(`ERR ${url.replace(key, 'KEY')}`);
+      continue;
+    }
+    const body = await safeText(resp);
+    tried.push(`${resp.status} ${url.replace(key, 'KEY')}`);
+    if (resp.ok) {
+      upstream = resp;
+      upstreamBody = body;
+      winningUrl = url;
+      break;
+    }
+    // If we get a "real" error like 401/429, stop trying — the key itself is bad.
+    if (resp.status === 401 || resp.status === 403) {
+      return errJson(`Lookup auth ${resp.status}: ${body.slice(0, 160)}`, 503);
+    }
+    if (resp.status === 429) {
+      return errJson('Daily address lookup limit reached. Please type the address manually.', 429);
+    }
   }
 
-  const upstreamBody = await safeText(upstream);
-
-  if (upstream.status === 404) {
+  if (!upstream) {
     return Response.json({
       ok: true,
       addresses: [],
-      _debug: `upstream 404 host=api.getaddress.io path=${path} keyLen=${keyLen} body="${upstreamBody.slice(0, 200)}"`,
+      _debug: `all variants failed keyLen=${keyLen} tried=[${tried.join(' | ')}]`,
     }, { headers: cacheHeaders() });
-  }
-  if (upstream.status === 401 || upstream.status === 403) {
-    return errJson(`Lookup auth ${upstream.status}: ${upstreamBody.slice(0, 160)}`, 503);
-  }
-  if (upstream.status === 429) {
-    return errJson('Daily address lookup limit reached. Please type the address manually.', 429);
-  }
-  if (!upstream.ok) {
-    return errJson(`Lookup ${upstream.status}: ${upstreamBody.slice(0, 160)}`, 502);
   }
 
   let data;
