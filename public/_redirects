@@ -6,6 +6,11 @@
 # rule loops with Cloudflare's own /staff -> /staff/ behaviour and triggers
 # ERR_TOO_MANY_REDIRECTS.
 
+# Canonical host: www.ricosyork.co.uk -> ricosyork.co.uk (apex).
+# This keeps the origin consistent so getAddress.io's domain-locked
+# autocomplete token (registered against the apex) matches every request.
+https://www.ricosyork.co.uk/*  https://ricosyork.co.uk/:splat  301
+
 # Friendly URLs.
 /menu     /order   302
 /book     /order   302
