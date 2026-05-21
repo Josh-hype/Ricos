@@ -1933,13 +1933,30 @@ async function placeOrder() {
   const errEl  = document.getElementById('paymentError');
   if (errEl) errEl.textContent = '';
 
-  // Defensive: if the contact step's data isn't on the page for any reason
-  // (browser back, race condition, localStorage purge), bounce the customer
-  // back to it rather than POSTing an empty customer object to the server.
-  if (!checkoutData.name || !checkoutData.email || !checkoutData.phone) {
-    alert("We're missing your contact details — please fill them in before paying.");
-    checkoutStep = 'contact';
-    renderCheckout();
+  // Read inline contact fields on the payment step. These exist so the
+  // customer can fill in (or fix) their name/email/phone from this screen
+  // without backtracking through the multi-step flow.
+  const inlineName  = document.getElementById('payName')?.value.trim();
+  const inlineEmail = document.getElementById('payEmail')?.value.trim();
+  const inlinePhone = document.getElementById('payPhone')?.value.trim();
+  if (inlineName)  checkoutData.name  = inlineName;
+  if (inlineEmail) checkoutData.email = inlineEmail;
+  if (inlinePhone) checkoutData.phone = inlinePhone;
+
+  // Validation. Show inline; never alert.
+  if (!checkoutData.name || checkoutData.name.length < 2) {
+    if (errEl) errEl.textContent = 'Please enter your full name.';
+    document.getElementById('payName')?.focus();
+    return;
+  }
+  if (!checkoutData.email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(checkoutData.email)) {
+    if (errEl) errEl.textContent = 'Please enter a valid email address.';
+    document.getElementById('payEmail')?.focus();
+    return;
+  }
+  if (!checkoutData.phone) {
+    if (errEl) errEl.textContent = 'Please enter your UK mobile number.';
+    document.getElementById('payPhone')?.focus();
     return;
   }
 
@@ -2187,6 +2204,26 @@ function renderCheckout() {
     body.innerHTML = `
       ${checkoutProgressHTML('payment')}
       <h4 style="font-family:var(--display);font-size:1.1rem;margin:0 0 1rem">Payment</h4>
+
+      <fieldset style="border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;margin:0 0 14px">
+        <legend style="padding:0 6px;font-weight:700;font-size:0.92rem">Contact details</legend>
+        <label for="payName" style="display:block;font-size:0.85rem;color:var(--grey);margin-top:4px">Full name</label>
+        <input id="payName" type="text" value="${escapeHTML(checkoutData.name || '')}" autocomplete="name"
+               placeholder="As shown on your bank card"
+               style="width:100%;padding:8px 10px;border:1.5px solid var(--ink);border-radius:8px;margin:2px 0 8px;font-size:0.95rem" />
+        <div style="display:flex;gap:8px">
+          <div style="flex:1.4">
+            <label for="payEmail" style="display:block;font-size:0.85rem;color:var(--grey)">Email (for receipt)</label>
+            <input id="payEmail" type="email" value="${escapeHTML(checkoutData.email || '')}" autocomplete="email"
+                   style="width:100%;padding:8px 10px;border:1.5px solid var(--ink);border-radius:8px;margin-top:2px;font-size:0.95rem" />
+          </div>
+          <div style="flex:1">
+            <label for="payPhone" style="display:block;font-size:0.85rem;color:var(--grey)">UK mobile</label>
+            <input id="payPhone" type="tel" value="${escapeHTML(checkoutData.phone || '')}" autocomplete="tel"
+                   placeholder="07…" style="width:100%;padding:8px 10px;border:1.5px solid var(--ink);border-radius:8px;margin-top:2px;font-size:0.95rem" />
+          </div>
+        </div>
+      </fieldset>
 
       <div class="order-summary">
         <h4>Order summary</h4>
