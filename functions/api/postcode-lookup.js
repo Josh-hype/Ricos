@@ -30,22 +30,33 @@ async function listForPostcode(raw, env) {
     return errJson('Not a valid York postcode.', 400);
   }
 
+  // Trim aggressively — secrets occasionally have a trailing newline if
+  // they were typed (vs pasted) into Cloudflare's secret field.
+  const key = (env.GETADDRESS_API_KEY || '').trim();
+  const keyLen = key.length;
+  const keyTail = key.slice(-4);
+
   // Autocomplete on the postcode; ask for the full list (top=20) so we
   // get every address on that postcode, not just the top few suggestions.
   const apiUrl = `https://api.getAddress.io/autocomplete/${encodeURIComponent(raw)}` +
-    `?api-key=${encodeURIComponent(env.GETADDRESS_API_KEY)}&all=true&top=20`;
+    `?api-key=${encodeURIComponent(key)}&all=true&top=20`;
 
   let upstream;
   try {
     upstream = await fetch(apiUrl, {
-      headers: { Accept: 'application/json', 'User-Agent': 'ricos-order/1.0' },
+      headers: {
+        Accept: 'application/json',
+        'User-Agent': 'ricos-order/1.0',
+        'api-key': key,
+        Authorization: `Bearer ${key}`,
+      },
     });
   } catch (e) {
     return errJson(`Address lookup network error: ${String(e).slice(0, 100)}`, 502);
   }
   const body = await safeText(upstream);
   if (upstream.status === 401 || upstream.status === 403) {
-    return errJson(`Lookup auth ${upstream.status}: ${body.slice(0, 160)}`, 503);
+    return errJson(`Lookup auth ${upstream.status} [keyLen=${keyLen} tail=...${keyTail}]: ${body.slice(0, 160)}`, 503);
   }
   if (upstream.status === 429) {
     return errJson('Daily address lookup limit reached. Please type the address manually.', 429);
