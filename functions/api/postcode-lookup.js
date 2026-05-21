@@ -25,15 +25,22 @@ export const onRequestGet = async ({ request, env }) => {
   }
 
   const keyLen = (env.GETADDRESS_API_KEY || '').length;
-  // Try the modern lowercase host with the postcode untouched (with space).
-  const path = `/find/${encodeURIComponent(raw)}`;
+  // getAddress.io API keys are usually domain-restricted. Send a Referer
+  // header pointing at our caller so their allow-list can recognise us.
+  const callerOrigin = new URL(request.url).origin;
+  // Cleaned postcode (no space) is the format their docs show.
+  const path = `/find/${encodeURIComponent(cleaned)}`;
   const apiUrl = `https://api.getaddress.io${path}?expand=true&sort=true`;
   let upstream;
   try {
     upstream = await fetch(apiUrl, {
       headers: {
         Accept: 'application/json',
+        'api-key': env.GETADDRESS_API_KEY,
         Authorization: `api-key ${env.GETADDRESS_API_KEY}`,
+        Referer: `${callerOrigin}/order`,
+        Origin: callerOrigin,
+        'User-Agent': 'ricos-order/1.0',
       },
     });
   } catch (e) {
