@@ -37,9 +37,9 @@
   "_comment_serviceFee": "Per-order developer/platform fee in pence. Charged to the customer at checkout, included in the Stripe charge or cash total. With Stripe Connect this is the application_fee_amount that flows to the platform; for cash orders the platform reconciles separately with the venue per the platform agreement.",
   "serviceFeePence": 35,
 
-  "_comment_stripe": "Stripe Connect: this site's PaymentIntents are created on the venue's connected account. connectedAccountId is the venue's acct_xxx string from Stripe Connect. Replace TBD once the venue has completed Connect onboarding under your platform Stripe account.",
+  "_comment_stripe": "Stripe Connect: this site's PaymentIntents are created on the venue's connected account. connectedAccountId is the venue's acct_xxx string from Stripe Connect. Currently pointing at the TEST sandbox connected account for RICOS; swap for the live acct_ once live mode is approved.",
   "stripe": {
-    "connectedAccountId": "TBD"
+    "connectedAccountId": "acct_1TZSakJgLwVJb8Ts"
   },
 
   "hours": {
