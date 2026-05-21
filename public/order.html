@@ -2267,6 +2267,11 @@ async function populateScheduleSelect() {
    and corporate firewalls that block api.getaddress.io don't matter. */
 const _postcodeCache = new Map();
 
+function formatAddressLabel(a) {
+  return [a.line_1, a.line_2, a.line_3, a.line_4, a.town_or_city]
+    .filter(Boolean).join(', ');
+}
+
 function wirePostcodeLookup() {
   const btn        = document.getElementById('coLookupBtn');
   const statusEl   = document.getElementById('coLookupStatus');
@@ -2280,37 +2285,25 @@ function wirePostcodeLookup() {
     statusEl.style.display = msg ? 'block' : 'none';
   };
 
-  const populate = (suggestions) => {
-    if (suggestions.length === 0) {
+  const populate = (addresses) => {
+    if (addresses.length === 0) {
       pickWrap.style.display = 'none';
       showStatus('No addresses found for that postcode. Please type yours below.', true);
       return;
     }
-    pick.innerHTML = `<option value="">— ${suggestions.length} address${suggestions.length === 1 ? '' : 'es'} found —</option>` +
-      suggestions.map((s, i) => `<option value="${i}">${escapeHTML(s.address || '')}</option>`).join('');
+    pick.innerHTML = `<option value="">— ${addresses.length} address${addresses.length === 1 ? '' : 'es'} found —</option>` +
+      addresses.map((a, i) => `<option value="${i}">${escapeHTML(formatAddressLabel(a))}</option>`).join('');
     pickWrap.style.display = 'block';
     showStatus('', false);
-    pick.onchange = async () => {
+    pick.onchange = () => {
       const idx = Number(pick.value);
       if (Number.isNaN(idx)) return;
-      const sel = suggestions[idx];
-      if (!sel || !sel.id) return;
-
-      showStatus('Loading address…', false);
-      try {
-        const res = await fetch(`/api/postcode-lookup?id=${encodeURIComponent(sel.id)}`);
-        const body = await res.json().catch(() => ({}));
-        if (!res.ok) {
-          showStatus(`Couldn't load that address (${res.status}). ${(body.reason || '').slice(0, 120)} — type it below.`, true);
-          return;
-        }
-        document.getElementById('coLine1').value = [body.line_1, body.line_2].filter(Boolean).join(', ');
-        document.getElementById('coLine2').value = [body.line_3, body.line_4].filter(Boolean).join(', ');
-        document.getElementById('coCity').value  = body.town_or_city || body.locality || 'York';
-        showStatus('', false);
-      } catch (e) {
-        showStatus(`Network error loading address [${e.name || 'Err'}: ${(e.message || '').slice(0, 60)}]. Please type it below.`, true);
-      }
+      const a = addresses[idx];
+      if (!a) return;
+      document.getElementById('coLine1').value = [a.line_1, a.line_2].filter(Boolean).join(', ');
+      document.getElementById('coLine2').value = [a.line_3, a.line_4].filter(Boolean).join(', ');
+      document.getElementById('coCity').value  = a.town_or_city || a.locality || 'York';
+      showStatus('', false);
     };
   };
 
@@ -2336,10 +2329,9 @@ function wirePostcodeLookup() {
         showStatus(`Lookup ${res.status}. ${(body.reason || '').slice(0, 140)} — type below.`, true);
         return;
       }
-      const suggestions = (Array.isArray(body.suggestions) ? body.suggestions : [])
-        .filter(s => s && s.id && s.address);
-      _postcodeCache.set(postcode, suggestions);
-      populate(suggestions);
+      const addresses = Array.isArray(body.addresses) ? body.addresses : [];
+      _postcodeCache.set(postcode, addresses);
+      populate(addresses);
     } catch (e) {
       showStatus(
         `Lookup network error [${e.name || 'Err'}: ${(e.message || '').slice(0, 80)}]. Please type the address below.`,
