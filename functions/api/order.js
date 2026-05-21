@@ -12,7 +12,6 @@ import { computeTotals } from '../_lib/totals.js';
 import { validateDeliveryPostcode } from '../_lib/postcode.js';
 import { isOpenNow, isSlotValid, listSlots } from '../_lib/hours.js';
 import { createPaymentIntent } from '../_lib/stripe.js';
-import { sendEmail, orderReceivedEmail } from '../_lib/email.js';
 import { putOrder, newOrderId, recordOptIn, incrSlotCount } from '../_lib/kv.js';
 import { normalisePhoneE164UK } from '../_lib/sms.js';
 import { readCustomerSession } from '../_lib/customer-auth.js';
@@ -159,10 +158,10 @@ export const onRequestPost = async ({ request, env }) => {
     await incrSlotCount(schedule, env);
   }
 
-  // Cash flow: send immediate receipt email + record opt-ins right now.
+  // No customer email until the kitchen accepts the order. Marketing opt-ins
+  // are still recorded immediately for cash orders (card orders go through
+  // the Stripe webhook).
   if (paymentMethod !== 'card') {
-    const mail = orderReceivedEmail(order, config);
-    await sendEmail({ to: email, subject: mail.subject, html: mail.html }, env);
     await recordIfOptedIn(order, env);
   }
 

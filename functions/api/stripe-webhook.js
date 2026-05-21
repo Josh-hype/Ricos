@@ -1,8 +1,6 @@
 /* POST /api/stripe-webhook — handles payment_intent.succeeded / failed. */
 import { verifyWebhook } from '../_lib/stripe.js';
-import { getConfig } from '../_lib/config.js';
 import { getOrder, putOrder, recordOptIn } from '../_lib/kv.js';
-import { sendEmail, orderReceivedEmail } from '../_lib/email.js';
 
 export const onRequestPost = async ({ request, env }) => {
   const raw = await request.text();
@@ -23,10 +21,7 @@ export const onRequestPost = async ({ request, env }) => {
       order.history.push({ at: order.payment.paidAt, event: 'paid' });
       await putOrder(order, env);
 
-      const config = getConfig();
-      const mail = orderReceivedEmail(order, config);
-      await sendEmail({ to: order.customer.email, subject: mail.subject, html: mail.html }, env);
-
+      // No customer email here - we only email once the kitchen accepts.
       if (order.marketing.email) {
         await recordOptIn({ kind: 'email', value: order.customer.email, source: 'checkout' }, env);
       }

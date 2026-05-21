@@ -28,49 +28,70 @@ export async function sendEmail({ to, subject, html, text, replyTo }, env) {
   return await res.json();
 }
 
-export function orderReceivedEmail(order, config) {
-  const lines = order.totals.lines.map(l =>
-    `<tr><td>${escapeHtml(l.qty)}× ${escapeHtml(l.name)}${l.modifiers?.length ? ` <em>(${l.modifiers.map(escapeHtml).join(', ')})</em>` : ''}${l.meal ? ' <em>(meal)</em>' : ''}</td><td style="text-align:right">£${(l.lineTotalP/100).toFixed(2)}</td></tr>`
-  ).join('');
-  const ref = order.id.toUpperCase();
-  const tradingName = escapeHtml(config.business.tradingName);
-  const phone = escapeHtml(config.business.phone || '');
-  const fulfillment = order.fulfillment === 'delivery' ? 'delivery' : 'collection';
-  return {
-    subject: `${tradingName} — order ${ref} received`,
-    html: `
-      <div style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto">
-        <h2>Thanks ${escapeHtml(order.customer.name.split(' ')[0])}, we've got your order</h2>
-        <p>Reference <strong>${ref}</strong> for ${fulfillment}. We'll send another email shortly with your ready time once the kitchen accepts it (usually within 5 minutes).</p>
-        <table style="width:100%;border-collapse:collapse">
-          ${lines}
-          <tr><td>Subtotal</td><td style="text-align:right">£${(order.totals.subtotalP/100).toFixed(2)}</td></tr>
-          ${order.totals.discountP ? `<tr><td>${escapeHtml(order.totals.discountLabel || 'Discount')}</td><td style="text-align:right">−£${(order.totals.discountP/100).toFixed(2)}</td></tr>` : ''}
-          ${order.totals.deliveryFeeP ? `<tr><td>Delivery</td><td style="text-align:right">£${(order.totals.deliveryFeeP/100).toFixed(2)}</td></tr>` : ''}
-          ${order.totals.serviceFeeP ? `<tr><td>Service fee</td><td style="text-align:right">£${(order.totals.serviceFeeP/100).toFixed(2)}</td></tr>` : ''}
-          <tr><td><strong>Total</strong></td><td style="text-align:right"><strong>£${(order.totals.totalP/100).toFixed(2)}</strong></td></tr>
-        </table>
-        <p style="margin-top:24px;font-size:0.9em;color:#555">Allergens? Call ${phone || 'the restaurant'} before collecting.</p>
-        <p style="font-size:0.85em;color:#888">${tradingName}, 49 Blossom Street, York, YO24 1AZ.</p>
-      </div>`,
-  };
-}
-
 export function orderAcceptedEmail(order, config) {
   const ref = order.id.toUpperCase();
   const tradingName = escapeHtml(config.business.tradingName);
-  const ready = new Date(order.readyAt).toLocaleString('en-GB', {
-    timeZone: config.ordering.timezone,
-    weekday: 'short', hour: '2-digit', minute: '2-digit',
+  const phone = escapeHtml(config.business.phone || '');
+  const domain = config.business.domain;
+  const logoUrl = domain ? `https://${domain}/ricos-logo.png` : null;
+
+  const tz = config.ordering?.timezone || 'Europe/London';
+  const readyDate = new Date(order.readyAt);
+  const readyTime = readyDate.toLocaleString('en-GB', {
+    timeZone: tz, hour: '2-digit', minute: '2-digit',
   });
-  const verb = order.fulfillment === 'delivery' ? 'delivered to you at' : 'ready for collection at';
+  const readyDay = readyDate.toLocaleString('en-GB', {
+    timeZone: tz, weekday: 'long', day: 'numeric', month: 'short',
+  });
+  const minutesAway = Math.max(1, Math.round((readyDate.getTime() - Date.now()) / 60000));
+  const verb = order.fulfillment === 'delivery'
+    ? 'delivered to you'
+    : 'ready for collection';
+
+  const lines = order.totals.lines.map(l =>
+    `<tr>
+       <td style="padding:6px 0">${escapeHtml(l.qty)}× ${escapeHtml(l.name)}${l.modifiers?.length ? ` <em style="color:#6b5e58">(${l.modifiers.map(escapeHtml).join(', ')})</em>` : ''}${l.meal ? ' <em style="color:#6b5e58">(meal)</em>' : ''}</td>
+       <td style="padding:6px 0;text-align:right">£${(l.lineTotalP/100).toFixed(2)}</td>
+     </tr>`
+  ).join('');
+
+  const addressBlock = order.fulfillment === 'delivery' && order.address
+    ? `<p style="margin:4px 0;color:#6b5e58;font-size:0.92em">
+         Delivering to: ${escapeHtml(order.address.line1)}${order.address.line2 ? `, ${escapeHtml(order.address.line2)}` : ''}, ${escapeHtml(order.address.postcode)}
+       </p>`
+    : '';
+
   return {
-    subject: `${tradingName} — order ${ref} confirmed for ${ready}`,
+    subject: `${tradingName} — order ${ref} confirmed, ready in ${minutesAway} min`,
     html: `
-      <div style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto">
-        <h2>Confirmed — ${ready}</h2>
-        <p>Your order <strong>${ref}</strong> will be ${verb} <strong>${ready}</strong>.</p>
-        <p style="font-size:0.9em;color:#555">${tradingName}, 49 Blossom Street, York, YO24 1AZ.</p>
+      <div style="font-family:'Helvetica Neue',Arial,sans-serif;max-width:560px;margin:0 auto;color:#181210;background:#fffaeb;padding:24px;border-radius:16px">
+        ${logoUrl ? `<div style="text-align:center;margin-bottom:12px">
+          <img src="${logoUrl}" alt="${tradingName}" width="120" height="120" style="border:0;display:inline-block" />
+        </div>` : ''}
+
+        <h1 style="font-size:1.6rem;text-align:center;margin:8px 0 4px;color:#c8261c">Order confirmed</h1>
+        <p style="text-align:center;margin:0 0 18px">Thanks ${escapeHtml(order.customer.name.split(' ')[0])} - we're cooking now.</p>
+
+        <div style="background:#fff5d8;border:2px solid #181210;border-radius:12px;padding:18px 16px;text-align:center;margin:0 0 18px">
+          <div style="font-size:0.92em;color:#6b5e58;letter-spacing:0.05em;text-transform:uppercase">Ready in about</div>
+          <div style="font-size:2.4rem;font-weight:700;line-height:1.1;margin:4px 0">${minutesAway} min</div>
+          <div style="font-size:0.95em">Your order will be ${verb} at <strong>${readyTime}</strong>, ${readyDay}.</div>
+        </div>
+
+        <p style="margin:0 0 4px"><strong>Reference:</strong> ${ref}</p>
+        ${addressBlock}
+
+        <table style="width:100%;border-collapse:collapse;margin:14px 0 4px;font-size:0.95em">
+          ${lines}
+          <tr><td style="padding-top:8px;border-top:1px solid #d8cfc8">Subtotal</td><td style="padding-top:8px;border-top:1px solid #d8cfc8;text-align:right">£${(order.totals.subtotalP/100).toFixed(2)}</td></tr>
+          ${order.totals.discountP ? `<tr><td>${escapeHtml(order.totals.discountLabel || 'Discount')}</td><td style="text-align:right">−£${(order.totals.discountP/100).toFixed(2)}</td></tr>` : ''}
+          ${order.totals.deliveryFeeP ? `<tr><td>Delivery</td><td style="text-align:right">£${(order.totals.deliveryFeeP/100).toFixed(2)}</td></tr>` : ''}
+          ${order.totals.serviceFeeP ? `<tr><td>Service fee</td><td style="text-align:right">£${(order.totals.serviceFeeP/100).toFixed(2)}</td></tr>` : ''}
+          <tr><td style="padding-top:6px"><strong>Total</strong></td><td style="padding-top:6px;text-align:right"><strong>£${(order.totals.totalP/100).toFixed(2)}</strong></td></tr>
+        </table>
+
+        <p style="margin-top:22px;font-size:0.9em;color:#6b5e58">Allergens or running late? Call ${phone || 'the restaurant'}.</p>
+        <p style="font-size:0.85em;color:#9a8e87;margin-top:14px">${tradingName}, 49 Blossom Street, York, YO24 1AZ.</p>
       </div>`,
   };
 }
