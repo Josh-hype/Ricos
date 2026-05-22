@@ -2946,6 +2946,23 @@ function renderCheckout() {
     // new card (no point offering save when there's no account to save to).
     if (state.user) saveLabel.style.display = 'flex';
 
+    // Stripe Elements and the server-side PaymentIntent must agree on
+    // setup_future_usage at confirm time — when the customer ticks Save,
+    // update the Elements instance so it matches the PI we'll create.
+    const saveCardCheckbox = document.getElementById('saveCard');
+    if (saveCardCheckbox) {
+      saveCardCheckbox.addEventListener('change', () => {
+        if (!stripeElements) return;
+        try {
+          stripeElements.update({
+            setupFutureUsage: saveCardCheckbox.checked ? 'off_session' : null,
+          });
+        } catch (e) {
+          console.warn('elements.update failed', e);
+        }
+      });
+    }
+
     document.querySelectorAll('input[name="payMethod"]').forEach(r => {
       r.addEventListener('change', () => {
         const isCard = document.querySelector('input[name="payMethod"]:checked').value === 'card';
