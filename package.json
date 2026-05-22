@@ -1,11 +1,13 @@
 {
-  "name": "ricos-peri-peri",
+  "name": "takeaway-platform",
   "version": "0.1.0",
   "private": true,
-  "description": "Rico's Peri Peri online ordering — Cloudflare Pages + Functions.",
+  "description": "Multi-tenant takeaway ordering platform on Cloudflare Pages + Functions.",
+  "type": "module",
   "scripts": {
-    "dev": "wrangler pages dev public --compatibility-date=2026-05-01 --kv ORDERS_KV --kv MARKETING_KV --kv SLOTS_KV --kv STAFF_LOGIN_KV",
-    "deploy": "wrangler pages deploy public --project-name=ricos",
+    "build": "node scripts/build-shop.js",
+    "dev": "npm run build && wrangler pages dev public --compatibility-date=2026-05-01 --kv ORDERS_KV --kv MARKETING_KV --kv SLOTS_KV --kv STAFF_LOGIN_KV --kv CUSTOMERS_KV",
+    "deploy": "npm run build && wrangler pages deploy public --project-name=ricos",
     "tail": "wrangler pages deployment tail --project-name=ricos"
   },
   "devDependencies": {
