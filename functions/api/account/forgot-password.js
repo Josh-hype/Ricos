@@ -30,7 +30,7 @@ export const onRequestPost = async ({ request, env }) => {
 
   try {
     const mail = passwordResetEmail({ name: customer.name, resetUrl }, getConfig());
-    await sendEmail({ to: customer.email, subject: mail.subject, html: mail.html }, env);
+    await sendEmail({ to: customer.email, subject: mail.subject, html: mail.html, fromName: mail.fromName }, env);
   } catch (e) {
     console.warn('password reset email failed', e);
   }

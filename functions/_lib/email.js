@@ -1,10 +1,18 @@
-/* Resend wrapper. Sends transactional email. */
+/* Resend wrapper. Sends transactional email.
 
-export async function sendEmail({ to, subject, html, text, replyTo }, env) {
+   `fromName` (optional) gets formatted as: "Display Name" <email@domain>
+   so inboxes show the brand instead of the local part of the address. */
+
+export async function sendEmail({ to, subject, html, text, replyTo, fromName }, env) {
   if (!env.RESEND_API_KEY) {
     console.warn('RESEND_API_KEY not set — skipping email');
     return { skipped: true };
   }
+  const fromEmail = env.RESEND_FROM_EMAIL || 'orders@example.com';
+  // Prefer fromName from the caller, then env override, then no display name.
+  const displayName = fromName || env.RESEND_FROM_NAME || null;
+  const from = displayName ? `"${displayName.replace(/"/g, '')}" <${fromEmail}>` : fromEmail;
+
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
@@ -12,7 +20,7 @@ export async function sendEmail({ to, subject, html, text, replyTo }, env) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: env.RESEND_FROM_EMAIL || 'orders@example.com',
+      from,
       to: Array.isArray(to) ? to : [to],
       subject,
       html,
@@ -30,7 +38,8 @@ export async function sendEmail({ to, subject, html, text, replyTo }, env) {
 
 export function orderAcceptedEmail(order, config) {
   const ref = order.id.toUpperCase();
-  const tradingName = escapeHtml(config.business.tradingName);
+  const tradingName = config.business.tradingName;
+  const tradingNameHtml = escapeHtml(tradingName);
   const phone = escapeHtml(config.business.phone || '');
   const domain = config.business.domain;
   const logoUrl = domain ? `https://${domain}/ricos-logo.png` : null;
@@ -66,7 +75,7 @@ export function orderAcceptedEmail(order, config) {
     html: `
       <div style="font-family:'Helvetica Neue',Arial,sans-serif;max-width:560px;margin:0 auto;color:#181210;background:#fffaeb;padding:24px;border-radius:16px">
         ${logoUrl ? `<div style="text-align:center;margin-bottom:12px">
-          <img src="${logoUrl}" alt="${tradingName}" width="120" height="120" style="border:0;display:inline-block" />
+          <img src="${logoUrl}" alt="${tradingNameHtml}" width="120" height="120" style="border:0;display:inline-block" />
         </div>` : ''}
 
         <h1 style="font-size:1.6rem;text-align:center;margin:8px 0 4px;color:#c8261c">Order confirmed</h1>
@@ -91,29 +100,33 @@ export function orderAcceptedEmail(order, config) {
         </table>
 
         <p style="margin-top:22px;font-size:0.9em;color:#6b5e58">Allergens or running late? Call ${phone || 'the restaurant'}.</p>
-        <p style="font-size:0.85em;color:#9a8e87;margin-top:14px">${tradingName}, 49 Blossom Street, York, YO24 1AZ.</p>
+        <p style="font-size:0.85em;color:#9a8e87;margin-top:14px">${tradingNameHtml}, 49 Blossom Street, York, YO24 1AZ.</p>
       </div>`,
+    fromName: tradingName,
   };
 }
 
 export function welcomeEmail({ name, contact }, config) {
-  const tradingName = escapeHtml(config.business.tradingName);
+  const tradingName = config.business.tradingName;
+  const tradingNameHtml = escapeHtml(tradingName);
   return {
     subject: `Welcome to ${tradingName}`,
     html: `
       <div style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto">
         <h2>Welcome, ${escapeHtml(name.split(' ')[0])}!</h2>
-        <p>Your ${tradingName} account is ready. Next time you order we'll
+        <p>Your ${tradingNameHtml} account is ready. Next time you order we'll
            remember your contact and delivery address so checkout's just two taps.</p>
         <p>You signed up with <strong>${escapeHtml(contact)}</strong>. If that wasn't you,
            reply to this email and we'll sort it out.</p>
-        <p style="font-size:0.85em;color:#888;margin-top:24px">${tradingName}, 49 Blossom Street, York, YO24 1AZ.</p>
+        <p style="font-size:0.85em;color:#888;margin-top:24px">${tradingNameHtml}, 49 Blossom Street, York, YO24 1AZ.</p>
       </div>`,
+    fromName: tradingName,
   };
 }
 
 export function passwordResetEmail({ name, resetUrl }, config) {
-  const tradingName = escapeHtml(config.business.tradingName);
+  const tradingName = config.business.tradingName;
+  const tradingNameHtml = escapeHtml(tradingName);
   return {
     subject: `${tradingName} — reset your password`,
     html: `
@@ -128,14 +141,16 @@ export function passwordResetEmail({ name, resetUrl }, config) {
           </a>
         </p>
         <p style="font-size:0.85em;color:#555">Or copy this link: <br>${escapeHtml(resetUrl)}</p>
-        <p style="font-size:0.85em;color:#888;margin-top:24px">If you didn't ask for this, ignore this email — your password won't change.</p>
+        <p style="font-size:0.85em;color:#888;margin-top:24px">If you didn't ask for this, ignore this email — your password won't change. — ${tradingNameHtml}</p>
       </div>`,
+    fromName: tradingName,
   };
 }
 
 export function orderRejectedEmail(order, config, reason) {
   const ref = order.id.toUpperCase();
-  const tradingName = escapeHtml(config.business.tradingName);
+  const tradingName = config.business.tradingName;
+  const tradingNameHtml = escapeHtml(tradingName);
   const phone = escapeHtml(config.business.phone || '');
   const refundLine = order.paymentMethod === 'card'
     ? `<p>Your card payment will be refunded automatically within 5–10 working days.</p>`
@@ -152,8 +167,9 @@ export function orderRejectedEmail(order, config, reason) {
         ${reasonLine}
         ${refundLine}
         <p>If you'd like to talk to us, call ${phone || 'the restaurant'} and we'll do what we can.</p>
-        <p style="font-size:0.85em;color:#888;margin-top:24px">${tradingName}, 49 Blossom Street, York, YO24 1AZ.</p>
+        <p style="font-size:0.85em;color:#888;margin-top:24px">${tradingNameHtml}, 49 Blossom Street, York, YO24 1AZ.</p>
       </div>`,
+    fromName: tradingName,
   };
 }
 

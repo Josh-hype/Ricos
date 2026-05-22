@@ -49,7 +49,7 @@ export const onRequestPost = async ({ request, env }) => {
   if (contact.type === 'email') {
     try {
       const mail = welcomeEmail({ name, contact: contact.value }, getConfig());
-      await sendEmail({ to: contact.value, subject: mail.subject, html: mail.html }, env);
+      await sendEmail({ to: contact.value, subject: mail.subject, html: mail.html, fromName: mail.fromName }, env);
     } catch (e) {
       console.warn('welcome email failed', e);
     }

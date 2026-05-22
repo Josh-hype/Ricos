@@ -38,7 +38,7 @@ export const onRequestPost = async ({ request, env, params }) => {
 
   const config = getConfig();
   const mail = orderAcceptedEmail(order, config);
-  await sendEmail({ to: order.customer.email, subject: mail.subject, html: mail.html }, env);
+  await sendEmail({ to: order.customer.email, subject: mail.subject, html: mail.html, fromName: mail.fromName }, env);
 
   return Response.json({ order });
 };

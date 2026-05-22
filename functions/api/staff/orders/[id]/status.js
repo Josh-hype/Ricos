@@ -40,7 +40,7 @@ export const onRequestPost = async ({ request, env, params }) => {
   if (status === 'cancelled' && wasRejectable && order.customer?.email) {
     try {
       const mail = orderRejectedEmail(order, getConfig(), reason);
-      await sendEmail({ to: order.customer.email, subject: mail.subject, html: mail.html }, env);
+      await sendEmail({ to: order.customer.email, subject: mail.subject, html: mail.html, fromName: mail.fromName }, env);
     } catch (e) {
       console.warn('rejection email failed', e);
     }
