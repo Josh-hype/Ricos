@@ -48,7 +48,18 @@ async function call(path, body, env, opts = {}) {
    In Stripe Connect mode (connectedAccountId set), this is a "direct
    charge" — the PaymentIntent is created on the connected account, money
    settles to the venue, and the platform automatically retains the
-   application_fee_amount (kept in the platform's Stripe balance). */
+   application_fee_amount (kept in the platform's Stripe balance).
+
+   Optional saved-card fields:
+   - customerId: attach the PI to a Stripe Customer (cus_xxx) on the
+     connected account. Required for saving or charging saved cards.
+   - setupFutureUsage: 'off_session' — instructs Stripe to save the new
+     PaymentMethod to the customer once payment succeeds, so it can be
+     charged on future orders without re-entering details.
+   - paymentMethodId: pm_xxx of a saved card. When set we confirm the
+     PI server-side off-session, so the customer skips Stripe Elements
+     entirely (the client only handles 3DS challenges if Stripe demands
+     one). */
 export async function createPaymentIntent({
   amountP,
   currency,
@@ -56,20 +67,64 @@ export async function createPaymentIntent({
   customerEmail,
   connectedAccountId,
   applicationFeeP,
+  customerId,
+  setupFutureUsage,
+  paymentMethodId,
 }, env) {
   const body = {
     amount: amountP,
     currency,
-    automatic_payment_methods: { enabled: true },
     receipt_email: customerEmail || undefined,
     metadata: { orderId },
   };
   if (connectedAccountId && applicationFeeP) {
     body.application_fee_amount = applicationFeeP;
   }
+  if (customerId) body.customer = customerId;
+  if (setupFutureUsage) body.setup_future_usage = setupFutureUsage;
+  if (paymentMethodId) {
+    // Off-session confirm with a saved card. We must not also enable
+    // automatic payment methods or Stripe rejects with "ambiguous".
+    body.payment_method = paymentMethodId;
+    body.confirm = 'true';
+    body.off_session = 'true';
+  } else {
+    body.automatic_payment_methods = { enabled: true };
+  }
   const opts = { idempotencyKey: `pi_${orderId}` };
   if (connectedAccountId) opts.stripeAccount = connectedAccountId;
   return call('/payment_intents', body, env, opts);
+}
+
+/* Create a Customer on the connected account. Used the first time a
+   signed-in user opts to save a card for that shop. Customer IDs are
+   per-connected-account (one shop's cus_xxx isn't usable elsewhere). */
+export async function createCustomer({ email, name, phone, metadata }, connectedAccountId, env) {
+  const body = {
+    email: email || undefined,
+    name: name || undefined,
+    phone: phone || undefined,
+    metadata: metadata || undefined,
+  };
+  const opts = {};
+  if (connectedAccountId) opts.stripeAccount = connectedAccountId;
+  return call('/customers', body, env, opts);
+}
+
+/* List PaymentMethods (cards only) attached to a customer on the
+   connected account. Returns Stripe's list response. */
+export async function listPaymentMethods(customerId, connectedAccountId, env) {
+  const opts = { method: 'GET' };
+  if (connectedAccountId) opts.stripeAccount = connectedAccountId;
+  const qs = `?customer=${encodeURIComponent(customerId)}&type=card&limit=10`;
+  return call(`/payment_methods${qs}`, null, env, opts);
+}
+
+/* Detach a PaymentMethod from its customer on the connected account. */
+export async function detachPaymentMethod(paymentMethodId, connectedAccountId, env) {
+  const opts = {};
+  if (connectedAccountId) opts.stripeAccount = connectedAccountId;
+  return call(`/payment_methods/${encodeURIComponent(paymentMethodId)}/detach`, {}, env, opts);
 }
 
 export async function verifyWebhook(rawBody, sigHeader, env) {

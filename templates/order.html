@@ -2366,6 +2366,18 @@ async function placeOrder() {
   const req = buildOrderRequest();
   const isCard = req.paymentMethod === 'card';
 
+  // Saved-card path: signed-in user picked an existing pm_xxx tile.
+  const savedPmId = isCard ? (checkoutData.selectedSavedPmId || null) : null;
+  if (savedPmId) req.paymentMethodId = savedPmId;
+
+  // Save-new-card path: signed-in user is entering a new card and ticked
+  // the "Save this card for next time" checkbox. Ignored when paying with
+  // a saved card (no card to save) or when not signed in.
+  if (isCard && !savedPmId && state.user) {
+    const saveBox = document.getElementById('saveCard');
+    if (saveBox?.checked) req.saveCard = true;
+  }
+
   payBtn.disabled = true;
   payBtn.textContent = isCard ? 'Confirming card…' : 'Placing order…';
 
@@ -2392,14 +2404,48 @@ async function placeOrder() {
       return;
     }
 
-    // Card flow: confirm with the real clientSecret.
-    if (!stripeInstance || !stripeElements) {
+    // Card flow.
+    if (!stripeInstance) {
       if (errEl) errEl.textContent = 'Card service not ready. Please try again.';
       payBtn.disabled = false;
       payBtn.textContent = `Pay ${fmt(cartTotals().total)}`;
       return;
     }
-    // Submit the Element first so Stripe can validate input.
+
+    // (a) Saved card: server already attached the PaymentMethod to the PI.
+    //     If the server attempted off-session confirm and it succeeded
+    //     outright (data.piStatus === 'succeeded') we can redirect now.
+    //     Otherwise we hand off to stripe.confirmCardPayment with just the
+    //     clientSecret; Stripe finds the attached PM and runs 3DS if needed.
+    if (savedPmId) {
+      if (data.piStatus === 'succeeded') {
+        state.cart = [];
+        saveState();
+        window.location.href = `/thank-you?ref=${encodeURIComponent(data.orderId)}`;
+        return;
+      }
+      const result = await stripeInstance.confirmCardPayment(data.clientSecret);
+      if (result.error) {
+        if (errEl) errEl.textContent = result.error.message || 'Payment failed.';
+        payBtn.disabled = false;
+        payBtn.textContent = `Pay ${fmt(cartTotals().total)}`;
+        return;
+      }
+      state.cart = [];
+      saveState();
+      window.location.href = `/thank-you?ref=${encodeURIComponent(data.orderId)}`;
+      return;
+    }
+
+    // (b) New card via Stripe Elements (existing flow). Saving the card
+    //     is handled server-side via setup_future_usage when saveCard was
+    //     true — nothing extra to do here.
+    if (!stripeElements) {
+      if (errEl) errEl.textContent = 'Card service not ready. Please try again.';
+      payBtn.disabled = false;
+      payBtn.textContent = `Pay ${fmt(cartTotals().total)}`;
+      return;
+    }
     const sub = await stripeElements.submit();
     if (sub.error) {
       if (errEl) errEl.textContent = sub.error.message || 'Please check your card details.';
@@ -2673,10 +2719,23 @@ function renderCheckout() {
         </label>
       </fieldset>
 
+      <!-- Saved cards (populated by JS for signed-in customers with saved
+           PaymentMethods). Empty + hidden until /api/account/payment-methods
+           resolves. -->
+      <div id="saved-cards-wrap" style="display:none;margin-bottom:10px">
+        <div style="font-size:0.85rem;color:var(--grey);margin:0 0 6px">Your saved cards</div>
+        <div id="saved-cards-list" style="display:flex;flex-direction:column;gap:6px"></div>
+        <button type="button" id="useNewCard" style="margin-top:8px;background:transparent;border:0;padding:6px 0;color:var(--red);font-weight:600;text-decoration:underline;cursor:pointer;font-size:0.9rem">+ Use a different card</button>
+      </div>
+
       <div id="payment-element-wrap">
         <div id="payment-element" style="background:#fff;border:2px solid var(--ink);border-radius:12px;padding:14px;min-height:48px">
           <div style="color:var(--grey);font-size:0.9rem">Loading secure payment…</div>
         </div>
+        <label id="saveCardLabel" style="display:none;align-items:center;gap:8px;margin-top:10px;font-size:0.9rem;cursor:pointer">
+          <input type="checkbox" id="saveCard" style="width:16px;height:16px;cursor:pointer">
+          <span>Save this card for next time</span>
+        </label>
         <div style="display:flex;align-items:flex-start;gap:10px;background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;padding:10px 14px;margin-top:10px;font-size:0.88rem;line-height:1.45">
           <span style="font-size:1.15rem;line-height:1" aria-hidden="true">🔒</span>
           <span><strong>Secure payment.</strong> Your card details never touch our servers — they're encrypted and handled directly by <strong>Stripe</strong>, a PCI-compliant payment processor.</span>
@@ -2779,11 +2838,120 @@ function renderCheckout() {
     // Mount immediately (default selection is card).
     ensureCardMounted();
 
+    /* ---------- Saved cards (signed-in only) ----------
+       Selecting a saved card hides the Stripe Elements form and stores the
+       chosen pm_xxx on checkoutData; placeOrder picks it up and posts it
+       to /api/order so the server attaches it to the PaymentIntent. */
+    checkoutData.selectedSavedPmId = null;
+    const savedWrap = document.getElementById('saved-cards-wrap');
+    const savedList = document.getElementById('saved-cards-list');
+    const saveLabel = document.getElementById('saveCardLabel');
+    const useNewBtn = document.getElementById('useNewCard');
+    const peWrap    = document.getElementById('payment-element-wrap');
+
+    function cardLogo(brand) {
+      // Tiny brand label - keeping this string-only avoids shipping SVGs.
+      const b = String(brand || '').toLowerCase();
+      if (b === 'visa') return 'Visa';
+      if (b === 'mastercard') return 'Mastercard';
+      if (b === 'amex' || b === 'american_express') return 'Amex';
+      if (b === 'discover') return 'Discover';
+      return brand ? brand[0].toUpperCase() + brand.slice(1) : 'Card';
+    }
+    function renderSavedCard(card) {
+      const wrap = document.createElement('label');
+      wrap.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px solid var(--ink);border-radius:10px;background:#fff;cursor:pointer';
+      wrap.innerHTML = `
+        <input type="radio" name="savedCard" value="${escapeHTML(card.id)}" style="margin:0">
+        <span style="flex:1;display:flex;flex-direction:column;line-height:1.2">
+          <span style="font-weight:600">${escapeHTML(cardLogo(card.brand))} •••• ${escapeHTML(card.last4)}</span>
+          <span style="font-size:0.8rem;color:var(--grey)">Expires ${String(card.expMonth || '').padStart(2,'0')}/${String(card.expYear || '').slice(-2)}</span>
+        </span>
+        <button type="button" data-detach="${escapeHTML(card.id)}" aria-label="Remove this card" style="background:transparent;border:0;color:var(--grey);font-size:0.85rem;text-decoration:underline;cursor:pointer">Remove</button>
+      `;
+      return wrap;
+    }
+    function showSavedCardsUI(cards) {
+      if (!cards.length) {
+        savedWrap.style.display = 'none';
+        return;
+      }
+      savedList.innerHTML = '';
+      cards.forEach(c => savedList.appendChild(renderSavedCard(c)));
+      // Auto-select the first (most recent) card.
+      const first = savedList.querySelector('input[name="savedCard"]');
+      if (first) {
+        first.checked = true;
+        checkoutData.selectedSavedPmId = first.value;
+        peWrap.style.display = 'none';
+      }
+      savedWrap.style.display = '';
+    }
+    // Listeners attached once via delegation - they survive re-renders of
+    // the saved-card list (e.g. after a detach).
+    savedList.addEventListener('change', () => {
+      const sel = savedList.querySelector('input[name="savedCard"]:checked');
+      checkoutData.selectedSavedPmId = sel ? sel.value : null;
+      peWrap.style.display = checkoutData.selectedSavedPmId ? 'none' : '';
+      if (!checkoutData.selectedSavedPmId) ensureCardMounted();
+    });
+    savedList.addEventListener('click', async (e) => {
+      const btn = e.target.closest('[data-detach]');
+      if (!btn) return;
+      e.preventDefault();
+      const pmId = btn.getAttribute('data-detach');
+      if (!confirm('Remove this saved card?')) return;
+      btn.disabled = true;
+      try {
+        const res = await fetch('/api/account/payment-methods?id=' + encodeURIComponent(pmId), {
+          method: 'DELETE',
+          credentials: 'same-origin',
+        });
+        if (!res.ok) throw new Error('detach failed');
+        loadSavedCards();
+      } catch {
+        btn.disabled = false;
+        alert("Couldn't remove that card. Please try again.");
+      }
+    });
+    async function loadSavedCards() {
+      if (!state.user) { savedWrap.style.display = 'none'; return; }
+      try {
+        const res = await fetch('/api/account/payment-methods', { credentials: 'same-origin' });
+        if (!res.ok) return;
+        const data = await res.json();
+        const cards = Array.isArray(data.cards) ? data.cards : [];
+        if (!cards.length) {
+          savedWrap.style.display = 'none';
+          checkoutData.selectedSavedPmId = null;
+          peWrap.style.display = '';
+          ensureCardMounted();
+          return;
+        }
+        showSavedCardsUI(cards);
+      } catch { /* silent — fall back to new-card form */ }
+    }
+    loadSavedCards();
+
+    // "Use a different card" returns to the Stripe Elements form.
+    useNewBtn.addEventListener('click', () => {
+      const radios = savedList.querySelectorAll('input[name="savedCard"]');
+      radios.forEach(r => { r.checked = false; });
+      checkoutData.selectedSavedPmId = null;
+      peWrap.style.display = '';
+      ensureCardMounted();
+    });
+
+    // Show the save-card checkbox only for signed-in customers entering a
+    // new card (no point offering save when there's no account to save to).
+    if (state.user) saveLabel.style.display = 'flex';
+
     document.querySelectorAll('input[name="payMethod"]').forEach(r => {
       r.addEventListener('change', () => {
         const isCard = document.querySelector('input[name="payMethod"]:checked').value === 'card';
         document.getElementById('payment-element-wrap').style.display = isCard ? '' : 'none';
-        if (isCard) ensureCardMounted();
+        savedWrap.style.display = (isCard && savedList.children.length > 0) ? '' : 'none';
+        if (isCard && !checkoutData.selectedSavedPmId) ensureCardMounted();
       });
     });
 
