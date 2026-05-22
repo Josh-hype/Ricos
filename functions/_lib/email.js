@@ -42,7 +42,7 @@ export function orderAcceptedEmail(order, config) {
   const tradingNameHtml = escapeHtml(tradingName);
   const phone = escapeHtml(config.business.phone || '');
   const domain = config.business.domain;
-  const logoUrl = domain ? `https://${domain}/logo.png` : null;
+  const logoUrl = domain ? `https://${domain}/ricos-logo.png` : null;
 
   const tz = config.ordering?.timezone || 'Europe/London';
   const readyDate = new Date(order.readyAt);

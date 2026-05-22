@@ -9,8 +9,3 @@ node_modules/
 dist/
 .vscode/
 .idea/
-
-# Multi-tenant build outputs - data/_active/ and public/logo.png are
-# regenerated per deploy by scripts/build-shop.js. We commit them with
-# Rico's defaults so deploys keep working even before the build command
-# is wired up in each Cloudflare Pages project.
