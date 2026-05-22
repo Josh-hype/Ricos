@@ -2763,7 +2763,11 @@ function renderCheckout() {
             phone: 'never',
           },
         },
-        wallets: { link: 'never' },
+        // Apple Pay + Google Pay disabled until Stripe domain verification
+        // is in place for both the platform account and each connected
+        // account (Apple Pay won't actually work without it, and showing
+        // the wallet tabs would surface a broken option to the customer).
+        wallets: { applePay: 'never', googlePay: 'never', link: 'never' },
       });
       const mount = document.getElementById('payment-element');
       mount.innerHTML = '';
