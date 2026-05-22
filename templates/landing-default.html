@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{{shopName}} — {{shopCity}}</title>
+<meta name="description" content="{{shopName}}. Order online for collection or delivery in {{shopCity}}." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --primary:      {{themePrimary}};
+    --primary-dark: {{themePrimaryDark}};
+    --accent:       {{themeAccent}};
+    --background:   {{themeBackground}};
+    --surface:      {{themeSurface}};
+    --ink:          #181210;
+    --muted:        #6b5e58;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--background);
+    line-height: 1.55;
+  }
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 20px 48px;
+  }
+  header {
+    text-align: center;
+    padding: 40px 0 24px;
+  }
+  .brand-logo {
+    max-width: 180px;
+    height: auto;
+    margin: 0 auto 16px;
+    display: block;
+  }
+  h1 {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    margin: 0 0 8px;
+    color: var(--primary);
+    letter-spacing: -0.01em;
+  }
+  .tagline {
+    font-size: 1.1rem;
+    color: var(--muted);
+    margin: 0 0 24px;
+  }
+  .cta {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--accent);
+    padding: 16px 32px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin: 16px 0;
+    transition: transform 0.1s;
+  }
+  .cta:hover { transform: translateY(-1px); }
+  .info {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 24px 20px;
+    margin-top: 24px;
+    text-align: center;
+  }
+  .info h2 {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 1.2rem;
+    margin: 0 0 12px;
+  }
+  .info p { margin: 6px 0; }
+  .info a { color: var(--ink); font-weight: 600; }
+  footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="logo.png" alt="{{shopName}}" class="brand-logo" />
+      <h1>{{shopName}}</h1>
+      <p class="tagline">Order online for collection or delivery in {{shopCity}}.</p>
+      <a href="/order" class="cta">Order now →</a>
+    </header>
+
+    <section class="info">
+      <h2>Find us</h2>
+      <p>{{shopAddressLine1}}<br>{{shopCity}}, {{shopPostcode}}</p>
+      <p><a href="tel:{{shopPhoneTel}}">{{shopPhone}}</a></p>
+    </section>
+
+    <footer>
+      <p>&copy; <span id="year"></span> {{shopName}}. All rights reserved.</p>
+    </footer>
+  </div>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

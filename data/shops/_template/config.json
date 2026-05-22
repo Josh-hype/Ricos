@@ -1,0 +1,100 @@
+{
+  "_comment": "Copy this folder to data/shops/<your-slug>/ and fill in the values below. Use lowercase, dashes-only for the slug (e.g. pizza-bob, joes-takeaway). The slug becomes the SHOP_SLUG env var in this shop's Cloudflare Pages project.",
+
+  "business": {
+    "tradingName": "Shop Name Ltd",
+    "_comment_shortName": "Conversational short form used in page headers, aria labels and the staff PWA name (e.g. 'Pizza Bob's' instead of 'Pizza Bob's Burgers Ltd').",
+    "shortName": "Shop Name",
+    "legalName": "SHOP NAME LIMITED",
+    "companyNumber": "00000000",
+    "address": {
+      "line1": "1 High Street",
+      "city": "Yourtown",
+      "postcode": "XX1 1AA",
+      "country": "United Kingdom"
+    },
+    "phone": "01000 000000",
+    "email": "orders@yourshop.co.uk",
+    "domain": "yourshop.co.uk"
+  },
+
+  "_comment_theme": "Brand colours. Defaults match Rico's red palette — change these to match the shop's branding.",
+  "theme": {
+    "primary":     "#c8261c",
+    "primaryDark": "#a01910",
+    "primaryDeep": "#7d1208",
+    "accent":      "#f5b71e",
+    "accentDeep":  "#d99a00",
+    "background":  "#fff5d8",
+    "surface":     "#fffaeb"
+  },
+
+  "fulfillment": {
+    "collection": { "enabled": true },
+    "delivery": {
+      "enabled": true,
+      "feePence": 200,
+      "minimumOrderPence": 1500,
+      "_comment_areaDescription": "Used in delivery error messages: 'we deliver {areaDescription} only'. Keep natural so the sentence reads well.",
+      "areaDescription": "in our delivery area",
+      "_comment_postcodes": "Outcodes (postcode prefixes) the shop delivers to. Must match the shop's own postcode area prefix (the letters before the digits).",
+      "allowedOutcodes": [
+        "XX1"
+      ]
+    }
+  },
+
+  "_comment_serviceFee": "Per-order platform fee in pence. Charged to the customer and kept by the platform.",
+  "serviceFeePence": 35,
+
+  "_comment_stripe": "Stripe Connect: this site's PaymentIntents are created on the venue's connected account. connectedAccountId is the venue's acct_xxx string from Stripe Connect.",
+  "stripe": {
+    "connectedAccountId": "acct_REPLACE_WITH_STRIPE_CONNECT_ID"
+  },
+
+  "hours": {
+    "_comment": "24-hour format. Closes after midnight are written as 25:00 = 01:00 next day. lastOrderBeforeCloseMinutes is subtracted automatically for the cut-off.",
+    "monday":    { "closed": false, "windows": [{ "open": "12:00", "close": "22:00" }] },
+    "tuesday":   { "closed": false, "windows": [{ "open": "12:00", "close": "22:00" }] },
+    "wednesday": { "closed": false, "windows": [{ "open": "12:00", "close": "22:00" }] },
+    "thursday":  { "closed": false, "windows": [{ "open": "12:00", "close": "22:00" }] },
+    "friday":    { "closed": false, "windows": [{ "open": "12:00", "close": "22:00" }] },
+    "saturday":  { "closed": false, "windows": [{ "open": "12:00", "close": "22:00" }] },
+    "sunday":    { "closed": false, "windows": [{ "open": "12:00", "close": "22:00" }] }
+  },
+
+  "ordering": {
+    "timezone": "Europe/London",
+    "asapMinPrepMinutes": 25,
+    "scheduling": {
+      "enabled": true,
+      "slotMinutes": 15,
+      "maxOrdersPerSlot": 6,
+      "horizonDays": 2
+    },
+    "lastOrderBeforeCloseMinutes": 30
+  },
+
+  "promo": {
+    "autoOnlineDiscount": {
+      "enabled": true,
+      "label": "10% off online orders",
+      "percent": 10
+    }
+  },
+
+  "payments": {
+    "stripeEnabled": true,
+    "cashOnCollectionEnabled": true,
+    "cashOnDeliveryEnabled": true
+  },
+
+  "allergens": {
+    "noticeAtCheckout": "For allergens please contact the restaurant before ordering."
+  },
+
+  "marketing": {
+    "emailOptIn": true,
+    "smsOptIn": true
+  }
+}

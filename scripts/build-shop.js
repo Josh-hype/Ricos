@@ -39,8 +39,12 @@ const repoRoot = path.resolve(path.dirname(__filename), '..');
 const slug = (process.env.SHOP_SLUG || 'ricos').trim();
 const shopDir = path.join(repoRoot, 'data', 'shops', slug);
 
+if (slug.startsWith('_')) {
+  console.error(`build-shop: shop slug "${slug}" starts with underscore. Underscore-prefixed folders (e.g. _template) are scaffolding, not deployable shops. Choose a real slug.`);
+  process.exit(1);
+}
 if (!fs.existsSync(shopDir)) {
-  console.error(`build-shop: no shop folder at data/shops/${slug}. Set SHOP_SLUG correctly or create the folder.`);
+  console.error(`build-shop: no shop folder at data/shops/${slug}. Set SHOP_SLUG correctly or create the folder (copy data/shops/_template/ as a starting point).`);
   process.exit(1);
 }
 
@@ -119,16 +123,9 @@ const templatedFiles = [
 
 const tokenPattern = /\{\{(\w+)\}\}/g;
 
-for (const [tplRel, outRel] of templatedFiles) {
-  const tplFile = path.join(repoRoot, 'templates', tplRel);
-  const outFile = path.join(repoRoot, outRel);
-  if (!fs.existsSync(tplFile)) {
-    console.warn(`build-shop: template missing, skipping: templates/${tplRel}`);
-    continue;
-  }
-  const src = fs.readFileSync(tplFile, 'utf8');
-  let replaced = 0;
+function substitute(src, label) {
   const unknown = new Set();
+  let replaced = 0;
   const out = src.replace(tokenPattern, (whole, name) => {
     if (Object.prototype.hasOwnProperty.call(tokens, name)) {
       replaced++;
@@ -138,11 +135,44 @@ for (const [tplRel, outRel] of templatedFiles) {
     return whole;
   });
   if (unknown.size) {
-    console.warn(`build-shop: templates/${tplRel} has unknown token(s): ${[...unknown].join(', ')}`);
+    console.warn(`build-shop: ${label} has unknown token(s): ${[...unknown].join(', ')}`);
   }
+  return { out, replaced };
+}
+
+for (const [tplRel, outRel] of templatedFiles) {
+  const tplFile = path.join(repoRoot, 'templates', tplRel);
+  const outFile = path.join(repoRoot, outRel);
+  if (!fs.existsSync(tplFile)) {
+    console.warn(`build-shop: template missing, skipping: templates/${tplRel}`);
+    continue;
+  }
+  const src = fs.readFileSync(tplFile, 'utf8');
+  const { out, replaced } = substitute(src, `templates/${tplRel}`);
   fs.mkdirSync(path.dirname(outFile), { recursive: true });
   fs.writeFileSync(outFile, out);
   console.log(`build-shop: templates/${tplRel} -> ${outRel} (${replaced} token(s))`);
+}
+
+/* ---------- Landing page ----------
+   Each shop can ship their own index.html in their shop folder (Rico's keeps
+   a custom landing with bespoke brand copy). If absent, we fall back to the
+   minimal default landing template. Both paths go through token substitution
+   so phone / address / theme stay config-driven. */
+{
+  const shopLanding = path.join(shopDir, 'index.html');
+  const defaultLanding = path.join(repoRoot, 'templates', 'landing-default.html');
+  const srcLanding = fs.existsSync(shopLanding) ? shopLanding : defaultLanding;
+  if (fs.existsSync(srcLanding)) {
+    const src = fs.readFileSync(srcLanding, 'utf8');
+    const label = srcLanding === shopLanding ? `data/shops/${slug}/index.html` : 'templates/landing-default.html';
+    const { out, replaced } = substitute(src, label);
+    const outFile = path.join(repoRoot, 'public', 'index.html');
+    fs.writeFileSync(outFile, out);
+    console.log(`build-shop: ${label} -> public/index.html (${replaced} token(s))`);
+  } else {
+    console.warn(`build-shop: no landing page found (shop or default); public/index.html left as-is`);
+  }
 }
 
 console.log(`build-shop: active shop is "${slug}".`);

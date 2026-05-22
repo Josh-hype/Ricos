@@ -1,0 +1,221 @@
+# Adding a new shop
+
+This codebase is multi-tenant: one repo, one set of code, deployed
+separately for each shop via Cloudflare Pages. Each shop is identified
+by a `SHOP_SLUG` (lowercase, dashes only) and lives entirely under
+`data/shops/<slug>/`.
+
+This document is the step-by-step checklist for onboarding a new shop
+end-to-end, from gathering info to going live.
+
+---
+
+## 1. Collect this info from the shop owner
+
+Send them a form (Google Forms / Notion doc) covering everything below.
+~15 minutes for them to fill in.
+
+### Business
+
+- Trading name (the customer-facing brand, e.g. "Pizza Bob's")
+- Short conversational form (e.g. "Pizza Bob's" instead of the legal name)
+- Legal company name + Companies House number
+- Address: line 1, city, postcode, country
+- Phone number (national format, e.g. 0113 245 6789)
+- Orders email (e.g. orders@pizzabob.co.uk)
+- Domain they own (e.g. pizzabob.co.uk)
+
+### Branding
+
+- **Logo PNG** — ideally square, transparent background, at least 512×512
+- **Brand colours** — primary (the dominant brand colour) and accent
+  (the secondary highlight). Hex codes preferred.
+- Anything else they want emphasised (one-line tagline, hero photo, etc.)
+
+### Operations
+
+- Opening hours per day (e.g. Mon-Sat 12:00-22:00, Sun closed)
+- Collection: enabled? Delivery: enabled? Both?
+- If delivery: delivery fee in pence (e.g. 200 = £2), minimum order in
+  pence (e.g. 1500 = £15)
+- Delivery postcodes covered (full outcodes, e.g. LS1, LS2, LS6)
+- Friendly description of the delivery zone (used in error messages,
+  e.g. "within 3 miles of the shop")
+
+### Menu
+
+- Full menu with prices in pence
+- Photos of items (will be base64-embedded in menu-visual.json for now)
+- Per-item: description, whether meal upgrade is available (and the
+  upgrade price)
+- Categories (Mains, Sides, Drinks, etc.) with an emoji icon each
+
+### Payments
+
+- They sign up for Stripe Connect via your platform's onboarding link.
+  This produces an `acct_xxx` Stripe Connect ID.
+
+---
+
+## 2. Add the shop's data folder
+
+```bash
+cp -r data/shops/_template data/shops/<your-slug>
+```
+
+Then edit each file:
+
+- `data/shops/<slug>/config.json` — fill in business, theme, hours,
+  delivery zone, Stripe Connect ID, etc.
+- `data/shops/<slug>/menu.json` — the canonical menu (server-side
+  source of truth for prices). Items have `id`, `name`, `priceP`,
+  optional `mealAddP`.
+- `data/shops/<slug>/menu-visual.json` — same item IDs, plus
+  customer-facing details (`name`, `price` as pounds float, `desc`,
+  `spicy`, `meal: { label, addPrice, image }`). The category icons +
+  any photos live here.
+- `data/shops/<slug>/logo.png` — the shop's logo.
+- `data/shops/<slug>/index.html` *(optional)* — if you want a bespoke
+  landing page, drop it here. Tokens like `{{shopName}}` are substituted.
+  Omit the file to use `templates/landing-default.html` instead.
+
+Test the build locally:
+
+```bash
+SHOP_SLUG=<your-slug> npm run build
+```
+
+You should see no errors and `public/` should now contain that shop's
+substituted output. Open `public/order.html` in a browser to sanity check.
+
+Commit and push.
+
+---
+
+## 3. Set up the Cloudflare Pages project
+
+The shop gets its own Pages project, sharing the same GitHub repo as the
+others. In the Cloudflare dashboard:
+
+### a) Create the project
+
+- **Workers & Pages → Create → Pages → Connect to Git**
+- Repo: `josh-hype/ricos`
+- Production branch: `main` (or whichever branch you deploy from)
+- **Project name**: `<your-slug>` — this becomes part of the default
+  `*.pages.dev` URL
+
+### b) Build settings
+
+- **Framework preset**: None
+- **Build command**: leave blank — the `postinstall` hook in
+  `package.json` runs the build automatically when Cloudflare runs
+  `npm install`. (Alternatively set it explicitly to `npm run build`.)
+- **Build output directory**: `public`
+- **Environment variables (Production + Preview)**:
+  - `SHOP_SLUG` = `<your-slug>`
+  - `NODE_VERSION` = `20` (or whatever matches local dev)
+
+### c) KV namespaces
+
+Each shop has its own data storage — no sharing across shops. In
+**Workers & Pages → KV**, create 5 namespaces (suggest naming pattern
+`<slug>-ORDERS_KV`, `<slug>-CUSTOMERS_KV`, etc.):
+
+- `ORDERS_KV`
+- `CUSTOMERS_KV`
+- `MARKETING_KV`
+- `SLOTS_KV`
+- `STAFF_LOGIN_KV`
+
+Then bind them: **Pages project → Settings → Functions → KV namespace
+bindings**. The binding name is the env-var key Functions read
+(`ORDERS_KV` etc.); the value is the namespace ID you just created.
+
+### d) Secrets
+
+**Pages project → Settings → Environment variables → Production**. Add as
+encrypted/secret variables (not plaintext):
+
+- `STRIPE_SECRET_KEY` — the platform Stripe key (same across all shops,
+  Connect routes payment to each shop's connected account)
+- `STRIPE_PUBLISHABLE_KEY` — same
+- `STRIPE_WEBHOOK_SECRET` — same
+- `RESEND_API_KEY` — your Resend account (shared)
+- `RESEND_FROM_EMAIL` — e.g. `orders@<shop-domain>`
+- `RESEND_FROM_NAME` — e.g. shop's trading name
+- `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER` — your
+  Twilio account (shared)
+- `STAFF_PASSWORD` — set this; give it to the shop's kitchen staff
+- `STAFF_TOTP_SECRET` *(optional)* — if 2FA is enabled for staff login
+
+### e) Custom domain
+
+**Pages project → Custom domains → Set up a custom domain → Enter
+`<shop-domain>`**. Cloudflare prints DNS records to add. Either:
+
+- The shop's DNS is on Cloudflare → records are added automatically
+- The shop's DNS is elsewhere → give them the records to add
+
+SSL provisions automatically in ~5 minutes once DNS resolves.
+
+### f) Trigger a deploy
+
+Push any small commit to the repo (or hit **Create deployment** in the
+Pages dashboard). Watch the build log: you should see the
+`build-shop: ... active shop is "<your-slug>"` line near the end. If
+you see `active shop is "ricos"`, the `SHOP_SLUG` env var isn't set —
+go back to step (b).
+
+---
+
+## 4. Stripe Connect onboarding
+
+Send the shop owner your Stripe Connect onboarding link (set this up
+once in your Stripe dashboard). They:
+
+1. Enter business name, address, bank account, ID document.
+2. Stripe creates their connected account, returns an `acct_xxx` ID.
+3. You add that ID to `data/shops/<slug>/config.json` under
+   `stripe.connectedAccountId` and push.
+
+From that point card payments flow to the shop's bank, the
+`serviceFeePence` per-order fee flows to your platform account.
+
+---
+
+## 5. Verify before going live
+
+Walk through end-to-end on the new domain:
+
+- [ ] `<shop-domain>/` loads — landing page shows their logo, name,
+      colours
+- [ ] `<shop-domain>/order` loads, menu appears (may show "Loading
+      menu…" for a beat on first load), correct items + prices, photos
+- [ ] Postcode validation: in-zone postcode accepted, out-of-zone gives
+      the right error message mentioning the shop's area description
+- [ ] Place a real order with a real card — confirm receipt email
+      arrives in the shop's brand colours with their logo
+- [ ] `<shop-domain>/staff` — log in with `STAFF_PASSWORD`, the test
+      order is visible, sound notification fires
+- [ ] Cancel/refund the test order in Stripe so the customer (you)
+      gets refunded
+
+Once green, give the shop their staff password and a setup guide for
+their kitchen screen (any web browser at `<shop-domain>/staff` works —
+Smart TV, tablet, laptop with HDMI to a monitor, etc.).
+
+---
+
+## Ongoing
+
+- **Updating Rico's or other shops**: any code change pushed to the
+  repo redeploys every Pages project (each rebuilds with its own
+  SHOP_SLUG). Fixes ship to all shops at once. Test on Rico's first.
+- **Menu / price / hours changes**: edit the shop's
+  `data/shops/<slug>/config.json` or `menu.json`, push. Their deploy
+  rebuilds; others are unaffected.
+- **Adding a feature for one shop only**: gate it behind a config flag
+  (e.g. `features.loyaltyPoints: true`) so the feature ships to
+  everyone but only renders when the shop turns it on. NEVER fork the
+  code — feature flags only.
