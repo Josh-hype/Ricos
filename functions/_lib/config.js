@@ -1,6 +1,8 @@
-/* Static config loader. config.json lives at /data/config.json in the repo
-   and is bundled at deploy time. */
-import config from '../../data/config.json';
+/* Static config loader. The active shop's config is materialised at
+   data/_active/config.json by scripts/build-shop.js before each deploy,
+   picked from data/shops/<SHOP_SLUG>/config.json. Each Pages project sets
+   its own SHOP_SLUG env var. */
+import config from '../../data/_active/config.json';
 
 export function getConfig() {
   return config;
