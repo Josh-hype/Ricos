@@ -6,9 +6,15 @@
    data/shops/<slug>/ becomes the "active" set of config + assets for
    this deploy:
 
-     data/shops/<slug>/config.json   -> data/_active/config.json
-     data/shops/<slug>/menu.json     -> data/_active/menu.json
-     data/shops/<slug>/logo.png      -> public/logo.png
+     data/shops/<slug>/config.json      -> data/_active/config.json
+     data/shops/<slug>/menu.json        -> data/_active/menu.json
+     data/shops/<slug>/menu-visual.json -> public/menu-visual.json
+     data/shops/<slug>/logo.png         -> public/logo.png
+
+   menu-visual.json goes into public/ (not data/_active/) so it's served
+   as a static CDN asset rather than embedded in the Cloudflare Functions
+   bundle. The visual menu can be megabytes of base64 photos and would
+   eat the 3MB compressed Worker size budget otherwise.
 
    Server-side imports (functions/_lib/config.js etc.) always read
    from data/_active/, which is rebuilt per deploy.
@@ -38,9 +44,10 @@ fs.mkdirSync(activeDir, { recursive: true });
 
 const copies = [
   // [from inside shop folder, to inside repo]
-  ['config.json', 'data/_active/config.json'],
-  ['menu.json',   'data/_active/menu.json'],
-  ['logo.png',    'public/logo.png'],
+  ['config.json',      'data/_active/config.json'],
+  ['menu.json',        'data/_active/menu.json'],
+  ['menu-visual.json', 'public/menu-visual.json'],
+  ['logo.png',         'public/logo.png'],
 ];
 
 for (const [src, dest] of copies) {
