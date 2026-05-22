@@ -2665,7 +2665,7 @@ function renderCheckout() {
         <legend style="padding:0 6px;font-weight:700">How would you like to pay?</legend>
         <label style="display:flex;align-items:center;gap:8px;padding:6px 0">
           <input type="radio" name="payMethod" value="card" checked>
-          <span>Card / Apple Pay / Google Pay</span>
+          <span>Card</span>
         </label>
         <label style="display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px dashed var(--line)">
           <input type="radio" name="payMethod" value="${cashValue}">
@@ -2676,6 +2676,10 @@ function renderCheckout() {
       <div id="payment-element-wrap">
         <div id="payment-element" style="background:#fff;border:2px solid var(--ink);border-radius:12px;padding:14px;min-height:48px">
           <div style="color:var(--grey);font-size:0.9rem">Loading secure payment…</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;padding:10px 14px;margin-top:10px;font-size:0.88rem;line-height:1.45">
+          <span style="font-size:1.15rem;line-height:1" aria-hidden="true">🔒</span>
+          <span><strong>Secure payment.</strong> Your card details never touch our servers — they're encrypted and handled directly by <strong>Stripe</strong>, a PCI-compliant payment processor.</span>
         </div>
         <div id="paymentError" style="color:var(--error);font-size:0.9rem;margin-top:6px;min-height:18px"></div>
       </div>
@@ -2701,9 +2705,6 @@ function renderCheckout() {
         <button class="btn-form secondary" id="coBack" style="flex:1">← Back</button>
         <button class="btn-form" id="coPay" style="flex:2">Pay ${fmt(t.total)}</button>
       </div>
-      <p style="text-align:center;font-size:0.78rem;color:var(--grey);margin-top:0.8rem">
-        🔒 Card details never touch our servers — handled securely by Stripe.
-      </p>
     `;
 
     // Allergens phone number from public config (loaded on boot).
