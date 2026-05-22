@@ -235,6 +235,10 @@
   }
   .nav-toggle svg { width: 22px; height: 22px; }
 
+  /* Hide the mobile drawer at desktop width; the media query below
+     re-enables it (and toggles .open) below 900px. */
+  .nav-mobile { display: none; }
+
   @media (max-width: 900px) {
     .nav-links, .nav-cta { display: none; }
     .nav-toggle { display: inline-flex; }
