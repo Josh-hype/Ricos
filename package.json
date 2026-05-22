@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build-shop.js",
+    "postinstall": "node scripts/build-shop.js",
     "dev": "npm run build && wrangler pages dev public --compatibility-date=2026-05-01 --kv ORDERS_KV --kv MARKETING_KV --kv SLOTS_KV --kv STAFF_LOGIN_KV --kv CUSTOMERS_KV",
     "deploy": "npm run build && wrangler pages deploy public --project-name=ricos",
     "tail": "wrangler pages deployment tail --project-name=ricos"

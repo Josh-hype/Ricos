@@ -14,13 +14,13 @@ export function isOutcodeAllowed(outcode, allowed) {
   return allowed.includes(outcode.toUpperCase());
 }
 
-export function validateDeliveryPostcode(raw, allowedOutcodes) {
+export function validateDeliveryPostcode(raw, allowedOutcodes, areaDescription = 'in our delivery area') {
   const p = normalisePostcode(raw);
   if (!p) return { ok: false, reason: 'Please enter a valid UK postcode.' };
   if (!isOutcodeAllowed(p.outcode, allowedOutcodes)) {
     return {
       ok: false,
-      reason: `Sorry, we don't deliver to ${p.formatted}. We deliver inside the York ring road only.`,
+      reason: `Sorry, we don't deliver to ${p.formatted}. We deliver ${areaDescription} only.`,
     };
   }
   return { ok: true, postcode: p.formatted, outcode: p.outcode };

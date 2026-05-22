@@ -38,14 +38,18 @@ export const onRequestPost = async ({ request, env }) => {
   let address = null;
   if (fulfillment === 'delivery') {
     if (!config.fulfillment.delivery.enabled) return errJson('Delivery is not available right now.', 400);
-    const pc = validateDeliveryPostcode(input.deliveryAddress?.postcode, config.fulfillment.delivery.allowedOutcodes);
+    const pc = validateDeliveryPostcode(
+      input.deliveryAddress?.postcode,
+      config.fulfillment.delivery.allowedOutcodes,
+      config.fulfillment.delivery.areaDescription,
+    );
     if (!pc.ok) return errJson(pc.reason, 400);
     const line1 = (input.deliveryAddress?.line1 || '').trim();
     if (line1.length < 2) return errJson('Please enter your delivery address.', 400);
     address = {
       line1,
       line2: (input.deliveryAddress?.line2 || '').trim(),
-      city: 'York',
+      city: config.business.address.city,
       postcode: pc.postcode,
       notes: (input.deliveryAddress?.notes || '').trim().slice(0, 280),
     };

@@ -100,7 +100,7 @@ export function orderAcceptedEmail(order, config) {
         </table>
 
         <p style="margin-top:22px;font-size:0.9em;color:#6b5e58">Allergens or running late? Call ${phone || 'the restaurant'}.</p>
-        <p style="font-size:0.85em;color:#9a8e87;margin-top:14px">${tradingNameHtml}, 49 Blossom Street, York, YO24 1AZ.</p>
+        <p style="font-size:0.85em;color:#9a8e87;margin-top:14px">${footerAddressHtml(config)}</p>
       </div>`,
     fromName: tradingName,
   };
@@ -118,7 +118,7 @@ export function welcomeEmail({ name, contact }, config) {
            remember your contact and delivery address so checkout's just two taps.</p>
         <p>You signed up with <strong>${escapeHtml(contact)}</strong>. If that wasn't you,
            reply to this email and we'll sort it out.</p>
-        <p style="font-size:0.85em;color:#888;margin-top:24px">${tradingNameHtml}, 49 Blossom Street, York, YO24 1AZ.</p>
+        <p style="font-size:0.85em;color:#888;margin-top:24px">${footerAddressHtml(config)}</p>
       </div>`,
     fromName: tradingName,
   };
@@ -167,7 +167,7 @@ export function orderRejectedEmail(order, config, reason) {
         ${reasonLine}
         ${refundLine}
         <p>If you'd like to talk to us, call ${phone || 'the restaurant'} and we'll do what we can.</p>
-        <p style="font-size:0.85em;color:#888;margin-top:24px">${tradingNameHtml}, 49 Blossom Street, York, YO24 1AZ.</p>
+        <p style="font-size:0.85em;color:#888;margin-top:24px">${footerAddressHtml(config)}</p>
       </div>`,
     fromName: tradingName,
   };
@@ -177,4 +177,16 @@ function escapeHtml(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   }[c]));
+}
+
+// Footer line for transactional emails: "Trading Name, line1, city, postcode."
+// Drops parts that are missing so it still reads cleanly for shops with a
+// partial address on file.
+function footerAddressHtml(config) {
+  const a = config.business.address || {};
+  const parts = [a.line1, a.city, a.postcode].filter(Boolean);
+  const tradingName = escapeHtml(config.business.tradingName);
+  return parts.length
+    ? `${tradingName}, ${parts.map(escapeHtml).join(', ')}.`
+    : `${tradingName}.`;
 }

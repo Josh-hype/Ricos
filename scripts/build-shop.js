@@ -21,6 +21,11 @@
    public/logo.png is overwritten in place so the email + page logo
    URL stays stable across shops.
 
+   After copying, the script substitutes {{token}} placeholders inside
+   the templated HTML / manifest files in public/ with values derived
+   from the active shop's config.json. Run via `npm run build` (which
+   is wired into the dev and deploy scripts in package.json).
+
    Run with SHOP_SLUG=<slug> (defaults to "ricos" so local dev works
    without env setup). */
 
@@ -60,6 +65,75 @@ for (const [src, dest] of copies) {
   fs.mkdirSync(path.dirname(to), { recursive: true });
   fs.copyFileSync(from, to);
   console.log(`build-shop: ${slug}/${src} -> ${dest}`);
+}
+
+/* ---------- Template substitution ---------- */
+
+const config = JSON.parse(fs.readFileSync(path.join(activeDir, 'config.json'), 'utf8'));
+
+const a = config.business.address || {};
+const phone = config.business.phone || '';
+const phoneTel = phone.replace(/\s+/g, '');
+const fullAddress = [a.line1, a.city, a.postcode].filter(Boolean).join(', ');
+// Derive postcode area prefix (the letter prefix before the digits) from the
+// shop's own postcode: "YO24 1AZ" -> "YO", "LS1 4DT" -> "LS", "M1 1AA" -> "M".
+const areaPrefix = (a.postcode || '').match(/^[A-Z]+/i)?.[0]?.toUpperCase() || '';
+
+const tokens = {
+  shopName:                config.business.tradingName || '',
+  shopShortName:           config.business.shortName || config.business.tradingName || '',
+  shopCity:                a.city || '',
+  shopAddressLine1:        a.line1 || '',
+  shopPostcode:            a.postcode || '',
+  shopFullAddress:         fullAddress,
+  shopPhone:               phone,
+  shopPhoneTel:            phoneTel,
+  shopAreaPrefix:          areaPrefix,
+  shopDomain:              config.business.domain || '',
+  deliveryAreaDescription: config.fulfillment?.delivery?.areaDescription || 'in our delivery area',
+  // JSON literal for the allowed outcodes - injected into client JS so
+  // postcode validation has a baseline before /api/config arrives.
+  allowedOutcodesJSON:     JSON.stringify(config.fulfillment?.delivery?.allowedOutcodes || []),
+};
+
+// Source HTML / manifest files with {{tokens}}. The build reads each from
+// templates/ and writes the substituted version to public/ (deploy target).
+// Add new files here when extracting more brand strings.
+const templatedFiles = [
+  // [source under templates/, destination under public/]
+  ['order.html',            'public/order.html'],
+  ['thank-you.html',        'public/thank-you.html'],
+  ['reset-password.html',   'public/reset-password.html'],
+  ['staff/index.html',      'public/staff/index.html'],
+  ['staff/manifest.json',   'public/staff/manifest.json'],
+];
+
+const tokenPattern = /\{\{(\w+)\}\}/g;
+
+for (const [tplRel, outRel] of templatedFiles) {
+  const tplFile = path.join(repoRoot, 'templates', tplRel);
+  const outFile = path.join(repoRoot, outRel);
+  if (!fs.existsSync(tplFile)) {
+    console.warn(`build-shop: template missing, skipping: templates/${tplRel}`);
+    continue;
+  }
+  const src = fs.readFileSync(tplFile, 'utf8');
+  let replaced = 0;
+  const unknown = new Set();
+  const out = src.replace(tokenPattern, (whole, name) => {
+    if (Object.prototype.hasOwnProperty.call(tokens, name)) {
+      replaced++;
+      return tokens[name];
+    }
+    unknown.add(name);
+    return whole;
+  });
+  if (unknown.size) {
+    console.warn(`build-shop: templates/${tplRel} has unknown token(s): ${[...unknown].join(', ')}`);
+  }
+  fs.mkdirSync(path.dirname(outFile), { recursive: true });
+  fs.writeFileSync(outFile, out);
+  console.log(`build-shop: templates/${tplRel} -> ${outRel} (${replaced} token(s))`);
 }
 
 console.log(`build-shop: active shop is "${slug}".`);

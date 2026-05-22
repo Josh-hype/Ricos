@@ -59,7 +59,7 @@ export function upsertAddress(customer, addr) {
   const next = {
     line1: addr.line1.trim(),
     line2: (addr.line2 || '').trim(),
-    city: (addr.city || 'York').trim(),
+    city: (addr.city || '').trim(),
     postcode: addr.postcode.trim().toUpperCase(),
     notes: (addr.notes || '').trim().slice(0, 280),
     lastUsedAt: now,

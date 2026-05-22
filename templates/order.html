@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Order — Rico's Peri Peri, York</title>
-<meta name="description" content="Order Rico's Peri Peri online. Collection or delivery in York. 10% off all online orders." />
+<title>Order — {{shopName}}, {{shopCity}}</title>
+<meta name="description" content="Order {{shopName}} online. Collection or delivery in {{shopCity}}. 10% off all online orders." />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -1284,8 +1284,8 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
         Back
       </a>
-      <a href="index.html" aria-label="Rico's home">
-        <img src="logo.png" alt="Rico's Peri Peri" class="brand-logo" />
+      <a href="index.html" aria-label="{{shopShortName}} home">
+        <img src="logo.png" alt="{{shopName}}" class="brand-logo" />
       </a>
       <div class="header-spacer"></div>
       <div class="header-actions">
@@ -1309,7 +1309,7 @@
     <div class="row">
       <div class="service-info">
         <h2 id="serviceMode">How would you like your order?</h2>
-        <p id="serviceHint">Pick collection or delivery and enter your postcode. Delivery is inside the York ring road only — collection from any York postcode.</p>
+        <p id="serviceHint">Pick collection or delivery and enter your postcode. Delivery is {{deliveryAreaDescription}} only — collection from any {{shopCity}} postcode.</p>
       </div>
       <div class="service-controls">
         <div class="mode-toggle" role="tablist">
@@ -1318,7 +1318,7 @@
         </div>
         <form class="pc-form" id="postcodeForm">
           <label for="postcode" class="sr-only">Postcode</label>
-          <input id="postcode" name="postcode" placeholder="YO24 1AZ" autocomplete="postal-code" maxlength="8" />
+          <input id="postcode" name="postcode" placeholder="{{shopPostcode}}" autocomplete="postal-code" maxlength="8" />
           <button type="submit">Check</button>
         </form>
       </div>
@@ -1451,21 +1451,21 @@ const SPICE_OPTIONS = [
    build-time fallback so the very first keystroke still validates. The
    server validates again so an out-of-zone postcode that slips past the
    client will still be rejected at /api/order. */
-const POSTCODE_AREA = 'YO';
+const POSTCODE_AREA = '{{shopAreaPrefix}}';
 const POSTCODE_REGEX = new RegExp('^' + POSTCODE_AREA + '(\\d{1,2})(\\d[A-Z]{2})$');
-const FALLBACK_OUTCODES = ["YO1","YO10","YO23","YO24","YO30","YO31"];
+const FALLBACK_OUTCODES = {{allowedOutcodesJSON}};
 
 function validatePostcode(raw, mode) {
   if (!raw) return { ok: false, reason: 'Enter a postcode.' };
   const cleaned = raw.replace(/\s+/g, '').toUpperCase();
   const m = cleaned.match(POSTCODE_REGEX);
-  if (!m) return { ok: false, reason: "That doesn't look like a York postcode. We only serve " + POSTCODE_AREA + " postcodes." };
+  if (!m) return { ok: false, reason: "That doesn't look like a {{shopCity}} postcode. We only serve " + POSTCODE_AREA + " postcodes." };
   const outcode = POSTCODE_AREA + m[1];
   const allowedOutcodes = window.SHOP_CONFIG?.fulfillment?.delivery?.allowedOutcodes || FALLBACK_OUTCODES;
   if (mode === 'deliver' && !allowedOutcodes.includes(outcode)) {
     return {
       ok: false,
-      reason: "We deliver inside the York ring road only. You can still collect from us.",
+      reason: "We deliver {{deliveryAreaDescription}} only. You can still collect from us.",
       suggestCollection: true,
     };
   }
@@ -1899,7 +1899,7 @@ function applyMode(mode) {
   document.getElementById('modeDeliver').classList.toggle('active', mode === 'deliver');
   document.getElementById('modeCollect').setAttribute('aria-selected', String(mode === 'collect'));
   document.getElementById('modeDeliver').setAttribute('aria-selected', String(mode === 'deliver'));
-  document.getElementById('serviceMode').textContent = mode === 'collect' ? 'Collection' : 'Delivery in York';
+  document.getElementById('serviceMode').textContent = mode === 'collect' ? 'Collection' : 'Delivery in {{shopCity}}';
 
   // If a postcode is already set, re-validate against the new mode.
   // Switching to delivery with an out-of-ring-road postcode will reject it.
@@ -2581,7 +2581,7 @@ function renderCheckout() {
       <div class="field-row">
         <div class="field">
           <label for="coCity">City</label>
-          <input id="coCity" type="text" value="${escapeHTML(checkoutData.city || 'York')}" autocomplete="address-level2" />
+          <input id="coCity" type="text" value="${escapeHTML(checkoutData.city || '{{shopCity}}')}" autocomplete="address-level2" />
         </div>
         <div class="field">
           <label for="coPostcode">Postcode</label>

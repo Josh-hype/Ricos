@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Order received — Rico's Peri Peri</title>
+<title>Order received — {{shopName}}</title>
 <meta name="description" content="Thanks — your order is in. We'll confirm a ready time shortly." />
 <meta name="robots" content="noindex,nofollow" />
 
@@ -92,7 +92,7 @@
     <p>Thanks — your order is in the kitchen's queue.</p>
     <div class="ref" id="ref">—</div>
     <p>We'll email your <strong>order confirmation</strong> with the ready time as soon as the restaurant accepts your order — usually within ~5 minutes.</p>
-    <p class="muted">Allergies? Call the restaurant on <a href="tel:01904927050" style="color:inherit;font-weight:600">01904 927050</a> before collecting.</p>
+    <p class="muted">Allergies? Call the restaurant on <a href="tel:{{shopPhoneTel}}" style="color:inherit;font-weight:600">{{shopPhone}}</a> before collecting.</p>
     <div class="links">
       <a class="btn" href="/">Back to home</a>
       <a class="btn secondary" href="/order">Order again</a>

@@ -3,6 +3,8 @@
 
   "business": {
     "tradingName": "Rico's Peri Peri",
+    "_comment_shortName": "Short conversational form shown in headers and aria labels (e.g. 'Rico's — staff orders'). Defaults to tradingName when omitted.",
+    "shortName": "Rico's",
     "legalName": "RICOS CHICKEN LIMITED",
     "companyNumber": "16996733",
     "address": {
@@ -22,6 +24,8 @@
       "enabled": true,
       "feePence": 200,
       "minimumOrderPence": 1500,
+      "_comment_areaDescription": "Free-text phrase used in error messages: 'we deliver {areaDescription} only'. Keep it natural so the surrounding text reads well.",
+      "areaDescription": "inside the York ring road",
       "_comment_postcodes": "Outcodes inside the York outer ring road (A1237/A64). YO26 is intentionally excluded — Poppleton, Skelton, Knapton and Wigginton are all OUTSIDE the ring. YO23 and YO10 contain a few rural addresses outside the ring (Copmanthorpe, Stockton-on-the-Forest); the kitchen can decline those at acceptance time. Add YO26 here if you want to extend coverage.",
       "allowedOutcodes": [
         "YO1",
