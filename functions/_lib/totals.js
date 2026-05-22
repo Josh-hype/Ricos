@@ -38,6 +38,7 @@ export function computeTotals(input, config) {
       name: item.name,
       qty,
       meal: !!line.meal,
+      spice: typeof line.spice === 'string' ? line.spice.slice(0, 40) : null,
       modifiers: modSummaries,
       unitPriceP: lineP,
       lineTotalP,

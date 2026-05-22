@@ -2381,6 +2381,7 @@ function buildOrderRequest() {
       id: l.itemId,
       qty: l.qty,
       meal: !!l.meal,
+      spice: l.spice || null,
       modifiers: [],
     })),
     fulfillment: state.mode === 'deliver' ? 'delivery' : 'collection',
