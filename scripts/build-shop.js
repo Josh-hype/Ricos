@@ -7,10 +7,11 @@
    this deploy:
 
      data/shops/<slug>/config.json   -> data/_active/config.json
+     data/shops/<slug>/menu.json     -> data/_active/menu.json
      data/shops/<slug>/logo.png      -> public/logo.png
 
    Server-side imports (functions/_lib/config.js etc.) always read
-   from data/_active/, which is gitignored and rebuilt per deploy.
+   from data/_active/, which is rebuilt per deploy.
    public/logo.png is overwritten in place so the email + page logo
    URL stays stable across shops.
 
@@ -38,6 +39,7 @@ fs.mkdirSync(activeDir, { recursive: true });
 const copies = [
   // [from inside shop folder, to inside repo]
   ['config.json', 'data/_active/config.json'],
+  ['menu.json',   'data/_active/menu.json'],
   ['logo.png',    'public/logo.png'],
 ];
 
