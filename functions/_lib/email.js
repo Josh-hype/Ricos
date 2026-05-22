@@ -43,6 +43,7 @@ export function orderAcceptedEmail(order, config) {
   const phone = escapeHtml(config.business.phone || '');
   const domain = config.business.domain;
   const logoUrl = domain ? `https://${domain}/logo.png` : null;
+  const c = themeColors(config);
 
   const tz = config.ordering?.timezone || 'Europe/London';
   const readyDate = new Date(order.readyAt);
@@ -59,7 +60,7 @@ export function orderAcceptedEmail(order, config) {
 
   const lines = order.totals.lines.map(l =>
     `<tr>
-       <td style="padding:6px 0">${escapeHtml(l.qty)}× ${escapeHtml(l.name)}${l.spice ? ` <em style="color:#a8331a">— ${escapeHtml(l.spice)}</em>` : ''}${l.modifiers?.length ? ` <em style="color:#6b5e58">(${l.modifiers.map(escapeHtml).join(', ')})</em>` : ''}${l.meal ? ' <em style="color:#6b5e58">(meal)</em>' : ''}</td>
+       <td style="padding:6px 0">${escapeHtml(l.qty)}× ${escapeHtml(l.name)}${l.spice ? ` <em style="color:${c.primaryDark}">— ${escapeHtml(l.spice)}</em>` : ''}${l.modifiers?.length ? ` <em style="color:#6b5e58">(${l.modifiers.map(escapeHtml).join(', ')})</em>` : ''}${l.meal ? ' <em style="color:#6b5e58">(meal)</em>' : ''}</td>
        <td style="padding:6px 0;text-align:right">£${(l.lineTotalP/100).toFixed(2)}</td>
      </tr>`
   ).join('');
@@ -73,15 +74,15 @@ export function orderAcceptedEmail(order, config) {
   return {
     subject: `${tradingName} — order ${ref} confirmed, ready in ${minutesAway} min`,
     html: `
-      <div style="font-family:'Helvetica Neue',Arial,sans-serif;max-width:560px;margin:0 auto;color:#181210;background:#fffaeb;padding:24px;border-radius:16px">
+      <div style="font-family:'Helvetica Neue',Arial,sans-serif;max-width:560px;margin:0 auto;color:#181210;background:${c.surface};padding:24px;border-radius:16px">
         ${logoUrl ? `<div style="text-align:center;margin-bottom:12px">
           <img src="${logoUrl}" alt="${tradingNameHtml}" width="120" height="120" style="border:0;display:inline-block" />
         </div>` : ''}
 
-        <h1 style="font-size:1.6rem;text-align:center;margin:8px 0 4px;color:#c8261c">Order confirmed</h1>
+        <h1 style="font-size:1.6rem;text-align:center;margin:8px 0 4px;color:${c.primary}">Order confirmed</h1>
         <p style="text-align:center;margin:0 0 18px">Thanks ${escapeHtml(order.customer.name.split(' ')[0])} - we're cooking now.</p>
 
-        <div style="background:#fff5d8;border:2px solid #181210;border-radius:12px;padding:18px 16px;text-align:center;margin:0 0 18px">
+        <div style="background:${c.background};border:2px solid #181210;border-radius:12px;padding:18px 16px;text-align:center;margin:0 0 18px">
           <div style="font-size:0.92em;color:#6b5e58;letter-spacing:0.05em;text-transform:uppercase">Ready in about</div>
           <div style="font-size:2.4rem;font-weight:700;line-height:1.1;margin:4px 0">${minutesAway} min</div>
           <div style="font-size:0.95em">Your order will be ${verb} at <strong>${readyTime}</strong>, ${readyDay}.</div>
@@ -127,6 +128,7 @@ export function welcomeEmail({ name, contact }, config) {
 export function passwordResetEmail({ name, resetUrl }, config) {
   const tradingName = config.business.tradingName;
   const tradingNameHtml = escapeHtml(tradingName);
+  const c = themeColors(config);
   return {
     subject: `${tradingName} — reset your password`,
     html: `
@@ -136,7 +138,7 @@ export function passwordResetEmail({ name, resetUrl }, config) {
            The link expires in 1 hour.</p>
         <p style="margin:24px 0">
           <a href="${escapeHtml(resetUrl)}"
-             style="display:inline-block;background:#b81f23;color:#fff;padding:12px 22px;text-decoration:none;border-radius:8px;font-weight:600">
+             style="display:inline-block;background:${c.primary};color:#fff;padding:12px 22px;text-decoration:none;border-radius:8px;font-weight:600">
             Choose a new password
           </a>
         </p>
@@ -189,4 +191,19 @@ function footerAddressHtml(config) {
   return parts.length
     ? `${tradingName}, ${parts.map(escapeHtml).join(', ')}.`
     : `${tradingName}.`;
+}
+
+// Brand colours for inline email styles. Email clients don't honour CSS
+// variables, so we read from config.theme and substitute literal hex into
+// the style attributes per template. Falls back to Rico's defaults for any
+// missing field so older configs keep rendering.
+function themeColors(config) {
+  const t = config.theme || {};
+  return {
+    primary:     t.primary     || '#c8261c',
+    primaryDark: t.primaryDark || '#a01910',
+    accent:      t.accent      || '#f5b71e',
+    background:  t.background  || '#fff5d8',
+    surface:     t.surface     || '#fffaeb',
+  };
 }

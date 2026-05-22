@@ -18,6 +18,17 @@
     "domain": "ricosyork.co.uk"
   },
 
+  "_comment_theme": "Brand colours used across all pages and the email templates. 'primary' is the dominant brand colour (currently red); 'primaryDark' and 'primaryDeep' are used for hover/active states - keep them progressively darker shades of primary. 'accent' is the secondary highlight (yellow). 'background' is the page wash, 'surface' is the panel/card background.",
+  "theme": {
+    "primary":     "#c8261c",
+    "primaryDark": "#a01910",
+    "primaryDeep": "#7d1208",
+    "accent":      "#f5b71e",
+    "accentDeep":  "#d99a00",
+    "background":  "#fff5d8",
+    "surface":     "#fffaeb"
+  },
+
   "fulfillment": {
     "collection": { "enabled": true },
     "delivery": {

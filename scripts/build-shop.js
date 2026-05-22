@@ -94,6 +94,15 @@ const tokens = {
   // JSON literal for the allowed outcodes - injected into client JS so
   // postcode validation has a baseline before /api/config arrives.
   allowedOutcodesJSON:     JSON.stringify(config.fulfillment?.delivery?.allowedOutcodes || []),
+  // Theme colours - inlined into the CSS :root blocks so the brand renders
+  // correctly on the very first paint, before any JS runs.
+  themePrimary:            config.theme?.primary     || '#c8261c',
+  themePrimaryDark:        config.theme?.primaryDark || '#a01910',
+  themePrimaryDeep:        config.theme?.primaryDeep || '#7d1208',
+  themeAccent:             config.theme?.accent      || '#f5b71e',
+  themeAccentDeep:         config.theme?.accentDeep  || '#d99a00',
+  themeBackground:         config.theme?.background  || '#fff5d8',
+  themeSurface:            config.theme?.surface     || '#fffaeb',
 };
 
 // Source HTML / manifest files with {{tokens}}. The build reads each from
