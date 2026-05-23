@@ -189,20 +189,12 @@ export const onRequestPost = async ({ request, env }) => {
       if (stripeCustomerId) order.payment.stripeCustomerId = stripeCustomerId;
       order.payment.piStatus = pi.status;
     } catch (e) {
+      // We only create the PaymentIntent here (we no longer confirm
+      // server-side), so failures are creation errors, not card declines —
+      // those surface client-side at confirm time. Treat any throw as a
+      // service error.
       console.error('Stripe PI failed', e);
-      // Off-session confirm with a saved card can throw 'authentication_required'
-      // when 3DS kicks in. Stripe attaches a client_secret to the error so the
-      // client can finish authentication — pass it through.
-      if (e.stripe?.code === 'authentication_required' && e.stripe?.payment_intent?.client_secret) {
-        order.payment.intentId = e.stripe.payment_intent.id;
-        order.payment.clientSecret = e.stripe.payment_intent.client_secret;
-        order.payment.connectedAccountId = connectedAccountId;
-        order.payment.piStatus = 'requires_action';
-      } else if (e.stripe?.code === 'card_declined' || e.stripe?.decline_code) {
-        return errJson('Your card was declined. Try another card.', 402);
-      } else {
-        return errJson('Payment service unavailable — please try again.', 502);
-      }
+      return errJson('Payment service unavailable — please try again.', 502);
     }
   }
 

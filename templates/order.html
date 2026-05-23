@@ -2672,14 +2672,13 @@ async function placeOrder() {
       return;
     }
 
-    // (a) Saved card: server already attached the PaymentMethod to the PI.
-    //     If the server attempted off-session confirm and it succeeded
-    //     outright (data.piStatus === 'succeeded') we can redirect now.
-    //     For high-value orders the server set require_cvc_recollection,
-    //     so we pass the CardCvcElement to confirmCardPayment; Stripe
-    //     pairs the freshly-typed CVC with the saved card details.
-    //     Otherwise we just hand off the clientSecret; Stripe finds the
-    //     attached PM and runs 3DS if needed.
+    // (a) Saved card: the server attached the saved PaymentMethod to the PI
+    //     but left it unconfirmed (customer is present). We confirm here so
+    //     Stripe can show a 3DS challenge if the bank requires one. For
+    //     high-value orders the server set require_cvc_recollection, so we
+    //     pass the CardCvcElement and Stripe pairs the freshly-typed CVC
+    //     with the saved card. The 'succeeded' guard is just defensive in
+    //     case the PI is already complete.
     if (savedPmId) {
       if (data.piStatus === 'succeeded') {
         state.cart = [];
