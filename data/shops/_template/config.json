@@ -45,7 +45,7 @@
   },
 
   "_comment_serviceFee": "Per-order platform fee in pence. Charged to the customer and kept by the platform.",
-  "serviceFeePence": 35,
+  "serviceFeePence": 50,
 
   "_comment_stripe": "Stripe Connect: this site's PaymentIntents are created on the venue's connected account. connectedAccountId is the venue's acct_xxx string from Stripe Connect.",
   "stripe": {

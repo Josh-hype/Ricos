@@ -1964,16 +1964,19 @@ function removeFromCart(key) {
   saveState();
   renderCart();
 }
-/* Per-order platform/service fee. Kept by the platform per the agreement
-   with the venue. Customer-visible at checkout. Keep in sync with
-   serviceFeePence in data/config.json. */
-const SERVICE_FEE = 0.35;
+/* Per-order platform/service fee, in pounds, read from the shop's config
+   (serviceFeePence) which the server treats as the authoritative source for
+   the actual charge. Falls back to 0.50 until /api/config has loaded. */
+function serviceFeeGBP() {
+  const p = Number(window.SHOP_CONFIG?.serviceFeePence);
+  return Number.isFinite(p) ? p / 100 : 0.50;
+}
 
 function cartTotals() {
   const sub = state.cart.reduce((s, l) => s + l.price * l.qty, 0);
   const discount = sub * 0.10;
   const delivery = state.mode === 'deliver' ? 2.00 : 0;
-  const serviceFee = state.cart.length > 0 ? SERVICE_FEE : 0;
+  const serviceFee = state.cart.length > 0 ? serviceFeeGBP() : 0;
   const total = Math.max(0, sub - discount + delivery + serviceFee);
   return { sub, discount, delivery, serviceFee, total };
 }
@@ -3437,7 +3440,12 @@ updateAccountButton();
    allowed postcodes) so the checkout flow is data-driven. Cached for 30s
    on the edge; safe to call on every page load. */
 fetch('/api/config').then(r => r.ok ? r.json() : null).then(cfg => {
-  if (cfg) window.SHOP_CONFIG = cfg;
+  if (cfg) {
+    window.SHOP_CONFIG = cfg;
+    // Re-render the cart so the service fee (and any other config-driven
+    // figures) reflect the loaded config rather than the boot-time fallback.
+    renderCart();
+  }
 }).catch(() => { /* fall back to defaults baked into the page */ });
 
 /* Sync the customer session with the server on boot. The localStorage user

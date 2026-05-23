@@ -29,6 +29,7 @@ export function getPublicConfig() {
     hours: config.hours,
     ordering: config.ordering,
     promo: config.promo,
+    serviceFeePence: Number(config.serviceFeePence) || 0,
     payments: {
       stripeEnabled: config.payments.stripeEnabled,
       cashOnCollectionEnabled: config.payments.cashOnCollectionEnabled,
