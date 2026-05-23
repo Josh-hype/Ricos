@@ -2247,6 +2247,9 @@ let checkoutData = {};
    step so the customer doesn't lose what they've typed. */
 let stripeInstance = null;
 let stripeElements = null;
+// Express Checkout (Apple/Google Pay) uses its own Elements group so its
+// submit() doesn't validate the (possibly empty) card Payment Element.
+let expressElements = null;
 // CVC re-collection state (lives at module scope so placeOrder can see it).
 let cvcElement = null;
 let cvcMounted = false;
@@ -2340,6 +2343,79 @@ function buildOrderRequest() {
     },
     paymentMethod: payMethod,
   };
+}
+
+/* Express checkout (Apple Pay / Google Pay) confirm handler. Fires after
+   the customer authorises in the native wallet sheet. We reuse the contact
+   / address / schedule already collected in the earlier steps, create the
+   order as a card payment, and confirm with the same Elements instance.
+   `event` is the Stripe Express Checkout 'confirm' event. */
+async function placeExpressOrder(event) {
+  const errEl = document.getElementById('paymentError');
+  if (errEl) { errEl.style.color = 'var(--error)'; errEl.textContent = ''; }
+
+  // Contact details were collected before this step; pull any inline edits.
+  const inlineName  = document.getElementById('payName')?.value.trim();
+  const inlineEmail = document.getElementById('payEmail')?.value.trim();
+  const inlinePhone = document.getElementById('payPhone')?.value.trim();
+  if (inlineName)  checkoutData.name  = inlineName;
+  if (inlineEmail) checkoutData.email = inlineEmail;
+  if (inlinePhone) checkoutData.phone = inlinePhone;
+
+  const validContact =
+    checkoutData.name && checkoutData.name.length >= 2 &&
+    checkoutData.email && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(checkoutData.email) &&
+    checkoutData.phone;
+  if (!validContact) {
+    // Can't proceed without contact details; abort the wallet flow and
+    // point the customer at the contact fields.
+    if (event.paymentFailed) event.paymentFailed({ reason: 'fail' });
+    if (errEl) errEl.textContent = 'Please complete your name, email and mobile above, then try again.';
+    return;
+  }
+
+  try {
+    const { error: submitError } = await expressElements.submit();
+    if (submitError) {
+      if (event.paymentFailed) event.paymentFailed({ reason: 'fail' });
+      if (errEl) errEl.textContent = submitError.message || 'Payment could not be started.';
+      return;
+    }
+
+    const req = buildOrderRequest();
+    req.paymentMethod = 'card'; // a wallet is a card under the hood
+
+    const res = await fetch('/api/order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      if (event.paymentFailed) event.paymentFailed({ reason: 'fail' });
+      if (errEl) errEl.textContent = data.error || `Couldn't place the order (${res.status}).`;
+      return;
+    }
+
+    const { error } = await stripeInstance.confirmPayment({
+      elements: expressElements,
+      clientSecret: data.clientSecret,
+      confirmParams: {
+        return_url: `${location.origin}/thank-you?ref=${encodeURIComponent(data.orderId)}`,
+      },
+      redirect: 'if_required',
+    });
+    if (error) {
+      if (errEl) errEl.textContent = error.message || 'Payment failed.';
+      return;
+    }
+    state.cart = [];
+    saveState();
+    window.location.href = `/thank-you?ref=${encodeURIComponent(data.orderId)}`;
+  } catch (e) {
+    console.error(e);
+    if (errEl) errEl.textContent = 'Network error — please try again.';
+  }
 }
 
 /* Place an order. Two paths:
@@ -2737,6 +2813,19 @@ function renderCheckout() {
         <div class="line total"><span>Total</span><span>${fmt(t.total)}</span></div>
       </div>
 
+      <!-- Express checkout: Apple Pay / Google Pay buttons in their own
+           section, shown automatically when the device supports a wallet.
+           Hidden (display:none) until the Express Checkout Element's 'ready'
+           event confirms a wallet is available. -->
+      <div id="express-checkout-section" style="display:none;margin:14px 0 0">
+        <div id="express-checkout-element"></div>
+        <div style="display:flex;align-items:center;gap:10px;margin:14px 0 4px;color:var(--grey);font-size:0.85rem">
+          <span style="flex:1;height:1px;background:var(--line)"></span>
+          <span>or pay another way</span>
+          <span style="flex:1;height:1px;background:var(--line)"></span>
+        </div>
+      </div>
+
       <fieldset style="border:2px solid var(--ink);border-radius:12px;padding:10px 14px;margin:14px 0 10px">
         <legend style="padding:0 6px;font-weight:700">How would you like to pay?</legend>
         <label style="display:flex;align-items:center;gap:8px;padding:6px 0">
@@ -2819,28 +2908,48 @@ function renderCheckout() {
     // forced to pick a future slot — the backend already enforces this.
     populateScheduleSelect();
 
-    // Prepare Stripe Elements only when card is selected. Mounted lazily so
-    // cash-only customers don't pay the JS cost.
+    const amountP = Math.round(t.total * 100);
+
+    // Reset the Elements groups on every entry to the payment step — the
+    // DOM nodes they were mounted into are recreated each render, so the
+    // old groups are stale. The Stripe.js instance itself is reusable.
+    stripeElements = null;
+    expressElements = null;
+
+    // Ensure the Stripe.js instance exists (Connect direct charge: bind it to
+    // the connected account so confirmPayment finds the PaymentIntent).
+    function ensureStripe() {
+      if (stripeInstance) return true;
+      const pk = window.SHOP_CONFIG?.stripe?.publishableKey;
+      const connectedAcct = window.SHOP_CONFIG?.stripe?.connectedAccountId;
+      if (!window.Stripe || !pk || !connectedAcct || connectedAcct === 'TBD') return false;
+      stripeInstance = window.Stripe(pk, { stripeAccount: connectedAcct });
+      return true;
+    }
+
+    // Elements group for the card Payment Element.
+    function ensureElements() {
+      if (stripeElements) return true;
+      if (!ensureStripe()) return false;
+      stripeElements = stripeInstance.elements({
+        mode: 'payment',
+        amount: amountP,
+        currency: 'gbp',
+        appearance: { theme: 'stripe' },
+      });
+      return true;
+    }
+
+    // Prepare the card Payment Element only when card entry is needed.
+    // Mounted lazily so cash-only / wallet customers don't pay the JS cost.
     let cardMounted = false;
     async function ensureCardMounted() {
       if (cardMounted) return;
-      const pk = window.SHOP_CONFIG?.stripe?.publishableKey;
-      const connectedAcct = window.SHOP_CONFIG?.stripe?.connectedAccountId;
-      if (!window.Stripe || !pk || !connectedAcct || connectedAcct === 'TBD') {
+      if (!ensureElements()) {
         document.getElementById('payment-element').innerHTML =
           '<div style="color:var(--error);font-size:0.9rem">Card payments are unavailable right now. Please choose cash, or refresh the page.</div>';
         return;
       }
-      // Stripe Connect direct charge: Stripe.js must be told which connected
-      // account the PaymentIntent will live on, otherwise confirmPayment
-      // returns "No such payment_intent".
-      stripeInstance = stripeInstance || window.Stripe(pk, { stripeAccount: connectedAcct });
-      stripeElements = stripeInstance.elements({
-        mode: 'payment',
-        amount: Math.round(t.total * 100),
-        currency: 'gbp',
-        appearance: { theme: 'stripe' },
-      });
       // Pre-fill the Element with the contact details we already collected
       // and tell Stripe not to re-collect them. Disables Stripe Link too —
       // its "save your info" prompt confuses customers who've just typed
@@ -2861,18 +2970,51 @@ function renderCheckout() {
             phone: 'never',
           },
         },
-        // Apple Pay + Google Pay enabled. They only render when the
-        // domain is registered with Stripe (platform + connected account
-        // for direct charges) and the customer's device/browser supports
-        // them. Link stays off — its "save your info" prompt duplicates
-        // our own contact step and confuses customers.
-        wallets: { applePay: 'auto', googlePay: 'auto', link: 'never' },
+        // Wallets are handled by the dedicated Express Checkout Element at
+        // the top of the step, so turn them off inside the card form to
+        // avoid showing Apple Pay / Google Pay in two places.
+        wallets: { applePay: 'never', googlePay: 'never', link: 'never' },
       });
       const mount = document.getElementById('payment-element');
       mount.innerHTML = '';
       paymentEl.mount(mount);
       cardMounted = true;
     }
+
+    /* ---------- Express checkout (Apple Pay / Google Pay) ----------
+       A dedicated row of wallet buttons at the top of the payment step.
+       Renders only the wallets the device actually supports; the whole
+       section stays hidden if none are available (e.g. desktop without
+       Google Pay set up). Tapping a button opens the native wallet sheet,
+       and on authorisation we create the order + confirm the payment using
+       the same Elements instance the card form uses. */
+    const expressSection = document.getElementById('express-checkout-section');
+    function mountExpressCheckout() {
+      if (!ensureStripe()) return;
+      expressElements = stripeInstance.elements({
+        mode: 'payment',
+        amount: amountP,
+        currency: 'gbp',
+        appearance: { theme: 'stripe' },
+      });
+      const ece = expressElements.create('expressCheckout', {
+        paymentMethods: {
+          applePay: 'auto',
+          googlePay: 'auto',
+          link: 'never',
+          paypal: 'never',
+          amazonPay: 'never',
+        },
+      });
+      ece.on('ready', (event) => {
+        const m = event.availablePaymentMethods;
+        // Show the section only if at least one wallet is available.
+        expressSection.style.display = (m && (m.applePay || m.googlePay)) ? '' : 'none';
+      });
+      ece.on('confirm', placeExpressOrder);
+      ece.mount('#express-checkout-element');
+    }
+    mountExpressCheckout();
 
     // Mount immediately (default selection is card).
     ensureCardMounted();
