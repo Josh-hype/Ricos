@@ -5,10 +5,12 @@ const SECURITY_HEADERS = {
   'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
-  // payment must be delegated to js.stripe.com too — Apple Pay and Google
-  // Pay run inside Stripe's cross-origin iframe, so 'self' alone blocks the
-  // wallet (browser logs "payment is not allowed in this document").
-  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(self), payment=(self "https://js.stripe.com")',
+  // payment=* so Apple Pay / Google Pay work. They render inside Stripe's
+  // cross-origin iframes (and Google Pay nests further iframes), so a
+  // scoped allowlist is fragile. The wildcard is safe here because our CSP
+  // frame-src only permits js.stripe.com / hooks.stripe.com — no other
+  // origin can load a payment iframe in the first place.
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(self), payment=*',
   'X-Frame-Options': 'DENY',
 };
 
