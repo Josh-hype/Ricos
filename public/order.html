@@ -706,6 +706,15 @@
     margin-bottom: 1rem;
     position: relative;
   }
+  /* When the item has no photo yet, collapse the big square into a slim
+     banner so the Add-to-cart button stays within thumb reach without
+     scrolling. */
+  .item-detail-photo.no-photo {
+    aspect-ratio: auto;
+    height: auto;
+    padding: 10px 14px;
+    margin-bottom: 0.7rem;
+  }
   .item-detail-photo img {
     width: 100%;
     height: 100%;
@@ -1614,12 +1623,16 @@ function openItemDetail(itemId) {
 
 function itemDetailHTML(item) {
   let photo;
+  let photoClass = 'item-detail-photo';
   if (item.image) {
     photo = `<img src="${item.image}" alt="${escapeHTML(item.name)}" />`;
   } else if (item.drink) {
     photo = drinkSVG(item.id, item.drink);
   } else {
     photo = `<span class="placeholder">Photo coming soon</span>`;
+    // Slim banner instead of a full square so the Add-to-cart button
+    // sits within thumb reach without scrolling.
+    photoClass += ' no-photo';
   }
 
   const spiceField = item.spicy
@@ -1636,7 +1649,7 @@ function itemDetailHTML(item) {
     : '';
 
   return `
-    <div class="item-detail-photo">${photo}</div>
+    <div class="${photoClass}">${photo}</div>
     <h4 class="item-detail-name">${escapeHTML(item.name)}</h4>
     <div class="item-detail-price">${fmt(item.price)}</div>
     <p class="item-detail-desc">${escapeHTML(item.desc)}</p>
