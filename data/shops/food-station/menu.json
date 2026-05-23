@@ -1,26 +1,1194 @@
 [
   {
-    "id": "mains",
-    "name": "Mains",
+    "id": "pizza",
+    "name": "Pizza",
     "items": [
-      { "id": "main-1", "name": "First Item",  "priceP": 800 },
-      { "id": "main-2", "name": "Second Item", "priceP": 950, "mealAddP": 300 }
+      {
+        "id": "marg",
+        "name": "Margarita",
+        "priceP": 800,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 180
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "bbq-marg",
+        "name": "BBQ Margarita",
+        "priceP": 800,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 180
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "4cheese",
+        "name": "4 Cheese",
+        "priceP": 850,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "london",
+        "name": "London Pizza",
+        "priceP": 880,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "halloumi",
+        "name": "Halloumi Pizza",
+        "priceP": 900,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "veg-supreme",
+        "name": "Veg Supreme",
+        "priceP": 880,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "hot-veg",
+        "name": "Hot Veg",
+        "priceP": 880,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "alfunghi",
+        "name": "Alfunghi",
+        "priceP": 850,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "mushroom",
+        "name": "Mushroom",
+        "priceP": 900,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "prosciutto",
+        "name": "Prosciutto",
+        "priceP": 900,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "ham",
+        "name": "Ham",
+        "priceP": 900,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "farmhouse",
+        "name": "Farmhouse",
+        "priceP": 900,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "ham-mushroom",
+        "name": "Ham & Mushroom",
+        "priceP": 900,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "hawaiian",
+        "name": "Hawaiian",
+        "priceP": 900,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "chicken-sweetcorn",
+        "name": "Chicken Sweetcorn",
+        "priceP": 900,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "bbq-chicken",
+        "name": "BBQ Chicken",
+        "priceP": 900,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "chicken-supreme",
+        "name": "Chicken Supreme",
+        "priceP": 1000,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "kiev",
+        "name": "Kiev",
+        "priceP": 900,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "pepperoni",
+        "name": "Pepperoni",
+        "priceP": 900,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "double-bite",
+        "name": "Double Bite",
+        "priceP": 1050,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "hot-shot",
+        "name": "Hot Shot",
+        "priceP": 1000,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "doner",
+        "name": "Doner",
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "mexicano",
+        "name": "Mexicano",
+        "priceP": 1000,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 180
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "meat-supreme",
+        "name": "Meat Supreme",
+        "priceP": 1000,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "tuna-sweetcorn",
+        "name": "Tuna Sweetcorn",
+        "priceP": 990,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 110
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "tuna-mushroom",
+        "name": "Tuna Mushroom",
+        "priceP": 990,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 110
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "seafood",
+        "name": "Seafood",
+        "priceP": 1000,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "bbq-meaty",
+        "name": "BBQ Meaty Mighty",
+        "priceP": 1090,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 110
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "bbq-pokker",
+        "name": "BBQ Pokker",
+        "priceP": 1090,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 110
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      },
+      {
+        "id": "hotdog-pizza",
+        "name": "Hotdog Pizza",
+        "priceP": 990,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 110
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "garlic-bread",
+    "name": "Garlic Bread",
+    "items": [
+      {
+        "id": "gb-plain",
+        "name": "Plain Garlic Bread",
+        "priceP": 500,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 150
+          }
+        ]
+      },
+      {
+        "id": "gb-tomato",
+        "name": "Garlic Bread Tomato",
+        "priceP": 600,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 100
+          }
+        ]
+      },
+      {
+        "id": "gb-cheese",
+        "name": "Garlic Bread Cheese",
+        "priceP": 700,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 100
+          }
+        ]
+      },
+      {
+        "id": "gb-cheese-tomato",
+        "name": "Garlic Bread Cheese & Tomato",
+        "priceP": 780,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 120
+          }
+        ]
+      },
+      {
+        "id": "gb-doner",
+        "name": "Garlic Bread Doner Cheese",
+        "priceP": 850,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 130
+          }
+        ]
+      },
+      {
+        "id": "gb-pepperoni",
+        "name": "Garlic Bread Pepperoni Cheese",
+        "priceP": 850,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 130
+          }
+        ]
+      },
+      {
+        "id": "gb-bacon",
+        "name": "Garlic Bread Bacon Cheese",
+        "priceP": 850,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 130
+          }
+        ]
+      },
+      {
+        "id": "gb-feta",
+        "name": "Garlic Bread Feta & Mozzarella",
+        "priceP": 800,
+        "modifiers": [
+          {
+            "id": "sz13",
+            "label": "13\"",
+            "priceDeltaP": 100
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "calzone",
+    "name": "Calzone",
+    "items": [
+      {
+        "id": "cal-kiev",
+        "name": "Calzone Kiev",
+        "priceP": 900
+      },
+      {
+        "id": "cal-doner",
+        "name": "Calzone Doner",
+        "priceP": 1000
+      },
+      {
+        "id": "cal-meat",
+        "name": "Calzone Meat Supreme",
+        "priceP": 1000
+      },
+      {
+        "id": "cal-cheese-onion",
+        "name": "Calzone Cheese & Onion",
+        "priceP": 850
+      },
+      {
+        "id": "cal-hot",
+        "name": "Calzone Hot",
+        "priceP": 1050
+      }
+    ]
+  },
+  {
+    "id": "parmesan",
+    "name": "Parmesan",
+    "items": [
+      {
+        "id": "parmo-plain",
+        "name": "Plain Parmesan",
+        "priceP": 900
+      },
+      {
+        "id": "parmo-bbq",
+        "name": "BBQ Parmesan",
+        "priceP": 1050
+      },
+      {
+        "id": "parmo-hot",
+        "name": "Hot Parmesan",
+        "priceP": 1050
+      },
+      {
+        "id": "parmo-ham",
+        "name": "Ham Parmesan",
+        "priceP": 1050
+      },
+      {
+        "id": "parmo-bacon",
+        "name": "Bacon Parmesan",
+        "priceP": 1050
+      },
+      {
+        "id": "parmo-doner",
+        "name": "Doner Parmesan",
+        "priceP": 1050
+      }
+    ]
+  },
+  {
+    "id": "kebab",
+    "name": "Kebab",
+    "items": [
+      {
+        "id": "kb-med-doner",
+        "name": "Medium Doner Kebab",
+        "priceP": 780
+      },
+      {
+        "id": "kb-lrg-doner",
+        "name": "Large Doner Kebab",
+        "priceP": 900
+      },
+      {
+        "id": "kb-chicken",
+        "name": "Chicken Kebab",
+        "priceP": 990
+      },
+      {
+        "id": "kb-combo",
+        "name": "Combo Kebab",
+        "priceP": 990
+      },
+      {
+        "id": "kb-lamb-shish",
+        "name": "Lamb Shish",
+        "priceP": 1200
+      },
+      {
+        "id": "kb-mixed-grill",
+        "name": "Mixed Grill",
+        "priceP": 1800
+      },
+      {
+        "id": "kb-doner-meat",
+        "name": "Portion of Doner Meat",
+        "priceP": 500
+      }
+    ]
+  },
+  {
+    "id": "wraps",
+    "name": "Wraps",
+    "items": [
+      {
+        "id": "wr-cheese-chips",
+        "name": "Cheese & Chips Wrap",
+        "priceP": 600
+      },
+      {
+        "id": "wr-doner-chips",
+        "name": "Doner Meat & Chips Wrap",
+        "priceP": 800
+      },
+      {
+        "id": "wr-chicken",
+        "name": "Chicken Wrap",
+        "priceP": 750
+      },
+      {
+        "id": "wr-lamb-shish",
+        "name": "Lamb Shish Wrap",
+        "priceP": 800
+      },
+      {
+        "id": "wr-combo",
+        "name": "Combo Wrap",
+        "priceP": 850
+      },
+      {
+        "id": "wr-mixed",
+        "name": "Mixed Wrap",
+        "priceP": 900
+      },
+      {
+        "id": "wr-foodstation",
+        "name": "Food Station Wrap",
+        "priceP": 980
+      },
+      {
+        "id": "wr-chicken-tender",
+        "name": "Chicken Tender Wrap",
+        "priceP": 850
+      }
+    ]
+  },
+  {
+    "id": "burgers",
+    "name": "Burgers",
+    "items": [
+      {
+        "id": "bg-ham",
+        "name": "Hamburger & Chips",
+        "priceP": 550,
+        "modifiers": [
+          {
+            "id": "h",
+            "label": "½lb",
+            "priceDeltaP": 100
+          }
+        ]
+      },
+      {
+        "id": "bg-cheese",
+        "name": "Cheeseburger & Chips",
+        "priceP": 650,
+        "modifiers": [
+          {
+            "id": "h",
+            "label": "½lb",
+            "priceDeltaP": 100
+          }
+        ]
+      },
+      {
+        "id": "bg-chicken",
+        "name": "Chicken Burger & Chips",
+        "priceP": 650,
+        "modifiers": [
+          {
+            "id": "h",
+            "label": "½lb",
+            "priceDeltaP": 100
+          }
+        ]
+      },
+      {
+        "id": "bg-hawaiian",
+        "name": "Hawaiian Burger & Chips",
+        "priceP": 690,
+        "modifiers": [
+          {
+            "id": "h",
+            "label": "½lb",
+            "priceDeltaP": 110
+          }
+        ]
+      },
+      {
+        "id": "bg-veg",
+        "name": "Vegetable Burger & Chips",
+        "priceP": 650,
+        "modifiers": [
+          {
+            "id": "h",
+            "label": "½lb",
+            "priceDeltaP": 100
+          }
+        ]
+      },
+      {
+        "id": "bg-americana",
+        "name": "Americana Burger & Chips",
+        "priceP": 650,
+        "modifiers": [
+          {
+            "id": "h",
+            "label": "½lb",
+            "priceDeltaP": 100
+          }
+        ]
+      },
+      {
+        "id": "bg-bacon",
+        "name": "Bacon Burger & Chips",
+        "priceP": 650,
+        "modifiers": [
+          {
+            "id": "h",
+            "label": "½lb",
+            "priceDeltaP": 100
+          }
+        ]
+      },
+      {
+        "id": "bg-combo",
+        "name": "Combo Burger & Chips",
+        "priceP": 950
+      },
+      {
+        "id": "bg-mega",
+        "name": "Mega Burger & Chips",
+        "priceP": 1050
+      },
+      {
+        "id": "bg-special",
+        "name": "Special Burger & Chips",
+        "priceP": 1150
+      }
+    ]
+  },
+  {
+    "id": "salad",
+    "name": "Salad",
+    "items": [
+      {
+        "id": "sl-side",
+        "name": "Side Salad",
+        "priceP": 300
+      },
+      {
+        "id": "sl-chicken",
+        "name": "Chicken Salad",
+        "priceP": 650
+      },
+      {
+        "id": "sl-tuna",
+        "name": "Tuna Salad",
+        "priceP": 580
+      }
     ]
   },
   {
     "id": "sides",
-    "name": "Sides",
+    "name": "Side Orders",
     "items": [
-      { "id": "side-chips", "name": "Chips",  "priceP": 350 },
-      { "id": "side-slaw",  "name": "Coleslaw","priceP": 250 }
+      {
+        "id": "sd-chips",
+        "name": "Chips",
+        "priceP": 290
+      },
+      {
+        "id": "sd-chips-cheese",
+        "name": "Chips & Cheese",
+        "priceP": 400
+      },
+      {
+        "id": "sd-chip-butty",
+        "name": "Chip Butty",
+        "priceP": 500
+      },
+      {
+        "id": "sd-chips-pepperoni",
+        "name": "Chips, Cheese & Pepperoni",
+        "priceP": 700
+      },
+      {
+        "id": "sd-chips-bacon",
+        "name": "Chips, Cheese & Bacon",
+        "priceP": 700
+      },
+      {
+        "id": "sd-chips-ham",
+        "name": "Chips, Cheese & Ham",
+        "priceP": 700
+      },
+      {
+        "id": "sd-mozzarella",
+        "name": "Mozzarella Sticks (5)",
+        "priceP": 480
+      },
+      {
+        "id": "sd-chilli-poppers",
+        "name": "Chilli Poppers (5)",
+        "priceP": 450
+      },
+      {
+        "id": "sd-hash",
+        "name": "Hash Browns (5)",
+        "priceP": 400
+      },
+      {
+        "id": "sd-onion-rings",
+        "name": "Onion Rings (8)",
+        "priceP": 450
+      },
+      {
+        "id": "sd-popcorn",
+        "name": "Popcorn Chicken (12)",
+        "priceP": 550
+      },
+      {
+        "id": "sd-nuggets",
+        "name": "Chicken Nuggets (8)",
+        "priceP": 450
+      },
+      {
+        "id": "sd-wedges",
+        "name": "Potato Wedges",
+        "priceP": 400
+      },
+      {
+        "id": "sd-sp-wings",
+        "name": "SP Wings (6)",
+        "priceP": 590
+      },
+      {
+        "id": "sd-garlic-mushroom",
+        "name": "Garlic Mushroom & Cheese",
+        "priceP": 550
+      },
+      {
+        "id": "sd-tenders",
+        "name": "Chicken Tenders (5)",
+        "priceP": 600
+      }
+    ]
+  },
+  {
+    "id": "kids",
+    "name": "Kids Meals",
+    "items": [
+      {
+        "id": "kd-nuggets",
+        "name": "Kids Nuggets & Chips",
+        "priceP": 550
+      },
+      {
+        "id": "kd-tenders",
+        "name": "Kids Tenders & Chips",
+        "priceP": 550
+      },
+      {
+        "id": "kd-popcorn",
+        "name": "Kids Popcorn & Chips",
+        "priceP": 550
+      },
+      {
+        "id": "kd-marg",
+        "name": "Kids Margherita & Chips",
+        "priceP": 700
+      }
+    ]
+  },
+  {
+    "id": "dips",
+    "name": "Dips — Pots of Sauce",
+    "items": [
+      {
+        "id": "dip-mayo",
+        "name": "Mayo",
+        "priceP": 100
+      },
+      {
+        "id": "dip-garlic-mayo",
+        "name": "Garlic Mayo",
+        "priceP": 100
+      },
+      {
+        "id": "dip-ketchup",
+        "name": "Ketchup",
+        "priceP": 100
+      },
+      {
+        "id": "dip-bbq",
+        "name": "BBQ Sauce",
+        "priceP": 100
+      },
+      {
+        "id": "dip-sweet-chilli",
+        "name": "Sweet Chilli",
+        "priceP": 100
+      },
+      {
+        "id": "dip-chilli",
+        "name": "Chilli",
+        "priceP": 100
+      },
+      {
+        "id": "dip-garlic-yoghurt",
+        "name": "Garlic Yoghurt",
+        "priceP": 100
+      },
+      {
+        "id": "dip-burger",
+        "name": "Burger Sauce",
+        "priceP": 100
+      },
+      {
+        "id": "dip-relish",
+        "name": "Relish",
+        "priceP": 100
+      }
+    ]
+  },
+  {
+    "id": "desserts",
+    "name": "Desserts",
+    "items": [
+      {
+        "id": "ds-choc",
+        "name": "Chocolate Cake",
+        "priceP": 350
+      },
+      {
+        "id": "ds-cheese",
+        "name": "Cheesecake",
+        "priceP": 350
+      },
+      {
+        "id": "ds-bj",
+        "name": "Ben & Jerry's",
+        "priceP": 700
+      }
     ]
   },
   {
     "id": "drinks",
     "name": "Drinks",
     "items": [
-      { "id": "drink-coke",  "name": "Can of Coke", "priceP": 190 },
-      { "id": "drink-water", "name": "Bottle of Water", "priceP": 150 }
+      {
+        "id": "dr-coke",
+        "name": "Coke",
+        "priceP": 150,
+        "modifiers": [
+          {
+            "id": "btl",
+            "label": "Bottle (1.5L)",
+            "priceDeltaP": 200
+          }
+        ]
+      },
+      {
+        "id": "dr-diet-coke",
+        "name": "Diet Coke",
+        "priceP": 150,
+        "modifiers": [
+          {
+            "id": "btl",
+            "label": "Bottle (1.5L)",
+            "priceDeltaP": 200
+          }
+        ]
+      },
+      {
+        "id": "dr-coke-zero",
+        "name": "Coke Zero",
+        "priceP": 150
+      },
+      {
+        "id": "dr-fanta",
+        "name": "Fanta",
+        "priceP": 150,
+        "modifiers": [
+          {
+            "id": "btl",
+            "label": "Bottle (1.5L)",
+            "priceDeltaP": 200
+          }
+        ]
+      },
+      {
+        "id": "dr-fanta-lemon",
+        "name": "Fanta Lemon",
+        "priceP": 150
+      },
+      {
+        "id": "dr-pepsi",
+        "name": "Pepsi",
+        "priceP": 150,
+        "modifiers": [
+          {
+            "id": "btl",
+            "label": "Bottle (1.5L)",
+            "priceDeltaP": 200
+          }
+        ]
+      },
+      {
+        "id": "dr-7up",
+        "name": "7up",
+        "priceP": 150
+      },
+      {
+        "id": "dr-dr-pepper",
+        "name": "Dr Pepper",
+        "priceP": 150
+      },
+      {
+        "id": "dr-monster",
+        "name": "Monster",
+        "priceP": 250
+      }
+    ]
+  },
+  {
+    "id": "meal-deals",
+    "name": "Meal Deals",
+    "items": [
+      {
+        "id": "md-1",
+        "name": "Meal Deal 1 — Goodie Box",
+        "priceP": 1500
+      },
+      {
+        "id": "md-2",
+        "name": "Meal Deal 2 — Burger Box",
+        "priceP": 1350
+      },
+      {
+        "id": "md-3",
+        "name": "Meal Deal 3",
+        "priceP": 1650
+      },
+      {
+        "id": "md-4",
+        "name": "Meal Deal 4",
+        "priceP": 2000
+      },
+      {
+        "id": "md-5",
+        "name": "Meal Deal 5",
+        "priceP": 2200
+      }
     ]
   }
 ]

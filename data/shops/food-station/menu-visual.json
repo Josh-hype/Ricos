@@ -1,20 +1,2036 @@
 [
   {
-    "id": "mains",
-    "name": "Mains",
+    "id": "pizza",
+    "name": "Pizza",
+    "icon": "🍕",
+    "items": [
+      {
+        "id": "marg",
+        "name": "Margarita",
+        "price": 8,
+        "desc": "Tomato sauce, mozzarella.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 1.8
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bbq-marg",
+        "name": "BBQ Margarita",
+        "price": 8,
+        "desc": "BBQ sauce, mozzarella.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 1.8
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "4cheese",
+        "name": "4 Cheese",
+        "price": 8.5,
+        "desc": "Pizza sauce, cheddar, feta, mozzarella, halloumi.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 1.5
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "london",
+        "name": "London Pizza",
+        "price": 8.8,
+        "desc": "Pizza sauce, mozzarella, halloumi.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 1.2
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "halloumi",
+        "name": "Halloumi Pizza",
+        "price": 9,
+        "desc": "Pizza sauce, mozzarella, halloumi.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "veg-supreme",
+        "name": "Veg Supreme",
+        "price": 8.8,
+        "desc": "Mozzarella, red onion, mushroom, peppers, tomato, sweetcorn, black olives.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 1.7
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hot-veg",
+        "name": "Hot Veg",
+        "price": 8.8,
+        "desc": "Mozzarella, red onion, mushroom, black olives, jalapeno, fresh chilli.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 1.7
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ],
+        "spicy": true
+      },
+      {
+        "id": "alfunghi",
+        "name": "Alfunghi",
+        "price": 8.5,
+        "desc": "Mushroom.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 1.5
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "mushroom",
+        "name": "Mushroom",
+        "price": 9,
+        "desc": "Mushroom, mozzarella.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "prosciutto",
+        "name": "Prosciutto",
+        "price": 9,
+        "desc": "Ham.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ham",
+        "name": "Ham",
+        "price": 9,
+        "desc": "Ham, mozzarella.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "farmhouse",
+        "name": "Farmhouse",
+        "price": 9,
+        "desc": "Ham and mushroom.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ham-mushroom",
+        "name": "Ham & Mushroom",
+        "price": 9,
+        "desc": "Ham and mushroom.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hawaiian",
+        "name": "Hawaiian",
+        "price": 9,
+        "desc": "Ham and pineapple.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "chicken-sweetcorn",
+        "name": "Chicken Sweetcorn",
+        "price": 9,
+        "desc": "Chicken, sweetcorn.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bbq-chicken",
+        "name": "BBQ Chicken",
+        "price": 9,
+        "desc": "BBQ chicken.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "chicken-supreme",
+        "name": "Chicken Supreme",
+        "price": 10,
+        "desc": "Chicken, peppers, BBQ.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "kiev",
+        "name": "Kiev",
+        "price": 9,
+        "desc": "Chicken, red onion, mushroom, peppers, garlic butter.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pepperoni",
+        "name": "Pepperoni",
+        "price": 9,
+        "desc": "Pepperoni, mozzarella.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "double-bite",
+        "name": "Double Bite",
+        "price": 10.5,
+        "desc": "Double pepperoni, double cheese.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hot-shot",
+        "name": "Hot Shot",
+        "price": 10,
+        "desc": "Pepperoni, jalapeno, garlic butter.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ],
+        "spicy": true
+      },
+      {
+        "id": "doner",
+        "name": "Doner",
+        "price": 9.5,
+        "desc": "Doner, red onion, mushroom.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "mexicano",
+        "name": "Mexicano",
+        "price": 10,
+        "desc": "Spicy beef, red onion, peppers, fresh chilli.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 1.8
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ],
+        "spicy": true
+      },
+      {
+        "id": "meat-supreme",
+        "name": "Meat Supreme",
+        "price": 10,
+        "desc": "Ham, pepperoni, salami.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "tuna-sweetcorn",
+        "name": "Tuna Sweetcorn",
+        "price": 9.9,
+        "desc": "Tuna, sweetcorn.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 1.1
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "tuna-mushroom",
+        "name": "Tuna Mushroom",
+        "price": 9.9,
+        "desc": "Tuna, mushroom.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 1.1
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "seafood",
+        "name": "Seafood",
+        "price": 10,
+        "desc": "Tuna, prawns, anchovies.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bbq-meaty",
+        "name": "BBQ Meaty Mighty",
+        "price": 10.9,
+        "desc": "BBQ ham, salami, pepperoni, bacon, meatball.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 1.1
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bbq-pokker",
+        "name": "BBQ Pokker",
+        "price": 10.9,
+        "desc": "BBQ chicken, pepperoni, bacon.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 1.1
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hotdog-pizza",
+        "name": "Hotdog Pizza",
+        "price": 9.9,
+        "desc": "Hotdog, mozzarella.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 1.1
+              }
+            ]
+          },
+          {
+            "id": "addons",
+            "label": "Make it special",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "garlic-bread",
+    "name": "Garlic Bread",
+    "icon": "🧄",
+    "items": [
+      {
+        "id": "gb-plain",
+        "name": "Plain Garlic Bread",
+        "price": 5,
+        "desc": "Stone-baked, brushed with garlic butter.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 1.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "gb-tomato",
+        "name": "Garlic Bread Tomato",
+        "price": 6,
+        "desc": "Garlic butter, tomato.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "gb-cheese",
+        "name": "Garlic Bread Cheese",
+        "price": 7,
+        "desc": "Garlic butter, melted mozzarella.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "gb-cheese-tomato",
+        "name": "Garlic Bread Cheese & Tomato",
+        "price": 7.8,
+        "desc": "Garlic butter, mozzarella, tomato.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 1.2
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "gb-doner",
+        "name": "Garlic Bread Doner Cheese",
+        "price": 8.5,
+        "desc": "Garlic butter, doner, mozzarella.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 1.3
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "gb-pepperoni",
+        "name": "Garlic Bread Pepperoni Cheese",
+        "price": 8.5,
+        "desc": "Garlic butter, pepperoni, mozzarella.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 1.3
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "gb-bacon",
+        "name": "Garlic Bread Bacon Cheese",
+        "price": 8.5,
+        "desc": "Garlic butter, bacon, mozzarella.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 1.3
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "gb-feta",
+        "name": "Garlic Bread Feta & Mozzarella",
+        "price": 8,
+        "desc": "Garlic butter, feta, mozzarella.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "calzone",
+    "name": "Calzone",
+    "icon": "🥟",
+    "items": [
+      {
+        "id": "cal-kiev",
+        "name": "Calzone Kiev",
+        "price": 9,
+        "desc": "Chicken, ham, garlic butter."
+      },
+      {
+        "id": "cal-doner",
+        "name": "Calzone Doner",
+        "price": 10,
+        "desc": "Doner, onion, mushroom."
+      },
+      {
+        "id": "cal-meat",
+        "name": "Calzone Meat Supreme",
+        "price": 10,
+        "desc": "Pepperoni, salami, ham, bacon."
+      },
+      {
+        "id": "cal-cheese-onion",
+        "name": "Calzone Cheese & Onion",
+        "price": 8.5,
+        "desc": "Cheese, onion."
+      },
+      {
+        "id": "cal-hot",
+        "name": "Calzone Hot",
+        "price": 10.5,
+        "desc": "Pepperoni, onion, jalapeno.",
+        "spicy": true
+      }
+    ]
+  },
+  {
+    "id": "parmesan",
+    "name": "Parmesan",
+    "icon": "🧀",
+    "items": [
+      {
+        "id": "parmo-plain",
+        "name": "Plain Parmesan",
+        "price": 9,
+        "desc": "Pounded chicken, golden crumb, bechamel & cheese."
+      },
+      {
+        "id": "parmo-bbq",
+        "name": "BBQ Parmesan",
+        "price": 10.5,
+        "desc": "Parmo topped with BBQ sauce & cheese."
+      },
+      {
+        "id": "parmo-hot",
+        "name": "Hot Parmesan",
+        "price": 10.5,
+        "desc": "Pepperoni, jalapeno, garlic butter.",
+        "spicy": true
+      },
+      {
+        "id": "parmo-ham",
+        "name": "Ham Parmesan",
+        "price": 10.5,
+        "desc": "Ham, cheese, garlic butter."
+      },
+      {
+        "id": "parmo-bacon",
+        "name": "Bacon Parmesan",
+        "price": 10.5,
+        "desc": "Bacon & cheese."
+      },
+      {
+        "id": "parmo-doner",
+        "name": "Doner Parmesan",
+        "price": 10.5,
+        "desc": "Doner & cheese."
+      }
+    ]
+  },
+  {
+    "id": "kebab",
+    "name": "Kebab",
+    "icon": "🥙",
+    "items": [
+      {
+        "id": "kb-med-doner",
+        "name": "Medium Doner Kebab",
+        "price": 7.8,
+        "desc": "Doner off the skewer, salad, pitta, sauce."
+      },
+      {
+        "id": "kb-lrg-doner",
+        "name": "Large Doner Kebab",
+        "price": 9,
+        "desc": "Extra doner, salad, pitta, sauce."
+      },
+      {
+        "id": "kb-chicken",
+        "name": "Chicken Kebab",
+        "price": 9.9,
+        "desc": "Chargrilled chicken, salad, pitta, sauce."
+      },
+      {
+        "id": "kb-combo",
+        "name": "Combo Kebab",
+        "price": 9.9,
+        "desc": "Chicken & doner, salad, pitta, sauce."
+      },
+      {
+        "id": "kb-lamb-shish",
+        "name": "Lamb Shish",
+        "price": 12,
+        "desc": "Chargrilled lamb shish, salad, pitta, sauce."
+      },
+      {
+        "id": "kb-mixed-grill",
+        "name": "Mixed Grill",
+        "price": 18,
+        "desc": "Chicken, lamb, doner — chips, salad, pitta & sauce."
+      },
+      {
+        "id": "kb-doner-meat",
+        "name": "Portion of Doner Meat",
+        "price": 5,
+        "desc": "Just the meat."
+      }
+    ]
+  },
+  {
+    "id": "wraps",
+    "name": "Wraps",
+    "icon": "🌯",
+    "items": [
+      {
+        "id": "wr-cheese-chips",
+        "name": "Cheese & Chips Wrap",
+        "price": 6,
+        "desc": "Cheese and chips, rolled."
+      },
+      {
+        "id": "wr-doner-chips",
+        "name": "Doner Meat & Chips Wrap",
+        "price": 8,
+        "desc": "Doner and chips, rolled."
+      },
+      {
+        "id": "wr-chicken",
+        "name": "Chicken Wrap",
+        "price": 7.5,
+        "desc": "Chargrilled chicken, salad, sauce."
+      },
+      {
+        "id": "wr-lamb-shish",
+        "name": "Lamb Shish Wrap",
+        "price": 8,
+        "desc": "Lamb shish, salad, sauce."
+      },
+      {
+        "id": "wr-combo",
+        "name": "Combo Wrap",
+        "price": 8.5,
+        "desc": "Chicken & doner."
+      },
+      {
+        "id": "wr-mixed",
+        "name": "Mixed Wrap",
+        "price": 9,
+        "desc": "Chicken, doner, lamb."
+      },
+      {
+        "id": "wr-foodstation",
+        "name": "Food Station Wrap",
+        "price": 9.8,
+        "desc": "Chicken tenders, cheese, doner."
+      },
+      {
+        "id": "wr-chicken-tender",
+        "name": "Chicken Tender Wrap",
+        "price": 8.5,
+        "desc": "Chicken tenders, salad, sauce."
+      }
+    ]
+  },
+  {
+    "id": "burgers",
+    "name": "Burgers",
     "icon": "🍔",
     "items": [
-      { "id": "main-1", "name": "First Item",  "price": 8.00, "desc": "Short description shown under the name on the menu page." },
-      { "id": "main-2", "name": "Second Item", "price": 9.50, "desc": "Another description.", "meal": { "label": "+ side & drink", "addPrice": 3.00 } }
+      {
+        "id": "bg-ham",
+        "name": "Hamburger & Chips",
+        "price": 5.5,
+        "desc": "Beef patty, salad, chips.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "q",
+                "label": "¼lb",
+                "price": 0
+              },
+              {
+                "id": "h",
+                "label": "½lb",
+                "price": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bg-cheese",
+        "name": "Cheeseburger & Chips",
+        "price": 6.5,
+        "desc": "Beef, cheese, salad, chips.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "q",
+                "label": "¼lb",
+                "price": 0
+              },
+              {
+                "id": "h",
+                "label": "½lb",
+                "price": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bg-chicken",
+        "name": "Chicken Burger & Chips",
+        "price": 6.5,
+        "desc": "Chicken fillet, salad, chips.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "q",
+                "label": "¼lb",
+                "price": 0
+              },
+              {
+                "id": "h",
+                "label": "½lb",
+                "price": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bg-hawaiian",
+        "name": "Hawaiian Burger & Chips",
+        "price": 6.9,
+        "desc": "Beef, cheese, pineapple, chips.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "q",
+                "label": "¼lb",
+                "price": 0
+              },
+              {
+                "id": "h",
+                "label": "½lb",
+                "price": 1.1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bg-veg",
+        "name": "Vegetable Burger & Chips",
+        "price": 6.5,
+        "desc": "Veggie patty, salad, chips.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "q",
+                "label": "¼lb",
+                "price": 0
+              },
+              {
+                "id": "h",
+                "label": "½lb",
+                "price": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bg-americana",
+        "name": "Americana Burger & Chips",
+        "price": 6.5,
+        "desc": "With fried onion & cheese, chips.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "q",
+                "label": "¼lb",
+                "price": 0
+              },
+              {
+                "id": "h",
+                "label": "½lb",
+                "price": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bg-bacon",
+        "name": "Bacon Burger & Chips",
+        "price": 6.5,
+        "desc": "Beef, bacon, cheese, chips.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "q",
+                "label": "¼lb",
+                "price": 0
+              },
+              {
+                "id": "h",
+                "label": "½lb",
+                "price": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bg-combo",
+        "name": "Combo Burger & Chips",
+        "price": 9.5,
+        "desc": "Cheeseburger + chicken burger, chips."
+      },
+      {
+        "id": "bg-mega",
+        "name": "Mega Burger & Chips",
+        "price": 10.5,
+        "desc": "Cheeseburger + chicken burger, chips."
+      },
+      {
+        "id": "bg-special",
+        "name": "Special Burger & Chips",
+        "price": 11.5,
+        "desc": "Cheeseburger, chicken burger, doner meat, chips."
+      }
+    ]
+  },
+  {
+    "id": "salad",
+    "name": "Salad",
+    "icon": "🥗",
+    "items": [
+      {
+        "id": "sl-side",
+        "name": "Side Salad",
+        "price": 3,
+        "desc": "Fresh mixed salad."
+      },
+      {
+        "id": "sl-chicken",
+        "name": "Chicken Salad",
+        "price": 6.5,
+        "desc": "Mixed salad topped with chargrilled chicken."
+      },
+      {
+        "id": "sl-tuna",
+        "name": "Tuna Salad",
+        "price": 5.8,
+        "desc": "Mixed salad with tuna."
+      }
     ]
   },
   {
     "id": "sides",
-    "name": "Sides",
+    "name": "Side Orders",
     "icon": "🍟",
     "items": [
-      { "id": "side-chips", "name": "Chips",   "price": 3.50, "desc": "Chunky cut, lightly salted." },
-      { "id": "side-slaw",  "name": "Coleslaw","price": 2.50, "desc": "Fresh, made daily." }
+      {
+        "id": "sd-chips",
+        "name": "Chips",
+        "price": 2.9,
+        "desc": "Freshly fried."
+      },
+      {
+        "id": "sd-chips-cheese",
+        "name": "Chips & Cheese",
+        "price": 4,
+        "desc": "Chips topped with melted cheese."
+      },
+      {
+        "id": "sd-chip-butty",
+        "name": "Chip Butty",
+        "price": 5,
+        "desc": "Chips in a buttered roll."
+      },
+      {
+        "id": "sd-chips-pepperoni",
+        "name": "Chips, Cheese & Pepperoni",
+        "price": 7,
+        "desc": "Loaded chips."
+      },
+      {
+        "id": "sd-chips-bacon",
+        "name": "Chips, Cheese & Bacon",
+        "price": 7,
+        "desc": "Loaded chips."
+      },
+      {
+        "id": "sd-chips-ham",
+        "name": "Chips, Cheese & Ham",
+        "price": 7,
+        "desc": "Loaded chips."
+      },
+      {
+        "id": "sd-mozzarella",
+        "name": "Mozzarella Sticks (5)",
+        "price": 4.8,
+        "desc": "Golden, gooey."
+      },
+      {
+        "id": "sd-chilli-poppers",
+        "name": "Chilli Poppers (5)",
+        "price": 4.5,
+        "desc": "Cheese-filled jalapeno poppers."
+      },
+      {
+        "id": "sd-hash",
+        "name": "Hash Browns (5)",
+        "price": 4,
+        "desc": "Crispy hash browns."
+      },
+      {
+        "id": "sd-onion-rings",
+        "name": "Onion Rings (8)",
+        "price": 4.5,
+        "desc": "Battered onion rings."
+      },
+      {
+        "id": "sd-popcorn",
+        "name": "Popcorn Chicken (12)",
+        "price": 5.5,
+        "desc": "Bite-size crispy chicken."
+      },
+      {
+        "id": "sd-nuggets",
+        "name": "Chicken Nuggets (8)",
+        "price": 4.5,
+        "desc": "Chicken nuggets."
+      },
+      {
+        "id": "sd-wedges",
+        "name": "Potato Wedges",
+        "price": 4,
+        "desc": "Seasoned potato wedges."
+      },
+      {
+        "id": "sd-sp-wings",
+        "name": "SP Wings (6)",
+        "price": 5.9,
+        "desc": "Southern-fried spicy wings.",
+        "spicy": true
+      },
+      {
+        "id": "sd-garlic-mushroom",
+        "name": "Garlic Mushroom & Cheese",
+        "price": 5.5,
+        "desc": "Breaded garlic mushrooms with cheese."
+      },
+      {
+        "id": "sd-tenders",
+        "name": "Chicken Tenders (5)",
+        "price": 6,
+        "desc": "Strips of chicken breast."
+      }
+    ]
+  },
+  {
+    "id": "kids",
+    "name": "Kids Meals",
+    "icon": "🧒",
+    "items": [
+      {
+        "id": "kd-nuggets",
+        "name": "Kids Nuggets & Chips",
+        "price": 5.5,
+        "desc": "Chicken nuggets (5) with chips."
+      },
+      {
+        "id": "kd-tenders",
+        "name": "Kids Tenders & Chips",
+        "price": 5.5,
+        "desc": "Chicken tenders (3) with chips."
+      },
+      {
+        "id": "kd-popcorn",
+        "name": "Kids Popcorn & Chips",
+        "price": 5.5,
+        "desc": "Popcorn chicken (8) with chips."
+      },
+      {
+        "id": "kd-marg",
+        "name": "Kids Margherita & Chips",
+        "price": 7,
+        "desc": "7\" margherita pizza with chips."
+      }
+    ]
+  },
+  {
+    "id": "dips",
+    "name": "Dips — Pots of Sauce",
+    "icon": "🥫",
+    "items": [
+      {
+        "id": "dip-mayo",
+        "name": "Mayo",
+        "price": 1,
+        "desc": ""
+      },
+      {
+        "id": "dip-garlic-mayo",
+        "name": "Garlic Mayo",
+        "price": 1,
+        "desc": ""
+      },
+      {
+        "id": "dip-ketchup",
+        "name": "Ketchup",
+        "price": 1,
+        "desc": ""
+      },
+      {
+        "id": "dip-bbq",
+        "name": "BBQ Sauce",
+        "price": 1,
+        "desc": ""
+      },
+      {
+        "id": "dip-sweet-chilli",
+        "name": "Sweet Chilli",
+        "price": 1,
+        "desc": ""
+      },
+      {
+        "id": "dip-chilli",
+        "name": "Chilli",
+        "price": 1,
+        "desc": ""
+      },
+      {
+        "id": "dip-garlic-yoghurt",
+        "name": "Garlic Yoghurt",
+        "price": 1,
+        "desc": ""
+      },
+      {
+        "id": "dip-burger",
+        "name": "Burger Sauce",
+        "price": 1,
+        "desc": ""
+      },
+      {
+        "id": "dip-relish",
+        "name": "Relish",
+        "price": 1,
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "desserts",
+    "name": "Desserts",
+    "icon": "🍰",
+    "items": [
+      {
+        "id": "ds-choc",
+        "name": "Chocolate Cake",
+        "price": 3.5,
+        "desc": "Rich chocolate fudge cake."
+      },
+      {
+        "id": "ds-cheese",
+        "name": "Cheesecake",
+        "price": 3.5,
+        "desc": "Creamy baked cheesecake."
+      },
+      {
+        "id": "ds-bj",
+        "name": "Ben & Jerry's",
+        "price": 7,
+        "desc": "Tub of Ben & Jerry’s ice cream."
+      }
     ]
   },
   {
@@ -22,8 +2038,177 @@
     "name": "Drinks",
     "icon": "🥤",
     "items": [
-      { "id": "drink-coke",  "name": "Can of Coke",    "price": 1.90 },
-      { "id": "drink-water", "name": "Bottle of Water","price": 1.50 }
+      {
+        "id": "dr-coke",
+        "name": "Coke",
+        "price": 1.5,
+        "desc": "",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "can",
+                "label": "Can",
+                "price": 0
+              },
+              {
+                "id": "btl",
+                "label": "Bottle (1.5L)",
+                "price": 2
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "dr-diet-coke",
+        "name": "Diet Coke",
+        "price": 1.5,
+        "desc": "",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "can",
+                "label": "Can",
+                "price": 0
+              },
+              {
+                "id": "btl",
+                "label": "Bottle (1.5L)",
+                "price": 2
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "dr-coke-zero",
+        "name": "Coke Zero",
+        "price": 1.5,
+        "desc": ""
+      },
+      {
+        "id": "dr-fanta",
+        "name": "Fanta",
+        "price": 1.5,
+        "desc": "",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "can",
+                "label": "Can",
+                "price": 0
+              },
+              {
+                "id": "btl",
+                "label": "Bottle (1.5L)",
+                "price": 2
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "dr-fanta-lemon",
+        "name": "Fanta Lemon",
+        "price": 1.5,
+        "desc": ""
+      },
+      {
+        "id": "dr-pepsi",
+        "name": "Pepsi",
+        "price": 1.5,
+        "desc": "",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "can",
+                "label": "Can",
+                "price": 0
+              },
+              {
+                "id": "btl",
+                "label": "Bottle (1.5L)",
+                "price": 2
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "dr-7up",
+        "name": "7up",
+        "price": 1.5,
+        "desc": ""
+      },
+      {
+        "id": "dr-dr-pepper",
+        "name": "Dr Pepper",
+        "price": 1.5,
+        "desc": ""
+      },
+      {
+        "id": "dr-monster",
+        "name": "Monster",
+        "price": 2.5,
+        "desc": ""
+      }
+    ]
+  },
+  {
+    "id": "meal-deals",
+    "name": "Meal Deals",
+    "icon": "🎉",
+    "items": [
+      {
+        "id": "md-1",
+        "name": "Meal Deal 1 — Goodie Box",
+        "price": 15,
+        "desc": "11\" margherita, doner, chips, 4 nuggets, 4 onion rings, can of drink."
+      },
+      {
+        "id": "md-2",
+        "name": "Meal Deal 2 — Burger Box",
+        "price": 13.5,
+        "desc": "Cheeseburger, chips, 6 nuggets, 6 onion rings, any dip, can of drink."
+      },
+      {
+        "id": "md-3",
+        "name": "Meal Deal 3",
+        "price": 16.5,
+        "desc": "Any 13\" pizza, chips and a bottle of drink."
+      },
+      {
+        "id": "md-4",
+        "name": "Meal Deal 4",
+        "price": 20,
+        "desc": "2 x 11\" pizza, 2 chips, 2 cans of drink."
+      },
+      {
+        "id": "md-5",
+        "name": "Meal Deal 5",
+        "price": 22,
+        "desc": "Any 13\" pizza, 1/4 cheeseburger, garlic bread, bottle of drink."
+      }
     ]
   }
 ]
