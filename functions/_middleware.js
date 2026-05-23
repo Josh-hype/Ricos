@@ -5,7 +5,10 @@ const SECURITY_HEADERS = {
   'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
-  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(self), payment=(self)',
+  // payment must be delegated to js.stripe.com too — Apple Pay and Google
+  // Pay run inside Stripe's cross-origin iframe, so 'self' alone blocks the
+  // wallet (browser logs "payment is not allowed in this document").
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(self), payment=(self "https://js.stripe.com")',
   'X-Frame-Options': 'DENY',
 };
 
