@@ -1,165 +1,181 @@
 # Restaurant onboarding — info we need from you
 
-Welcome! This form gathers everything we need to build your ordering
-website. Take ~15 minutes to fill it in and reply with the answers
-(plus the logo / photos as email attachments).
+This form has everything we need to build your online ordering website.
+Just fill it in with a pen — there's no rush. If you're not sure about
+something, leave it blank and we'll go through it together when you hand
+it back.
 
-If you're not sure on any field, leave it blank and we'll follow up.
-
----
-
-## 1. Business basics
-
-| Field | Your answer |
-|---|---|
-| Trading name (what customers see, e.g. "Pizza Bob's") | |
-| Short name (casual form for headers, e.g. "Pizza Bob's" or just "Bob's") | |
-| Legal company name (as on Companies House) | |
-| Companies House number | |
-| Address line 1 | |
-| City / town | |
-| Postcode | |
-| Country | |
-| Phone number (the one customers should ring with questions) | |
-| Orders email address (e.g. orders@yourshop.co.uk) | |
+You don't need a computer, and you don't need to send anything online.
+For your **logo** and **menu**, see sections 3 and 6 — the easiest thing
+is to give us a copy or send a photo by WhatsApp.
 
 ---
 
-## 2. Domain (your website address)
+## 1. Your business
 
-| Field | Your answer |
-|---|---|
-| Domain you'd like customers to use (e.g. `pizzabob.co.uk`) | |
-| Do you already own this domain? (yes / no — if no, we can register one for you) | |
-| Where is the domain's DNS managed? (e.g. GoDaddy, 123-reg, Cloudflare, "no idea") | |
-| Are you happy for us to manage the DNS for you? (saves us emailing you records to add) | |
+**Business name** — what your customers see (e.g. "Pizza Bob's")
+
+____________________________________________________________
+
+**Short version of the name** — for the top of the website (e.g. "Bob's")
+
+____________________________________________________________
+
+**Registered company name** — if you have one (leave blank if not)
+
+____________________________________________________________
+
+**Company number** — if you have one (leave blank if not)
+
+____________________________________________________________
+
+**Shop address**
+
+____________________________________________________________
+
+**Town / city**
+
+____________________________________________________________
+
+**Postcode**
+
+____________________________________________________________
+
+**Phone number** customers can call with questions
+
+____________________________________________________________
+
+**Email address for receiving orders** (e.g. orders@yourshop.co.uk)
+
+____________________________________________________________
 
 ---
 
-## 3. Branding
+## 2. Your website address
 
-Attach with your reply:
+**Do you already have a website address?** (e.g. pizzabob.co.uk)
 
-- [ ] **Logo file**: PNG with transparent background. Square if
-      possible, at least 512×512 pixels. If you only have a print logo
-      / business card, send what you have and we'll work with it.
+☐ Yes — write it here:  ____________________________________
 
-| Field | Your answer |
-|---|---|
-| Primary brand colour (the dominant colour — give us a hex code like `#c8261c`, or describe e.g. "deep red") | |
-| Accent colour (a second highlight colour — same format) | |
-| Background colour, if you want one (defaults to a warm cream) | |
-| Optional: a one-line tagline for your landing page (e.g. "Char-grilled chicken, family-run, since 2024") | |
+☐ No — please sort one out for us
+
+**If yes,** do you know where it was set up? (e.g. GoDaddy, 123-reg,
+or "not sure" — that's fine)
+
+____________________________________________________________
+
+---
+
+## 3. Your logo and colours
+
+**Your logo** — tick whichever is easiest:
+
+☐ I'll give you something with my logo on it (menu, business card, sign)
+
+☐ I'll send a photo of it by WhatsApp to **07438107483**
+
+☐ I don't have a logo — please design one for me
+
+**Your colours** — describe the colours you'd like the website to use
+(e.g. "red and yellow", "green and white"). No need to be exact.
+
+____________________________________________________________
+
+**A short line about your shop** for the homepage, if you'd like one
+(e.g. "Freshly made pizzas & kebabs, family-run in York")
+
+____________________________________________________________
 
 ---
 
 ## 4. Opening hours
 
-For each day, tell us either the open/close times or "closed":
+Write your hours for each day (e.g. "12pm – 11pm"), or tick **Closed**.
+If you're open past midnight, just write it the way you'd say it
+(e.g. "5pm – 1am") and we'll set it up correctly.
 
-| Day | Opens | Closes |
-|---|---|---|
-| Monday | | |
-| Tuesday | | |
-| Wednesday | | |
-| Thursday | | |
-| Friday | | |
-| Saturday | | |
-| Sunday | | |
+```
+Monday      _______________________     ☐ Closed
+Tuesday     _______________________     ☐ Closed
+Wednesday   _______________________     ☐ Closed
+Thursday    _______________________     ☐ Closed
+Friday      _______________________     ☐ Closed
+Saturday    _______________________     ☐ Closed
+Sunday      _______________________     ☐ Closed
+```
 
-If you stay open past midnight (e.g. close at 1am Saturday), write the
-close time as e.g. "1am Sunday" — we'll set it up correctly.
+**How long before closing should we stop taking online orders?**
+(so the kitchen isn't rushed right at the end — e.g. 30 minutes)
 
-| Field | Your answer |
-|---|---|
-| How many minutes before closing should we stop taking online orders? (so the kitchen isn't slammed at the bell, e.g. "30 minutes") | |
-| How long does an order typically take to prepare? (we use this for the "ready in about X minutes" estimate) | |
+____________________________________________________________
+
+**Roughly how long does an order take to make?**
+(we tell customers "ready in about X minutes" — e.g. 25 minutes)
+
+____________________________________________________________
 
 ---
 
 ## 5. Collection and delivery
 
-| Field | Your answer |
-|---|---|
-| Do you offer **collection**? (yes / no) | |
-| Do you offer **delivery**? (yes / no) | |
+**Do you offer collection?**    ☐ Yes    ☐ No
 
-If you offer delivery:
+**Do you offer delivery?**    ☐ Yes    ☐ No
 
-| Field | Your answer |
-|---|---|
-| Delivery fee charged to the customer (in £, e.g. £2.00) | |
-| Minimum order value for delivery (in £, e.g. £15) | |
-| Which postcode areas do you cover? Give us the outcodes — the bit before the space (e.g. "YO1, YO10, YO23, YO24") | |
-| Short description of your delivery area for error messages (e.g. "inside the York ring road" or "within 3 miles of the shop") | |
+If you offer delivery, please fill in the rest of this section:
+
+**How much do you charge for delivery?** (e.g. £2.00)
+
+____________________________________________________________
+
+**Smallest order you'll deliver?** (e.g. £15)
+
+____________________________________________________________
+
+**Which areas do you deliver to?** List the areas or postcodes
+(e.g. "Acomb, Holgate, YO24, YO26")
+
+____________________________________________________________
+
+____________________________________________________________
+
+**In a few words, how would you describe your delivery area?**
+(e.g. "within 3 miles of the shop" or "inside the ring road")
+
+____________________________________________________________
 
 ---
 
 ## 6. Your menu
 
-List your full menu, grouped by category. For each item include the
-**name**, **price** (in £), and a short **description** (1 sentence).
-Photos are optional but make a big difference — see below.
+You don't need to write your menu out here. Just get it to us whichever
+way is easiest — tick one:
 
-**Don't want to type it all out?** You can give us a hard copy of your
-menu, or send it over WhatsApp to **07438107483** — whatever's easiest.
+☐ I'll give you a printed copy of my menu
 
-**Format example:**
+☐ I'll send a photo of it by WhatsApp to **07438107483**
 
-```
-SIGNATURE CHICKEN  (emoji: 🍗)
+**Has anything changed?** If any items or prices are different from your
+printed menu, note the changes here (or just tell us):
 
-- Signature Peri Thighs ×3 — £10.95
-  3 char-grilled peri thighs in your spice.
-  Spicy: yes
-  Meal upgrade: + 2 sides & drink, +£4.00
+____________________________________________________________
 
-- Half Chicken — £9.95
-  Half a peri-marinated chicken, char-grilled.
-  Spicy: yes
-  Meal upgrade: + 2 sides & drink, +£3.00
+____________________________________________________________
 
-SIDES  (emoji: 🍟)
-
-- Chips (Regular) — £2.90
-- Coleslaw — £2.60
-```
-
-Notes:
-- **Categories** — give each one a short name and a single emoji for
-  the menu icon
-- **Spicy** items get a flame icon on the customer's view; non-spicy
-  items don't ask for a spice level
-- **Meal upgrade** is optional — for items where customers can add
-  "+ sides & drink" for a small extra charge
-- **Photos** — if you have item photos, attach them as JPGs. Naming
-  them after the item helps (e.g. "half-chicken.jpg"). Square crops
-  work best. We'll embed them into the menu page.
-
-| Field | Your answer |
-|---|---|
-| Your menu | (paste below, attach, hand us a hard copy, or WhatsApp to 07438107483) |
-| Photos to attach? (yes/no, how many) | |
+**Photos of your food** look great on the website but are optional. If
+you have any, send them by WhatsApp to **07438107483** — nothing to
+bring with you today.
 
 ---
 
-## 7. Payments
+## 7. Card payments
 
-We use Stripe to process card payments — they're the same provider
-behind most takeaway apps. Payments land directly in your bank account
-(not ours); we just take a small per-order platform fee.
+Card payments go straight into your own bank account — we never see your
+customers' card details. We'll set this up with you separately; it takes
+about 10 minutes and you'll just need your bank details to hand.
 
-We'll send you a **Stripe Connect onboarding link** separately. You'll
-need to:
+**Would you also like to take cash?**
 
-- [ ] Click the link and fill in business name, address, and your bank
-      details (Stripe handles all the card-handling security; we never
-      see your customers' card numbers)
-- [ ] Upload an ID document if Stripe asks
-- [ ] Send us the `acct_xxx` code Stripe gives you at the end
+On collection:    ☐ Yes    ☐ No
 
-| Field | Your answer |
-|---|---|
-| Do you also want to accept **cash on collection**? (yes / no) | |
-| Do you also want to accept **cash on delivery**? (yes / no) | |
-| Stripe Connect ID (the `acct_xxx` code — fill in after onboarding) | |
+On delivery:    ☐ Yes    ☐ No
