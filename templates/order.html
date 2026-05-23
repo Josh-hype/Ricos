@@ -1325,6 +1325,25 @@
     color: var(--grey);
   }
   .schedule-note:empty { display: none; }
+
+  /* Delivery minimum-order hint in the cart. Amber, informative (not an
+     error), hidden until needed. Checkout is disabled while it shows. */
+  .min-order-hint {
+    margin: 10px 0 0;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: #fff5d8;
+    border: 1.5px solid var(--yellow-deep);
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+  }
+  .min-order-hint:empty { display: none; }
+  .checkout-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
 </style>
 <script>
 /* Inline logo so the file works standalone (no separate PNG needed).
@@ -1419,6 +1438,7 @@
         <div class="cart-row" id="sumDeliveryRow" style="display:none"><span>Delivery</span><span id="sumDelivery">£2.00</span></div>
         <div class="cart-row"><span>Service fee</span><span id="sumService">£0.30</span></div>
         <div class="cart-row total"><span>Total</span><span id="sumTotal">£0.00</span></div>
+        <div class="min-order-hint" id="minHint"></div>
         <button class="checkout-btn" id="checkoutBtn">Checkout →</button>
       </div>
     </aside>
@@ -1458,6 +1478,7 @@
       <div class="cart-row" id="mSumDeliveryRow" style="display:none"><span>Delivery</span><span id="mSumDelivery">£2.00</span></div>
       <div class="cart-row"><span>Service fee</span><span id="mSumService">£0.30</span></div>
       <div class="cart-row total"><span>Total</span><span id="mSumTotal">£0.00</span></div>
+      <div class="min-order-hint" id="mMinHint"></div>
       <button class="checkout-btn" id="mCheckoutBtn" style="margin-top: 0.6rem;">Checkout →</button>
     </div>
   </div>
@@ -2007,6 +2028,25 @@ function renderCart() {
 
   renderInto('cartBody',      'cartSummary',     'sumSub',  'sumDisc',  'sumDeliveryRow',  'sumDelivery',  'sumService',  'sumTotal');
   renderInto('cartModalBody', 'cartModalFooter', 'mSumSub', 'mSumDisc', 'mSumDeliveryRow', 'mSumDelivery', 'mSumService', 'mSumTotal');
+
+  // Delivery minimum-order hint. Mirrors the server check (subtotal after
+  // the online discount vs the configured minimum) so the customer sees how
+  // much more they need before checkout, rather than getting rejected at
+  // the end. Checkout is disabled while under the minimum.
+  const minP = Number(window.SHOP_CONFIG?.fulfillment?.delivery?.minimumOrderPence) || 0;
+  const netP = Math.round((t.sub - t.discount) * 100);
+  const underMin = state.mode === 'deliver' && minP > 0 && state.cart.length > 0 && netP < minP;
+  const hintText = underMin
+    ? `Add ${fmt((minP - netP) / 100)} more for delivery (${fmt(minP / 100)} minimum)`
+    : '';
+  for (const id of ['minHint', 'mMinHint']) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = hintText;
+  }
+  for (const id of ['checkoutBtn', 'mCheckoutBtn']) {
+    const b = document.getElementById(id);
+    if (b) b.disabled = underMin;
+  }
 }
 
 /* ---------- Modal helpers ---------- */
@@ -2735,6 +2775,17 @@ function startCheckout() {
     alert('Please enter your postcode at the top of the page first.');
     document.getElementById('postcode').focus();
     return;
+  }
+  // Delivery minimum backstop (the checkout button is also disabled while
+  // under the minimum; this covers the sign-in/guest resume path).
+  const minP = Number(window.SHOP_CONFIG?.fulfillment?.delivery?.minimumOrderPence) || 0;
+  if (state.mode === 'deliver' && minP > 0) {
+    const ct = cartTotals();
+    const netP = Math.round((ct.sub - ct.discount) * 100);
+    if (netP < minP) {
+      alert(`Minimum delivery order is ${fmt(minP / 100)}. Add ${fmt((minP - netP) / 100)} more, or switch to collection.`);
+      return;
+    }
   }
   // if not signed in and not yet chosen guest path, prompt for account first
   if (!state.user && !checkoutData.guest) {
