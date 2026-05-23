@@ -2432,8 +2432,11 @@ async function placeOrder() {
       }
       const cvcWrapEl = document.getElementById('cvc-prompt-wrap');
       const cvcShowing = cvcMounted && cvcWrapEl && cvcWrapEl.style.display !== 'none';
+      // For CVC re-collection on a saved card the saved PM is already on
+      // the PI; we pass a fresh CVC via payment_method_options.card.cvc so
+      // Stripe pairs the CVC with the saved card details.
       const confirmArgs = cvcShowing
-        ? { payment_method: { card: cvcElement } }
+        ? { payment_method_options: { card: { cvc: cvcElement } } }
         : undefined;
       const result = await stripeInstance.confirmCardPayment(data.clientSecret, confirmArgs);
       if (result.error) {
