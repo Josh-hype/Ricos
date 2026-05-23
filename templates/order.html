@@ -957,6 +957,14 @@
     padding-top: 12px;
   }
   .cart-row .discount { color: var(--success); }
+  /* Item option groups (sizes / add-ons) in the detail modal */
+  .opt-group { border: 1.5px solid #e6e0d0; border-radius: 12px; padding: 8px 12px 10px; margin: 0 0 10px; text-align: left; }
+  .opt-group legend { font-weight: 800; font-size: 0.85rem; padding: 0 6px; color: var(--ink, #181210); }
+  .opt-choice { display: flex; align-items: center; gap: 10px; padding: 7px 2px; cursor: pointer; font-size: 0.98rem; }
+  .opt-choice input { width: 18px; height: 18px; accent-color: var(--primary, #c8261c); flex: 0 0 auto; }
+  .opt-choice .opt-delta { margin-left: auto; font-weight: 700; color: var(--primary, #c8261c); }
+  .opt-required-note { color: #c0392b; font-size: 0.8rem; margin: 2px 0 0; min-height: 1em; }
+  .opt-required-note:empty { min-height: 0; }
 
   .checkout-btn {
     width: 100%;
@@ -1690,8 +1698,38 @@ function itemRowHTML(item) {
   `;
 }
 
+/* Build the option groups (sizes, add-ons) for the item modal. Each group is
+   single-select (radios, e.g. pizza size) or multi-select (checkboxes, e.g.
+   extra toppings). Choice `price` is the £ delta added on top of the base
+   price. The matching priceDeltaP in menu.json is what the server actually
+   charges — these are display only. Items with no `options` render nothing,
+   so existing shops are unchanged. */
+function optionGroupsHTML(item) {
+  if (!Array.isArray(item.options) || !item.options.length) return '';
+  return item.options.map(g => {
+    const type = g.select === 'multi' ? 'checkbox' : 'radio';
+    const gid = 'optg-' + g.id;
+    const rows = (g.choices || []).map((c, i) => {
+      const checked = (type === 'radio' && g.required && i === 0) ? 'checked' : '';
+      const delta = c.price ? `<span class="opt-delta">+${fmt(c.price)}</span>` : '';
+      return `<label class="opt-choice"><input type="${type}" name="${gid}" value="${escapeHTML(c.id)}" data-price="${Number(c.price) || 0}" data-label="${escapeHTML(c.label)}" ${checked}/><span>${escapeHTML(c.label)}</span>${delta}</label>`;
+    }).join('');
+    return `<fieldset class="opt-group" data-select="${type === 'checkbox' ? 'multi' : 'single'}" data-required="${g.required ? '1' : '0'}"><legend>${escapeHTML(g.label)}</legend>${rows}<div class="opt-required-note" data-err></div></fieldset>`;
+  }).join('');
+}
+
+/* Read the currently-ticked options from the open modal body.
+   Returns [{ id, label, price }]. */
+function readSelectedOptions(body) {
+  const out = [];
+  body.querySelectorAll('.opt-group input:checked').forEach(inp => {
+    out.push({ id: inp.value, label: inp.dataset.label, price: Number(inp.dataset.price) || 0 });
+  });
+  return out;
+}
+
 /* Open the item detail modal: shows the photo (or drink SVG / placeholder),
-   description, spice picker, meal upgrade, and Add to cart button. */
+   description, option groups, spice picker, meal upgrade, and Add to cart. */
 function openItemDetail(itemId) {
   const item = findItem(itemId);
   if (!item) return;
@@ -1702,18 +1740,45 @@ function openItemDetail(itemId) {
 
   const mealInput = body.querySelector('.meal-toggle input');
   const mealChoicesEl = body.querySelector('#mealChoices');
+  const priceEl = body.querySelector('#itemDetailPrice');
+
+  // Live price = base + meal upgrade (if ticked) + selected option deltas.
+  const recalcPrice = () => {
+    let p = item.price;
+    if (mealInput && mealInput.checked && item.meal) p += item.meal.addPrice;
+    for (const o of readSelectedOptions(body)) p += o.price;
+    if (priceEl) priceEl.textContent = fmt(p);
+  };
+  body.querySelectorAll('.opt-group input').forEach(inp => inp.addEventListener('change', recalcPrice));
+
   if (mealInput) {
     mealInput.addEventListener('change', () => {
       mealInput.closest('.meal-toggle').classList.toggle('active', mealInput.checked);
       // Reveal the side/drink pickers only while the meal is selected.
       if (mealChoicesEl) mealChoicesEl.style.display = mealInput.checked ? '' : 'none';
+      recalcPrice();
     });
   }
+  recalcPrice();
 
   const addBtn = body.querySelector('.item-detail-add');
   addBtn.addEventListener('click', () => {
     const spiceSel = body.querySelector('.spice-select');
     const isMeal = mealInput ? mealInput.checked : false;
+
+    // Required option groups must have a selection (radios default-check the
+    // first choice, so this mainly catches required multi-select groups).
+    let optionErr = false;
+    body.querySelectorAll('.opt-group[data-required="1"]').forEach(grp => {
+      const errEl = grp.querySelector('[data-err]');
+      if (!grp.querySelector('input:checked')) {
+        const lbl = grp.querySelector('legend') ? grp.querySelector('legend').textContent : 'an option';
+        if (errEl) errEl.textContent = 'Please choose ' + lbl + '.';
+        optionErr = true;
+      } else if (errEl) { errEl.textContent = ''; }
+    });
+    if (optionErr) return;
+    const options = readSelectedOptions(body);
 
     // When the meal has side/drink pickers, require every one to be chosen.
     let mealChoices = [];
@@ -1732,6 +1797,7 @@ function openItemDetail(itemId) {
       spice: spiceSel ? spiceSel.value : null,
       meal: isMeal,
       mealChoices,
+      options,
     });
     addBtn.classList.add('added');
     addBtn.textContent = '✓ Added to cart';
@@ -1778,9 +1844,10 @@ function itemDetailHTML(item) {
   return `
     <div class="${photoClass}">${photo}</div>
     <h4 class="item-detail-name">${escapeHTML(item.name)}</h4>
-    <div class="item-detail-price">${fmt(item.price)}</div>
+    <div class="item-detail-price" id="itemDetailPrice">${fmt(item.price)}</div>
     <p class="item-detail-desc">${escapeHTML(item.desc)}</p>
     <div class="item-detail-controls">
+      ${optionGroupsHTML(item)}
       ${spiceField}
       ${mealField}
       ${mealChooseField}
@@ -1927,14 +1994,21 @@ function addToCart(itemId, opts) {
   // Chosen meal sides/drink (ids). Names resolved for display via MENU_DATA.
   const choiceIds = (opts.meal && Array.isArray(opts.mealChoices)) ? opts.mealChoices : [];
   const choiceNames = choiceIds.map(id => findItem(id)?.name).filter(Boolean);
-  // Different side/drink combinations are separate cart lines.
-  const lineKey = `${itemId}|${opts.spice || ''}|${opts.meal ? 'meal' : ''}|${choiceIds.join(',')}`;
+  // Selected option add-ons: ids go to the server (modifiers), labels are for
+  // display, price is the £ delta added to this line.
+  const options = Array.isArray(opts.options) ? opts.options : [];
+  const optionIds = options.map(o => o.id);
+  const optionNames = options.map(o => o.label).filter(Boolean);
+  const optionDelta = options.reduce((s, o) => s + (Number(o.price) || 0), 0);
+  // Different option / side / drink combinations are separate cart lines.
+  const lineKey = `${itemId}|${opts.spice || ''}|${opts.meal ? 'meal' : ''}|${choiceIds.join(',')}|${optionIds.slice().sort().join(',')}`;
   const existing = state.cart.find(c => c.key === lineKey);
   if (existing) {
     existing.qty += 1;
   } else {
     let price = found.price;
     if (opts.meal && found.meal) price += found.meal.addPrice;
+    price += optionDelta;
     state.cart.push({
       key: lineKey,
       itemId,
@@ -1946,6 +2020,8 @@ function addToCart(itemId, opts) {
       meal: opts.meal && found.meal ? found.meal.label : null,
       mealChoices: choiceIds,
       mealChoiceNames: choiceNames,
+      modifiers: optionIds,
+      optionNames,
     });
   }
   saveState();
@@ -1988,7 +2064,9 @@ function deliveryFeeGBP() {
 
 function cartTotals() {
   const sub = state.cart.reduce((s, l) => s + l.price * l.qty, 0);
-  const discount = sub * 0.10;
+  const promo = window.SHOP_CONFIG?.promo?.autoOnlineDiscount;
+  const discountPct = (promo && promo.enabled) ? (Number(promo.percent) || 0) : 0;
+  const discount = sub * (discountPct / 100);
   const delivery = deliveryFeeGBP();
   const serviceFee = state.cart.length > 0 ? serviceFeeGBP() : 0;
   const total = Math.max(0, sub - discount + delivery + serviceFee);
@@ -1996,7 +2074,7 @@ function cartTotals() {
 }
 
 function cartLineHTML(line) {
-  const meta = [line.spice, line.meal, ...(line.mealChoiceNames || [])].filter(Boolean).join(' · ');
+  const meta = [...(line.optionNames || []), line.spice, line.meal, ...(line.mealChoiceNames || [])].filter(Boolean).join(' · ');
   return `
     <div class="cart-item" data-key="${line.key}">
       <div class="cart-item-name">${escapeHTML(line.name)}</div>
@@ -2040,6 +2118,8 @@ function renderCart() {
     if (summary) summary.style.display = 'block';
     document.getElementById(subId).textContent  = fmt(t.sub);
     document.getElementById(discId).textContent = `-${fmt(t.discount)}`;
+    const discRow = document.getElementById(discId).closest('.cart-row');
+    if (discRow) discRow.style.display = t.discount > 0 ? '' : 'none';
     document.getElementById(svcId).textContent  = fmt(t.serviceFee);
     document.getElementById(totalId).textContent = fmt(t.total);
     const dRow = document.getElementById(delvRowId);
@@ -2524,7 +2604,7 @@ function buildOrderRequest() {
       qty: l.qty,
       meal: !!l.meal,
       spice: l.spice || null,
-      modifiers: [],
+      modifiers: Array.isArray(l.modifiers) ? l.modifiers : [],
       mealChoices: Array.isArray(l.mealChoices) ? l.mealChoices : [],
     })),
     fulfillment: state.mode === 'deliver' ? 'delivery' : 'collection',
@@ -2979,7 +3059,7 @@ function renderCheckout() {
   else if (checkoutStep === 'payment') {
     const t = cartTotals();
     const linesHTML = state.cart.map(l =>
-      `<div class="line"><span><span class="qx">${l.qty}×</span>${escapeHTML(l.name)}${l.spice ? ' · '+escapeHTML(l.spice) : ''}${l.meal ? ' · '+escapeHTML(l.meal) : ''}</span><span>${fmt(l.price * l.qty)}</span></div>`
+      `<div class="line"><span><span class="qx">${l.qty}×</span>${escapeHTML(l.name)}${(l.optionNames && l.optionNames.length) ? ' · '+escapeHTML(l.optionNames.join(' · ')) : ''}${l.spice ? ' · '+escapeHTML(l.spice) : ''}${l.meal ? ' · '+escapeHTML(l.meal) : ''}</span><span>${fmt(l.price * l.qty)}</span></div>`
     ).join('');
 
     const cashLabel = state.mode === 'deliver'
@@ -3021,7 +3101,7 @@ function renderCheckout() {
         <h4>Order summary</h4>
         ${linesHTML}
         <div class="line"><span>Subtotal</span><span>${fmt(t.sub)}</span></div>
-        <div class="line"><span style="color:var(--success)">Online discount (10%)</span><span style="color:var(--success)">-${fmt(t.discount)}</span></div>
+        ${t.discount > 0 ? `<div class="line"><span style="color:var(--success)">Online discount (10%)</span><span style="color:var(--success)">-${fmt(t.discount)}</span></div>` : ''}
         ${state.mode==='deliver' ? `<div class="line"><span>Delivery</span><span>${t.delivery===0?'FREE':fmt(t.delivery)}</span></div>` : ''}
         ${t.serviceFee > 0 ? `<div class="line"><span>Service fee</span><span>${fmt(t.serviceFee)}</span></div>` : ''}
         <div class="line total"><span>Total</span><span>${fmt(t.total)}</span></div>
