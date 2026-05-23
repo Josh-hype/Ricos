@@ -576,7 +576,7 @@ function renderCard(o, isNew) {
   const lines = (o.totals.lines || []).map(l => `
     <li>
       <span class="qty">${l.qty}×</span>
-      <span class="name">${escapeHtml(l.name)}${l.spice ? ` <span class="mod" style="background:#ffe1d4;color:#a8331a;font-weight:600">${escapeHtml(l.spice)}</span>` : ''}${l.meal ? ' <span class="mod">(meal)</span>' : ''}${l.modifiers && l.modifiers.length ? ` <span class="mod">(${l.modifiers.map(escapeHtml).join(', ')})</span>` : ''}</span>
+      <span class="name">${escapeHtml(l.name)}${l.spice ? ` <span class="mod" style="background:#ffe1d4;color:#a8331a;font-weight:600">${escapeHtml(l.spice)}</span>` : ''}${l.meal ? ' <span class="mod">(meal)</span>' : ''}${l.mealChoices && l.mealChoices.length ? ` <span class="mod">(${l.mealChoices.map(escapeHtml).join(', ')})</span>` : ''}${l.modifiers && l.modifiers.length ? ` <span class="mod">(${l.modifiers.map(escapeHtml).join(', ')})</span>` : ''}</span>
     </li>`).join('');
 
   const addr = o.address ? `<div style="font-size:0.85rem;color:var(--grey);margin-top:4px">${escapeHtml(o.address.line1)}${o.address.line2 ? ', ' + escapeHtml(o.address.line2) : ''}, ${escapeHtml(o.address.postcode)}${o.address.notes ? `<br><em>${escapeHtml(o.address.notes)}</em>` : ''}</div>` : '';

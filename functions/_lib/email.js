@@ -60,7 +60,7 @@ export function orderAcceptedEmail(order, config) {
 
   const lines = order.totals.lines.map(l =>
     `<tr>
-       <td style="padding:6px 0">${escapeHtml(l.qty)}× ${escapeHtml(l.name)}${l.spice ? ` <em style="color:${c.primaryDark}">— ${escapeHtml(l.spice)}</em>` : ''}${l.modifiers?.length ? ` <em style="color:#6b5e58">(${l.modifiers.map(escapeHtml).join(', ')})</em>` : ''}${l.meal ? ' <em style="color:#6b5e58">(meal)</em>' : ''}</td>
+       <td style="padding:6px 0">${escapeHtml(l.qty)}× ${escapeHtml(l.name)}${l.spice ? ` <em style="color:${c.primaryDark}">— ${escapeHtml(l.spice)}</em>` : ''}${l.meal ? ' <em style="color:#6b5e58">(meal)</em>' : ''}${l.mealChoices?.length ? ` <em style="color:#6b5e58">(${l.mealChoices.map(escapeHtml).join(', ')})</em>` : ''}${l.modifiers?.length ? ` <em style="color:#6b5e58">(${l.modifiers.map(escapeHtml).join(', ')})</em>` : ''}</td>
        <td style="padding:6px 0;text-align:right">£${(l.lineTotalP/100).toFixed(2)}</td>
      </tr>`
   ).join('');

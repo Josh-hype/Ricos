@@ -30,6 +30,23 @@ export function computeTotals(input, config) {
       modSummaries.push(mod.label);
     }
 
+    // Meal side/drink choices. Price-neutral (covered by mealAddP); we only
+    // validate they're within the meal's allowed set and record their names
+    // for the kitchen ticket + receipt. Validating against the allow-list
+    // (built from the configured categories minus excludes) stops a crafted
+    // request swapping in, say, a chicken side it shouldn't get.
+    const mealChoiceNames = [];
+    if (line.meal && item.mealChoose && Array.isArray(line.mealChoices)) {
+      const allowed = allowedMealChoiceIds(item.mealChoose, menu);
+      const maxCount = (item.mealChoose.sides?.count || 0) + (item.mealChoose.drink?.count || 0);
+      for (const choiceId of line.mealChoices) {
+        if (mealChoiceNames.length >= maxCount) break;
+        if (!allowed.has(choiceId)) continue;
+        const chosen = itemsById.get(choiceId);
+        if (chosen) mealChoiceNames.push(chosen.name);
+      }
+    }
+
     const lineTotalP = lineP * qty;
     subtotalP += lineTotalP;
 
@@ -40,6 +57,7 @@ export function computeTotals(input, config) {
       meal: !!line.meal,
       spice: typeof line.spice === 'string' ? line.spice.slice(0, 40) : null,
       modifiers: modSummaries,
+      mealChoices: mealChoiceNames,
       unitPriceP: lineP,
       lineTotalP,
     });
@@ -100,4 +118,21 @@ function indexMenu(menu) {
     }
   }
   return m;
+}
+
+// Build the set of item ids a meal's side/drink choice may use, from the
+// configured categories minus any excluded ids. Mirrors the client UI's
+// option list so server validation matches what the customer was offered.
+function allowedMealChoiceIds(mealChoose, menu) {
+  const allowed = new Set();
+  for (const cfg of [mealChoose.sides, mealChoose.drink]) {
+    if (!cfg) continue;
+    const cat = menu.find(c => c.id === cfg.category);
+    if (!cat) continue;
+    const ex = new Set(cfg.exclude || []);
+    for (const item of cat.items || []) {
+      if (!ex.has(item.id)) allowed.add(item.id);
+    }
+  }
+  return allowed;
 }

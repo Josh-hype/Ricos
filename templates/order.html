@@ -511,6 +511,39 @@
     flex: 1;
     min-width: 130px;
   }
+  /* Meal side/drink pickers (revealed when "make it a meal" is ticked). */
+  .meal-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.7rem;
+    border: 1.5px dashed var(--ink);
+    border-radius: 10px;
+    background: var(--cream);
+  }
+  .meal-choice {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .meal-choice > span { min-width: 64px; }
+  .meal-choice select {
+    flex: 1;
+    padding: 7px 10px;
+    border-radius: 8px;
+    border: 1.5px solid var(--ink);
+    background: var(--white);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .meal-choice-err {
+    color: var(--error);
+    font-size: 0.82rem;
+    min-height: 16px;
+  }
   .meal-toggle {
     display: inline-flex;
     align-items: center;
@@ -1602,18 +1635,37 @@ function openItemDetail(itemId) {
   openModal('itemDetailOverlay');
 
   const mealInput = body.querySelector('.meal-toggle input');
+  const mealChoicesEl = body.querySelector('#mealChoices');
   if (mealInput) {
     mealInput.addEventListener('change', () => {
       mealInput.closest('.meal-toggle').classList.toggle('active', mealInput.checked);
+      // Reveal the side/drink pickers only while the meal is selected.
+      if (mealChoicesEl) mealChoicesEl.style.display = mealInput.checked ? '' : 'none';
     });
   }
 
   const addBtn = body.querySelector('.item-detail-add');
   addBtn.addEventListener('click', () => {
     const spiceSel = body.querySelector('.spice-select');
+    const isMeal = mealInput ? mealInput.checked : false;
+
+    // When the meal has side/drink pickers, require every one to be chosen.
+    let mealChoices = [];
+    if (isMeal && mealChoicesEl) {
+      const selects = [...mealChoicesEl.querySelectorAll('select')];
+      const errEl = body.querySelector('#mealChoiceErr');
+      if (selects.some(s => !s.value)) {
+        if (errEl) errEl.textContent = 'Please choose your sides and drink.';
+        return;
+      }
+      if (errEl) errEl.textContent = '';
+      mealChoices = selects.map(s => s.value);
+    }
+
     addToCart(itemId, {
       spice: spiceSel ? spiceSel.value : null,
-      meal: mealInput ? mealInput.checked : false,
+      meal: isMeal,
+      mealChoices,
     });
     addBtn.classList.add('added');
     addBtn.textContent = '✓ Added to cart';
@@ -1648,6 +1700,15 @@ function itemDetailHTML(item) {
        </label>`
     : '';
 
+  // Meal side/drink pickers — only when the meal defines a `choose` config.
+  // Hidden until the meal checkbox is ticked.
+  const mealChooseField = (item.meal && item.meal.choose)
+    ? `<div class="meal-choices" id="mealChoices" style="display:none">
+         ${mealChoiceSelectsHTML(item.meal.choose)}
+         <div class="meal-choice-err" id="mealChoiceErr" aria-live="polite"></div>
+       </div>`
+    : '';
+
   return `
     <div class="${photoClass}">${photo}</div>
     <h4 class="item-detail-name">${escapeHTML(item.name)}</h4>
@@ -1656,9 +1717,38 @@ function itemDetailHTML(item) {
     <div class="item-detail-controls">
       ${spiceField}
       ${mealField}
+      ${mealChooseField}
       <button type="button" class="item-detail-add">+ Add to order</button>
     </div>
   `;
+}
+
+/* Build the side/drink <select> dropdowns for a meal's `choose` config.
+   Options come from the named category in MENU_DATA minus any excluded ids
+   (e.g. chicken sides and dips). Each select carries data-kind so we can
+   label it in the cart. */
+function mealOptionItems(categoryId, excludeIds) {
+  const cat = MENU_DATA.find(c => c.id === categoryId);
+  if (!cat) return [];
+  const ex = new Set(excludeIds || []);
+  return cat.items.filter(it => !ex.has(it.id)).map(it => ({ id: it.id, name: it.name }));
+}
+function mealChoiceSelectsHTML(choose) {
+  const blocks = [];
+  const build = (cfg, kind, label) => {
+    if (!cfg) return;
+    const opts = mealOptionItems(cfg.category, cfg.exclude);
+    const optHTML = opts.map(o => `<option value="${o.id}">${escapeHTML(o.name)}</option>`).join('');
+    const count = cfg.count || 1;
+    for (let i = 0; i < count; i++) {
+      const lbl = count > 1 ? `${label} ${i + 1}` : label;
+      blocks.push(`<label class="meal-choice"><span>${lbl}</span>
+        <select data-kind="${kind}"><option value="">Choose…</option>${optHTML}</select></label>`);
+    }
+  };
+  build(choose.sides, 'side', 'Side');
+  build(choose.drink, 'drink', 'Drink');
+  return blocks.join('');
 }
 
 /* ---------- Drink illustrations ----------
@@ -1762,7 +1852,11 @@ function findItem(itemId) {
 function addToCart(itemId, opts) {
   const found = findItem(itemId);
   if (!found) return;
-  const lineKey = `${itemId}|${opts.spice || ''}|${opts.meal ? 'meal' : ''}`;
+  // Chosen meal sides/drink (ids). Names resolved for display via MENU_DATA.
+  const choiceIds = (opts.meal && Array.isArray(opts.mealChoices)) ? opts.mealChoices : [];
+  const choiceNames = choiceIds.map(id => findItem(id)?.name).filter(Boolean);
+  // Different side/drink combinations are separate cart lines.
+  const lineKey = `${itemId}|${opts.spice || ''}|${opts.meal ? 'meal' : ''}|${choiceIds.join(',')}`;
   const existing = state.cart.find(c => c.key === lineKey);
   if (existing) {
     existing.qty += 1;
@@ -1778,6 +1872,8 @@ function addToCart(itemId, opts) {
       qty: 1,
       spice: opts.spice || null,
       meal: opts.meal && found.meal ? found.meal.label : null,
+      mealChoices: choiceIds,
+      mealChoiceNames: choiceNames,
     });
   }
   saveState();
@@ -1811,7 +1907,7 @@ function cartTotals() {
 }
 
 function cartLineHTML(line) {
-  const meta = [line.spice, line.meal].filter(Boolean).join(' · ');
+  const meta = [line.spice, line.meal, ...(line.mealChoiceNames || [])].filter(Boolean).join(' · ');
   return `
     <div class="cart-item" data-key="${line.key}">
       <div class="cart-item-name">${escapeHTML(line.name)}</div>
@@ -2323,6 +2419,7 @@ function buildOrderRequest() {
       meal: !!l.meal,
       spice: l.spice || null,
       modifiers: [],
+      mealChoices: Array.isArray(l.mealChoices) ? l.mealChoices : [],
     })),
     fulfillment: state.mode === 'deliver' ? 'delivery' : 'collection',
     deliveryAddress: state.mode === 'deliver' ? {

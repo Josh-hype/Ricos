@@ -3,7 +3,7 @@
     "id": "signature",
     "name": "Signature Chicken",
     "items": [
-      { "id": "sig-thighs", "name": "Signature Peri Thighs ×3", "priceP": 1095, "mealAddP": 400 },
+      { "id": "sig-thighs", "name": "Signature Peri Thighs ×3", "priceP": 1095, "mealAddP": 400, "mealChoose": { "sides": { "count": 2, "category": "sides", "exclude": ["side-thighs", "side-wings", "popcorn", "dip-mayo", "dip-sweet", "dip-hot", "dip-ketchup", "dip-chipotle", "dip-garlic"] }, "drink": { "count": 1, "category": "drinks" } } },
       { "id": "quarter",    "name": "Quarter Chicken",           "priceP":  695, "mealAddP": 300 },
       { "id": "half",       "name": "Half Chicken",              "priceP":  995, "mealAddP": 300 },
       { "id": "full",       "name": "Full Chicken",              "priceP": 1495, "mealAddP": 300 },
