@@ -70,6 +70,7 @@ export async function createPaymentIntent({
   customerId,
   setupFutureUsage,
   paymentMethodId,
+  requireCvcRecollection,
 }, env) {
   const body = {
     amount: amountP,
@@ -83,11 +84,19 @@ export async function createPaymentIntent({
   if (customerId) body.customer = customerId;
   if (setupFutureUsage) body.setup_future_usage = setupFutureUsage;
   if (paymentMethodId) {
-    // Off-session confirm with a saved card. We must not also enable
-    // automatic payment methods or Stripe rejects with "ambiguous".
     body.payment_method = paymentMethodId;
-    body.confirm = 'true';
-    body.off_session = 'true';
+    if (requireCvcRecollection) {
+      // CVC has to come from the cardholder, so we can't off-session
+      // confirm here. Leave the PI in 'requires_confirmation' and let the
+      // client finish via stripe.confirmCardPayment, which prompts the
+      // customer for their CVV.
+      body.payment_method_options = { card: { require_cvc_recollection: true } };
+    } else {
+      // Off-session confirm with a saved card. We must not also enable
+      // automatic payment methods or Stripe rejects with "ambiguous".
+      body.confirm = 'true';
+      body.off_session = 'true';
+    }
   } else {
     body.automatic_payment_methods = { enabled: true };
   }

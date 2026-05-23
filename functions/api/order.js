@@ -163,6 +163,13 @@ export const onRequestPost = async ({ request, env }) => {
       return errJson('Saved card requires a signed-in account. Please sign in and try again.', 401);
     }
 
+    // High-value saved-card orders re-prompt for CVV as a defence against
+    // account takeover. Threshold is per-shop config; 0 / missing disables.
+    const cvcThresholdP = Number(config.payments?.savedCardCvcThresholdPence) || 0;
+    const requireCvcRecollection = !!paymentMethodIdInput
+      && cvcThresholdP > 0
+      && totals.totalP > cvcThresholdP;
+
     try {
       const pi = await createPaymentIntent({
         amountP: totals.totalP,
@@ -174,6 +181,7 @@ export const onRequestPost = async ({ request, env }) => {
         customerId: stripeCustomerId || undefined,
         setupFutureUsage: saveCard && stripeCustomerId ? 'off_session' : undefined,
         paymentMethodId: paymentMethodIdInput || undefined,
+        requireCvcRecollection,
       }, env);
       order.payment.intentId = pi.id;
       order.payment.clientSecret = pi.client_secret;

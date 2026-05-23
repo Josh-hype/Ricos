@@ -33,6 +33,7 @@ export function getPublicConfig() {
       stripeEnabled: config.payments.stripeEnabled,
       cashOnCollectionEnabled: config.payments.cashOnCollectionEnabled,
       cashOnDeliveryEnabled: config.payments.cashOnDeliveryEnabled,
+      savedCardCvcThresholdPence: Number(config.payments.savedCardCvcThresholdPence) || 0,
     },
     allergens: config.allergens,
     marketing: config.marketing,

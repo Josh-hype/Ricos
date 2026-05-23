@@ -2234,6 +2234,9 @@ let checkoutData = {};
    step so the customer doesn't lose what they've typed. */
 let stripeInstance = null;
 let stripeElements = null;
+// CVC re-collection state (lives at module scope so placeOrder can see it).
+let cvcElement = null;
+let cvcMounted = false;
 
 /* Build the "When?" dropdown on the payment step from the public config
    loaded on page boot. If the boot fetch hasn't finished yet (race
@@ -2415,8 +2418,11 @@ async function placeOrder() {
     // (a) Saved card: server already attached the PaymentMethod to the PI.
     //     If the server attempted off-session confirm and it succeeded
     //     outright (data.piStatus === 'succeeded') we can redirect now.
-    //     Otherwise we hand off to stripe.confirmCardPayment with just the
-    //     clientSecret; Stripe finds the attached PM and runs 3DS if needed.
+    //     For high-value orders the server set require_cvc_recollection,
+    //     so we pass the CardCvcElement to confirmCardPayment; Stripe
+    //     pairs the freshly-typed CVC with the saved card details.
+    //     Otherwise we just hand off the clientSecret; Stripe finds the
+    //     attached PM and runs 3DS if needed.
     if (savedPmId) {
       if (data.piStatus === 'succeeded') {
         state.cart = [];
@@ -2424,7 +2430,12 @@ async function placeOrder() {
         window.location.href = `/thank-you?ref=${encodeURIComponent(data.orderId)}`;
         return;
       }
-      const result = await stripeInstance.confirmCardPayment(data.clientSecret);
+      const cvcWrapEl = document.getElementById('cvc-prompt-wrap');
+      const cvcShowing = cvcMounted && cvcWrapEl && cvcWrapEl.style.display !== 'none';
+      const confirmArgs = cvcShowing
+        ? { payment_method: { card: cvcElement } }
+        : undefined;
+      const result = await stripeInstance.confirmCardPayment(data.clientSecret, confirmArgs);
       if (result.error) {
         if (errEl) errEl.textContent = result.error.message || 'Payment failed.';
         payBtn.disabled = false;
@@ -2725,6 +2736,14 @@ function renderCheckout() {
       <div id="saved-cards-wrap" style="display:none;margin-bottom:10px">
         <div style="font-size:0.85rem;color:var(--grey);margin:0 0 6px">Your saved cards</div>
         <div id="saved-cards-list" style="display:flex;flex-direction:column;gap:6px"></div>
+        <!-- CVC re-prompt for high-value saved-card orders (configurable
+             threshold). Mounted lazily when needed. -->
+        <div id="cvc-prompt-wrap" style="display:none;margin-top:10px;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:12px 14px">
+          <div style="font-size:0.85rem;font-weight:600;margin-bottom:6px">Re-enter your CVV</div>
+          <div style="font-size:0.78rem;color:var(--grey);margin-bottom:8px">For your security, orders over <span id="cvcThresholdLabel">£50</span> need the 3-digit code on the back of your card.</div>
+          <div id="cvc-mount" style="background:var(--paper);border:1.5px solid var(--ink);border-radius:8px;padding:10px 12px"></div>
+          <div id="cvcError" style="color:var(--error);font-size:0.85rem;margin-top:6px;min-height:18px"></div>
+        </div>
         <button type="button" id="useNewCard" style="margin-top:8px;background:transparent;border:0;padding:6px 0;color:var(--red);font-weight:600;text-decoration:underline;cursor:pointer;font-size:0.9rem">+ Use a different card</button>
       </div>
 
@@ -2841,13 +2860,58 @@ function renderCheckout() {
     /* ---------- Saved cards (signed-in only) ----------
        Selecting a saved card hides the Stripe Elements form and stores the
        chosen pm_xxx on checkoutData; placeOrder picks it up and posts it
-       to /api/order so the server attaches it to the PaymentIntent. */
+       to /api/order so the server attaches it to the PaymentIntent.
+
+       High-value orders (config.payments.savedCardCvcThresholdPence) need
+       a fresh CVV before charging; we lazily mount a Stripe CardCvcElement
+       inside #cvc-mount when that's the case. */
     checkoutData.selectedSavedPmId = null;
     const savedWrap = document.getElementById('saved-cards-wrap');
     const savedList = document.getElementById('saved-cards-list');
     const saveLabel = document.getElementById('saveCardLabel');
     const useNewBtn = document.getElementById('useNewCard');
     const peWrap    = document.getElementById('payment-element-wrap');
+    const cvcWrap   = document.getElementById('cvc-prompt-wrap');
+    const cvcLabel  = document.getElementById('cvcThresholdLabel');
+
+    // cvcElement / cvcMounted live at module scope so placeOrder can read
+    // them. Reset on every entry to the payment step so a fresh render
+    // starts cleanly.
+    cvcElement = null;
+    cvcMounted = false;
+    function cvcThresholdP() {
+      return Number(window.SHOP_CONFIG?.payments?.savedCardCvcThresholdPence) || 0;
+    }
+    function cvcRequired() {
+      const tot = cartTotals().total; // pounds float
+      const thrP = cvcThresholdP();
+      if (!checkoutData.selectedSavedPmId || thrP <= 0) return false;
+      return Math.round(tot * 100) > thrP;
+    }
+    function ensureCvcMounted() {
+      if (cvcMounted) return;
+      if (!stripeInstance) {
+        const pk = window.SHOP_CONFIG?.stripe?.publishableKey;
+        const acct = window.SHOP_CONFIG?.stripe?.connectedAccountId;
+        if (!window.Stripe || !pk || !acct) return;
+        stripeInstance = window.Stripe(pk, { stripeAccount: acct });
+      }
+      const els = stripeInstance.elements();
+      cvcElement = els.create('cardCvc', { placeholder: 'CVV' });
+      cvcElement.mount('#cvc-mount');
+      cvcMounted = true;
+    }
+    function refreshCvcVisibility() {
+      const need = cvcRequired();
+      if (need) {
+        const thrP = cvcThresholdP();
+        cvcLabel.textContent = '£' + (thrP / 100).toFixed(thrP % 100 === 0 ? 0 : 2);
+        cvcWrap.style.display = '';
+        ensureCvcMounted();
+      } else {
+        cvcWrap.style.display = 'none';
+      }
+    }
 
     function cardLogo(brand) {
       // Tiny brand label - keeping this string-only avoids shipping SVGs.
@@ -2874,6 +2938,7 @@ function renderCheckout() {
     function showSavedCardsUI(cards) {
       if (!cards.length) {
         savedWrap.style.display = 'none';
+        cvcWrap.style.display = 'none';
         return;
       }
       savedList.innerHTML = '';
@@ -2886,6 +2951,7 @@ function renderCheckout() {
         peWrap.style.display = 'none';
       }
       savedWrap.style.display = '';
+      refreshCvcVisibility();
     }
     // Listeners attached once via delegation - they survive re-renders of
     // the saved-card list (e.g. after a detach).
@@ -2894,6 +2960,7 @@ function renderCheckout() {
       checkoutData.selectedSavedPmId = sel ? sel.value : null;
       peWrap.style.display = checkoutData.selectedSavedPmId ? 'none' : '';
       if (!checkoutData.selectedSavedPmId) ensureCardMounted();
+      refreshCvcVisibility();
     });
     savedList.addEventListener('click', async (e) => {
       const btn = e.target.closest('[data-detach]');
@@ -2939,6 +3006,7 @@ function renderCheckout() {
       radios.forEach(r => { r.checked = false; });
       checkoutData.selectedSavedPmId = null;
       peWrap.style.display = '';
+      cvcWrap.style.display = 'none';
       ensureCardMounted();
     });
 

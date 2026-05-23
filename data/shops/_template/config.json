@@ -86,7 +86,9 @@
   "payments": {
     "stripeEnabled": true,
     "cashOnCollectionEnabled": true,
-    "cashOnDeliveryEnabled": true
+    "cashOnDeliveryEnabled": true,
+    "_comment_cvcThreshold": "Order total (in pence) above which a customer paying with a saved card has to re-enter their CVV. Defends against account-takeover for higher-value orders. Set to 0 to never require CVC re-collection. £50 = 5000.",
+    "savedCardCvcThresholdPence": 5000
   },
 
   "allergens": {
