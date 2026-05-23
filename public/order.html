@@ -1322,8 +1322,8 @@
       </div>
       <div class="service-controls">
         <div class="mode-toggle" role="tablist">
-          <button id="modeCollect" class="active" role="tab" aria-selected="true">Collection</button>
-          <button id="modeDeliver" role="tab" aria-selected="false">Delivery</button>
+          <button id="modeCollect" role="tab" aria-selected="false">Collection</button>
+          <button id="modeDeliver" class="active" role="tab" aria-selected="true">Delivery</button>
         </div>
         <form class="pc-form" id="postcodeForm">
           <label for="postcode" class="sr-only">Postcode</label>
@@ -1488,7 +1488,7 @@ const state = loadState();
 function loadState() {
   const defaults = {
     cart: [],
-    mode: 'collect',
+    mode: 'deliver',
     postcode: null,
     user: null,
     activeCategory: null,
