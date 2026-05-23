@@ -5,7 +5,7 @@
     "tradingName": "Food Station",
     "_comment_shortName": "Conversational short form used in page headers, aria labels and the staff PWA name.",
     "shortName": "Food Station",
-    "_comment_todo": "legalName, companyNumber and orders email still pending (not printed on the menu).",
+    "_comment_todo": "Pending/unconfirmed: legalName, companyNumber, orders email, and domain. Domain — the shop does NOT own foodstationyork.co.uk yet (buying a new domain and/or recovering this one from the old provider); confirm before go-live / Cloudflare custom domain.",
     "legalName": "TODO_LEGAL_NAME",
     "companyNumber": "TODO_COMPANY_NUMBER",
     "address": {
@@ -16,7 +16,7 @@
     },
     "phone": "01347 824522",
     "email": "TODO_ORDERS_EMAIL",
-    "domain": "foodstationyork.co.uk"
+    "domain": "TODO_DOMAIN"
   },
 
   "_comment_theme": "Food Station palette (Brand Identity Guide vol.01). Tomato Red #D72C26 = primary (headlines, buttons). Mustard #F2B91D = accent. Cream #FBF5E9 = background (never pure white). Brand also uses Leaf Green #4FAE3F (secondary) and Charcoal #1A1A1A (text/outlines) — no theme slot, applied in the custom landing/CSS. Type: Poppins Bold (display) / Poppins Regular (body).",
