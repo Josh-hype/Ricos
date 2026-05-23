@@ -2441,12 +2441,9 @@ async function placeOrder() {
             payment_method_options: { card: { cvc: cvcElement } },
           }
         : undefined;
-      console.log('[saved-card pay] piStatus=', data.piStatus, 'cvcShowing=', cvcShowing, 'savedPmId=', savedPmId);
       const result = await stripeInstance.confirmCardPayment(data.clientSecret, confirmArgs);
-      console.log('[saved-card pay] result=', result);
       if (result.error) {
         if (errEl) errEl.textContent = result.error.message || 'Payment failed.';
-        console.error('[saved-card pay] stripe error', result.error);
         payBtn.disabled = false;
         payBtn.textContent = `Pay ${fmt(cartTotals().total)}`;
         return;
