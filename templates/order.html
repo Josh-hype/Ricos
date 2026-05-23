@@ -1297,6 +1297,34 @@
   .notice.warn  { background: #fff5d8; border: 1.5px solid var(--yellow-deep); color: var(--ink-soft); }
   .notice.error { background: #fdecea; border: 1.5px solid var(--error); color: var(--red-dark); }
   .notice.ok    { background: #e9f7ee; border: 1.5px solid var(--success); color: #155c2a; }
+
+  /* Prominent checkout error (e.g. "Minimum delivery order is £15"). Hidden
+     while empty so it reserves no space; shows as a bold red banner with a
+     warning mark when there's a message. */
+  .pay-error {
+    margin-top: 10px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    background: #fdecea;
+    border: 2px solid var(--error);
+    color: var(--red-dark);
+    font-size: 0.95rem;
+    font-weight: 700;
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    line-height: 1.4;
+  }
+  .pay-error:empty { display: none; }
+  .pay-error::before { content: '⚠'; font-size: 1.1em; line-height: 1.25; }
+  /* Neutral informational note under the schedule picker (e.g. "we're
+     closed — pick a time"). Distinct from the red error banner. */
+  .schedule-note {
+    margin-top: 6px;
+    font-size: 0.82rem;
+    color: var(--grey);
+  }
+  .schedule-note:empty { display: none; }
 </style>
 <script>
 /* Inline logo so the file works standalone (no separate PNG needed).
@@ -2406,11 +2434,8 @@ async function populateScheduleSelect() {
   sel.innerHTML = opts.join('');
 
   if (!isOpen && slots.length > 0) {
-    const errEl = document.getElementById('paymentError');
-    if (errEl && !errEl.textContent) {
-      errEl.style.color = 'var(--grey)';
-      errEl.textContent = "We're closed right now — pick a scheduled time below.";
-    }
+    const noteEl = document.getElementById('scheduleNote');
+    if (noteEl) noteEl.textContent = "We're closed right now — pick a scheduled time above.";
   }
 }
 
@@ -2455,7 +2480,7 @@ function buildOrderRequest() {
    `event` is the Stripe Express Checkout 'confirm' event. */
 async function placeExpressOrder(event) {
   const errEl = document.getElementById('paymentError');
-  if (errEl) { errEl.style.color = 'var(--error)'; errEl.textContent = ''; }
+  if (errEl) errEl.textContent = '';
 
   // Contact details were collected before this step; pull any inline edits.
   const inlineName  = document.getElementById('payName')?.value.trim();
@@ -2904,6 +2929,7 @@ function renderCheckout() {
                 style="width:100%;padding:8px 10px;border:1.5px solid var(--ink);border-radius:8px;margin-top:2px;font-size:0.95rem;background:white">
           <option value="asap">Loading available times…</option>
         </select>
+        <div id="scheduleNote" class="schedule-note"></div>
       </fieldset>
 
       <div class="order-summary">
@@ -2970,7 +2996,7 @@ function renderCheckout() {
           <span style="font-size:1.15rem;line-height:1" aria-hidden="true">🔒</span>
           <span><strong>Secure payment.</strong> Your card details never touch our servers — they're encrypted and handled directly by <strong>Stripe</strong>, a PCI-compliant payment processor.</span>
         </div>
-        <div id="paymentError" style="color:var(--error);font-size:0.9rem;margin-top:6px;min-height:18px"></div>
+        <div id="paymentError" class="pay-error" aria-live="assertive"></div>
       </div>
 
       <div style="background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:0.92rem">
