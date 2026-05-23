@@ -30,20 +30,28 @@ export function computeTotals(input, config) {
       modSummaries.push(mod.label);
     }
 
-    // Meal side/drink choices. Price-neutral (covered by mealAddP); we only
-    // validate they're within the meal's allowed set and record their names
-    // for the kitchen ticket + receipt. Validating against the allow-list
-    // (built from the configured categories minus excludes) stops a crafted
-    // request swapping in, say, a chicken side it shouldn't get.
+    // Meal side/dip/drink choices. Price-neutral (covered by mealAddP); we
+    // validate per group and record the names for the kitchen ticket +
+    // receipt. Validating each group against its own allow-list — and
+    // capping to its count — stops a crafted request swapping in a chicken
+    // side, a banned item, or extra picks it shouldn't get.
     const mealChoiceNames = [];
-    if (line.meal && item.mealChoose && Array.isArray(line.mealChoices)) {
-      const allowed = allowedMealChoiceIds(item.mealChoose, menu);
-      const maxCount = (item.mealChoose.sides?.count || 0) + (item.mealChoose.drink?.count || 0);
-      for (const choiceId of line.mealChoices) {
-        if (mealChoiceNames.length >= maxCount) break;
-        if (!allowed.has(choiceId)) continue;
-        const chosen = itemsById.get(choiceId);
-        if (chosen) mealChoiceNames.push(chosen.name);
+    if (line.meal && Array.isArray(item.mealChoose) && Array.isArray(line.mealChoices)) {
+      const usedIdx = new Set();
+      for (const group of item.mealChoose) {
+        const allowed = allowedMealChoiceIds(group, menu);
+        const cap = group.count || 1;
+        let taken = 0;
+        for (let i = 0; i < line.mealChoices.length && taken < cap; i++) {
+          if (usedIdx.has(i)) continue;
+          const id = line.mealChoices[i];
+          if (!allowed.has(id)) continue;
+          const chosen = itemsById.get(id);
+          if (!chosen) continue;
+          mealChoiceNames.push(chosen.name);
+          usedIdx.add(i);
+          taken++;
+        }
       }
     }
 
@@ -120,19 +128,19 @@ function indexMenu(menu) {
   return m;
 }
 
-// Build the set of item ids a meal's side/drink choice may use, from the
-// configured categories minus any excluded ids. Mirrors the client UI's
-// option list so server validation matches what the customer was offered.
-function allowedMealChoiceIds(mealChoose, menu) {
+// Set of item ids a single meal choice group may use: its category,
+// optionally narrowed by an include or exclude id list. Mirrors the client
+// UI so server validation matches exactly what the customer was offered.
+function allowedMealChoiceIds(group, menu) {
   const allowed = new Set();
-  for (const cfg of [mealChoose.sides, mealChoose.drink]) {
-    if (!cfg) continue;
-    const cat = menu.find(c => c.id === cfg.category);
-    if (!cat) continue;
-    const ex = new Set(cfg.exclude || []);
-    for (const item of cat.items || []) {
-      if (!ex.has(item.id)) allowed.add(item.id);
-    }
+  const cat = menu.find(c => c.id === group.category);
+  if (!cat) return allowed;
+  const inc = Array.isArray(group.include) ? new Set(group.include) : null;
+  const ex = Array.isArray(group.exclude) ? new Set(group.exclude) : null;
+  for (const item of cat.items || []) {
+    if (inc && !inc.has(item.id)) continue;
+    if (ex && ex.has(item.id)) continue;
+    allowed.add(item.id);
   }
   return allowed;
 }

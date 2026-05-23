@@ -1723,31 +1723,37 @@ function itemDetailHTML(item) {
   `;
 }
 
-/* Build the side/drink <select> dropdowns for a meal's `choose` config.
-   Options come from the named category in MENU_DATA minus any excluded ids
-   (e.g. chicken sides and dips). Each select carries data-kind so we can
-   label it in the cart. */
-function mealOptionItems(categoryId, excludeIds) {
-  const cat = MENU_DATA.find(c => c.id === categoryId);
+/* Build the side/dip/drink <select> dropdowns for a meal's `choose` config.
+   `choose` is an array of groups; each group draws its options from a menu
+   category, optionally filtered by an include or exclude id list (e.g. only
+   dips, or sides minus chicken sides). A group renders `count` dropdowns. */
+function mealOptionItems(group) {
+  const cat = MENU_DATA.find(c => c.id === group.category);
   if (!cat) return [];
-  const ex = new Set(excludeIds || []);
-  return cat.items.filter(it => !ex.has(it.id)).map(it => ({ id: it.id, name: it.name }));
+  let items = cat.items;
+  if (Array.isArray(group.include)) {
+    const inc = new Set(group.include);
+    items = items.filter(it => inc.has(it.id));
+  }
+  if (Array.isArray(group.exclude)) {
+    const ex = new Set(group.exclude);
+    items = items.filter(it => !ex.has(it.id));
+  }
+  return items.map(it => ({ id: it.id, name: it.name }));
 }
 function mealChoiceSelectsHTML(choose) {
+  const groups = Array.isArray(choose) ? choose : [];
   const blocks = [];
-  const build = (cfg, kind, label) => {
-    if (!cfg) return;
-    const opts = mealOptionItems(cfg.category, cfg.exclude);
+  for (const g of groups) {
+    const opts = mealOptionItems(g);
     const optHTML = opts.map(o => `<option value="${o.id}">${escapeHTML(o.name)}</option>`).join('');
-    const count = cfg.count || 1;
+    const count = g.count || 1;
     for (let i = 0; i < count; i++) {
-      const lbl = count > 1 ? `${label} ${i + 1}` : label;
-      blocks.push(`<label class="meal-choice"><span>${lbl}</span>
-        <select data-kind="${kind}"><option value="">Choose…</option>${optHTML}</select></label>`);
+      const lbl = count > 1 ? `${g.label} ${i + 1}` : g.label;
+      blocks.push(`<label class="meal-choice"><span>${escapeHTML(lbl)}</span>
+        <select><option value="">Choose…</option>${optHTML}</select></label>`);
     }
-  };
-  build(choose.sides, 'side', 'Side');
-  build(choose.drink, 'drink', 'Drink');
+  }
   return blocks.join('');
 }
 
