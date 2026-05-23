@@ -5,18 +5,18 @@
     "tradingName": "Food Station",
     "_comment_shortName": "Conversational short form used in page headers, aria labels and the staff PWA name.",
     "shortName": "Food Station",
-    "_comment_todo": "TODO_ fields are placeholders pending the shop's operational details (collect via docs/SHOP_INTAKE_FORM.md; address/hours often appear on the foodbooking ordering page too).",
+    "_comment_todo": "legalName, companyNumber and orders email still pending (not printed on the menu).",
     "legalName": "TODO_LEGAL_NAME",
     "companyNumber": "TODO_COMPANY_NUMBER",
     "address": {
-      "line1": "TODO_ADDRESS_LINE1",
-      "city": "TODO_CITY",
-      "postcode": "TODO_POSTCODE",
+      "line1": "56 Long Street",
+      "city": "Easingwold",
+      "postcode": "YO61 3HT",
       "country": "United Kingdom"
     },
-    "phone": "TODO_PHONE",
+    "phone": "01347 824522",
     "email": "TODO_ORDERS_EMAIL",
-    "domain": "TODO_DOMAIN"
+    "domain": "foodstationyork.co.uk"
   },
 
   "_comment_theme": "Food Station palette (Brand Identity Guide vol.01). Tomato Red #D72C26 = primary (headlines, buttons). Mustard #F2B91D = accent. Cream #FBF5E9 = background (never pure white). Brand also uses Leaf Green #4FAE3F (secondary) and Charcoal #1A1A1A (text/outlines) — no theme slot, applied in the custom landing/CSS. Type: Poppins Bold (display) / Poppins Regular (body).",
@@ -34,17 +34,19 @@
     "collection": { "enabled": true },
     "delivery": {
       "enabled": true,
-      "_comment_feePence": "Default delivery fee in pence, used for any allowed outcode not given its own price in feeByOutcode.",
-      "feePence": 200,
-      "minimumOrderPence": 1500,
-      "_comment_areaDescription": "Used in delivery error messages: 'we deliver {areaDescription} only'. Keep natural so the sentence reads well.",
-      "areaDescription": "in our delivery area",
-      "_comment_postcodes": "Outcodes (postcode prefixes) the shop delivers to. Must match the shop's own postcode area prefix (the letters before the digits).",
+      "_comment_feePence": "Menu states: Easingwold delivery £1, then +£1 per extra mile. The per-mile surcharge can't be expressed by outcode alone. TODO confirm how to charge beyond Easingwold (extra outcodes + their fees, or a flat zone rate).",
+      "feePence": 100,
+      "minimumOrderPence": 1200,
+      "_comment_areaDescription": "Used in delivery error messages: 'we deliver {areaDescription} only'.",
+      "areaDescription": "around Easingwold",
+      "_comment_postcodes": "Easingwold is YO61. TODO confirm any further outcodes the shop delivers to (and their per-mile fees).",
       "allowedOutcodes": [
-        "XX1"
+        "YO61"
       ],
-      "_comment_feeByOutcode": "Optional per-outcode delivery fee overrides in pence (key = postcode prefix). Outcodes not listed fall back to feePence. Leave empty to charge feePence everywhere.",
-      "feeByOutcode": {}
+      "_comment_feeByOutcode": "Per-outcode delivery fee in pence. YO61 (Easingwold) = £1.00 (100p).",
+      "feeByOutcode": {
+        "YO61": 100
+      }
     }
   },
 
@@ -57,14 +59,14 @@
   },
 
   "hours": {
-    "_comment": "24-hour format. Closes after midnight are written as 25:00 = 01:00 next day. lastOrderBeforeCloseMinutes is subtracted automatically for the cut-off.",
-    "monday":    { "closed": false, "windows": [{ "open": "12:00", "close": "22:00" }] },
-    "tuesday":   { "closed": false, "windows": [{ "open": "12:00", "close": "22:00" }] },
-    "wednesday": { "closed": false, "windows": [{ "open": "12:00", "close": "22:00" }] },
-    "thursday":  { "closed": false, "windows": [{ "open": "12:00", "close": "22:00" }] },
-    "friday":    { "closed": false, "windows": [{ "open": "12:00", "close": "22:00" }] },
-    "saturday":  { "closed": false, "windows": [{ "open": "12:00", "close": "22:00" }] },
-    "sunday":    { "closed": false, "windows": [{ "open": "12:00", "close": "22:00" }] }
+    "_comment": "24-hour format. Source: printed menu — Sun-Thu 4pm-10pm, Fri-Sat 4pm-11pm.",
+    "monday":    { "closed": false, "windows": [{ "open": "16:00", "close": "22:00" }] },
+    "tuesday":   { "closed": false, "windows": [{ "open": "16:00", "close": "22:00" }] },
+    "wednesday": { "closed": false, "windows": [{ "open": "16:00", "close": "22:00" }] },
+    "thursday":  { "closed": false, "windows": [{ "open": "16:00", "close": "22:00" }] },
+    "friday":    { "closed": false, "windows": [{ "open": "16:00", "close": "23:00" }] },
+    "saturday":  { "closed": false, "windows": [{ "open": "16:00", "close": "23:00" }] },
+    "sunday":    { "closed": false, "windows": [{ "open": "16:00", "close": "22:00" }] }
   },
 
   "ordering": {
@@ -80,8 +82,9 @@
   },
 
   "promo": {
+    "_comment": "Food Station's printed offer is 'spend over £40, free garlic bread or drink' — a threshold reward the simple promo schema can't express. The generic online discount is DISABLED so we don't apply a discount the shop didn't ask for. TODO confirm desired promo.",
     "autoOnlineDiscount": {
-      "enabled": true,
+      "enabled": false,
       "label": "10% off online orders",
       "percent": 10
     }
