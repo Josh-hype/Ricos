@@ -101,6 +101,9 @@ List your full menu, grouped by category. For each item include the
 **name**, **price** (in £), and a short **description** (1 sentence).
 Photos are optional but make a big difference — see below.
 
+**Don't want to type it all out?** You can give us a hard copy of your
+menu, or send it over WhatsApp to **07438107483** — whatever's easiest.
+
 **Format example:**
 
 ```
@@ -135,7 +138,7 @@ Notes:
 
 | Field | Your answer |
 |---|---|
-| Your menu | (paste or attach) |
+| Your menu | (paste below, attach, hand us a hard copy, or WhatsApp to 07438107483) |
 | Photos to attach? (yes/no, how many) | |
 
 ---
@@ -160,57 +163,3 @@ need to:
 | Do you also want to accept **cash on collection**? (yes / no) | |
 | Do you also want to accept **cash on delivery**? (yes / no) | |
 | Stripe Connect ID (the `acct_xxx` code — fill in after onboarding) | |
-
----
-
-## 8. Kitchen setup
-
-When orders come in, your kitchen staff will see them on a "staff
-page" — basically a live list of new orders that beeps when a new one
-arrives. This works in any web browser.
-
-| Field | Your answer |
-|---|---|
-| What device(s) will the kitchen use to see orders? (e.g. iPad, wall-mounted TV with Fire Stick, old laptop, your existing till PC) | |
-| Do you want a printer too? (we can support adding a thermal receipt printer later — extra cost ~£150 hardware) | |
-| Phone number that should receive an SMS for each new order (optional but useful as a backup) | |
-
----
-
-## 9. Marketing
-
-We can collect customer emails / mobile numbers (opt-in only) so you
-can send promotions later. You don't have to use this — just tells us
-whether to show the opt-in tickboxes at checkout.
-
-| Field | Your answer |
-|---|---|
-| Show "Email me about offers" tickbox at checkout? (yes / no) | |
-| Show "Text me about offers" tickbox at checkout? (yes / no) | |
-
----
-
-## 10. Anything else
-
-| Field | Your answer |
-|---|---|
-| Anything specific about how you'd like the site to look or work? | |
-| Any features you've seen elsewhere that you'd want? (we'll let you know if it's possible) | |
-| When would you ideally like to be live? | |
-
----
-
-## What happens next
-
-Once you send this back along with the logo + photos + your Stripe
-Connect `acct_xxx`:
-
-1. We build your site (~1 working day)
-2. We send you a test link so you can place a few practice orders
-3. You point your domain at us (or we do it if you've given us DNS
-   access)
-4. We do a final round of testing on the live domain
-5. You're live — start taking orders
-
-Reply with the filled-in form and attachments, or send any questions
-back our way.
