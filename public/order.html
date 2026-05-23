@@ -1668,7 +1668,14 @@ function escapeHTML(s) {
 }
 
 function itemRowHTML(item) {
-  const tag = item.spicy ? `<span class="item-row-tag"><span class="fire" aria-hidden="true">🔥</span>Pick your heat</span>` : '';
+  // `spicy` items let you pick a heat level (badge + dropdown in the modal);
+  // `spicyTag` items are a fixed spicy recipe — badge only, no picker.
+  let tag = '';
+  if (item.spicy) {
+    tag = `<span class="item-row-tag"><span class="fire" aria-hidden="true">🔥</span>Pick your heat</span>`;
+  } else if (item.spicyTag) {
+    tag = `<span class="item-row-tag"><span class="fire" aria-hidden="true">🔥</span>Spicy</span>`;
+  }
   return `
     <button class="item-row" type="button" data-id="${item.id}" aria-label="View ${escapeHTML(item.name)}">
       <div class="item-row-main">

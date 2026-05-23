@@ -438,7 +438,8 @@
               "category": "drinks"
             }
           ]
-        }
+        },
+        "spicyTag": true
       },
       {
         "id": "beef-nacho",
@@ -531,7 +532,8 @@
               "category": "drinks"
             }
           ]
-        }
+        },
+        "spicyTag": true
       }
     ]
   },
