@@ -1972,10 +1972,24 @@ function serviceFeeGBP() {
   return Number.isFinite(p) ? p / 100 : 0.50;
 }
 
+/* Delivery fee in pounds. Per-outcode if the shop configures feeByOutcode,
+   otherwise the default feePence. Outcode comes from the entered postcode
+   (the bit before the space); before a postcode is set we show the default
+   as a preview. The server recomputes this authoritatively at /api/order. */
+function deliveryFeeGBP() {
+  if (state.mode !== 'deliver') return 0;
+  const d = window.SHOP_CONFIG?.fulfillment?.delivery;
+  if (!d) return 2.00; // fallback until config loads
+  const outcode = state.postcode ? state.postcode.split(' ')[0].toUpperCase() : null;
+  const byOutcode = d.feeByOutcode || {};
+  const p = (outcode && Number.isFinite(byOutcode[outcode])) ? byOutcode[outcode] : d.feePence;
+  return (Number(p) || 0) / 100;
+}
+
 function cartTotals() {
   const sub = state.cart.reduce((s, l) => s + l.price * l.qty, 0);
   const discount = sub * 0.10;
-  const delivery = state.mode === 'deliver' ? 2.00 : 0;
+  const delivery = deliveryFeeGBP();
   const serviceFee = state.cart.length > 0 ? serviceFeeGBP() : 0;
   const total = Math.max(0, sub - discount + delivery + serviceFee);
   return { sub, discount, delivery, serviceFee, total };
@@ -2161,6 +2175,7 @@ document.getElementById('postcodeForm').addEventListener('submit', (e) => {
   saveState();
   input.value = '';
   refreshPCMessage();
+  renderCart(); // delivery fee can vary by outcode, so refresh the totals
 });
 
 /* ---------- Account modal ---------- */

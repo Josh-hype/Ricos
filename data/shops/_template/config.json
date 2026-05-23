@@ -33,6 +33,7 @@
     "collection": { "enabled": true },
     "delivery": {
       "enabled": true,
+      "_comment_feePence": "Default delivery fee in pence, used for any allowed outcode not given its own price in feeByOutcode.",
       "feePence": 200,
       "minimumOrderPence": 1500,
       "_comment_areaDescription": "Used in delivery error messages: 'we deliver {areaDescription} only'. Keep natural so the sentence reads well.",
@@ -40,7 +41,9 @@
       "_comment_postcodes": "Outcodes (postcode prefixes) the shop delivers to. Must match the shop's own postcode area prefix (the letters before the digits).",
       "allowedOutcodes": [
         "XX1"
-      ]
+      ],
+      "_comment_feeByOutcode": "Optional per-outcode delivery fee overrides in pence (key = postcode prefix). Outcodes not listed fall back to feePence. Leave empty to charge feePence everywhere.",
+      "feeByOutcode": {}
     }
   },
 

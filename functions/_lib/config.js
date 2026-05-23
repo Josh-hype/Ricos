@@ -22,6 +22,7 @@ export function getPublicConfig() {
       delivery: {
         enabled: config.fulfillment.delivery.enabled,
         feePence: config.fulfillment.delivery.feePence,
+        feeByOutcode: config.fulfillment.delivery.feeByOutcode || {},
         minimumOrderPence: config.fulfillment.delivery.minimumOrderPence,
         allowedOutcodes: config.fulfillment.delivery.allowedOutcodes,
       },

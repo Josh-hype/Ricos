@@ -33,6 +33,7 @@
     "collection": { "enabled": true },
     "delivery": {
       "enabled": true,
+      "_comment_feePence": "Default delivery fee in pence, used for any allowed outcode not given its own price in feeByOutcode below.",
       "feePence": 200,
       "minimumOrderPence": 1500,
       "_comment_areaDescription": "Free-text phrase used in error messages: 'we deliver {areaDescription} only'. Keep it natural so the surrounding text reads well.",
@@ -45,7 +46,16 @@
         "YO24",
         "YO30",
         "YO31"
-      ]
+      ],
+      "_comment_feeByOutcode": "Per-outcode delivery fee in pence. The key is the postcode prefix (the bit before the space). Edit these to charge different prices for different areas. An outcode that's in allowedOutcodes but not listed here falls back to feePence. All set to 200 (£2.00) for now — update with the real per-area charges.",
+      "feeByOutcode": {
+        "YO1": 200,
+        "YO10": 200,
+        "YO23": 200,
+        "YO24": 200,
+        "YO30": 200,
+        "YO31": 200
+      }
     }
   },
 

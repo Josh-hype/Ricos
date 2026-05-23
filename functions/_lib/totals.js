@@ -3,6 +3,7 @@
    price from the menu and compute totals here. */
 
 import { getMenu } from './menu.js';
+import { normalisePostcode } from './postcode.js';
 
 export function computeTotals(input, config) {
   const menu = getMenu();
@@ -82,10 +83,15 @@ export function computeTotals(input, config) {
     discountLabel = config.promo.autoOnlineDiscount.label;
   }
 
-  // Delivery fee.
+  // Delivery fee — per-outcode if configured (feeByOutcode), else the
+  // default feePence. Outcode is derived from the delivery postcode.
   let deliveryFeeP = 0;
   if (fulfillment === 'delivery') {
-    deliveryFeeP = config.fulfillment.delivery.feePence;
+    const d = config.fulfillment.delivery;
+    const p = normalisePostcode(input.deliveryAddress?.postcode);
+    const byOutcode = d.feeByOutcode || {};
+    const override = p && byOutcode[p.outcode];
+    deliveryFeeP = Number.isFinite(override) ? override : d.feePence;
   }
 
   // Per-order platform/service fee (kept by the platform operator).
