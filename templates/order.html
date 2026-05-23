@@ -2861,11 +2861,12 @@ function renderCheckout() {
             phone: 'never',
           },
         },
-        // Apple Pay + Google Pay disabled until Stripe domain verification
-        // is in place for both the platform account and each connected
-        // account (Apple Pay won't actually work without it, and showing
-        // the wallet tabs would surface a broken option to the customer).
-        wallets: { applePay: 'never', googlePay: 'never', link: 'never' },
+        // Apple Pay + Google Pay enabled. They only render when the
+        // domain is registered with Stripe (platform + connected account
+        // for direct charges) and the customer's device/browser supports
+        // them. Link stays off — its "save your info" prompt duplicates
+        // our own contact step and confuses customers.
+        wallets: { applePay: 'auto', googlePay: 'auto', link: 'never' },
       });
       const mount = document.getElementById('payment-element');
       mount.innerHTML = '';
