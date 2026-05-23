@@ -1,3 +1,8 @@
+<div align="center">
+  <img src="assets/lumin-labs-logo.png" alt="Lumin Labs" width="300" />
+  <p><img src="assets/whatsapp.png" alt="WhatsApp" width="16" /> &nbsp;<strong>WhatsApp us:</strong> 07438107483</p>
+</div>
+
 # Restaurant onboarding — info we need from you
 
 This form has everything we need to build your online ordering website.
