@@ -2432,15 +2432,21 @@ async function placeOrder() {
       }
       const cvcWrapEl = document.getElementById('cvc-prompt-wrap');
       const cvcShowing = cvcMounted && cvcWrapEl && cvcWrapEl.style.display !== 'none';
-      // For CVC re-collection on a saved card the saved PM is already on
-      // the PI; we pass a fresh CVC via payment_method_options.card.cvc so
-      // Stripe pairs the CVC with the saved card details.
+      // For CVC re-collection on a saved card we pass the saved PM
+      // explicitly plus a fresh CVC via payment_method_options.card.cvc -
+      // Stripe pairs them at charge time.
       const confirmArgs = cvcShowing
-        ? { payment_method_options: { card: { cvc: cvcElement } } }
+        ? {
+            payment_method: savedPmId,
+            payment_method_options: { card: { cvc: cvcElement } },
+          }
         : undefined;
+      console.log('[saved-card pay] piStatus=', data.piStatus, 'cvcShowing=', cvcShowing, 'savedPmId=', savedPmId);
       const result = await stripeInstance.confirmCardPayment(data.clientSecret, confirmArgs);
+      console.log('[saved-card pay] result=', result);
       if (result.error) {
         if (errEl) errEl.textContent = result.error.message || 'Payment failed.';
+        console.error('[saved-card pay] stripe error', result.error);
         payBtn.disabled = false;
         payBtn.textContent = `Pay ${fmt(cartTotals().total)}`;
         return;
