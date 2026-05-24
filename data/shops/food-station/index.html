@@ -70,7 +70,18 @@
   .cta .btn{font-size:1.3rem;padding:20px 46px;background:var(--ink);color:var(--mustard);}
 
   footer{background:var(--ink);color:#cfc7b8;text-align:center;padding:26px;font-size:.9rem;} footer a{color:var(--mustard);font-weight:600;text-decoration:none;}
-  @media(max-width:720px){.grid2{grid-template-columns:1fr;}.info-grid{grid-template-columns:1fr;}.hero{padding:48px 0 44px;}}
+  @media(max-width:720px){
+    .grid2{grid-template-columns:1fr;}
+    .info-grid{grid-template-columns:1fr;}
+    .hero{padding:36px 0 96px;}
+    .hero h1{font-size:clamp(2.1rem,9.5vw,3rem);}
+    .hero p{font-size:1.05rem;margin:18px auto 28px;}
+    .hero .btn{font-size:1rem;padding:12px 24px;}
+    .badge{margin-bottom:18px;}
+    .float.pizza{width:108px;top:-22px;left:-32px;}
+    .float.burger{width:116px;top:6px;right:-30px;}
+    .float.wrap{width:106px;left:auto;right:7%;bottom:14px;transform:rotate(7deg);}
+  }
 </style>
 </head>
 <body>
