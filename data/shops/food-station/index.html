@@ -25,12 +25,13 @@
   header.bar img{height:48px;display:block;}
   header.bar .btn{padding:11px 20px;font-size:.95rem;box-shadow:3px 3px 0 var(--ink);background:var(--red);color:#fff;}
 
-  .hero{background:var(--red);color:var(--cream);border-bottom:5px solid var(--ink);position:relative;overflow:hidden;padding:70px 0 64px;text-align:center;}
-  .hero .dot{position:absolute;border-radius:50%;}
-  .hero .dot.m{width:150px;height:150px;background:var(--mustard);top:-40px;right:8%;opacity:.9;}
-  .hero .dot.g{width:90px;height:90px;background:var(--green);bottom:24px;left:7%;border:4px solid var(--ink);}
-  .hero .dot.c{width:50px;height:50px;background:var(--cream);top:40%;right:14%;border:4px solid var(--ink);}
+  .hero{background:var(--red);color:var(--cream);border-bottom:5px solid var(--ink);position:relative;overflow:hidden;padding:70px 0 60px;text-align:center;}
   .hero .inner{position:relative;z-index:2;}
+  .hero-discs{display:flex;justify-content:center;align-items:center;gap:clamp(10px,3vw,46px);margin:44px auto 4px;flex-wrap:wrap;}
+  .disc{aspect-ratio:1;border-radius:50%;border:5px solid var(--ink);box-shadow:7px 7px 0 var(--ink);object-fit:cover;background:var(--cream);}
+  .disc.a{width:clamp(88px,24vw,184px);transform:rotate(-4deg);}
+  .disc.b{width:clamp(108px,28vw,224px);transform:rotate(3deg);}
+  .disc.c{width:clamp(88px,24vw,184px);transform:rotate(-3deg);}
   .badge{display:inline-block;background:var(--mustard);color:var(--ink);border:3px solid var(--ink);border-radius:999px;
          padding:7px 22px;font-weight:800;box-shadow:4px 4px 0 var(--ink);margin-bottom:24px;transform:rotate(-2deg);}
   .hero h1{font-size:clamp(3rem,9vw,6rem);margin:0;color:var(--cream);text-shadow:4px 4px 0 var(--ink);}
@@ -69,15 +70,8 @@
   .cta h2{font-family:'Lilita One';font-size:clamp(2rem,6vw,3.4rem);margin:0 0 24px;}
   .cta .btn{font-size:1.3rem;padding:20px 46px;background:var(--ink);color:var(--mustard);}
 
-  .hero-food{display:block;width:78%;max-width:450px;margin:36px auto -14px;filter:drop-shadow(0 16px 24px rgba(0,0,0,.4));}
-  .goods{padding:54px 0;text-align:center;}
-  .goods h2{font-family:'Lilita One';font-size:clamp(1.8rem,4.5vw,2.8rem);margin:0 0 6px;color:var(--ink);}
-  .goods .s{color:var(--red);font-weight:700;margin:0 0 30px;}
-  .goods-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center;max-width:780px;margin:0 auto;}
-  .goods-grid img{width:100%;max-width:350px;justify-self:center;filter:drop-shadow(0 12px 16px rgba(0,0,0,.22));}
-
   footer{background:var(--ink);color:#cfc7b8;text-align:center;padding:26px;font-size:.9rem;} footer a{color:var(--mustard);font-weight:600;text-decoration:none;}
-  @media(max-width:720px){.grid2{grid-template-columns:1fr;}.info-grid{grid-template-columns:1fr;}.goods-grid{grid-template-columns:1fr;}.hero{padding:48px 0;}}
+  @media(max-width:720px){.grid2{grid-template-columns:1fr;}.info-grid{grid-template-columns:1fr;}.hero{padding:48px 0 44px;}}
 </style>
 </head>
 <body>
@@ -88,13 +82,16 @@
   </header>
 
   <section class="hero">
-    <span class="dot m"></span><span class="dot g"></span><span class="dot c"></span>
     <div class="wrap inner">
       <span class="badge">Pull up. Pig out.</span>
       <h1 class="display"><span class="m">FIVE</span> CRAVINGS.<br>ONE KITCHEN.<br>ZERO COMPROMISES.</h1>
       <p>Pizza, parmo, kebab, burger, wrap — five comfort-food worlds under one roof. Big portions, real ingredients, no fuss.</p>
       <a href="/order" class="btn">Start your order →</a>
-      <img class="hero-food" src="assets/pizza.png" alt="Loaded stone-baked pizza" loading="lazy" />
+      <div class="hero-discs">
+        <img class="disc a" src="assets/burger.jpg" alt="Stacked cheeseburger" />
+        <img class="disc b" src="assets/pizza.jpg" alt="Loaded stone-baked pizza" />
+        <img class="disc c" src="assets/wrap.jpg" alt="Loaded doner wrap" />
+      </div>
     </div>
   </section>
 
@@ -102,15 +99,6 @@
     <div class="lbl">Five worlds · one menu</div>
     <div class="chips">
       <span class="chip r">PIZZA</span><span class="chip g">PARMO</span><span class="chip m">KEBAB</span><span class="chip k">BURGER</span><span class="chip r">WRAP</span>
-    </div>
-  </div></section>
-
-  <section class="goods"><div class="wrap">
-    <h2 class="display">Made loud. Made fresh.</h2>
-    <p class="s">Pulled, stacked, rolled — and out fast.</p>
-    <div class="goods-grid">
-      <img src="assets/burger.png" alt="Stacked cheeseburger" loading="lazy" />
-      <img src="assets/wrap.png" alt="Loaded doner wrap" loading="lazy" />
     </div>
   </div></section>
 
