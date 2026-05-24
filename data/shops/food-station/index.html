@@ -31,6 +31,7 @@
   .float.pizza{width:clamp(150px,23vw,300px);top:-40px;left:-46px;transform:rotate(-12deg);}
   .float.burger{width:clamp(145px,21.25vw,273px);top:6px;right:-30px;transform:rotate(11deg);}
   .float.wrap{width:clamp(140px,20vw,256px);bottom:8%;left:8%;transform:rotate(-8deg);}
+  .wrap-below{display:none;}
   .badge{display:inline-block;background:var(--mustard);color:var(--ink);border:3px solid var(--ink);border-radius:999px;
          padding:7px 22px;font-weight:800;box-shadow:4px 4px 0 var(--ink);margin-bottom:24px;transform:rotate(-2deg);}
   .hero h1{font-size:clamp(3rem,9vw,6rem);margin:0;color:var(--cream);text-shadow:4px 4px 0 var(--ink);}
@@ -73,14 +74,15 @@
   @media(max-width:720px){
     .grid2{grid-template-columns:1fr;}
     .info-grid{grid-template-columns:1fr;}
-    .hero{padding:70px 0 56px;}
+    .hero{padding:70px 0 44px;}
     .hero h1{font-size:clamp(2.1rem,9.5vw,3rem);}
     .hero p{font-size:1.05rem;margin:32px auto 44px;}
     .hero .btn{font-size:0.92rem;padding:11px 18px;}
     .badge{margin-bottom:50px;}
     .float.pizza{width:140px;top:-28px;left:-40px;}
     .float.burger{width:116px;top:6px;right:-30px;}
-    .float.wrap{width:156px;left:-64px;right:auto;bottom:24px;transform:rotate(-6deg);}
+    .float.wrap{display:none;}
+    .wrap-below{display:block;width:170px;margin:44px auto 0;transform:rotate(-4deg);filter:drop-shadow(0 10px 14px rgba(0,0,0,.45));}
   }
 </style>
 </head>
@@ -100,6 +102,7 @@
       <h1 class="display"><span class="m">FIVE</span> CRAVINGS.<br>ONE KITCHEN.<br>ZERO COMPROMISES.</h1>
       <p>Pizza, parmo, kebab, burger, wrap — five comfort-food worlds under one roof. Big portions, real ingredients, no fuss.</p>
       <a href="/order" class="btn">Start your order →</a>
+      <img class="wrap-below" src="assets/wrap.png" alt="Loaded doner wrap" />
     </div>
   </section>
 
