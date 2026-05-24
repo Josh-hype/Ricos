@@ -26,7 +26,14 @@
     "accent":      "#f5b71e",
     "accentDeep":  "#d99a00",
     "background":  "#fff5d8",
-    "surface":     "#fffaeb"
+    "surface":     "#fffaeb",
+    "fonts": {
+      "link":       "https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Caveat:wght@500;700&family=DM+Sans:wght@400;500;700&display=swap",
+      "display":    "'Archivo Black', 'Arial Black', sans-serif",
+      "displayAlt": "'Anton', 'Impact', sans-serif",
+      "body":       "'DM Sans', system-ui, sans-serif",
+      "hand":       "'Caveat', cursive"
+    }
   },
 
   "fulfillment": {

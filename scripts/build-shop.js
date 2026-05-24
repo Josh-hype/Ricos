@@ -133,6 +133,15 @@ const tokens = {
   themeAccentDeep:         config.theme?.accentDeep  || '#d99a00',
   themeBackground:         config.theme?.background  || '#fff5d8',
   themeSurface:            config.theme?.surface     || '#fffaeb',
+  // Typography - the Google Fonts stylesheet URL plus the four font-family
+  // stacks used as CSS custom properties on the order page. Defaults are
+  // Rico's original faces, so any shop that omits a theme.fonts block (and
+  // Rico's itself) renders byte-identically to before this was tokenised.
+  fontLink:                config.theme?.fonts?.link        || 'https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Caveat:wght@500;700&family=DM+Sans:wght@400;500;700&display=swap',
+  fontDisplay:             config.theme?.fonts?.display      || "'Archivo Black', 'Arial Black', sans-serif",
+  fontDisplayAlt:          config.theme?.fonts?.displayAlt   || "'Anton', 'Impact', sans-serif",
+  fontBody:                config.theme?.fonts?.body         || "'DM Sans', system-ui, sans-serif",
+  fontHand:                config.theme?.fonts?.hand         || "'Caveat', cursive",
 };
 
 // Source HTML / manifest files with {{tokens}}. The build reads each from
