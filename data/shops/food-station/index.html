@@ -69,8 +69,15 @@
   .cta h2{font-family:'Lilita One';font-size:clamp(2rem,6vw,3.4rem);margin:0 0 24px;}
   .cta .btn{font-size:1.3rem;padding:20px 46px;background:var(--ink);color:var(--mustard);}
 
+  .hero-food{display:block;width:78%;max-width:450px;margin:36px auto -14px;filter:drop-shadow(0 16px 24px rgba(0,0,0,.4));}
+  .goods{padding:54px 0;text-align:center;}
+  .goods h2{font-family:'Lilita One';font-size:clamp(1.8rem,4.5vw,2.8rem);margin:0 0 6px;color:var(--ink);}
+  .goods .s{color:var(--red);font-weight:700;margin:0 0 30px;}
+  .goods-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center;max-width:780px;margin:0 auto;}
+  .goods-grid img{width:100%;max-width:350px;justify-self:center;filter:drop-shadow(0 12px 16px rgba(0,0,0,.22));}
+
   footer{background:var(--ink);color:#cfc7b8;text-align:center;padding:26px;font-size:.9rem;} footer a{color:var(--mustard);font-weight:600;text-decoration:none;}
-  @media(max-width:720px){.grid2{grid-template-columns:1fr;}.info-grid{grid-template-columns:1fr;}.hero{padding:48px 0;}}
+  @media(max-width:720px){.grid2{grid-template-columns:1fr;}.info-grid{grid-template-columns:1fr;}.goods-grid{grid-template-columns:1fr;}.hero{padding:48px 0;}}
 </style>
 </head>
 <body>
@@ -87,6 +94,7 @@
       <h1 class="display"><span class="m">FIVE</span> CRAVINGS.<br>ONE KITCHEN.<br>ZERO COMPROMISES.</h1>
       <p>Pizza, parmo, kebab, burger, wrap — five comfort-food worlds under one roof. Big portions, real ingredients, no fuss.</p>
       <a href="/order" class="btn">Start your order →</a>
+      <img class="hero-food" src="assets/pizza.png" alt="Loaded stone-baked pizza" loading="lazy" />
     </div>
   </section>
 
@@ -94,6 +102,15 @@
     <div class="lbl">Five worlds · one menu</div>
     <div class="chips">
       <span class="chip r">PIZZA</span><span class="chip g">PARMO</span><span class="chip m">KEBAB</span><span class="chip k">BURGER</span><span class="chip r">WRAP</span>
+    </div>
+  </div></section>
+
+  <section class="goods"><div class="wrap">
+    <h2 class="display">Made loud. Made fresh.</h2>
+    <p class="s">Pulled, stacked, rolled — and out fast.</p>
+    <div class="goods-grid">
+      <img src="assets/burger.png" alt="Stacked cheeseburger" loading="lazy" />
+      <img src="assets/wrap.png" alt="Loaded doner wrap" loading="lazy" />
     </div>
   </div></section>
 

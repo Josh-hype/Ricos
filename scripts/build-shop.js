@@ -83,6 +83,20 @@ for (const [src, dest] of copies) {
   console.log(`build-shop: ${slug}/${src} -> ${dest}`);
 }
 
+/* Per-shop static assets (food photos etc.): copy data/shops/<slug>/assets/*
+   to public/assets/. Optional — shops without an assets/ folder skip this. */
+{
+  const shopAssets = path.join(shopDir, 'assets');
+  if (fs.existsSync(shopAssets)) {
+    const outAssets = path.join(repoRoot, 'public', 'assets');
+    fs.mkdirSync(outAssets, { recursive: true });
+    for (const f of fs.readdirSync(shopAssets)) {
+      fs.copyFileSync(path.join(shopAssets, f), path.join(outAssets, f));
+      console.log(`build-shop: ${slug}/assets/${f} -> public/assets/${f}`);
+    }
+  }
+}
+
 /* ---------- Template substitution ---------- */
 
 const config = JSON.parse(fs.readFileSync(path.join(activeDir, 'config.json'), 'utf8'));
