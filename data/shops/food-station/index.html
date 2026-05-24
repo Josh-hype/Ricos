@@ -5,109 +5,72 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>{{shopName}} — Pizza · Parmo · Kebab · Burger · Wrap in {{shopCity}}</title>
 <meta name="description" content="{{shopName}} — five cravings, one kitchen. Stone-baked pizza, parmos, kebabs, smash burgers and loaded wraps. Order online for collection or delivery {{deliveryAreaDescription}}." />
-
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-
 <style>
-  :root {
-    --red:#D72C26; --green:#4FAE3F; --mustard:#F2B91D;
-    --ink:#1A1A1A; --cream:#FBF5E9; --surface:#FFFDF6;
-  }
-  * { box-sizing:border-box; }
-  html { scroll-behavior:smooth; }
-  body {
-    margin:0; font-family:'Poppins',system-ui,sans-serif; color:var(--ink);
-    background:var(--cream); line-height:1.55; overflow-x:hidden;
-  }
-  .display { font-family:'Lilita One',system-ui,sans-serif; font-weight:400; letter-spacing:.5px; line-height:.98; }
-  .wrap { max-width:1080px; margin:0 auto; padding:0 22px; }
-  a { color:inherit; }
+  :root{ --red:#D72C26; --green:#4FAE3F; --mustard:#F2B91D; --ink:#1A1A1A; --cream:#FBF5E9; --surface:#FFFDF6; }
+  *{box-sizing:border-box;} html,body{margin:0;} html{scroll-behavior:smooth;}
+  body{font-family:'Poppins',system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.5;overflow-x:hidden;}
+  .display{font-family:'Lilita One',system-ui,sans-serif;line-height:.95;letter-spacing:.5px;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 22px;}
+  a{color:inherit;}
+  .btn{display:inline-flex;align-items:center;gap:10px;font-weight:800;font-size:1.1rem;text-decoration:none;
+       padding:16px 32px;border:3px solid var(--ink);border-radius:14px;box-shadow:5px 5px 0 var(--ink);
+       background:var(--mustard);color:var(--ink);transition:transform .08s,box-shadow .08s;cursor:pointer;}
+  .btn:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--ink);}
+  .btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink);}
 
-  /* Sticker primitives */
-  .sticker { border:3px solid var(--ink); border-radius:16px; box-shadow:5px 5px 0 var(--ink); background:var(--surface); }
-  .btn {
-    display:inline-flex; align-items:center; gap:10px; font-family:'Poppins'; font-weight:800;
-    font-size:1.05rem; text-decoration:none; padding:15px 28px; border:3px solid var(--ink);
-    border-radius:14px; box-shadow:4px 4px 0 var(--ink); background:var(--red); color:#fff;
-    transition:transform .08s ease, box-shadow .08s ease; cursor:pointer;
-  }
-  .btn:hover { transform:translate(-2px,-2px); box-shadow:6px 6px 0 var(--ink); }
-  .btn:active { transform:translate(2px,2px); box-shadow:1px 1px 0 var(--ink); }
-  .btn.green { background:var(--green); }
-  .btn.ink { background:var(--ink); color:var(--mustard); }
+  header.bar{display:flex;align-items:center;justify-content:space-between;padding:12px 22px;background:var(--cream);border-bottom:4px solid var(--ink);position:sticky;top:0;z-index:20;}
+  header.bar img{height:48px;display:block;}
+  header.bar .btn{padding:11px 20px;font-size:.95rem;box-shadow:3px 3px 0 var(--ink);background:var(--red);color:#fff;}
 
-  /* Top bar */
-  header.bar {
-    position:sticky; top:0; z-index:20; background:var(--cream);
-    border-bottom:3px solid var(--ink); display:flex; align-items:center;
-    justify-content:space-between; padding:12px 22px;
-  }
-  header.bar img { height:46px; width:auto; display:block; }
-  header.bar .btn { padding:11px 20px; font-size:.95rem; box-shadow:3px 3px 0 var(--ink); }
+  .hero{background:var(--red);color:var(--cream);border-bottom:5px solid var(--ink);position:relative;overflow:hidden;padding:70px 0 64px;text-align:center;}
+  .hero .dot{position:absolute;border-radius:50%;}
+  .hero .dot.m{width:150px;height:150px;background:var(--mustard);top:-40px;right:8%;opacity:.9;}
+  .hero .dot.g{width:90px;height:90px;background:var(--green);bottom:24px;left:7%;border:4px solid var(--ink);}
+  .hero .dot.c{width:50px;height:50px;background:var(--cream);top:40%;right:14%;border:4px solid var(--ink);}
+  .hero .inner{position:relative;z-index:2;}
+  .badge{display:inline-block;background:var(--mustard);color:var(--ink);border:3px solid var(--ink);border-radius:999px;
+         padding:7px 22px;font-weight:800;box-shadow:4px 4px 0 var(--ink);margin-bottom:24px;transform:rotate(-2deg);}
+  .hero h1{font-size:clamp(3rem,9vw,6rem);margin:0;color:var(--cream);text-shadow:4px 4px 0 var(--ink);}
+  .hero h1 .m{color:var(--mustard);}
+  .hero p{font-size:clamp(1.1rem,2.6vw,1.4rem);font-weight:600;max-width:600px;margin:22px auto 30px;}
+  .hero .btn{font-size:1.25rem;padding:18px 40px;}
 
-  /* Hero */
-  .hero { position:relative; padding:64px 0 36px; text-align:center; }
-  .hero .blob { position:absolute; border-radius:50%; z-index:0; }
-  .hero .blob.r { width:300px; height:300px; background:var(--red); top:-90px; right:-70px; }
-  .hero .blob.g { width:210px; height:210px; background:var(--green); bottom:-30px; left:-80px; }
-  .hero .blob.m { width:120px; height:120px; background:var(--mustard); top:120px; left:40px; }
-  .hero .inner { position:relative; z-index:2; }
-  .kicker {
-    display:inline-block; background:var(--mustard); border:3px solid var(--ink); border-radius:999px;
-    padding:6px 18px; font-weight:800; font-size:.95rem; box-shadow:3px 3px 0 var(--ink); margin-bottom:22px;
-  }
-  .hero h1 { font-size:clamp(2.8rem,8vw,5.2rem); margin:0; }
-  .hero h1 .r{ color:var(--red); } .hero h1 .g{ color:var(--green); } .hero h1 .k{ color:var(--ink); }
-  .hero p.sub { font-size:clamp(1.05rem,2.4vw,1.35rem); font-weight:600; max-width:620px; margin:18px auto 6px; }
-  .hero .cravings { font-weight:700; color:var(--ink); opacity:.85; margin:0 0 26px; }
+  .cravings{padding:46px 0;text-align:center;}
+  .cravings .lbl{font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--red);margin-bottom:18px;}
+  .chips{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;}
+  .chip{font-family:'Lilita One';font-size:1.5rem;color:#fff;padding:14px 30px;border:3px solid var(--ink);border-radius:999px;box-shadow:5px 5px 0 var(--ink);transform:rotate(-2deg);}
+  .chip:nth-child(2n){transform:rotate(2deg);}
+  .chip.r{background:var(--red);} .chip.g{background:var(--green);} .chip.m{background:var(--mustard);color:var(--ink);} .chip.k{background:var(--ink);color:var(--mustard);}
 
-  /* Cravings chips */
-  .chips { display:flex; flex-wrap:wrap; gap:14px; justify-content:center; padding:8px 0 50px; }
-  .chip { font-family:'Lilita One'; font-size:1.25rem; color:#fff; padding:12px 24px; border:3px solid var(--ink);
-          border-radius:999px; box-shadow:4px 4px 0 var(--ink); transform:rotate(-2deg); }
-  .chip:nth-child(2n){ transform:rotate(2deg); }
-  .chip.red{background:var(--red)} .chip.green{background:var(--green)} .chip.mustard{background:var(--mustard); color:var(--ink)} .chip.ink{background:var(--ink); color:var(--mustard)}
+  .story{background:var(--ink);color:var(--cream);padding:60px 0;}
+  .story h2{font-size:clamp(2rem,5vw,3.2rem);margin:0 0 16px;color:#fff;}
+  .story h2 .m{color:var(--mustard);} .story h2 .g{color:var(--green);}
+  .story p{font-size:1.15rem;max-width:740px;margin:0;}
+  .story .t{color:var(--mustard);font-weight:700;}
 
-  /* Story */
-  .band { background:var(--ink); color:var(--cream); padding:52px 0; border-top:3px solid var(--ink); border-bottom:3px solid var(--ink); }
-  .band h2 { font-size:clamp(1.8rem,4vw,2.8rem); margin:0 0 14px; color:#fff; }
-  .band h2 .m{ color:var(--mustard); } .band h2 .g{ color:var(--green); }
-  .band p { font-size:1.12rem; max-width:760px; margin:0; }
-  .band .tag { color:var(--mustard); font-weight:700; }
+  .feat{padding:56px 0;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:26px;}
+  .card{padding:30px;border:3px solid var(--ink);border-radius:18px;box-shadow:7px 7px 0 var(--ink);color:#fff;}
+  .card.red{background:var(--red);} .card.green{background:var(--green);}
+  .card .pill{display:inline-block;background:var(--mustard);color:var(--ink);font-weight:800;font-size:.78rem;padding:5px 14px;border-radius:999px;border:2px solid var(--ink);margin-bottom:14px;}
+  .card h3{font-family:'Lilita One';font-size:2rem;margin:0 0 10px;}
+  .card p{margin:0;font-size:1.05rem;}
 
-  /* Feature cards */
-  .feature { padding:54px 0; }
-  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
-  .card { padding:26px 26px 28px; }
-  .card.box { background:var(--red); color:#fff; }
-  .card.stack { background:var(--green); color:#fff; }
-  .card h3 { font-family:'Lilita One'; font-size:1.7rem; margin:0 0 10px; }
-  .card .pill { display:inline-block; background:var(--mustard); color:var(--ink); font-weight:800; font-size:.78rem;
-                padding:4px 12px; border-radius:999px; border:2px solid var(--ink); margin-bottom:12px; }
-  .card p { margin:0; font-size:1.02rem; }
+  .find{background:var(--green);color:#fff;padding:56px 0;border-top:5px solid var(--ink);border-bottom:5px solid var(--ink);}
+  .find h2{font-size:clamp(1.8rem,4vw,2.6rem);text-align:center;margin:0 0 28px;color:#fff;}
+  .info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .info{background:var(--cream);color:var(--ink);border:3px solid var(--ink);border-radius:16px;box-shadow:5px 5px 0 var(--ink);padding:22px;text-align:center;}
+  .info .ic{font-size:1.8rem;} .info h4{margin:8px 0 6px;color:var(--red);text-transform:uppercase;letter-spacing:.05em;font-size:.95rem;} .info p{margin:0;font-weight:600;} .info a{font-weight:800;text-decoration:none;}
 
-  /* Find us */
-  .find { padding:10px 0 60px; }
-  .find h2 { font-size:clamp(1.6rem,4vw,2.4rem); text-align:center; margin:0 0 26px; }
-  .info-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
-  .info { padding:22px; text-align:center; background:var(--surface); }
-  .info .ic { font-size:1.7rem; }
-  .info h4 { margin:8px 0 6px; font-size:1rem; text-transform:uppercase; letter-spacing:.04em; color:var(--red); }
-  .info p { margin:0; font-weight:600; }
-  .info a { font-weight:700; text-decoration:none; }
+  .cta{background:var(--mustard);text-align:center;padding:60px 22px;border-bottom:5px solid var(--ink);}
+  .cta h2{font-family:'Lilita One';font-size:clamp(2rem,6vw,3.4rem);margin:0 0 24px;}
+  .cta .btn{font-size:1.3rem;padding:20px 46px;background:var(--ink);color:var(--mustard);}
 
-  .cta-final { text-align:center; padding:0 0 70px; }
-  .cta-final .btn { font-size:1.25rem; padding:18px 40px; }
-
-  footer { background:var(--ink); color:#cfc7b8; text-align:center; padding:26px 22px; font-size:.9rem; }
-  footer a { color:var(--mustard); font-weight:600; text-decoration:none; }
-
-  @media (max-width:720px){
-    .grid2{ grid-template-columns:1fr; } .info-grid{ grid-template-columns:1fr; }
-    .hero{ padding-top:44px; }
-  }
+  footer{background:var(--ink);color:#cfc7b8;text-align:center;padding:26px;font-size:.9rem;} footer a{color:var(--mustard);font-weight:600;text-decoration:none;}
+  @media(max-width:720px){.grid2{grid-template-columns:1fr;}.info-grid{grid-template-columns:1fr;}.hero{padding:48px 0;}}
 </style>
 </head>
 <body>
@@ -118,74 +81,42 @@
   </header>
 
   <section class="hero">
-    <span class="blob r"></span><span class="blob g"></span><span class="blob m"></span>
+    <span class="dot m"></span><span class="dot g"></span><span class="dot c"></span>
     <div class="wrap inner">
-      <span class="kicker">Pull up. Pig out.</span>
-      <h1 class="display"><span class="r">FIVE</span> <span class="k">CRAVINGS.</span><br><span class="g">ONE</span> <span class="k">KITCHEN.</span><br><span class="k">ZERO COMPROMISES.</span></h1>
-      <p class="sub">Pizza, parmo, kebab, burger, wrap — five comfort-food worlds under one roof. Big portions, real ingredients, no fuss.</p>
-      <p class="cravings">Your hunger's last stop in {{shopCity}}.</p>
-      <a href="/order" class="btn ink">Start your order →</a>
+      <span class="badge">Pull up. Pig out.</span>
+      <h1 class="display"><span class="m">FIVE</span> CRAVINGS.<br>ONE KITCHEN.<br>ZERO COMPROMISES.</h1>
+      <p>Pizza, parmo, kebab, burger, wrap — five comfort-food worlds under one roof. Big portions, real ingredients, no fuss.</p>
+      <a href="/order" class="btn">Start your order →</a>
     </div>
   </section>
 
-  <div class="wrap">
+  <section class="cravings"><div class="wrap">
+    <div class="lbl">Five worlds · one menu</div>
     <div class="chips">
-      <span class="chip red">PIZZA</span>
-      <span class="chip green">PARMO</span>
-      <span class="chip mustard">KEBAB</span>
-      <span class="chip ink">BURGER</span>
-      <span class="chip red">WRAP</span>
+      <span class="chip r">PIZZA</span><span class="chip g">PARMO</span><span class="chip m">KEBAB</span><span class="chip k">BURGER</span><span class="chip r">WRAP</span>
     </div>
-  </div>
+  </div></section>
 
-  <section class="band">
-    <div class="wrap">
-      <h2 class="display">What happens when five cravings<br><span class="m">stop fighting</span> and <span class="g">share a kitchen.</span></h2>
-      <p>We built one spot for every kind of hunger — the post-shift one, the late-night one, the "feed the whole family" one. Stone-baked pizza that folds properly. A parmo smothered in béchamel. Chargrilled kebabs off the skewer. Smashed, double-stacked burgers. Loaded wraps built to eat one-handed. <span class="tag">Pull up to the station. Pile your plate. Job done.</span></p>
+  <section class="story"><div class="wrap">
+    <h2 class="display">When five cravings <span class="m">stop fighting</span><br>and <span class="g">share a kitchen.</span></h2>
+    <p>One spot for every kind of hunger — the post-shift one, the late-night one, the "feed the whole family" one. Stone-baked pizza, a parmo smothered in béchamel, chargrilled kebabs, smashed burgers, loaded wraps. <span class="t">Pull up to the station. Pile your plate. Job done.</span></p>
+  </div></section>
+
+  <section class="feat"><div class="wrap grid2">
+    <div class="card red"><span class="pill">The famous one</span><h3>The Indecision Box</h3><p>Mini pizza, quarter parmo, slider burger, half a kebab wrap, and chips — all in one box. For when you genuinely can't choose.</p></div>
+    <div class="card green"><span class="pill">Signature offer</span><h3>The Station Stack</h3><p>Any two mains + chips + a drink for one fixed price. Stamp card too — ten stacks, next one's on us.</p></div>
+  </div></section>
+
+  <section class="find"><div class="wrap">
+    <h2 class="display">Find the station</h2>
+    <div class="info-grid">
+      <div class="info"><div class="ic">📍</div><h4>Where</h4><p>{{shopAddressLine1}}<br>{{shopCity}}, {{shopPostcode}}</p></div>
+      <div class="info"><div class="ic">🕒</div><h4>When</h4><p>Sun–Thu · 4–10pm<br>Fri–Sat · 4–11pm</p></div>
+      <div class="info"><div class="ic">🛵</div><h4>Collection &amp; delivery</h4><p>Delivery {{deliveryAreaDescription}}<br><a href="tel:{{shopPhoneTel}}">{{shopPhone}}</a></p></div>
     </div>
-  </section>
+  </div></section>
 
-  <section class="feature">
-    <div class="wrap grid2">
-      <div class="card box sticker">
-        <span class="pill">The famous one</span>
-        <h3>The Indecision Box</h3>
-        <p>A mini slice of pizza, a quarter parmo, a slider burger, half a kebab wrap, and chips — all in one box. For when you genuinely cannot choose. The place that gives you everything.</p>
-      </div>
-      <div class="card stack sticker">
-        <span class="pill">Signature offer</span>
-        <h3>The Station Stack</h3>
-        <p>Pick any two mains, add chips and a drink for one fixed price. Stamp card too — ten stacks and the next one's on us.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="find">
-    <div class="wrap">
-      <h2 class="display">Find the station</h2>
-      <div class="info-grid">
-        <div class="info sticker">
-          <div class="ic">📍</div>
-          <h4>Where</h4>
-          <p>{{shopAddressLine1}}<br>{{shopCity}}, {{shopPostcode}}</p>
-        </div>
-        <div class="info sticker">
-          <div class="ic">🕒</div>
-          <h4>When</h4>
-          <p>Sun–Thu · 4pm–10pm<br>Fri–Sat · 4pm–11pm</p>
-        </div>
-        <div class="info sticker">
-          <div class="ic">🛵</div>
-          <h4>Collection &amp; delivery</h4>
-          <p>Delivery {{deliveryAreaDescription}}<br><a href="tel:{{shopPhoneTel}}">{{shopPhone}}</a></p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="cta-final">
-    <a href="/order" class="btn green">Pick your hunger →</a>
-  </section>
+  <section class="cta"><h2 class="display">Pick your hunger.</h2><a href="/order" class="btn">Start your order →</a></section>
 
   <footer>
     <p>&copy; <span id="year"></span> {{shopName}} · {{shopAddressLine1}}, {{shopCity}} {{shopPostcode}}</p>
