@@ -101,6 +101,14 @@ for (const [src, dest] of copies) {
 
 const config = JSON.parse(fs.readFileSync(path.join(activeDir, 'config.json'), 'utf8'));
 
+// Optional per-shop CSS appended to the order page's <style> block. Lets a
+// shop layer on bespoke styling (e.g. Food Station's sticker buttons) without
+// forking the shared template. Absent for most shops -> empty -> no change.
+const orderCssFile = path.join(shopDir, 'order.css');
+const orderStyleOverrides = fs.existsSync(orderCssFile)
+  ? fs.readFileSync(orderCssFile, 'utf8')
+  : '';
+
 const a = config.business.address || {};
 const phone = config.business.phone || '';
 const phoneTel = phone.replace(/\s+/g, '');
@@ -142,6 +150,8 @@ const tokens = {
   fontDisplayAlt:          config.theme?.fonts?.displayAlt   || "'Anton', 'Impact', sans-serif",
   fontBody:                config.theme?.fonts?.body         || "'DM Sans', system-ui, sans-serif",
   fontHand:                config.theme?.fonts?.hand         || "'Caveat', cursive",
+  // Optional per-shop CSS injected at the end of the order page <style>.
+  orderStyleOverrides,
 };
 
 // Source HTML / manifest files with {{tokens}}. The build reads each from

@@ -1,0 +1,24 @@
+/* Food Station — sticker-lite buttons.
+   The shared order page already gives the cards, category chips and the
+   cart / checkout button the charcoal-outline + hard-offset-shadow sticker
+   look. These rules extend the same pop to the add-to-cart and quantity
+   buttons (which ship without a shadow) and add a tactile press-down on tap.
+   No rotation, so a dense ordering UI stays calm. */
+
+.add-btn {
+  box-shadow: 3px 3px 0 var(--ink);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
+}
+.add-btn:hover  { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); }
+.add-btn:active { transform: translate(2px, 2px);   box-shadow: 1px 1px 0 var(--ink); }
+
+.qty-btn {
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
+}
+.qty-btn:hover  { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--ink); }
+.qty-btn:active { transform: translate(1px, 1px);   box-shadow: 0 0 0 var(--ink); }
+
+/* Elements that already carry the sticker shadow only gain the press-down. */
+.cat-card:active     { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+.checkout-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
