@@ -36,7 +36,19 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(__filename), '..');
 
-const slug = (process.env.SHOP_SLUG || 'ricos').trim();
+// Shop selection order: SHOP_SLUG env var (set per Cloudflare Pages project)
+// wins; then an optional committed .shopslug file (lets a project deploy the
+// right shop even when its env var isn't wired up); then "ricos" for local
+// dev. The env var always takes precedence, so shops that set it (Rico's)
+// are unaffected by the file.
+function shopSlugFromFile() {
+  try {
+    const f = path.join(repoRoot, '.shopslug');
+    if (fs.existsSync(f)) return fs.readFileSync(f, 'utf8').trim();
+  } catch { /* ignore */ }
+  return '';
+}
+const slug = (process.env.SHOP_SLUG || shopSlugFromFile() || 'ricos').trim();
 const shopDir = path.join(repoRoot, 'data', 'shops', slug);
 
 if (slug.startsWith('_')) {
