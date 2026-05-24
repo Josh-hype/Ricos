@@ -276,7 +276,7 @@
             ]
           }
         ],
-        "spicy": true
+        "spicyTag": true
       },
       {
         "id": "alfunghi",
@@ -823,7 +823,7 @@
             ]
           }
         ],
-        "spicy": true
+        "spicyTag": true
       },
       {
         "id": "doner",
@@ -902,7 +902,7 @@
             ]
           }
         ],
-        "spicy": true
+        "spicyTag": true
       },
       {
         "id": "meat-supreme",
@@ -1428,7 +1428,7 @@
         "name": "Calzone Hot",
         "price": 10.5,
         "desc": "Pepperoni, onion, jalapeno.",
-        "spicy": true
+        "spicyTag": true
       }
     ]
   },
@@ -1454,7 +1454,7 @@
         "name": "Hot Parmesan",
         "price": 10.5,
         "desc": "Pepperoni, jalapeno, garlic butter.",
-        "spicy": true
+        "spicyTag": true
       },
       {
         "id": "parmo-ham",
@@ -1900,7 +1900,7 @@
         "name": "SP Wings (6)",
         "price": 5.9,
         "desc": "Southern-fried spicy wings.",
-        "spicy": true
+        "spicyTag": true
       },
       {
         "id": "sd-garlic-mushroom",

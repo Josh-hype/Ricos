@@ -2097,7 +2097,7 @@ function renderCart() {
     const body = document.getElementById(bodyId);
     const summary = document.getElementById(summaryId);
     if (state.cart.length === 0) {
-      body.innerHTML = `<div class="cart-empty"><div class="big">no items yet</div><p>Add some chicken from the menu →</p></div>`;
+      body.innerHTML = `<div class="cart-empty"><div class="big">no items yet</div><p>Add something from the menu →</p></div>`;
       if (summary) summary.style.display = 'none';
       return;
     }
