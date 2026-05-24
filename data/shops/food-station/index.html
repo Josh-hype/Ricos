@@ -27,7 +27,6 @@
 
   .hero{background:var(--red);color:var(--cream);border-bottom:5px solid var(--ink);position:relative;overflow:hidden;padding:64px 0 60px;text-align:center;}
   .hero .inner{position:relative;z-index:2;}
-  .hero-logo{display:block;width:clamp(230px,40vw,440px);height:auto;margin:0 auto 26px;filter:drop-shadow(0 8px 12px rgba(0,0,0,.4));}
   .float{position:absolute;z-index:1;pointer-events:none;filter:drop-shadow(0 10px 14px rgba(0,0,0,.45));}
   .float.pizza{width:clamp(150px,23vw,300px);top:-40px;left:-46px;transform:rotate(-12deg);}
   .float.burger{width:clamp(116px,17vw,218px);top:6px;right:-30px;transform:rotate(11deg);}
@@ -86,7 +85,7 @@
     <img class="float burger" src="assets/burger.png" alt="Stacked cheeseburger" />
     <img class="float wrap"   src="assets/wrap.png"   alt="Loaded doner wrap" />
     <div class="wrap inner">
-      <img class="hero-logo" src="logo.png" alt="{{shopName}}" />
+      <span class="badge">Pull up. Pig out.</span>
       <h1 class="display"><span class="m">FIVE</span> CRAVINGS.<br>ONE KITCHEN.<br>ZERO COMPROMISES.</h1>
       <p>Pizza, parmo, kebab, burger, wrap — five comfort-food worlds under one roof. Big portions, real ingredients, no fuss.</p>
       <a href="/order" class="btn">Start your order →</a>
