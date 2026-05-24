@@ -14,3 +14,9 @@ dist/
 # regenerated per deploy by scripts/build-shop.js. We commit them with
 # Rico's defaults so deploys keep working even before the build command
 # is wired up in each Cloudflare Pages project.
+
+# public/assets/ is copied per-shop from data/shops/<slug>/assets/ at build
+# time. It has no sensible committed default (Rico's ships no assets), and
+# each deploy regenerates it, so it's left out of version control. The source
+# images live under data/shops/<slug>/assets/ and are committed there.
+public/assets/
