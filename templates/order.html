@@ -2474,6 +2474,9 @@ function renderAccountTab() {
     `;
     document.getElementById('doGuest').addEventListener('click', () => {
       closeModal('accountOverlay');
+      // Mark this as the guest path so startCheckout() skips the account
+      // prompt instead of re-opening it (otherwise checkout loops here).
+      checkoutData.guest = true;
       // if cart has items + postcode set, jump straight into checkout
       if (state.cart.length > 0 && state.postcode) {
         startCheckout();
