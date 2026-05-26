@@ -34,7 +34,8 @@
             {
               "label": "Drink",
               "count": 1,
-              "category": "drinks"
+              "category": "drinks",
+              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
             }
           ]
         }
@@ -66,7 +67,8 @@
             {
               "label": "Drink",
               "count": 1,
-              "category": "drinks"
+              "category": "drinks",
+              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
             }
           ]
         }
@@ -98,7 +100,8 @@
             {
               "label": "Drink",
               "count": 1,
-              "category": "drinks"
+              "category": "drinks",
+              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
             }
           ]
         }
@@ -130,7 +133,8 @@
             {
               "label": "Drink",
               "count": 1,
-              "category": "drinks"
+              "category": "drinks",
+              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
             }
           ]
         }
@@ -162,7 +166,8 @@
             {
               "label": "Drink",
               "count": 1,
-              "category": "drinks"
+              "category": "drinks",
+              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
             }
           ]
         }
@@ -194,7 +199,8 @@
             {
               "label": "Drink",
               "count": 1,
-              "category": "drinks"
+              "category": "drinks",
+              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
             }
           ]
         },
@@ -248,7 +254,8 @@
             {
               "label": "Drink",
               "count": 1,
-              "category": "drinks"
+              "category": "drinks",
+              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
             }
           ]
         }
@@ -300,7 +307,8 @@
             {
               "label": "Drink",
               "count": 1,
-              "category": "drinks"
+              "category": "drinks",
+              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
             }
           ]
         }
@@ -332,7 +340,8 @@
             {
               "label": "Drink",
               "count": 1,
-              "category": "drinks"
+              "category": "drinks",
+              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
             }
           ]
         }
@@ -364,7 +373,8 @@
             {
               "label": "Drink",
               "count": 1,
-              "category": "drinks"
+              "category": "drinks",
+              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
             }
           ]
         }
@@ -402,7 +412,8 @@
             {
               "label": "Drink",
               "count": 1,
-              "category": "drinks"
+              "category": "drinks",
+              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
             }
           ]
         },
@@ -466,7 +477,8 @@
             {
               "label": "Drink",
               "count": 1,
-              "category": "drinks"
+              "category": "drinks",
+              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
             }
           ]
         },
@@ -517,7 +529,8 @@
             {
               "label": "Drink",
               "count": 1,
-              "category": "drinks"
+              "category": "drinks",
+              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
             }
           ]
         },
@@ -569,7 +582,8 @@
             {
               "label": "Drink",
               "count": 1,
-              "category": "drinks"
+              "category": "drinks",
+              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
             }
           ]
         },
@@ -620,7 +634,8 @@
             {
               "label": "Drink",
               "count": 1,
-              "category": "drinks"
+              "category": "drinks",
+              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
             }
           ]
         },
@@ -671,7 +686,8 @@
             {
               "label": "Drink",
               "count": 1,
-              "category": "drinks"
+              "category": "drinks",
+              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
             }
           ]
         },
@@ -1394,7 +1410,7 @@
         "id": "btl-coke",
         "name": "Bottle of Coke",
         "price": 3.8,
-        "desc": "1.25L bottle.",
+        "desc": "1.5L bottle.",
         "spicy": false,
         "drink": {
           "kind": "bottle",
@@ -1408,7 +1424,7 @@
         "id": "btl-diet",
         "name": "Bottle of Diet Coke",
         "price": 3.8,
-        "desc": "1.25L bottle.",
+        "desc": "1.5L bottle.",
         "spicy": false,
         "drink": {
           "kind": "bottle",
@@ -1422,7 +1438,7 @@
         "id": "btl-tango",
         "name": "Bottle of Tango",
         "price": 3.8,
-        "desc": "1.25L bottle.",
+        "desc": "1.5L bottle.",
         "spicy": false,
         "drink": {
           "kind": "bottle",
@@ -1436,7 +1452,7 @@
         "id": "btl-7up",
         "name": "Bottle of 7Up",
         "price": 3.8,
-        "desc": "1.25L bottle.",
+        "desc": "1.5L bottle.",
         "spicy": false,
         "drink": {
           "kind": "bottle",
