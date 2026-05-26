@@ -76,13 +76,13 @@
 
   "hours": {
     "_comment": "24-hour format. Closes after midnight are written as 25:00 = 01:00 next day. lastOrderBeforeCloseMinutes is subtracted automatically for the cut-off.",
-    "monday":    { "closed": false, "windows": [{ "open": "13:00", "close": "22:45" }] },
-    "tuesday":   { "closed": false, "windows": [{ "open": "13:00", "close": "22:45" }] },
-    "wednesday": { "closed": false, "windows": [{ "open": "13:00", "close": "22:45" }] },
-    "thursday":  { "closed": false, "windows": [{ "open": "13:00", "close": "22:45" }] },
+    "monday":    { "closed": false, "windows": [{ "open": "13:00", "close": "23:00" }] },
+    "tuesday":   { "closed": false, "windows": [{ "open": "13:00", "close": "23:00" }] },
+    "wednesday": { "closed": false, "windows": [{ "open": "13:00", "close": "23:00" }] },
+    "thursday":  { "closed": false, "windows": [{ "open": "13:00", "close": "23:00" }] },
     "friday":    { "closed": false, "windows": [{ "open": "13:00", "close": "25:00" }] },
     "saturday":  { "closed": false, "windows": [{ "open": "14:00", "close": "25:00" }] },
-    "sunday":    { "closed": false, "windows": [{ "open": "14:00", "close": "22:45" }] }
+    "sunday":    { "closed": false, "windows": [{ "open": "14:00", "close": "23:00" }] }
   },
 
   "ordering": {
@@ -94,7 +94,7 @@
       "maxOrdersPerSlot": 6,
       "horizonDays": 2
     },
-    "lastOrderBeforeCloseMinutes": 30
+    "lastOrderBeforeCloseMinutes": 15
   },
 
   "promo": {
