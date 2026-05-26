@@ -84,6 +84,33 @@ Push to `main` → both sites rebuild automatically.
 - Safety net: Cloudflare keeps every past deployment — one-click **Rollback**
   if a deploy breaks a site.
 
+## Adding a new shop (3rd, 4th, 5th…)
+
+Follow the existing runbooks — **do not invent a new process**:
+- **`docs/ADDING_A_SHOP.md`** — full end-to-end walkthrough
+- **`docs/SHOP_CHECKLIST.md`** — the tick-box version of the same
+
+The shape, in brief:
+1. `cp -r data/shops/_template data/shops/<slug>` (slug = lowercase, dashes only).
+2. Fill in `config.json`, `menu.json` (prices in **pence**), `menu-visual.json`.
+   **Required files** (build fails without them): `config.json`, `menu.json`,
+   `menu-visual.json`, **`logo.png`**. Optional: `index.html` (otherwise the
+   shared `templates/landing-default.html` is used), `assets/` (photos),
+   `order.css` (per-shop CSS).
+3. Test locally: `SHOP_SLUG=<slug> npm run build` — must end with
+   `active shop is "<slug>"`.
+4. Commit on `dev`, check the preview, merge to `main`.
+5. Create a **new Cloudflare Pages project** on the **same** repo: build command
+   `npm run build`, production branch `main`, env `SHOP_SLUG=<slug>` (+
+   `NODE_VERSION`) for **both** Production and Preview; create its 5 KV
+   namespaces and bind them (`ORDERS_KV`, `CUSTOMERS_KV`, `MARKETING_KV`,
+   `SLOTS_KV`, `STAFF_LOGIN_KV`); add the secrets (`STRIPE_*`, `RESEND_*`,
+   `TWILIO_*`, `SESSION_SECRET`, `STAFF_PIN_HASH`); add the custom domain.
+   All of this is detailed step-by-step in the docs above.
+
+**Never fork shared code for one shop** — gate shop-specific behaviour behind a
+config flag so it ships to everyone but only renders where it's turned on.
+
 ## Starting a session
 
 The user will say which brand we're working on (Rico's or Food Station). That

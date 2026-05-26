@@ -81,9 +81,11 @@ Add each as **encrypted** (the lock icon), not plaintext:
 - [ ] `RESEND_API_KEY` (shared)
 - [ ] `RESEND_FROM_EMAIL` = `orders@<shop-domain>`
 - [ ] `RESEND_FROM_NAME` = shop's trading name
-- [ ] `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`
+- [ ] `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`
       (shared)
-- [ ] `STAFF_PASSWORD` — set it, save it; gives this to their staff
+- [ ] `SESSION_SECRET` — long random string; signs staff login sessions
+- [ ] `STAFF_PIN_HASH` — hash of the staff login PIN (staff enter the PIN
+      at `/staff`; store its hash, not the raw PIN)
 
 ## Phase 6 — Custom domain (~5 min, you + DNS propagation)
 
@@ -118,7 +120,7 @@ Walk through on the live URL with a real card (you'll refund after):
 - [ ] **Receipt email arrives** in the shop's brand colours with logo,
       address, phone
 - [ ] **Staff page** (`<shop-domain>/staff`) — log in with the staff
-      password, the test order appears, sound notification fires
+      PIN, the test order appears, sound notification fires
 - [ ] **Refund the test order in Stripe** so you get the money back
 - [ ] **Test signed-in flow**: create a customer account, place a small
       order with "Save card" ticked, sign back in on a fresh browser,
@@ -126,7 +128,7 @@ Walk through on the live URL with a real card (you'll refund after):
 
 ## Phase 9 — Hand off to the shop
 
-- [ ] Give the shop's manager the staff password
+- [ ] Give the shop's manager the staff PIN
 - [ ] Send them the kitchen screen setup guide (any browser →
       `<shop-domain>/staff` → log in → F11 for fullscreen → leave open)
 - [ ] Confirm with the owner that delivery drivers know how to mark

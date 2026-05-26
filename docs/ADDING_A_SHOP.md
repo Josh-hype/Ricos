@@ -144,10 +144,11 @@ encrypted/secret variables (not plaintext):
 - `RESEND_API_KEY` — your Resend account (shared)
 - `RESEND_FROM_EMAIL` — e.g. `orders@<shop-domain>`
 - `RESEND_FROM_NAME` — e.g. shop's trading name
-- `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER` — your
+- `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` — your
   Twilio account (shared)
-- `STAFF_PASSWORD` — set this; give it to the shop's kitchen staff
-- `STAFF_TOTP_SECRET` *(optional)* — if 2FA is enabled for staff login
+- `SESSION_SECRET` — a long random string; signs staff login sessions
+- `STAFF_PIN_HASH` — hash of the staff login PIN. Staff enter the PIN at
+  `/staff`; store its hash here, never the raw PIN.
 
 ### e) Custom domain
 
@@ -196,7 +197,7 @@ Walk through end-to-end on the new domain:
       the right error message mentioning the shop's area description
 - [ ] Place a real order with a real card — confirm receipt email
       arrives in the shop's brand colours with their logo
-- [ ] `<shop-domain>/staff` — log in with `STAFF_PASSWORD`, the test
+- [ ] `<shop-domain>/staff` — log in with the staff PIN, the test
       order is visible, sound notification fires
 - [ ] Cancel/refund the test order in Stripe so the customer (you)
       gets refunded
