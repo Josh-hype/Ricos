@@ -242,7 +242,13 @@ for (const [tplRel, outRel] of templatedFiles) {
   if (fs.existsSync(srcLanding)) {
     const src = fs.readFileSync(srcLanding, 'utf8');
     const label = srcLanding === shopLanding ? `data/shops/${slug}/index.html` : 'templates/landing-default.html';
-    const { out, replaced } = substitute(src, label);
+    // Inject the shared persistent-basket bar before </body> on every landing,
+    // then substitute tokens (so its {{themePrimary}} colour resolves per shop).
+    const barFile = path.join(repoRoot, 'templates', 'basket-bar.html');
+    const srcWithBar = (fs.existsSync(barFile) && src.includes('</body>'))
+      ? src.replace('</body>', `${fs.readFileSync(barFile, 'utf8')}\n</body>`)
+      : src;
+    const { out, replaced } = substitute(srcWithBar, label);
     const outFile = path.join(repoRoot, 'public', 'index.html');
     fs.writeFileSync(outFile, out);
     console.log(`build-shop: ${label} -> public/index.html (${replaced} token(s))`);

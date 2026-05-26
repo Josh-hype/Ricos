@@ -1,0 +1,38 @@
+<!-- Persistent basket bar. Injected into every landing page by
+     scripts/build-shop.js, just before </body>. Shows whenever the saved cart
+     (localStorage, shared with the order page) has items, and links back to
+     /order so the basket stays visible when a customer leaves the order page.
+     Colour is config-driven via {{themePrimary}}. -->
+<a id="basketBar" href="/order" aria-label="View your basket"
+   style="position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:9999;display:none;align-items:center;gap:10px;background:{{themePrimary}};color:#fff;text-decoration:none;font-weight:800;padding:13px 22px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,0.28);font-size:1rem;max-width:92vw;font-family:inherit">
+  <span aria-hidden="true" style="font-size:1.2rem">🛒</span>
+  <span id="basketBarText">View basket</span>
+</a>
+<script>
+  (function () {
+    var KEY = 'ricos.v1';
+    var bar = document.getElementById('basketBar');
+    var txt = document.getElementById('basketBarText');
+    if (!bar) return;
+    function refresh() {
+      var count = 0, total = 0;
+      try {
+        var s = JSON.parse(localStorage.getItem(KEY) || '{}');
+        (s && Array.isArray(s.cart) ? s.cart : []).forEach(function (l) {
+          var q = Number(l.qty) || 0;
+          count += q;
+          total += (Number(l.price) || 0) * q;
+        });
+      } catch (e) {}
+      if (count > 0) {
+        txt.textContent = 'View basket · £' + total.toFixed(2) + ' · ' + count + (count === 1 ? ' item' : ' items');
+        bar.style.display = 'flex';
+      } else {
+        bar.style.display = 'none';
+      }
+    }
+    refresh();
+    window.addEventListener('pageshow', refresh);
+    window.addEventListener('storage', function (e) { if (e.key === KEY) refresh(); });
+  })();
+</script>
