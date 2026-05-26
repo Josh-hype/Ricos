@@ -676,6 +676,26 @@
             "id": "btl-water",
             "label": "Water",
             "priceDeltaP": 0
+          },
+          {
+            "id": "btl-coke",
+            "label": "Coke (bottle)",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "btl-diet",
+            "label": "Diet Coke (bottle)",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "btl-tango",
+            "label": "Tango (bottle)",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "btl-7up",
+            "label": "7Up (bottle)",
+            "priceDeltaP": 0
           }
         ]
       },
@@ -906,6 +926,26 @@
       {
         "id": "btl-pepsi",
         "name": "Bottle of Pepsi",
+        "priceP": 380
+      },
+      {
+        "id": "btl-coke",
+        "name": "Bottle of Coke",
+        "priceP": 380
+      },
+      {
+        "id": "btl-diet",
+        "name": "Bottle of Diet Coke",
+        "priceP": 380
+      },
+      {
+        "id": "btl-tango",
+        "name": "Bottle of Tango",
+        "priceP": 380
+      },
+      {
+        "id": "btl-7up",
+        "name": "Bottle of 7Up",
         "priceP": 380
       }
     ]

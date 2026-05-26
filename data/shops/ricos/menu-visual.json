@@ -992,6 +992,26 @@
                 "id": "btl-water",
                 "label": "Water",
                 "price": 0
+              },
+              {
+                "id": "btl-coke",
+                "label": "Coke (bottle)",
+                "price": 0
+              },
+              {
+                "id": "btl-diet",
+                "label": "Diet Coke (bottle)",
+                "price": 0
+              },
+              {
+                "id": "btl-tango",
+                "label": "Tango (bottle)",
+                "price": 0
+              },
+              {
+                "id": "btl-7up",
+                "label": "7Up (bottle)",
+                "price": 0
               }
             ]
           }
@@ -1368,6 +1388,62 @@
           "label": "PEPSI",
           "accent": "#E32934",
           "text": "#004B93"
+        }
+      },
+      {
+        "id": "btl-coke",
+        "name": "Bottle of Coke",
+        "price": 3.8,
+        "desc": "1.25L bottle.",
+        "spicy": false,
+        "drink": {
+          "kind": "bottle",
+          "body": "#E61829",
+          "label": "COKE",
+          "accent": "#FFFFFF",
+          "text": "#FFFFFF"
+        }
+      },
+      {
+        "id": "btl-diet",
+        "name": "Bottle of Diet Coke",
+        "price": 3.8,
+        "desc": "1.25L bottle.",
+        "spicy": false,
+        "drink": {
+          "kind": "bottle",
+          "body": "#D7DBDE",
+          "label": "DIET COKE",
+          "accent": "#E61829",
+          "text": "#222222"
+        }
+      },
+      {
+        "id": "btl-tango",
+        "name": "Bottle of Tango",
+        "price": 3.8,
+        "desc": "1.25L bottle.",
+        "spicy": false,
+        "drink": {
+          "kind": "bottle",
+          "body": "#F5821F",
+          "label": "TANGO",
+          "accent": "#FFFFFF",
+          "text": "#FFFFFF"
+        }
+      },
+      {
+        "id": "btl-7up",
+        "name": "Bottle of 7Up",
+        "price": 3.8,
+        "desc": "1.25L bottle.",
+        "spicy": false,
+        "drink": {
+          "kind": "bottle",
+          "body": "#008C3A",
+          "label": "7UP",
+          "accent": "#FFFFFF",
+          "text": "#FFFFFF"
         }
       }
     ]
