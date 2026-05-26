@@ -10,13 +10,21 @@ dist/
 .vscode/
 .idea/
 
-# Multi-tenant build outputs - data/_active/ and public/logo.png are
-# regenerated per deploy by scripts/build-shop.js. We commit them with
-# Rico's defaults so deploys keep working even before the build command
-# is wired up in each Cloudflare Pages project.
-
-# public/assets/ is copied per-shop from data/shops/<slug>/assets/ at build
-# time. It has no sensible committed default (Rico's ships no assets), and
-# each deploy regenerates it, so it's left out of version control. The source
-# images live under data/shops/<slug>/assets/ and are committed there.
+# Build outputs — generated per deploy by scripts/build-shop.js from
+# data/shops/<SHOP_SLUG>/ and templates/. Both Cloudflare Pages projects run
+# `npm run build`, so these are regenerated on every deploy and are NOT
+# committed (a committed copy goes stale and can be served by mistake).
+data/_active/
 public/assets/
+public/logo.png
+public/menu-visual.json
+public/index.html
+public/order.html
+public/thank-you.html
+public/reset-password.html
+public/staff/index.html
+public/staff/manifest.json
+
+# NOT generated — these static files are served as-is and stay tracked:
+#   public/_headers  public/_redirects  public/robots.txt
+#   public/sitemap.xml  public/privacy.html  public/terms.html
