@@ -108,9 +108,9 @@ others. In the Cloudflare dashboard:
 ### b) Build settings
 
 - **Framework preset**: None
-- **Build command**: leave blank — the `postinstall` hook in
-  `package.json` runs the build automatically when Cloudflare runs
-  `npm install`. (Alternatively set it explicitly to `npm run build`.)
+- **Build command**: `npm run build` — **required.** Build outputs are not
+  committed to the repo, so a project that doesn't build ships an empty site.
+  Never leave it blank.
 - **Build output directory**: `public`
 - **Environment variables (Production + Preview)**:
   - `SHOP_SLUG` = `<your-slug>`

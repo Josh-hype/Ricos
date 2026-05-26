@@ -49,7 +49,7 @@ Pick a slug — lowercase, dashes only, no leading underscore (e.g. `bobs-burger
 - [ ] **Production branch**: `main`
 - [ ] **Build settings**:
   - [ ] Framework preset: None
-  - [ ] Build command: leave blank (postinstall hook runs the build)
+  - [ ] Build command: `npm run build` (required — outputs aren't committed)
   - [ ] Build output directory: `public`
 - [ ] **Environment variables (Production + Preview)**:
   - [ ] `SHOP_SLUG` = `<slug>`

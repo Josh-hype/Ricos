@@ -1,63 +1,110 @@
 # Rico's / Food Station — Project Guide
 
+**Read this first, every session.** This file is the source of truth for how
+the project is set up. Don't invent a different structure — if something here
+seems wrong, ask before changing the architecture.
+
 This repo (`Josh-hype/Ricos`) is **one multi-tenant codebase** that powers
-**multiple restaurant websites** from a single source. We currently run two
-sites and can add more the same way:
+**multiple restaurant websites** from a single source. Today it runs two:
 
-- **Rico's Peri Peri** — York
-- **Food Station** — Easingwold
+- **Rico's Peri Peri** — York (slug `ricos`)
+- **Food Station** — Easingwold (slug `food-station`)
 
-## #1 rule — shops are NOT separate branches
+More shops are added the same way (see "Adding a new shop").
 
-There is **one** production code branch: `main`. **Both sites build from it.**
+---
 
-A "shop" is a tenant **folder** under `data/shops/<slug>/`, selected at build
-time by the `SHOP_SLUG` environment variable — it is **not** a git branch.
+## The three golden rules
 
-| Shop | Folder | `SHOP_SLUG` |
-|------|--------|-------------|
-| Rico's | `data/shops/ricos/` | `ricos` |
-| Food Station | `data/shops/food-station/` | `food-station` |
+1. **Shops are folders, not branches.** Every shop lives under
+   `data/shops/<slug>/` and is selected at build time by the `SHOP_SLUG`
+   environment variable. There is no "ricos branch" or "food-station branch".
+2. **Build outputs are never committed.** `public/` (the built site) and
+   `data/_active/` are generated on every deploy by `npm run build`. They are
+   gitignored. A committed copy goes stale and gets served by mistake — that
+   already bit us once (Rico's menu options "vanished" because a stale
+   committed `public/` was being served).
+3. **Never fork shared code for one shop.** If one shop needs different
+   behaviour, gate it behind a config flag so it ships to everyone but only
+   renders where it's turned on. One codebase, forever.
 
-Do **not** create a branch per shop, and do **not** look for a "ricos branch"
-or "food station branch" — that old layout was retired and consolidated into
-`main`.
+---
 
-## Branches
+## Branches & workflow
 
-- **`main`** — production. Both live sites deploy from it. Only merge **tested** code.
+- **`main`** — production. Both live sites build from it. Only merge tested code.
 - **`dev`** — staging / playground. Push experiments here; Cloudflare builds it
-  as a **preview** (separate URL) so the live sites are never affected.
-- Any leftover `claude/*` branches are deprecated — ignore them.
+  as a **preview** (separate URL) so the live sites are untouched.
+- These are the **only** two branches. (All the old `claude/*` branches were
+  consolidated into `main` and deleted.)
 
-**Workflow:** work on `dev` (or a feature branch) → check the Cloudflare
-preview URL → merge into `main` when happy → both live sites rebuild.
+**Workflow:** work on `dev` → check the Cloudflare preview URL → merge to
+`main` when happy → both live sites rebuild automatically.
 
-## How a build works
+---
 
-- Build command: `npm run build` (= `node scripts/build-shop.js`). Uses only
-  Node built-ins — no `npm install` needed.
-- It reads `SHOP_SLUG` (default `ricos`) and for that shop:
+## Repository layout
+
+| Path | What it is |
+|------|-----------|
+| `data/shops/<slug>/` | **Per-shop source** (one folder per shop). See below. |
+| `data/shops/_template/` | Scaffold for new shops (build refuses `_`-prefixed slugs). |
+| `data/_active/` | **Generated.** The active shop's `config.json` + `menu.json`, written by the build; imported by the API. Gitignored. |
+| `templates/` | **Shared** HTML/manifest templates with `{{token}}` placeholders. |
+| `functions/` | **Shared** Cloudflare Pages Functions (the backend API). |
+| `scripts/build-shop.js` | The build: resolves `SHOP_SLUG`, copies the shop's files, substitutes tokens. |
+| `public/` | **Generated** site output (gitignored) — *except* a few static files (below). |
+| `docs/` | `ADDING_A_SHOP.md`, `SHOP_CHECKLIST.md`, etc. |
+
+**Static files in `public/` that ARE committed** (served as-is, not generated):
+`_headers`, `_redirects`, `robots.txt`, `sitemap.xml`, `privacy.html`,
+`terms.html`.
+
+---
+
+## How the build works
+
+- Command: `npm run build` (= `node scripts/build-shop.js`). Pure Node
+  built-ins, no `npm install` needed to run it locally. `package.json` also has
+  a `postinstall` that runs it.
+- It reads `SHOP_SLUG` (defaults to `ricos` for local dev only) and for that shop:
   - `data/shops/<slug>/config.json` → `data/_active/config.json`
   - `data/shops/<slug>/menu.json` → `data/_active/menu.json`
   - `data/shops/<slug>/menu-visual.json` → `public/menu-visual.json`
-  - then substitutes `{{tokens}}` from config into the templates → `public/`.
-- The API (`functions/_lib/`) imports `data/_active/*`, so each deploy bundles
-  the active shop's data.
-- `public/` and `data/_active/` are **build output** (regenerated every
-  deploy) — don't hand-edit them.
+  - `data/shops/<slug>/logo.png` → `public/logo.png`
+  - `data/shops/<slug>/assets/*` → `public/assets/*` (optional)
+  - substitutes `{{tokens}}` from config into the templates → `public/`
+- It ends with `build-shop: active shop is "<slug>"`. **Always check that line**
+  — if it shows the wrong slug, `SHOP_SLUG` is wrong.
+- **Generated files (gitignored, rebuilt every deploy):** `public/index.html`,
+  `public/logo.png`, `public/menu-visual.json`, `public/order.html`,
+  `public/thank-you.html`, `public/reset-password.html`,
+  `public/staff/index.html`, `public/staff/manifest.json`, `public/assets/`,
+  `data/_active/`.
+
+---
 
 ## Shared code vs per-shop data (know your blast radius)
 
-**Shared** — a change here affects **every** shop, so test both:
-- `templates/order.html`, `templates/staff/`
+**Shared** — a change here affects **every** shop, so test more than one:
+- `templates/order.html`, `templates/staff/`, `templates/landing-default.html`,
+  `templates/thank-you.html`, `templates/reset-password.html`
 - `scripts/build-shop.js`
-- `functions/` (API: orders, Stripe, staff; `functions/_lib/totals.js`, etc.)
+- `functions/` (orders, Stripe, staff; `functions/_lib/totals.js` is the
+  authority on pricing)
 
-**Per-shop** — a change here affects only that one shop:
-- `data/shops/<slug>/` → `config.json` (business info, theme, fonts,
-  fulfilment, Stripe), `menu.json`, `menu-visual.json`, `index.html` (landing),
-  `logo.png`, `assets/`, `order.css` (optional per-shop CSS overrides)
+**Per-shop** — a change here affects only that one shop, under
+`data/shops/<slug>/`:
+- `config.json` — business info, theme colours + fonts, opening hours,
+  delivery zone, `stripe.connectedAccountId` **(required)**
+- `menu.json` — server source of truth, prices in **pence** **(required)**
+- `menu-visual.json` — customer-facing menu (names, photos, options) **(required)**
+- `logo.png` — the logo **(required — build fails without it)**
+- `index.html` *(optional)* — bespoke landing; omit to use `landing-default.html`
+- `assets/` *(optional)* — photos copied to `public/assets/`
+- `order.css` *(optional)* — per-shop CSS appended to the order page
+
+---
 
 ## Menu / item-options schema (dual file, linked by `id`)
 
@@ -67,54 +114,76 @@ preview URL → merge into `main` when happy → both live sites rebuild.
 - **`menu.json`** = server truth. The same item carries `modifiers`:
   `[{id, label, priceDeltaP}]` — `priceDeltaP` is in **pence**.
 - The choice `id` links the two. `functions/_lib/totals.js` sums modifier
-  prices server-side and is the authority on what the customer is charged.
+  prices server-side — it decides what the customer is actually charged.
+- Item IDs in `menu.json` and `menu-visual.json` **must match exactly**.
 
-## Deployment (Cloudflare Pages — one project per site)
+---
 
-Each project is configured with:
-- **Build command:** `npm run build`
-- **`SHOP_SLUG`** set for **both** the Production and Preview environments
-  (`ricos` for the Rico's project, `food-station` for the Food Station project)
+## Cloudflare deployment (one Pages project per site, same repo)
+
+Each project (`ricos`, the Food Station project, and any future shop):
+
+- **Build command:** `npm run build` — **required.** Build outputs aren't
+  committed, so a project that doesn't build ships an empty/broken site. Do
+  **not** leave it blank.
+- **Build output directory:** `public`
 - **Production branch:** `main`
+- **Environment variables — set `SHOP_SLUG` for BOTH Production and Preview:**
+  - `SHOP_SLUG` = the shop's slug (`ricos`, `food-station`, …)
+  - `NODE_VERSION` = `20`
+- **KV namespaces** (create per shop, bind by these names):
+  `ORDERS_KV`, `CUSTOMERS_KV`, `MARKETING_KV`, `SLOTS_KV`, `STAFF_LOGIN_KV`
+- **Secrets** (encrypted env vars — names the code actually reads):
+  - Stripe: `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`
+  - Email (Resend): `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_FROM_NAME`
+  - SMS (Twilio): `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`
+  - Sessions/staff: `SESSION_SECRET`, `STAFF_PIN_HASH` (staff log in with a
+    PIN; store its hash, never the raw PIN)
+- **Custom domain:** add it under the project's Custom domains.
 
-Push to `main` → both sites rebuild automatically.
+A push to `main` rebuilds **every** project (each with its own `SHOP_SLUG`).
+Stripe is **Stripe Connect**, currently **TEST** mode (per-shop
+`connectedAccountId`). Cloudflare keeps every past deployment — one-click
+**Rollback** if a deploy breaks a site.
 
-- Stripe is **Stripe Connect**, currently **TEST** mode (per-shop
-  `connectedAccountId` in that shop's `config.json`).
-- Safety net: Cloudflare keeps every past deployment — one-click **Rollback**
-  if a deploy breaks a site.
+---
 
 ## Adding a new shop (3rd, 4th, 5th…)
 
-Follow the existing runbooks — **do not invent a new process**:
-- **`docs/ADDING_A_SHOP.md`** — full end-to-end walkthrough
-- **`docs/SHOP_CHECKLIST.md`** — the tick-box version of the same
+Follow the runbooks — **do not invent a new process:**
+- **`docs/ADDING_A_SHOP.md`** — full walkthrough
+- **`docs/SHOP_CHECKLIST.md`** — tick-box version
 
-The shape, in brief:
-1. `cp -r data/shops/_template data/shops/<slug>` (slug = lowercase, dashes only).
-2. Fill in `config.json`, `menu.json` (prices in **pence**), `menu-visual.json`.
-   **Required files** (build fails without them): `config.json`, `menu.json`,
-   `menu-visual.json`, **`logo.png`**. Optional: `index.html` (otherwise the
-   shared `templates/landing-default.html` is used), `assets/` (photos),
-   `order.css` (per-shop CSS).
-3. Test locally: `SHOP_SLUG=<slug> npm run build` — must end with
-   `active shop is "<slug>"`.
+Brief shape:
+1. `cp -r data/shops/_template data/shops/<slug>` (slug = lowercase, dashes).
+2. Fill in `config.json`, `menu.json` (pence), `menu-visual.json`; add
+   `logo.png`. (Optional: `index.html`, `assets/`, `order.css`.)
+3. `SHOP_SLUG=<slug> npm run build` — must end with `active shop is "<slug>"`.
 4. Commit on `dev`, check the preview, merge to `main`.
-5. Create a **new Cloudflare Pages project** on the **same** repo: build command
-   `npm run build`, production branch `main`, env `SHOP_SLUG=<slug>` (+
-   `NODE_VERSION`) for **both** Production and Preview; create its 5 KV
-   namespaces and bind them (`ORDERS_KV`, `CUSTOMERS_KV`, `MARKETING_KV`,
-   `SLOTS_KV`, `STAFF_LOGIN_KV`); add the secrets (`STRIPE_*`, `RESEND_*`,
-   `TWILIO_*`, `SESSION_SECRET`, `STAFF_PIN_HASH`); add the custom domain.
-   All of this is detailed step-by-step in the docs above.
+5. Create a new Cloudflare Pages project (settings exactly as the Cloudflare
+   section above): `npm run build`, branch `main`, `SHOP_SLUG` (Prod+Preview),
+   5 KV namespaces, secrets, custom domain.
 
-**Never fork shared code for one shop** — gate shop-specific behaviour behind a
-config flag so it ships to everyone but only renders where it's turned on.
+---
+
+## Gotchas we've already hit (don't repeat them)
+
+- **Stale committed build →** the original cause of "Rico's menu disappeared".
+  Fixed by gitignoring build outputs + setting every project's build command to
+  `npm run build`. Never re-commit `public/`/`data/_active/`.
+- **`SHOP_SLUG` only on Production →** previews build the wrong shop. Set it on
+  **Preview** too.
+- **Blank build command →** now ships an empty site (outputs aren't committed).
+  Always `npm run build`.
+- **Item IDs drifting between `menu.json` and `menu-visual.json` →** prices/
+  options render wrong. Keep IDs identical.
+
+---
 
 ## Starting a session
 
 The user will say which brand we're working on (Rico's or Food Station). That
 tells you which `data/shops/<slug>/` folder to edit and which `SHOP_SLUG` /
-Cloudflare project it maps to — but remember **both shops share the one `main`
-codebase**, so check whether your change is per-shop data or shared code before
-assuming it's isolated.
+Cloudflare project it maps to — but **both shops share the one `main`
+codebase**, so before assuming a change is isolated, check whether you're
+touching per-shop data or shared code.
