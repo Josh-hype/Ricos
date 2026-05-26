@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Privacy policy — {{shopName}}</title>
+<meta name="description" content="How {{shopName}} collects, uses and protects your personal data." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="{{fontLink}}" rel="stylesheet" />
+
+<style>
+  :root {
+    --primary: {{themePrimary}};
+    --accent:  {{themeAccent}};
+    --bg:      {{themeBackground}};
+    --surface: {{themeSurface}};
+    --ink:     #1f1a17;
+    --muted:   #6b625c;
+  }
+  *,*::before,*::after { box-sizing: border-box; }
+  body { margin:0; font-family: {{fontBody}}; background: var(--bg); color: var(--ink); line-height: 1.65; }
+  .wrap { width: min(820px, 92vw); margin: 0 auto; padding: 32px 0 64px; }
+  header { padding: 16px 0; border-bottom: 3px solid var(--ink); margin-bottom: 32px; }
+  header a { color: inherit; text-decoration: none; font-weight: 700; font-family: {{fontDisplay}}; }
+  h1 { font-family: {{fontDisplay}}; font-size: 2rem; line-height: 1.1; margin: 0 0 6px; color: var(--primary); }
+  h2 { font-family: {{fontDisplay}}; font-size: 1.15rem; margin: 30px 0 8px; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; }
+  p, li { margin: 10px 0; }
+  ul { padding-left: 20px; }
+  a { color: var(--primary); }
+  footer { margin-top: 56px; padding-top: 24px; border-top: 1px solid rgba(0,0,0,0.12); font-size: 0.9rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 8px 18px; justify-content: space-between; }
+  footer a { color: inherit; }
+</style>
+</head>
+<body>
+  <header><div class="wrap"><a href="/">← {{shopName}}</a></div></header>
+  <main class="wrap">
+    <h1>Privacy policy</h1>
+    <p class="meta">Last updated: 26 May 2026.</p>
+
+    <p>This policy explains how <strong>{{shopName}}</strong> ("we", "us", "our") collects, uses and protects your personal data when you use this website and order from us. We comply with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.</p>
+
+    <h2>Who we are</h2>
+    <p>The data controller for your personal data is {{controllerIdentity}}. You can contact us about your data {{contactLine}}.</p>
+
+    <h2>What data we collect</h2>
+    <ul>
+      <li><strong>Order data:</strong> your name, email address, phone number, delivery address (where applicable), the items in your order, and the time of ordering.</li>
+      <li><strong>Account data:</strong> if you create an account, your contact details and your order history. If you save a card for future orders, it is stored securely by Stripe — we never see or hold your full card number.</li>
+      <li><strong>Payment data:</strong> card payments are processed by Stripe. We receive a transaction reference and the last four digits of the card; we never see or store the full card number.</li>
+      <li><strong>Marketing preferences:</strong> your email and/or SMS marketing choices, with the date you made them.</li>
+      <li><strong>Technical data:</strong> minimal access logs (IP address, page requested, time) for security and abuse prevention.</li>
+    </ul>
+
+    <h2>Why we use it</h2>
+    <ul>
+      <li>To take, prepare, and deliver or hand over your order — <em>performance of a contract</em>.</li>
+      <li>To send order confirmations, "ready time" updates and receipts by email or SMS — <em>performance of a contract</em>.</li>
+      <li>To keep records we are legally required to keep, such as tax records — <em>legal obligation</em>.</li>
+      <li>To send you marketing about offers and new menu items. For <strong>email</strong>, we rely on the "soft opt-in" — you are an existing customer ordering similar products, the box is pre-selected at checkout, and you can opt out at checkout or via the unsubscribe link in any email (<em>legitimate interests</em>). For <strong>SMS</strong>, we only send marketing if you actively tick the SMS box (<em>consent</em>); reply STOP at any time to withdraw.</li>
+      <li>To prevent fraud and abuse, and to keep the service secure — <em>legitimate interests</em>.</li>
+    </ul>
+
+    <h2>Who we share it with</h2>
+    <p>We use a small number of trusted processors, only as far as needed to run the service:</p>
+    <ul>
+      <li><strong>Cloudflare</strong> — website hosting and protection.</li>
+      <li><strong>Stripe</strong> — card payment processing.</li>
+      <li><strong>Resend</strong> — sending order and account emails.</li>
+      <li><strong>Twilio</strong> — sending SMS messages (only where relevant).</li>
+    </ul>
+    <p>We never sell your personal data.</p>
+
+    <h2>How long we keep it</h2>
+    <ul>
+      <li>Order and transaction records: 6 years, to meet HMRC requirements.</li>
+      <li>Marketing preferences: until you unsubscribe, plus up to 2 years as evidence of your choice.</li>
+      <li>Access logs: a short period for security purposes only.</li>
+    </ul>
+
+    <h2>Your rights</h2>
+    <p>You have the right to access, correct or delete the personal data we hold about you, to restrict or object to how we use it, and to data portability. To exercise any of these, contact us {{contactLine}}. You also have the right to complain to the Information Commissioner's Office (ICO) at <a href="https://ico.org.uk" target="_blank" rel="noopener">ico.org.uk</a>.</p>
+
+    <h2>Cookies</h2>
+    <p>We do not use advertising or tracking cookies. The site uses only the essential storage needed to keep your basket and to keep staff signed in to the orders dashboard.</p>
+
+    <h2>Changes to this policy</h2>
+    <p>If we change this policy we will update the "Last updated" date above. Please check back from time to time.</p>
+
+    <footer>
+      <span><a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · <a href="/allergy-info">Allergy info</a></span>
+      <span>© <span id="yr"></span> {{shopName}}</span>
+    </footer>
+  </main>
+<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+</body>
+</html>

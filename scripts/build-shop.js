@@ -108,6 +108,36 @@ const fullAddress = [a.line1, a.city, a.postcode].filter(Boolean).join(', ');
 // shop's own postcode: "YO24 1AZ" -> "YO", "LS1 4DT" -> "LS", "M1 1AA" -> "M".
 const areaPrefix = (a.postcode || '').match(/^[A-Z]+/i)?.[0]?.toUpperCase() || '';
 
+// Legal pages (privacy / terms / allergy-info). Some shops haven't supplied a
+// registered company or contact email yet (placeholders like "TODO_..."); treat
+// those as absent and fall back gracefully so the pages still read correctly.
+const isSet = (v) => v && !/^TODO[_-]|REPLACE_WITH/i.test(String(v).trim());
+const legalName     = isSet(config.business.legalName)     ? String(config.business.legalName).trim()     : '';
+const companyNumber = isSet(config.business.companyNumber) ? String(config.business.companyNumber).trim() : '';
+const email         = isSet(config.business.email)         ? String(config.business.email).trim()         : '';
+
+// One clause identifying the legal entity / data controller for the legal pages.
+let controllerIdentity;
+if (legalName && companyNumber) {
+  controllerIdentity = `${legalName} (company number ${companyNumber}), a company registered in England and Wales, trading as ${config.business.tradingName} from ${fullAddress}`;
+} else if (legalName) {
+  controllerIdentity = `${legalName}, trading as ${config.business.tradingName}, of ${fullAddress}`;
+} else {
+  controllerIdentity = `${config.business.tradingName}, of ${fullAddress}`;
+}
+
+// How customers reach us (email when known, always the phone).
+const contactParts = [];
+if (email) contactParts.push(`by email at ${email}`);
+if (phone) contactParts.push(`by phone on ${phone}`);
+const contactLine = contactParts.join(' or ') || 'using the contact details on our website';
+
+// Terms: the promotional-discount clause only appears for shops that run one.
+const promo = config.promo?.autoOnlineDiscount;
+const promoSection = (promo && promo.enabled)
+  ? `<h2>Promotional discounts</h2>\n    <p>The ${promo.percent}% online discount is applied automatically to the subtotal of qualifying online orders. We may change or end this offer at any time.</p>`
+  : '';
+
 const tokens = {
   shopName:                config.business.tradingName || '',
   shopShortName:           config.business.shortName || config.business.tradingName || '',
@@ -143,6 +173,13 @@ const tokens = {
   fontHand:                config.theme?.fonts?.hand         || "'Caveat', cursive",
   // Optional per-shop CSS injected at the end of the order page <style>.
   orderStyleOverrides,
+  // Legal pages (privacy / terms / allergy-info).
+  shopEmail:               email,
+  shopLegalName:           legalName,
+  shopCompanyNumber:       companyNumber,
+  controllerIdentity,
+  contactLine,
+  promoSection,
 };
 
 // Source HTML / manifest files with {{tokens}}. The build reads each from
@@ -155,6 +192,9 @@ const templatedFiles = [
   ['reset-password.html',   'public/reset-password.html'],
   ['staff/index.html',      'public/staff/index.html'],
   ['staff/manifest.json',   'public/staff/manifest.json'],
+  ['privacy.html',          'public/privacy.html'],
+  ['terms.html',            'public/terms.html'],
+  ['allergy-info.html',     'public/allergy-info.html'],
 ];
 
 const tokenPattern = /\{\{(\w+)\}\}/g;

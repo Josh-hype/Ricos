@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Terms &amp; conditions — {{shopName}}</title>
+<meta name="description" content="The terms that apply to orders placed with {{shopName}}." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="{{fontLink}}" rel="stylesheet" />
+
+<style>
+  :root {
+    --primary: {{themePrimary}};
+    --accent:  {{themeAccent}};
+    --bg:      {{themeBackground}};
+    --surface: {{themeSurface}};
+    --ink:     #1f1a17;
+    --muted:   #6b625c;
+  }
+  *,*::before,*::after { box-sizing: border-box; }
+  body { margin:0; font-family: {{fontBody}}; background: var(--bg); color: var(--ink); line-height: 1.65; }
+  .wrap { width: min(820px, 92vw); margin: 0 auto; padding: 32px 0 64px; }
+  header { padding: 16px 0; border-bottom: 3px solid var(--ink); margin-bottom: 32px; }
+  header a { color: inherit; text-decoration: none; font-weight: 700; font-family: {{fontDisplay}}; }
+  h1 { font-family: {{fontDisplay}}; font-size: 2rem; line-height: 1.1; margin: 0 0 6px; color: var(--primary); }
+  h2 { font-family: {{fontDisplay}}; font-size: 1.15rem; margin: 30px 0 8px; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; }
+  p, li { margin: 10px 0; }
+  ul { padding-left: 20px; }
+  a { color: var(--primary); }
+  footer { margin-top: 56px; padding-top: 24px; border-top: 1px solid rgba(0,0,0,0.12); font-size: 0.9rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 8px 18px; justify-content: space-between; }
+  footer a { color: inherit; }
+</style>
+</head>
+<body>
+  <header><div class="wrap"><a href="/">← {{shopName}}</a></div></header>
+  <main class="wrap">
+    <h1>Terms &amp; conditions</h1>
+    <p class="meta">Last updated: 26 May 2026.</p>
+
+    <p>These terms govern orders you place with <strong>{{shopName}}</strong> through this website. By placing an order you confirm that you accept them. These terms are between you and {{controllerIdentity}}.</p>
+
+    <h2>Ordering</h2>
+    <ul>
+      <li>You must be at least 18 years old to place an order.</li>
+      <li>Prices on the website are in pounds sterling and include VAT where applicable.</li>
+      <li>Placing an order is an offer to buy. Your order is not accepted until our kitchen confirms it; you will receive a confirmation with a ready time once it is accepted.</li>
+      <li>If we cannot fulfil an item, we will contact you and offer either a substitute or a refund.</li>
+    </ul>
+
+    <h2>Payment</h2>
+    <ul>
+      <li>Card payments are processed by Stripe. We do not store your card number.</li>
+      <li>Cash is accepted on collection or on delivery, payable in full at the time of handover.</li>
+      <li>If a card payment fails, the order is not placed.</li>
+    </ul>
+
+    <h2>Collection and delivery</h2>
+    <ul>
+      <li>Collection orders should be picked up at the time stated in your confirmation. Orders left longer than 30 minutes past the ready time may be discarded for food-safety reasons, and we cannot offer a refund in that case.</li>
+      <li>Delivery is offered {{deliveryAreaDescription}} only. Our driver will attempt delivery once at the address you provide. If no one is available we may, at our discretion, leave the order at the door.</li>
+      <li>Estimated times are best-effort and can be affected by traffic and how busy we are.</li>
+    </ul>
+
+    <h2>Cancellations and refunds</h2>
+    <ul>
+      <li>You can cancel a card-paid order for a full refund any time before our kitchen accepts it — call us on {{shopPhone}}.</li>
+      <li>Once an order has been accepted and preparation has started, we cannot offer a refund except where required by law (for example, if the food is not as described or is unfit to eat).</li>
+      <li>If your order is wrong or unfit, please contact us within 24 hours so we can put it right.</li>
+    </ul>
+
+    <h2>Allergens</h2>
+    <p>All of our food is prepared in a kitchen that handles the 14 named allergens, and we cannot guarantee that any item is free from traces of them. <strong>If you have a food allergy or intolerance, please tell us before you order.</strong> See our <a href="/allergy-info">allergy information</a> for details.</p>
+
+    {{promoSection}}
+
+    <h2>Liability</h2>
+    <p>Nothing in these terms limits our liability for fraud, for death or personal injury caused by our negligence, or for any breach of your statutory rights as a consumer.</p>
+
+    <h2>Governing law</h2>
+    <p>These terms are governed by the law of England and Wales, and the courts of England and Wales have exclusive jurisdiction.</p>
+
+    <h2>Contact</h2>
+    <p>You can reach us {{contactLine}}.</p>
+
+    <footer>
+      <span><a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · <a href="/allergy-info">Allergy info</a></span>
+      <span>© <span id="yr"></span> {{shopName}}</span>
+    </footer>
+  </main>
+<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+</body>
+</html>

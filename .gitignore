@@ -24,7 +24,9 @@ public/thank-you.html
 public/reset-password.html
 public/staff/index.html
 public/staff/manifest.json
+public/privacy.html
+public/terms.html
+public/allergy-info.html
 
 # NOT generated — these static files are served as-is and stay tracked:
-#   public/_headers  public/_redirects  public/robots.txt
-#   public/sitemap.xml  public/privacy.html  public/terms.html
+#   public/_headers  public/_redirects  public/robots.txt  public/sitemap.xml

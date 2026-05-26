@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Allergy information — {{shopName}}</title>
+<meta name="description" content="Allergen information for {{shopName}}. If you have a food allergy or intolerance, please tell us before you order." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="{{fontLink}}" rel="stylesheet" />
+
+<style>
+  :root {
+    --primary: {{themePrimary}};
+    --accent:  {{themeAccent}};
+    --bg:      {{themeBackground}};
+    --surface: {{themeSurface}};
+    --ink:     #1f1a17;
+    --muted:   #6b625c;
+  }
+  *,*::before,*::after { box-sizing: border-box; }
+  body { margin:0; font-family: {{fontBody}}; background: var(--bg); color: var(--ink); line-height: 1.65; }
+  .wrap { width: min(820px, 92vw); margin: 0 auto; padding: 32px 0 64px; }
+  header { padding: 16px 0; border-bottom: 3px solid var(--ink); margin-bottom: 32px; }
+  header a { color: inherit; text-decoration: none; font-weight: 700; font-family: {{fontDisplay}}; }
+  h1 { font-family: {{fontDisplay}}; font-size: 2rem; line-height: 1.1; margin: 0 0 6px; color: var(--primary); }
+  h2 { font-family: {{fontDisplay}}; font-size: 1.15rem; margin: 30px 0 8px; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; }
+  p, li { margin: 10px 0; }
+  ul { padding-left: 20px; }
+  a { color: var(--primary); }
+  .callout { background: var(--surface); border: 2px solid var(--primary); border-radius: 12px; padding: 16px 18px; margin: 20px 0; }
+  .callout strong { color: var(--primary); }
+  .allergens { columns: 2; column-gap: 28px; }
+  @media (max-width: 520px) { .allergens { columns: 1; } }
+  footer { margin-top: 56px; padding-top: 24px; border-top: 1px solid rgba(0,0,0,0.12); font-size: 0.9rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 8px 18px; justify-content: space-between; }
+  footer a { color: inherit; }
+</style>
+</head>
+<body>
+  <header><div class="wrap"><a href="/">← {{shopName}}</a></div></header>
+  <main class="wrap">
+    <h1>Allergy information</h1>
+    <p class="meta">Last updated: 26 May 2026.</p>
+
+    <div class="callout">
+      <p><strong>If you have a food allergy or intolerance, please tell us before you order.</strong> Speak to us {{contactLine}} and we will talk you through what is and isn't safe for you. Please do not rely on the menu descriptions alone.</p>
+    </div>
+
+    <p>At <strong>{{shopName}}</strong> we take allergies and intolerances seriously, and we want you to be able to order with confidence.</p>
+
+    <h2>Our kitchen</h2>
+    <p>All of our food is freshly prepared in a single kitchen that handles all 14 of the allergens named in UK law. Because ingredients and equipment are shared, we <strong>cannot guarantee that any dish is completely free from any allergen</strong>, and there is always a risk of cross-contamination.</p>
+
+    <h2>The 14 named allergens</h2>
+    <ul class="allergens">
+      <li>Celery</li>
+      <li>Cereals containing gluten (wheat, rye, barley, oats)</li>
+      <li>Crustaceans (e.g. prawns, crab)</li>
+      <li>Eggs</li>
+      <li>Fish</li>
+      <li>Lupin</li>
+      <li>Milk</li>
+      <li>Molluscs (e.g. mussels, squid)</li>
+      <li>Mustard</li>
+      <li>Tree nuts (e.g. almonds, walnuts)</li>
+      <li>Peanuts</li>
+      <li>Sesame</li>
+      <li>Soya</li>
+      <li>Sulphur dioxide / sulphites</li>
+    </ul>
+
+    <h2>Before you order</h2>
+    <ul>
+      <li>Tell us about your allergy or intolerance <strong>before</strong> placing your order — call us on {{shopPhone}}.</li>
+      <li>If you order online, please call to confirm what is safe before relying on your order; you can also add a note about your allergy.</li>
+      <li>Let us know how severe your allergy is so we can advise you properly.</li>
+    </ul>
+
+    <p>If you ever have any doubt about whether a dish is safe for you, please ask us — we would always rather check than risk it.</p>
+
+    <footer>
+      <span><a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · <a href="/allergy-info">Allergy info</a></span>
+      <span>© <span id="yr"></span> {{shopName}}</span>
+    </footer>
+  </main>
+<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+</body>
+</html>
