@@ -3147,11 +3147,14 @@ function renderCheckout() {
           <input type="checkbox" id="saveCard" style="width:16px;height:16px;cursor:pointer">
           <span>Save this card for next time</span>
         </label>
-        <div style="display:flex;align-items:flex-start;gap:10px;background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;padding:10px 14px;margin-top:10px;font-size:0.88rem;line-height:1.45">
-          <span style="font-size:1.15rem;line-height:1" aria-hidden="true">🔒</span>
-          <span><strong>Secure payment.</strong> Your card details never touch our servers — they're encrypted and handled directly by <strong>Stripe</strong>, a PCI-compliant payment processor.</span>
-        </div>
         <div id="paymentError" class="pay-error" aria-live="assertive"></div>
+      </div>
+
+      <!-- Secure-payment reassurance. Sits OUTSIDE #payment-element-wrap so it
+           stays visible for saved-card checkouts (which hide the card form). -->
+      <div style="display:flex;align-items:center;gap:11px;background:#e9f8ef;border:1.5px solid var(--green);border-radius:10px;padding:12px 14px;margin-top:12px;font-size:0.9rem;line-height:1.45;color:var(--ink)">
+        <span style="font-size:1.35rem;line-height:1" aria-hidden="true">🔒</span>
+        <span><strong style="color:var(--success)">Secure payment.</strong> Your card details never touch our servers — they're encrypted and handled directly by <strong>Stripe</strong>, a PCI-compliant payment processor.</span>
       </div>
 
       <div style="background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:0.92rem">
