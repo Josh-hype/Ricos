@@ -197,7 +197,22 @@
               "category": "drinks"
             }
           ]
-        }
+        },
+        "options": [
+          {
+            "id": "extras",
+            "label": "Extras",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "extra-chicken",
+                "label": "Extra chicken",
+                "price": 3
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -237,6 +252,20 @@
             }
           ]
         }
+      },
+      {
+        "id": "wings-platter",
+        "name": "Wings Platter",
+        "price": 16.45,
+        "desc": "18× char-grilled peri wings.",
+        "spicy": true
+      },
+      {
+        "id": "mega-wings",
+        "name": "Mega Wings Platter",
+        "price": 24.45,
+        "desc": "28× char-grilled peri wings.",
+        "spicy": true
       }
     ]
   },
@@ -376,7 +405,40 @@
               "category": "drinks"
             }
           ]
-        }
+        },
+        "options": [
+          {
+            "id": "customise",
+            "label": "Customise",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "no-salad",
+                "label": "No salad",
+                "price": 0
+              },
+              {
+                "id": "no-sauce",
+                "label": "No sauce",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extras",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "extra-thigh",
+                "label": "Extra thigh",
+                "price": 3
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "beef-classic",
@@ -407,7 +469,27 @@
               "category": "drinks"
             }
           ]
-        }
+        },
+        "options": [
+          {
+            "id": "customise",
+            "label": "Customise",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "no-salad",
+                "label": "No salad",
+                "price": 0
+              },
+              {
+                "id": "no-sauce",
+                "label": "No sauce",
+                "price": 0
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "beef-chipotle",
@@ -439,7 +521,27 @@
             }
           ]
         },
-        "spicyTag": true
+        "spicyTag": true,
+        "options": [
+          {
+            "id": "customise",
+            "label": "Customise",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "no-salad",
+                "label": "No salad",
+                "price": 0
+              },
+              {
+                "id": "no-sauce",
+                "label": "No sauce",
+                "price": 0
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "beef-nacho",
@@ -470,7 +572,27 @@
               "category": "drinks"
             }
           ]
-        }
+        },
+        "options": [
+          {
+            "id": "customise",
+            "label": "Customise",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "no-salad",
+                "label": "No salad",
+                "price": 0
+              },
+              {
+                "id": "no-sauce",
+                "label": "No sauce",
+                "price": 0
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "beef-sweet",
@@ -501,7 +623,27 @@
               "category": "drinks"
             }
           ]
-        }
+        },
+        "options": [
+          {
+            "id": "customise",
+            "label": "Customise",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "no-salad",
+                "label": "No salad",
+                "price": 0
+              },
+              {
+                "id": "no-sauce",
+                "label": "No sauce",
+                "price": 0
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "beef-hot",
@@ -533,7 +675,27 @@
             }
           ]
         },
-        "spicyTag": true
+        "spicyTag": true,
+        "options": [
+          {
+            "id": "customise",
+            "label": "Customise",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "no-salad",
+                "label": "No salad",
+                "price": 0
+              },
+              {
+                "id": "no-sauce",
+                "label": "No sauce",
+                "price": 0
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -561,14 +723,279 @@
         "name": "Kings Platter",
         "price": 12.95,
         "desc": "¼ chicken, 1 thigh, 2 wings, peri pitta, fries, dip & drink.",
-        "spicy": true
+        "spicy": true,
+        "options": [
+          {
+            "id": "dip",
+            "label": "Dip",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "dip-mayo",
+                "label": "Mayo",
+                "price": 0
+              },
+              {
+                "id": "dip-sweet",
+                "label": "Sweet Chilli",
+                "price": 0
+              },
+              {
+                "id": "dip-hot",
+                "label": "Hot Chilli",
+                "price": 0
+              },
+              {
+                "id": "dip-ketchup",
+                "label": "Ketchup",
+                "price": 0
+              },
+              {
+                "id": "dip-chipotle",
+                "label": "Chipotle",
+                "price": 0
+              },
+              {
+                "id": "dip-garlic",
+                "label": "Garlic Mayo",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "can",
+            "label": "Can of drink",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "can-coke",
+                "label": "Coke",
+                "price": 0
+              },
+              {
+                "id": "can-coke-zero",
+                "label": "Coke Zero",
+                "price": 0
+              },
+              {
+                "id": "can-diet",
+                "label": "Diet Coke",
+                "price": 0
+              },
+              {
+                "id": "can-drpepper",
+                "label": "Dr Pepper",
+                "price": 0
+              },
+              {
+                "id": "can-pepsi",
+                "label": "Pepsi",
+                "price": 0
+              },
+              {
+                "id": "can-fanta",
+                "label": "Fanta Orange",
+                "price": 0
+              },
+              {
+                "id": "can-fanta-lemon",
+                "label": "Fanta Lemon",
+                "price": 0
+              },
+              {
+                "id": "can-sprite",
+                "label": "Sprite",
+                "price": 0
+              },
+              {
+                "id": "can-7up",
+                "label": "7Up",
+                "price": 0
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "family-platter",
         "name": "Family Evening Platter",
         "price": 28.95,
         "desc": "Whole chicken, 5 wings, 2 chips, 1 spicy rice, 4 dips, Pepsi.",
-        "spicy": true
+        "spicy": true,
+        "options": [
+          {
+            "id": "dip1",
+            "label": "Dip 1",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "dip-mayo",
+                "label": "Mayo",
+                "price": 0
+              },
+              {
+                "id": "dip-sweet",
+                "label": "Sweet Chilli",
+                "price": 0
+              },
+              {
+                "id": "dip-hot",
+                "label": "Hot Chilli",
+                "price": 0
+              },
+              {
+                "id": "dip-ketchup",
+                "label": "Ketchup",
+                "price": 0
+              },
+              {
+                "id": "dip-chipotle",
+                "label": "Chipotle",
+                "price": 0
+              },
+              {
+                "id": "dip-garlic",
+                "label": "Garlic Mayo",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "dip2",
+            "label": "Dip 2",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "dip-mayo",
+                "label": "Mayo",
+                "price": 0
+              },
+              {
+                "id": "dip-sweet",
+                "label": "Sweet Chilli",
+                "price": 0
+              },
+              {
+                "id": "dip-hot",
+                "label": "Hot Chilli",
+                "price": 0
+              },
+              {
+                "id": "dip-ketchup",
+                "label": "Ketchup",
+                "price": 0
+              },
+              {
+                "id": "dip-chipotle",
+                "label": "Chipotle",
+                "price": 0
+              },
+              {
+                "id": "dip-garlic",
+                "label": "Garlic Mayo",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "dip3",
+            "label": "Dip 3",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "dip-mayo",
+                "label": "Mayo",
+                "price": 0
+              },
+              {
+                "id": "dip-sweet",
+                "label": "Sweet Chilli",
+                "price": 0
+              },
+              {
+                "id": "dip-hot",
+                "label": "Hot Chilli",
+                "price": 0
+              },
+              {
+                "id": "dip-ketchup",
+                "label": "Ketchup",
+                "price": 0
+              },
+              {
+                "id": "dip-chipotle",
+                "label": "Chipotle",
+                "price": 0
+              },
+              {
+                "id": "dip-garlic",
+                "label": "Garlic Mayo",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "dip4",
+            "label": "Dip 4",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "dip-mayo",
+                "label": "Mayo",
+                "price": 0
+              },
+              {
+                "id": "dip-sweet",
+                "label": "Sweet Chilli",
+                "price": 0
+              },
+              {
+                "id": "dip-hot",
+                "label": "Hot Chilli",
+                "price": 0
+              },
+              {
+                "id": "dip-ketchup",
+                "label": "Ketchup",
+                "price": 0
+              },
+              {
+                "id": "dip-chipotle",
+                "label": "Chipotle",
+                "price": 0
+              },
+              {
+                "id": "dip-garlic",
+                "label": "Garlic Mayo",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "bottle",
+            "label": "Bottle of drink",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "btl-pepsi",
+                "label": "Pepsi (bottle)",
+                "price": 0
+              },
+              {
+                "id": "btl-water",
+                "label": "Water",
+                "price": 0
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "big-boss",
@@ -748,21 +1175,81 @@
         "name": "Kids Nuggets",
         "price": 5.95,
         "desc": "4× nuggets, chips, fruit shoot.",
-        "spicy": false
+        "spicy": false,
+        "options": [
+          {
+            "id": "kids-drink",
+            "label": "Drink",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "kids-orange",
+                "label": "Orange",
+                "price": 0
+              },
+              {
+                "id": "kids-blackcurrant",
+                "label": "Blackcurrant",
+                "price": 0
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "kids-burger",
         "name": "Kids Burger",
         "price": 5.95,
         "desc": "Grilled peri burger, chips, fruit shoot.",
-        "spicy": false
+        "spicy": false,
+        "options": [
+          {
+            "id": "kids-drink",
+            "label": "Drink",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "kids-orange",
+                "label": "Orange",
+                "price": 0
+              },
+              {
+                "id": "kids-blackcurrant",
+                "label": "Blackcurrant",
+                "price": 0
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "kids-wings",
         "name": "Kids Wings",
         "price": 5.95,
         "desc": "4× mild peri wings, chips, fruit shoot.",
-        "spicy": false
+        "spicy": false,
+        "options": [
+          {
+            "id": "kids-drink",
+            "label": "Drink",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "kids-orange",
+                "label": "Orange",
+                "price": 0
+              },
+              {
+                "id": "kids-blackcurrant",
+                "label": "Blackcurrant",
+                "price": 0
+              }
+            ]
+          }
+        ]
       }
     ]
   },

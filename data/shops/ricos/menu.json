@@ -160,6 +160,13 @@
             "count": 1,
             "category": "drinks"
           }
+        ],
+        "modifiers": [
+          {
+            "id": "extra-chicken",
+            "label": "Extra chicken",
+            "priceDeltaP": 300
+          }
         ]
       }
     ]
@@ -193,6 +200,16 @@
             "category": "drinks"
           }
         ]
+      },
+      {
+        "id": "wings-platter",
+        "name": "Wings Platter",
+        "priceP": 1645
+      },
+      {
+        "id": "mega-wings",
+        "name": "Mega Wings Platter",
+        "priceP": 2445
       }
     ]
   },
@@ -308,6 +325,23 @@
             "count": 1,
             "category": "drinks"
           }
+        ],
+        "modifiers": [
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "extra-thigh",
+            "label": "Extra thigh",
+            "priceDeltaP": 300
+          }
         ]
       },
       {
@@ -333,6 +367,18 @@
             "label": "Drink",
             "count": 1,
             "category": "drinks"
+          }
+        ],
+        "modifiers": [
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
           }
         ]
       },
@@ -360,6 +406,18 @@
             "count": 1,
             "category": "drinks"
           }
+        ],
+        "modifiers": [
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          }
         ]
       },
       {
@@ -385,6 +443,18 @@
             "label": "Drink",
             "count": 1,
             "category": "drinks"
+          }
+        ],
+        "modifiers": [
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
           }
         ]
       },
@@ -412,6 +482,18 @@
             "count": 1,
             "category": "drinks"
           }
+        ],
+        "modifiers": [
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          }
         ]
       },
       {
@@ -438,6 +520,18 @@
             "count": 1,
             "category": "drinks"
           }
+        ],
+        "modifiers": [
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          }
         ]
       }
     ]
@@ -459,12 +553,131 @@
       {
         "id": "kings-platter",
         "name": "Kings Platter",
-        "priceP": 1295
+        "priceP": 1295,
+        "modifiers": [
+          {
+            "id": "dip-mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-sweet",
+            "label": "Sweet Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-hot",
+            "label": "Hot Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-chipotle",
+            "label": "Chipotle",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-garlic",
+            "label": "Garlic Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-coke",
+            "label": "Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-coke-zero",
+            "label": "Coke Zero",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-diet",
+            "label": "Diet Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-drpepper",
+            "label": "Dr Pepper",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-pepsi",
+            "label": "Pepsi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-fanta",
+            "label": "Fanta Orange",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-fanta-lemon",
+            "label": "Fanta Lemon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-sprite",
+            "label": "Sprite",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-7up",
+            "label": "7Up",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "family-platter",
         "name": "Family Evening Platter",
-        "priceP": 2895
+        "priceP": 2895,
+        "modifiers": [
+          {
+            "id": "dip-mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-sweet",
+            "label": "Sweet Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-hot",
+            "label": "Hot Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-chipotle",
+            "label": "Chipotle",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-garlic",
+            "label": "Garlic Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "btl-pepsi",
+            "label": "Pepsi (bottle)",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "btl-water",
+            "label": "Water",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "big-boss",
@@ -586,17 +799,53 @@
       {
         "id": "kids-nuggets",
         "name": "Kids Nuggets",
-        "priceP": 595
+        "priceP": 595,
+        "modifiers": [
+          {
+            "id": "kids-orange",
+            "label": "Orange",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "kids-blackcurrant",
+            "label": "Blackcurrant",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "kids-burger",
         "name": "Kids Burger",
-        "priceP": 595
+        "priceP": 595,
+        "modifiers": [
+          {
+            "id": "kids-orange",
+            "label": "Orange",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "kids-blackcurrant",
+            "label": "Blackcurrant",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "kids-wings",
         "name": "Kids Wings",
-        "priceP": 595
+        "priceP": 595,
+        "modifiers": [
+          {
+            "id": "kids-orange",
+            "label": "Orange",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "kids-blackcurrant",
+            "label": "Blackcurrant",
+            "priceDeltaP": 0
+          }
+        ]
       }
     ]
   },
