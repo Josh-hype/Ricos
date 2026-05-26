@@ -838,7 +838,7 @@
         "id": "family-platter",
         "name": "Family Evening Platter",
         "price": 28.95,
-        "desc": "Whole chicken, 5 wings, 2 chips, 1 spicy rice, 4 dips, Pepsi.",
+        "desc": "Whole chicken, 5 wings, 2 chips, 1 spicy rice, 4 dips, bottle of drink.",
         "spicy": true,
         "options": [
           {
@@ -1037,8 +1037,452 @@
         "id": "big-boss",
         "name": "The Big Boss Platter",
         "price": 44.95,
-        "desc": "2× whole chicken, 4 thighs, 5 wings, 4 sides, 4 dips, Pepsi.",
-        "spicy": true
+        "desc": "2× whole chicken, 4 thighs, 5 wings, 4 sides, 4 dips, bottle of drink.",
+        "spicy": true,
+        "options": [
+          {
+            "id": "side1",
+            "label": "Side 1",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "mozz",
+                "label": "Mozzarella Sticks",
+                "price": 0
+              },
+              {
+                "id": "rings",
+                "label": "Onion Rings",
+                "price": 0
+              },
+              {
+                "id": "jalapeno",
+                "label": "Jalapeño Poppers",
+                "price": 0
+              },
+              {
+                "id": "chips-reg",
+                "label": "Chips (Regular)",
+                "price": 0
+              },
+              {
+                "id": "chips-lrg",
+                "label": "Chips (Large)",
+                "price": 0
+              },
+              {
+                "id": "curly",
+                "label": "Curly Fries",
+                "price": 0
+              },
+              {
+                "id": "wedges",
+                "label": "Potato Wedges",
+                "price": 0
+              },
+              {
+                "id": "chips-cheese",
+                "label": "Chips & Cheese",
+                "price": 0
+              },
+              {
+                "id": "chips-nacho",
+                "label": "Chips & Nacho Cheese",
+                "price": 0
+              },
+              {
+                "id": "rice",
+                "label": "Spicy Rice",
+                "price": 0
+              },
+              {
+                "id": "slaw",
+                "label": "Coleslaw",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "side2",
+            "label": "Side 2",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "mozz",
+                "label": "Mozzarella Sticks",
+                "price": 0
+              },
+              {
+                "id": "rings",
+                "label": "Onion Rings",
+                "price": 0
+              },
+              {
+                "id": "jalapeno",
+                "label": "Jalapeño Poppers",
+                "price": 0
+              },
+              {
+                "id": "chips-reg",
+                "label": "Chips (Regular)",
+                "price": 0
+              },
+              {
+                "id": "chips-lrg",
+                "label": "Chips (Large)",
+                "price": 0
+              },
+              {
+                "id": "curly",
+                "label": "Curly Fries",
+                "price": 0
+              },
+              {
+                "id": "wedges",
+                "label": "Potato Wedges",
+                "price": 0
+              },
+              {
+                "id": "chips-cheese",
+                "label": "Chips & Cheese",
+                "price": 0
+              },
+              {
+                "id": "chips-nacho",
+                "label": "Chips & Nacho Cheese",
+                "price": 0
+              },
+              {
+                "id": "rice",
+                "label": "Spicy Rice",
+                "price": 0
+              },
+              {
+                "id": "slaw",
+                "label": "Coleslaw",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "side3",
+            "label": "Side 3",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "mozz",
+                "label": "Mozzarella Sticks",
+                "price": 0
+              },
+              {
+                "id": "rings",
+                "label": "Onion Rings",
+                "price": 0
+              },
+              {
+                "id": "jalapeno",
+                "label": "Jalapeño Poppers",
+                "price": 0
+              },
+              {
+                "id": "chips-reg",
+                "label": "Chips (Regular)",
+                "price": 0
+              },
+              {
+                "id": "chips-lrg",
+                "label": "Chips (Large)",
+                "price": 0
+              },
+              {
+                "id": "curly",
+                "label": "Curly Fries",
+                "price": 0
+              },
+              {
+                "id": "wedges",
+                "label": "Potato Wedges",
+                "price": 0
+              },
+              {
+                "id": "chips-cheese",
+                "label": "Chips & Cheese",
+                "price": 0
+              },
+              {
+                "id": "chips-nacho",
+                "label": "Chips & Nacho Cheese",
+                "price": 0
+              },
+              {
+                "id": "rice",
+                "label": "Spicy Rice",
+                "price": 0
+              },
+              {
+                "id": "slaw",
+                "label": "Coleslaw",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "side4",
+            "label": "Side 4",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "mozz",
+                "label": "Mozzarella Sticks",
+                "price": 0
+              },
+              {
+                "id": "rings",
+                "label": "Onion Rings",
+                "price": 0
+              },
+              {
+                "id": "jalapeno",
+                "label": "Jalapeño Poppers",
+                "price": 0
+              },
+              {
+                "id": "chips-reg",
+                "label": "Chips (Regular)",
+                "price": 0
+              },
+              {
+                "id": "chips-lrg",
+                "label": "Chips (Large)",
+                "price": 0
+              },
+              {
+                "id": "curly",
+                "label": "Curly Fries",
+                "price": 0
+              },
+              {
+                "id": "wedges",
+                "label": "Potato Wedges",
+                "price": 0
+              },
+              {
+                "id": "chips-cheese",
+                "label": "Chips & Cheese",
+                "price": 0
+              },
+              {
+                "id": "chips-nacho",
+                "label": "Chips & Nacho Cheese",
+                "price": 0
+              },
+              {
+                "id": "rice",
+                "label": "Spicy Rice",
+                "price": 0
+              },
+              {
+                "id": "slaw",
+                "label": "Coleslaw",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "dip1",
+            "label": "Dip 1",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "dip-mayo",
+                "label": "Mayo",
+                "price": 0
+              },
+              {
+                "id": "dip-sweet",
+                "label": "Sweet Chilli",
+                "price": 0
+              },
+              {
+                "id": "dip-hot",
+                "label": "Hot Chilli",
+                "price": 0
+              },
+              {
+                "id": "dip-ketchup",
+                "label": "Ketchup",
+                "price": 0
+              },
+              {
+                "id": "dip-chipotle",
+                "label": "Chipotle",
+                "price": 0
+              },
+              {
+                "id": "dip-garlic",
+                "label": "Garlic Mayo",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "dip2",
+            "label": "Dip 2",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "dip-mayo",
+                "label": "Mayo",
+                "price": 0
+              },
+              {
+                "id": "dip-sweet",
+                "label": "Sweet Chilli",
+                "price": 0
+              },
+              {
+                "id": "dip-hot",
+                "label": "Hot Chilli",
+                "price": 0
+              },
+              {
+                "id": "dip-ketchup",
+                "label": "Ketchup",
+                "price": 0
+              },
+              {
+                "id": "dip-chipotle",
+                "label": "Chipotle",
+                "price": 0
+              },
+              {
+                "id": "dip-garlic",
+                "label": "Garlic Mayo",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "dip3",
+            "label": "Dip 3",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "dip-mayo",
+                "label": "Mayo",
+                "price": 0
+              },
+              {
+                "id": "dip-sweet",
+                "label": "Sweet Chilli",
+                "price": 0
+              },
+              {
+                "id": "dip-hot",
+                "label": "Hot Chilli",
+                "price": 0
+              },
+              {
+                "id": "dip-ketchup",
+                "label": "Ketchup",
+                "price": 0
+              },
+              {
+                "id": "dip-chipotle",
+                "label": "Chipotle",
+                "price": 0
+              },
+              {
+                "id": "dip-garlic",
+                "label": "Garlic Mayo",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "dip4",
+            "label": "Dip 4",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "dip-mayo",
+                "label": "Mayo",
+                "price": 0
+              },
+              {
+                "id": "dip-sweet",
+                "label": "Sweet Chilli",
+                "price": 0
+              },
+              {
+                "id": "dip-hot",
+                "label": "Hot Chilli",
+                "price": 0
+              },
+              {
+                "id": "dip-ketchup",
+                "label": "Ketchup",
+                "price": 0
+              },
+              {
+                "id": "dip-chipotle",
+                "label": "Chipotle",
+                "price": 0
+              },
+              {
+                "id": "dip-garlic",
+                "label": "Garlic Mayo",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "bottle",
+            "label": "Bottle of drink",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "btl-pepsi",
+                "label": "Pepsi (bottle)",
+                "price": 0
+              },
+              {
+                "id": "btl-water",
+                "label": "Water",
+                "price": 0
+              },
+              {
+                "id": "btl-coke",
+                "label": "Coke (bottle)",
+                "price": 0
+              },
+              {
+                "id": "btl-diet",
+                "label": "Diet Coke (bottle)",
+                "price": 0
+              },
+              {
+                "id": "btl-tango",
+                "label": "Tango (bottle)",
+                "price": 0
+              },
+              {
+                "id": "btl-7up",
+                "label": "7Up (bottle)",
+                "price": 0
+              }
+            ]
+          }
+        ]
       }
     ]
   },

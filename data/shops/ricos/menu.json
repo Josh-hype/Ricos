@@ -718,7 +718,124 @@
       {
         "id": "big-boss",
         "name": "The Big Boss Platter",
-        "priceP": 4495
+        "priceP": 4495,
+        "modifiers": [
+          {
+            "id": "mozz",
+            "label": "Mozzarella Sticks",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "rings",
+            "label": "Onion Rings",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "jalapeno",
+            "label": "Jalapeño Poppers",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chips-reg",
+            "label": "Chips (Regular)",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chips-lrg",
+            "label": "Chips (Large)",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "curly",
+            "label": "Curly Fries",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "wedges",
+            "label": "Potato Wedges",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chips-cheese",
+            "label": "Chips & Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chips-nacho",
+            "label": "Chips & Nacho Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "rice",
+            "label": "Spicy Rice",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "slaw",
+            "label": "Coleslaw",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-sweet",
+            "label": "Sweet Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-hot",
+            "label": "Hot Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-chipotle",
+            "label": "Chipotle",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-garlic",
+            "label": "Garlic Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "btl-pepsi",
+            "label": "Pepsi (bottle)",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "btl-water",
+            "label": "Water",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "btl-coke",
+            "label": "Coke (bottle)",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "btl-diet",
+            "label": "Diet Coke (bottle)",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "btl-tango",
+            "label": "Tango (bottle)",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "btl-7up",
+            "label": "7Up (bottle)",
+            "priceDeltaP": 0
+          }
+        ]
       }
     ]
   },
