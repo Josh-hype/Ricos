@@ -38,6 +38,29 @@ export async function markOrderPaid(order, env) {
   return true;
 }
 
+// Total already refunded on an order (pence). Tolerant of the legacy single
+// refund record so orders refunded before the partial-refund model still read.
+export function refundedSoFar(order) {
+  const p = order?.payment || {};
+  if (typeof p.refundedTotalP === 'number') return p.refundedTotalP;
+  if (p.refund?.state === 'succeeded' && p.refund.amountP) return p.refund.amountP;
+  return 0;
+}
+
+// Append a refund to an order's record (pure — caller persists via putOrder).
+// Supports multiple partial refunds; payment.state flips to 'refunded' once the
+// order total is fully covered, otherwise 'partly_refunded'.
+export function recordRefund(order, { amountP, reason, stripeId }) {
+  order.payment = order.payment || {};
+  order.payment.refunds = order.payment.refunds || [];
+  const at = new Date().toISOString();
+  order.payment.refunds.push({ amountP, reason: reason || null, stripeId: stripeId || null, at });
+  order.payment.refundedTotalP = refundedSoFar(order) + amountP;
+  order.payment.state = order.payment.refundedTotalP >= (order.totals?.totalP || 0)
+    ? 'refunded' : 'partly_refunded';
+  order.history.push({ at, event: 'refund', amountP, ...(reason ? { reason } : {}) });
+}
+
 const KITCHEN_VISIBLE_STATUSES = new Set([
   'pending_accept',     // paid (or cash) — waiting for staff to accept
   'accepted',           // staff accepted with a ready time

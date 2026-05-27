@@ -5,39 +5,39 @@
    where the customer has been waiting on the kitchen's decision. */
 import { requireStaff } from '../../../../_lib/auth.js';
 import { getConfig } from '../../../../_lib/config.js';
-import { getOrder, putOrder } from '../../../../_lib/kv.js';
+import { getOrder, putOrder, recordRefund, refundedSoFar } from '../../../../_lib/kv.js';
 import { sendEmail, orderRejectedEmail } from '../../../../_lib/email.js';
 import { createRefund } from '../../../../_lib/stripe.js';
 
 const ALLOWED = ['ready', 'out_for_delivery', 'completed', 'cancelled'];
 const REJECTABLE_FROM = new Set(['pending_payment', 'pending_accept', 'accepted']);
 
-// Auto-refund a paid card order when it's rejected. Full refund including the
-// platform service fee. Mutates `order` with the outcome; never throws — a
-// failed refund must not block the cancellation, it's flagged for a manual one.
+// Auto-refund the remaining balance of a paid card order when it's rejected
+// (full refund, incl. the platform service fee when nothing was refunded yet).
+// Mutates `order`; never throws — a failed refund must not block the
+// cancellation, it's flagged for a manual one.
 async function refundOnReject(order, env) {
   const p = order.payment || {};
-  const refundable = order.paymentMethod === 'card'
-    && p.state === 'paid'
-    && p.intentId
-    && p.refund?.state !== 'succeeded';
-  if (!refundable) return null;
-  const at = new Date().toISOString();
+  if (order.paymentMethod !== 'card' || !p.intentId || !['paid', 'partly_refunded'].includes(p.state)) {
+    return null;
+  }
+  const prior = refundedSoFar(order);
+  const remaining = (order.totals?.totalP || 0) - prior;
+  if (remaining <= 0) return { ok: true, amountP: 0 };
   try {
-    const refund = await createRefund(
-      { paymentIntentId: p.intentId, refundApplicationFee: true },
-      p.connectedAccountId, env,
-    );
-    p.refund = { state: 'succeeded', id: refund.id, amountP: refund.amount, at };
-    p.state = 'refunded';
-    order.payment = p;
-    order.history.push({ at, event: 'refunded', amountP: refund.amount });
-    return { ok: true, amountP: refund.amount };
+    const refund = await createRefund({
+      paymentIntentId: p.intentId,
+      amountP: remaining,
+      refundApplicationFee: prior === 0,
+      idempotencyKey: `refund_${p.intentId}_${prior}`,
+    }, p.connectedAccountId, env);
+    const amt = refund.amount ?? remaining;
+    recordRefund(order, { amountP: amt, reason: 'order cancelled', stripeId: refund.id });
+    return { ok: true, amountP: amt };
   } catch (e) {
     console.error('auto-refund failed', e);
-    p.refund = { state: 'failed', error: e?.message || 'unknown', at };
-    order.payment = p;
-    order.history.push({ at, event: 'refund_failed', error: p.refund.error });
+    order.payment.refundFailed = true;
+    order.history.push({ at: new Date().toISOString(), event: 'refund_failed', error: e?.message || 'unknown' });
     return { ok: false, error: e?.message || 'refund failed' };
   }
 }

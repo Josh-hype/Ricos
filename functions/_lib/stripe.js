@@ -107,10 +107,13 @@ export async function createPaymentIntent({
    charges, refund_application_fee returns the platform's application fee to the
    connected account too — used when an order is rejected so the platform keeps
    nothing. Idempotent per PaymentIntent, so a retry can't double-refund. */
-export async function createRefund({ paymentIntentId, refundApplicationFee = true }, connectedAccountId, env) {
+export async function createRefund({ paymentIntentId, amountP, refundApplicationFee = true, idempotencyKey }, connectedAccountId, env) {
   const body = { payment_intent: paymentIntentId };
+  if (amountP) body.amount = amountP;                 // partial; omit for full
   if (refundApplicationFee) body.refund_application_fee = true;
-  const opts = { idempotencyKey: `refund_${paymentIntentId}` };
+  // Idempotency key must differ per refund so multiple partials on one PI don't
+  // collapse into one; callers pass `refund_<pi>_<priorRefundedTotal>`.
+  const opts = { idempotencyKey: idempotencyKey || `refund_${paymentIntentId}` };
   if (connectedAccountId) opts.stripeAccount = connectedAccountId;
   return call('/refunds', body, env, opts);
 }

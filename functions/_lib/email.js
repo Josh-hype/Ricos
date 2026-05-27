@@ -159,13 +159,16 @@ export function orderRejectedEmail(order, config, reason) {
   // auto-refund failed (being refunded manually) still assures the customer of
   // the amount. An unpaid card order (never charged) gets no refund line.
   const p = order.payment || {};
+  const refundedP = typeof p.refundedTotalP === 'number'
+    ? p.refundedTotalP
+    : (p.refund?.state === 'succeeded' && p.refund.amountP ? p.refund.amountP : 0);
   const isPaidCard = order.paymentMethod === 'card'
-    && (p.state === 'refunded' || p.state === 'paid' || !!p.refund);
+    && (refundedP > 0 || ['paid', 'refunded', 'partly_refunded'].includes(p.state));
   let refundLine = '';
   if (isPaidCard) {
-    const amountP = p.refund?.amountP || order.totals.totalP;
+    const amountP = refundedP || order.totals.totalP;
     const amount = `£${(amountP / 100).toFixed(2)}`;
-    refundLine = p.refund?.state === 'succeeded'
+    refundLine = refundedP > 0
       ? `<p>We've refunded <strong>${amount}</strong> to your card — it usually appears within 5–10 working days.</p>`
       : `<p>Your card payment of <strong>${amount}</strong> will be refunded within 5–10 working days.</p>`;
   }
@@ -181,6 +184,27 @@ export function orderRejectedEmail(order, config, reason) {
         ${reasonLine}
         ${refundLine}
         <p>If you'd like to talk to us, call ${phone || 'the restaurant'} and we'll do what we can.</p>
+        <p style="font-size:0.85em;color:#888;margin-top:24px">${footerAddressHtml(config)}</p>
+      </div>`,
+    fromName: tradingName,
+  };
+}
+
+// Sent when staff issue a refund (full or partial) on an order that already
+// went through — distinct from the rejection email (which is for orders the
+// kitchen couldn't accept).
+export function orderRefundEmail(order, config, amountP, reason) {
+  const ref = order.id.toUpperCase();
+  const tradingName = config.business.tradingName;
+  const amount = `£${((amountP || 0) / 100).toFixed(2)}`;
+  const reasonLine = reason ? `<p><strong>For:</strong> ${escapeHtml(reason)}</p>` : '';
+  return {
+    subject: `${tradingName} — ${amount} refunded for order ${ref}`,
+    html: `
+      <div style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto">
+        <h2>Refund processed</h2>
+        <p>Hi ${escapeHtml(order.customer.name.split(' ')[0])}, we've refunded <strong>${amount}</strong> to your card for order <strong>${ref}</strong>. It usually appears within 5–10 working days.</p>
+        ${reasonLine}
         <p style="font-size:0.85em;color:#888;margin-top:24px">${footerAddressHtml(config)}</p>
       </div>`,
     fromName: tradingName,

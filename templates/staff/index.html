@@ -467,7 +467,21 @@
   }
   .card-menu .menu button:hover { background: #fdecec; }
   /* leave room so the ⋮ doesn't sit on top of the time/pills */
-  .card.st-accepted .card-head { padding-right: 26px; }
+  .card.st-accepted .card-head, .card.st-ready .card-head, .card.st-out .card-head { padding-right: 26px; }
+  .card-menu .menu .menu-refund { color: var(--ink); }
+  .btn-refund { background: #fff; color: var(--red); border: 1.5px solid var(--red) !important; }
+
+  /* Refund modal */
+  .refund-sum { color: var(--grey); font-size: 0.9rem; margin-bottom: 12px; }
+  .refund-modes { display: flex; gap: 8px; margin-bottom: 12px; }
+  .refund-modes .rmode { flex: 1; padding: 12px 8px; border: 2px solid var(--ink); border-radius: 10px; background: #fff; font-weight: 700; }
+  .refund-modes .rmode.active { background: var(--yellow); }
+  .refund-items { max-height: 42vh; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-bottom: 4px; }
+  .refund-items[hidden] { display: none; }
+  .refund-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 9px; cursor: pointer; }
+  .refund-item input { width: 20px; height: 20px; flex: 0 0 auto; }
+  .refund-item span { flex: 1; }
+  .refund-item b { font-weight: 700; }
 
   /* ============================== Modal */
   .ovl {
@@ -687,6 +701,18 @@
     <div class="alarm-actions">
       <button class="reject" id="alarmReject">Reject</button>
       <button class="accept" id="alarmAccept">Accept</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== Refund modal -->
+<div class="ovl" id="refundOvl" role="dialog" aria-modal="true" aria-labelledby="refundTitle">
+  <div class="modal">
+    <h2 id="refundTitle">Refund order</h2>
+    <div id="refundBody"></div>
+    <div class="row">
+      <button class="cancel" id="refundCancel">Close</button>
+      <button class="confirm" id="refundConfirm">Refund</button>
     </div>
   </div>
 </div>
@@ -964,6 +990,10 @@ function wireCardButtons() {
       updateStatus(b.dataset.id, 'cancelled');
     }
   }));
+  $$('.card-menu .menu-refund, .card .btn-refund').forEach(b => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openRefund(b.dataset.id);
+  }));
   // Expand/collapse Recent cards by tapping their header (ignore button/link taps).
   $$('.card.collapsible').forEach(card => {
     const head = card.querySelector('.chead');
@@ -1110,11 +1140,20 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
   const statusPill = stLabel[o.status]
     ? `<span class="pill ${stPillCls[o.status]}">${stLabel[o.status]}</span>`
     : '';
-  const refundPill = (o.status === 'cancelled' && o.paymentMethod === 'card' && o.payment?.refund)
-    ? (o.payment.refund.state === 'succeeded'
+  const pmt = o.payment || {};
+  const refundedP = pmt.refundedTotalP
+    || (pmt.refund?.state === 'succeeded' ? pmt.refund.amountP : 0) || 0;
+  const fullyRefunded = refundedP >= (o.totals.totalP || 0);
+  // Card orders that took payment can still be refunded (full or partial) until
+  // fully refunded — including completed ones.
+  const canRefund = o.paymentMethod === 'card'
+    && ['paid', 'partly_refunded', 'refunded'].includes(pmt.state)
+    && !fullyRefunded;
+  const refundPill = refundedP > 0
+    ? (fullyRefunded
         ? '<span class="pill s-completed">refunded</span>'
-        : '<span class="pill s-cancelled">refund: manual</span>')
-    : '';
+        : `<span class="pill s-cancelled">part-refund £${(refundedP / 100).toFixed(2)}</span>`)
+    : (pmt.refundFailed ? '<span class="pill s-cancelled">refund: manual</span>' : '');
   const fulfillmentPill = o.fulfillment === 'delivery'
     ? '<span class="pill delivery">delivery</span>'
     : '<span class="pill collection">collection</span>';
@@ -1155,7 +1194,8 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
       <button class="btn-complete" data-id="${o.id}">→ Complete</button>
       <button class="btn-print" data-id="${o.id}">Print</button>`;
   } else if (o.status === 'completed' || o.status === 'cancelled') {
-    actions = `<button class="btn-print" data-id="${o.id}">Print</button>`;
+    actions = `<button class="btn-print" data-id="${o.id}">Print</button>`
+      + (o.status === 'completed' && canRefund ? `<button class="btn-refund" data-id="${o.id}">Refund…</button>` : '');
   }
   if (readOnly) actions = '';   // Z report cards are view-only
 
@@ -1174,14 +1214,19 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
       ${totals}
       <div class="actions">${actions}</div>`;
 
-  // Accepted orders get a ⋮ menu (top-right) to cancel — which auto-refunds a
-  // paid card order, since 'accepted' is a refundable state on the server.
-  const menuHtml = o.status === 'accepted'
+  // ⋮ menu on in-progress cards: Refund… (full/partial) for paid card orders,
+  // plus Cancel & refund on accepted (cancels + full refund via the reject path).
+  const menuItems = [];
+  if (canRefund && ['accepted', 'ready', 'out_for_delivery'].includes(o.status)) {
+    menuItems.push(`<button class="menu-refund" data-id="${o.id}">Refund…</button>`);
+  }
+  if (o.status === 'accepted') {
+    menuItems.push(`<button class="menu-cancel" data-id="${o.id}">${o.paymentMethod === 'card' ? 'Cancel &amp; refund' : 'Cancel order'}</button>`);
+  }
+  const menuHtml = menuItems.length
     ? `<div class="card-menu">
          <button class="dots" data-id="${o.id}" aria-label="More actions">⋮</button>
-         <div class="menu" hidden>
-           <button class="menu-cancel" data-id="${o.id}">${o.paymentMethod === 'card' ? 'Cancel &amp; refund' : 'Cancel order'}</button>
-         </div>
+         <div class="menu" hidden>${menuItems.join('')}</div>
        </div>`
     : '';
 
@@ -1419,6 +1464,104 @@ function closeAccept() {
   acceptingId = null;
   $('#acceptOvl').classList.remove('open');
 }
+
+/* ============================== Refund modal (full / partial by item) */
+let refundCtx = null;
+
+function findOrder(id) {
+  return (state.orders || []).find(o => o.id === id)
+    || (state.doneOrders || []).find(o => o.id === id)
+    || null;
+}
+
+function openRefund(id) {
+  const o = findOrder(id);
+  if (!o) return;
+  $$('.card-menu .menu').forEach(m => m.setAttribute('hidden', ''));
+  const total = o.totals.totalP || 0;
+  const pmt = o.payment || {};
+  const prior = pmt.refundedTotalP || (pmt.refund?.state === 'succeeded' ? pmt.refund.amountP : 0) || 0;
+  refundCtx = { id, total, prior, remaining: total - prior, mode: 'full', selected: new Set(), lines: o.totals.lines || [] };
+  renderRefund(o);
+  $('#refundOvl').classList.add('open');
+}
+
+function refundAmountP() {
+  if (!refundCtx) return 0;
+  if (refundCtx.mode === 'full') return refundCtx.remaining;
+  let sum = 0;
+  refundCtx.selected.forEach(i => { sum += (refundCtx.lines[i]?.lineTotalP || 0); });
+  return Math.min(sum, refundCtx.remaining);
+}
+
+function updateRefundConfirm() {
+  const amt = refundAmountP();
+  const btn = $('#refundConfirm');
+  btn.textContent = `Refund £${(amt / 100).toFixed(2)}`;
+  btn.disabled = !(amt > 0);
+}
+
+function renderRefund(o) {
+  const c = refundCtx;
+  const gbp = p => `£${((p || 0) / 100).toFixed(2)}`;
+  const priorLine = c.prior > 0 ? ` · already refunded ${gbp(c.prior)} · ${gbp(c.remaining)} left` : '';
+  const items = c.lines.map((l, i) => `
+    <label class="refund-item">
+      <input type="checkbox" data-i="${i}" ${c.selected.has(i) ? 'checked' : ''} />
+      <span>${l.qty}× ${escapeHtml(l.name)}</span>
+      <b>${gbp(l.lineTotalP)}</b>
+    </label>`).join('');
+  $('#refundTitle').textContent = `Refund #${o.id}`;
+  $('#refundBody').innerHTML = `
+    <div class="refund-sum">${gbp(c.total)} total${priorLine}</div>
+    <div class="refund-modes">
+      <button class="rmode ${c.mode === 'full' ? 'active' : ''}" data-mode="full">Full refund ${gbp(c.remaining)}</button>
+      <button class="rmode ${c.mode === 'partial' ? 'active' : ''}" data-mode="partial">By item</button>
+    </div>
+    <div class="refund-items" ${c.mode === 'partial' ? '' : 'hidden'}>${items || '<div class="muted" style="color:var(--grey)">No itemised lines on this order.</div>'}</div>`;
+  $$('#refundBody .rmode').forEach(b => b.addEventListener('click', () => { c.mode = b.dataset.mode; renderRefund(o); }));
+  $$('#refundBody .refund-item input').forEach(cb => cb.addEventListener('change', () => {
+    const i = Number(cb.dataset.i);
+    if (cb.checked) c.selected.add(i); else c.selected.delete(i);
+    updateRefundConfirm();
+  }));
+  updateRefundConfirm();
+}
+
+function closeRefund() {
+  refundCtx = null;
+  $('#refundOvl').classList.remove('open');
+}
+$('#refundCancel').addEventListener('click', closeRefund);
+$('#refundOvl').addEventListener('click', (e) => { if (e.target.id === 'refundOvl') closeRefund(); });
+
+$('#refundConfirm').addEventListener('click', async () => {
+  if (!refundCtx) return;
+  const c = refundCtx;
+  const amt = refundAmountP();
+  if (!(amt > 0)) return;
+  const full = c.mode === 'full';
+  const reason = full ? '' : [...c.selected].map(i => `${c.lines[i].qty}× ${c.lines[i].name}`).join(', ');
+  if (!confirm(`Refund £${(amt / 100).toFixed(2)} to the customer's card?`)) return;
+  $('#refundConfirm').disabled = true;
+  try {
+    const res = await fetch(`/api/staff/orders/${c.id}/refund`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(full ? { mode: 'full' } : { mode: 'partial', amountP: amt, reason }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data.ok === false) { alert(data.error || `Refund failed (${res.status}).`); return; }
+    closeRefund();
+    if (state.view === 'done') loadDone();
+    else if (state.view === 'zreport') loadReport(false);
+    else poll();
+  } catch (e) {
+    alert('Network error — try again.');
+  } finally {
+    $('#refundConfirm').disabled = false;
+  }
+});
 
 /* ============================== Status updates */
 async function sendStatus(id, status, reason) {
