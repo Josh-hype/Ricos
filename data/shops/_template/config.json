@@ -33,17 +33,20 @@
     "collection": { "enabled": true },
     "delivery": {
       "enabled": true,
-      "_comment_feePence": "Default delivery fee in pence, used for any allowed outcode not given its own price in feeByOutcode.",
-      "feePence": 200,
+      "_comment_mode": "Pick the delivery pricing model. 'outcode' = charge by postcode area (fill in allowedOutcodes + feeByOutcode below; this is Rico's model). 'radius' = charge by straight-line distance from the shop in bands (delete the outcode fields, add a radius block — see _comment_radius; this is Food Station's model). Distance lookups use postcodes.io (free, no key). See docs/ADDING_A_SHOP.md.",
+      "mode": "outcode",
       "minimumOrderPence": 1500,
-      "_comment_areaDescription": "Used in delivery error messages: 'we deliver {areaDescription} only'. Keep natural so the sentence reads well.",
+      "_comment_areaDescription": "Used in delivery messages: 'we deliver {areaDescription} only'. Keep natural so the sentence reads well.",
       "areaDescription": "in our delivery area",
-      "_comment_postcodes": "Outcodes (postcode prefixes) the shop delivers to. Must match the shop's own postcode area prefix (the letters before the digits).",
+      "_comment_feePence": "[outcode mode] Default delivery fee in pence, for any allowed outcode not given its own price in feeByOutcode.",
+      "feePence": 200,
+      "_comment_postcodes": "[outcode mode] Outcodes (postcode prefixes) the shop delivers to. Must match the shop's own postcode area prefix (the letters before the digits).",
       "allowedOutcodes": [
         "XX1"
       ],
-      "_comment_feeByOutcode": "Optional per-outcode delivery fee overrides in pence (key = postcode prefix). Outcodes not listed fall back to feePence. Leave empty to charge feePence everywhere.",
-      "feeByOutcode": {}
+      "_comment_feeByOutcode": "[outcode mode] Optional per-outcode delivery fee overrides in pence (key = postcode prefix). Outcodes not listed fall back to feePence. Leave empty to charge feePence everywhere.",
+      "feeByOutcode": {},
+      "_comment_radius": "[radius mode] Set mode to 'radius', remove the three outcode fields above (keep minimumOrderPence + areaDescription), and add: \"radius\": { \"maxMiles\": 5, \"bands\": [ { \"maxMiles\": 1, \"feePence\": 100 }, { \"maxMiles\": 2, \"feePence\": 200 } ] }. Origin defaults to the shop's own postcode (override with radius.origin {lat,lng}). Bands checked low-to-high; beyond the largest maxMiles = no delivery."
     }
   },
 

@@ -96,7 +96,10 @@ More shops are added the same way (see "Adding a new shop").
 **Per-shop** — a change here affects only that one shop, under
 `data/shops/<slug>/`:
 - `config.json` — business info, theme colours + fonts, opening hours,
-  delivery zone, `stripe.connectedAccountId` **(required)**
+  delivery, `stripe.connectedAccountId` **(required)**. Delivery has two modes
+  via `fulfillment.delivery.mode`: **`outcode`** (charge by postcode area —
+  Rico's) or **`radius`** (charge by straight-line distance bands from the
+  shop, geocoded free via postcodes.io — Food Station). Default is `outcode`.
 - `menu.json` — server source of truth, prices in **pence** **(required)**
 - `menu-visual.json` — customer-facing menu (names, photos, options) **(required)**
 - `logo.png` — the logo **(required — build fails without it)**

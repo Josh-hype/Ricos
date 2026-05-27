@@ -36,11 +36,16 @@ Send them a form (Google Forms / Notion doc) covering everything below.
 
 - Opening hours per day (e.g. Mon-Sat 12:00-22:00, Sun closed)
 - Collection: enabled? Delivery: enabled? Both?
-- If delivery: delivery fee in pence (e.g. 200 = £2), minimum order in
-  pence (e.g. 1500 = £15)
-- Delivery postcodes covered (full outcodes, e.g. LS1, LS2, LS6)
-- Friendly description of the delivery zone (used in error messages,
-  e.g. "within 3 miles of the shop")
+- **Delivery pricing model** — pick one (`fulfillment.delivery.mode` in config):
+  - **`outcode`** — charge by postcode area. Collect: the outcodes covered
+    (e.g. LS1, LS2, LS6) and the fee per outcode. (Rico's uses this.)
+  - **`radius`** — charge by straight-line distance from the shop, in bands
+    (e.g. 0–1mi £1, 1–2mi £2 … up to a max radius). Collect: the band
+    distances + fees and the max delivery distance. Distances use postcodes.io
+    (free, no key); origin is the shop's own postcode. (Food Station uses this.)
+- If delivery: minimum order in pence (e.g. 1500 = £15)
+- Friendly description of the delivery zone (used in messages, e.g. "within
+  3 miles of the shop")
 
 ### Menu
 
