@@ -63,6 +63,25 @@ export async function listDoneOrders(env, { limit = 50 } = {}) {
   return out;
 }
 
+// London calendar date (YYYY-MM-DD) — the shop's local "today", DST-safe.
+export function londonDay(iso = new Date().toISOString()) {
+  return new Date(iso).toLocaleDateString('en-CA', { timeZone: 'Europe/London' });
+}
+
+// All orders created on a given London day (YYYY-MM-DD). Filters on the
+// lightweight key metadata first, then only fetches that day's values — a
+// day's orders is a small set, so this stays cheap.
+export async function listOrdersOnDay(env, ymd) {
+  const list = await env.ORDERS_KV.list({ prefix: 'orders:', limit: 1000 });
+  const todays = list.keys.filter(k => k.metadata?.createdAt && londonDay(k.metadata.createdAt) === ymd);
+  const out = [];
+  for (const k of todays) {
+    const raw = await env.ORDERS_KV.get(k.name);
+    if (raw) { try { out.push(JSON.parse(raw)); } catch {} }
+  }
+  return out;
+}
+
 export async function incrSlotCount(slotIso, env) {
   const key = `slot:${slotIso}`;
   const raw = await env.SLOTS_KV.get(key);

@@ -223,6 +223,53 @@
   .card.done { background: #faf6ec; }
   .card.done .ref { color: var(--grey); }
 
+  /* ============================== Summary view */
+  .summary {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    align-content: start;
+  }
+  .summary .hero {
+    grid-column: 1 / -1;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 16px;
+    padding: 18px 22px;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .summary .hero .big {
+    font-family: 'Anton', sans-serif;
+    font-size: 2.8rem;
+    color: var(--yellow);
+    line-height: 1;
+  }
+  .summary .hero .label { font-size: 0.98rem; opacity: 0.85; }
+  .summary .hero .date { margin-left: auto; font-size: 0.9rem; opacity: 0.7; }
+  .stat {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 6px 0 rgba(0,0,0,.05);
+  }
+  .stat .v { font-family: 'Anton', sans-serif; font-size: 1.7rem; line-height: 1; }
+  .stat .k {
+    color: var(--grey);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-top: 6px;
+  }
+  .stat.split { display: flex; flex-direction: column; gap: 7px; justify-content: center; }
+  .stat.split .row { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.95rem; }
+  .stat.split .row span { color: var(--grey); }
+  .stat.split .row b { font-size: 1.05rem; }
+
   .card-head {
     display: flex;
     align-items: baseline;
@@ -440,6 +487,7 @@
       <div class="tabs" role="tablist">
         <button class="tab active" data-view="live" role="tab">Live<span class="tab-count" id="liveCount">0</span></button>
         <button class="tab" data-view="done" role="tab">Recent</button>
+        <button class="tab" data-view="summary" role="tab">Summary</button>
       </div>
       <div class="spacer"></div>
       <span class="pulse" id="pulse" title="Live — refreshes automatically"></span>
@@ -571,6 +619,7 @@ function setView(view) {
   state.view = view;
   $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === view));
   if (view === 'done') loadDone();
+  else if (view === 'summary') loadSummary(false);
   else renderList(state.orders);
 }
 $$('.tab').forEach(t => t.addEventListener('click', () => setView(t.dataset.view)));
@@ -578,6 +627,7 @@ $('#refreshBtn').addEventListener('click', () => {
   $('#refreshBtn').classList.add('spin');
   setTimeout(() => $('#refreshBtn').classList.remove('spin'), 500);
   if (state.view === 'done') loadDone();
+  else if (state.view === 'summary') loadSummary(false);
   else poll();
 });
 
@@ -644,6 +694,8 @@ async function poll() {
     state.lastPollAt = Date.now();
     $('#pulse').classList.remove('stale');
     handleOrders(data.orders || []);
+    // Keep the Summary figures live too, without blanking the view.
+    if (state.view === 'summary') loadSummary(true);
   } catch (e) {
     console.error('poll failed', e);
     $('#pulse').classList.add('stale');
@@ -706,6 +758,54 @@ async function loadDone() {
     return;
   }
   if (state.view === 'done') renderList(state.doneOrders);
+}
+
+async function loadSummary(silent) {
+  const grid = $('#grid');
+  if (!silent) grid.innerHTML = '<div class="empty">Loading today\'s figures…</div>';
+  let s;
+  try {
+    const res = await fetch('/api/staff/summary', { cache: 'no-store' });
+    if (res.status === 401) { $('#logoutBtn').click(); return; }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    s = (await res.json()).summary;
+  } catch (e) {
+    if (!silent) grid.innerHTML = '<div class="empty">Couldn\'t load the summary. Tap ↻ to retry.</div>';
+    return;
+  }
+  if (state.view === 'summary' && s) renderSummary(s);
+}
+
+function renderSummary(s) {
+  const gbp = p => `£${((p || 0) / 100).toFixed(2)}`;
+  const dateLabel = new Date(s.date + 'T12:00:00')
+    .toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+  $('#grid').innerHTML = `
+    <div class="summary">
+      <div class="hero">
+        <span class="big">${gbp(s.grossP)}</span>
+        <span class="label">taken today · ${s.orderCount} order${s.orderCount === 1 ? '' : 's'}</span>
+        <span class="date">${escapeHtml(dateLabel)}</span>
+      </div>
+      <div class="stat"><div class="v">${s.orderCount}</div><div class="k">Orders</div></div>
+      <div class="stat"><div class="v">${gbp(s.avgP)}</div><div class="k">Avg order</div></div>
+      <div class="stat split">
+        <div class="row"><span>Card</span><b>${gbp(s.card.grossP)}</b></div>
+        <div class="row"><span>Cash</span><b>${gbp(s.cash.grossP)}</b></div>
+        <div class="k">${s.card.count} card · ${s.cash.count} cash</div>
+      </div>
+      <div class="stat split">
+        <div class="row"><span>Collection</span><b>${s.collection}</b></div>
+        <div class="row"><span>Delivery</span><b>${s.delivery}</b></div>
+        <div class="k">delivery fees ${gbp(s.deliveryFeeP)}</div>
+      </div>
+      <div class="stat split">
+        <div class="row"><span>In progress</span><b>${s.inProgress}</b></div>
+        <div class="row"><span>Completed</span><b>${s.completed}</b></div>
+        <div class="row"><span>Cancelled</span><b>${s.cancelled}</b></div>
+      </div>
+      <div class="stat"><div class="v">${gbp(s.serviceFeeP)}</div><div class="k">Service fees (platform)</div></div>
+    </div>`;
 }
 
 function renderCard(o, isNew) {
