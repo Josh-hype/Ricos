@@ -223,6 +223,59 @@
   .card.done { background: #faf6ec; }
   .card.done .ref { color: var(--grey); }
 
+  /* ============================== Date-range toolbar (Recent / Z report) */
+  .datebar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+  }
+  .datebar button {
+    border: 1.5px solid var(--ink);
+    background: #fff;
+    color: var(--ink);
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+  .datebar button.dbapply { background: var(--ink); color: var(--yellow); }
+  .datebar label { font-size: 0.85rem; color: var(--grey); display: flex; align-items: center; gap: 5px; }
+  .datebar input[type=date] { border: 1.5px solid var(--ink); border-radius: 8px; padding: 6px 8px; background: #fff; }
+  .datebar .dbspacer { flex: 1; min-width: 8px; }
+
+  /* ============================== Z report */
+  .zreport { grid-column: 1 / -1; }
+  .zhead { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .zt { font-family: 'Archivo Black', sans-serif; font-size: 1.3rem; }
+  .zsub { color: var(--grey); font-size: 0.9rem; }
+  .zprintbtn { margin-left: auto; background: var(--ink); color: var(--yellow); border: 0; border-radius: 10px; padding: 11px 18px; font-weight: 700; }
+  .zfig {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .zbig { font-family: 'Anton', sans-serif; font-size: 2.6rem; line-height: 1; display: flex; flex-direction: column; color: var(--red); }
+  .zbig span { font-family: 'DM Sans', sans-serif; font-size: 0.85rem; color: var(--grey); }
+  .zg { display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 12px; flex: 1; }
+  .zg div { display: flex; flex-direction: column; }
+  .zg b { font-size: 1.15rem; }
+  .zg span { color: var(--grey); font-size: 0.78rem; }
+  .zlog { width: 100%; border-collapse: collapse; background: var(--paper); border: 2px solid var(--ink); border-radius: 14px; overflow: hidden; }
+  .zlog th, .zlog td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); font-size: 0.9rem; vertical-align: top; }
+  .zlog th { background: var(--ink); color: var(--paper); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .zlog tr.void td { color: var(--grey); }
+  .zlog .muted { color: var(--grey); font-size: 0.8rem; }
+
   /* ============================== Summary view */
   .summary {
     grid-column: 1 / -1;
@@ -453,10 +506,14 @@
 
   /* ============================== Print */
   @media print {
-    header, .actions, .ovl, .topbar, .pin-screen { display: none !important; }
+    header, .actions, .ovl, .topbar, .pin-screen, .datebar, .zprintbtn, #refreshBtn { display: none !important; }
     body { background: #fff; color: #000; }
     .grid { display: block; padding: 0; }
     .card { page-break-after: always; box-shadow: none; border: 1.5px solid #000; max-width: 76mm; }
+    .zreport { color: #000; }
+    .zfig, .zlog { border-color: #000 !important; }
+    .zbig { color: #000; }
+    .zlog th { background: #000 !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
 
   /* Reduce motion */
@@ -488,6 +545,7 @@
         <button class="tab active" data-view="live" role="tab">Live<span class="tab-count" id="liveCount">0</span></button>
         <button class="tab" data-view="done" role="tab">Recent</button>
         <button class="tab" data-view="summary" role="tab">Summary</button>
+        <button class="tab" data-view="zreport" role="tab">Z report</button>
       </div>
       <div class="spacer"></div>
       <span class="pulse" id="pulse" title="Live — refreshes automatically"></span>
@@ -496,6 +554,18 @@
       <button id="logoutBtn">Logout</button>
     </div>
   </header>
+
+  <div class="datebar" id="dateBar" hidden>
+    <button data-preset="today">Today</button>
+    <button data-preset="yesterday">Yesterday</button>
+    <button data-preset="7d">Last 7 days</button>
+    <button data-preset="thisweek">This week</button>
+    <button data-preset="lastweek">Last week</button>
+    <span class="dbspacer"></span>
+    <label>From <input type="date" id="dateFrom" /></label>
+    <label>To <input type="date" id="dateTo" /></label>
+    <button id="dateApply" class="dbapply">View</button>
+  </div>
 
   <main class="grid" id="grid">
     <div class="empty">No active orders. Sit tight — they'll appear here as they come in.</div>
@@ -599,8 +669,10 @@ const state = {
   alarmHandle: null,   // setInterval for the repeating new-order chime
   alarmId: null,       // order id currently shown in the alarm popup
   alarmMin: 25,        // prep minutes selected in the alarm popup
-  view: 'live',        // 'live' (kitchen queue) or 'done' (recent history)
+  view: 'live',        // live | done (Recent) | summary | zreport
   doneOrders: [],      // cache for the Recent view
+  from: '',            // selected London-day range (Recent + Z report)
+  to: '',
 };
 
 function setSoundLabel() {
@@ -614,12 +686,44 @@ $('#soundToggle').addEventListener('click', () => {
   if (state.soundOn) audio.chime(); // unlock audio context
 });
 
-/* ============================== View tabs (Live queue / Recent history) */
+/* ============================== Date range (London calendar days) */
+function ymdToday() { return new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/London' }); }
+function ymdShift(ymd, days) {
+  const d = new Date(ymd + 'T00:00:00Z');
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+function ymdDowMon0(ymd) { return (new Date(ymd + 'T00:00:00Z').getUTCDay() + 6) % 7; } // 0=Mon..6=Sun
+function presetRange(preset) {
+  const today = ymdToday();
+  if (preset === 'yesterday') { const y = ymdShift(today, -1); return { from: y, to: y }; }
+  if (preset === '7d') return { from: ymdShift(today, -6), to: today };
+  if (preset === 'thisweek') return { from: ymdShift(today, -ymdDowMon0(today)), to: today };
+  if (preset === 'lastweek') {
+    const wkStart = ymdShift(today, -ymdDowMon0(today));
+    return { from: ymdShift(wkStart, -7), to: ymdShift(wkStart, -1) };
+  }
+  return { from: today, to: today };
+}
+function applyRangeToInputs() {
+  $('#dateFrom').value = state.from;
+  $('#dateTo').value = state.to;
+}
+function reloadRangeView() {
+  if (state.view === 'done') loadDone();
+  else if (state.view === 'zreport') loadReport(false);
+}
+
+/* ============================== View tabs */
 function setView(view) {
   state.view = view;
   $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === view));
+  const usesRange = (view === 'done' || view === 'zreport');
+  $('#dateBar').hidden = !usesRange;
+  if (usesRange) applyRangeToInputs();
   if (view === 'done') loadDone();
   else if (view === 'summary') loadSummary(false);
+  else if (view === 'zreport') loadReport(false);
   else renderList(state.orders);
 }
 $$('.tab').forEach(t => t.addEventListener('click', () => setView(t.dataset.view)));
@@ -628,7 +732,22 @@ $('#refreshBtn').addEventListener('click', () => {
   setTimeout(() => $('#refreshBtn').classList.remove('spin'), 500);
   if (state.view === 'done') loadDone();
   else if (state.view === 'summary') loadSummary(false);
+  else if (state.view === 'zreport') loadReport(false);
   else poll();
+});
+$$('#dateBar [data-preset]').forEach(b => b.addEventListener('click', () => {
+  const r = presetRange(b.dataset.preset);
+  state.from = r.from; state.to = r.to;
+  applyRangeToInputs();
+  reloadRangeView();
+}));
+$('#dateApply').addEventListener('click', () => {
+  const f = $('#dateFrom').value, t = $('#dateTo').value;
+  if (!f || !t) return;
+  state.from = f <= t ? f : t;
+  state.to = f <= t ? t : f;
+  applyRangeToInputs();
+  reloadRangeView();
 });
 
 /* ============================== Auth */
@@ -670,6 +789,7 @@ $('#logoutBtn').addEventListener('click', () => {
 
 function enterDashboard() {
   state.authed = true;
+  if (!state.from) { state.from = state.to = ymdToday(); }
   $('#pinScreen').style.display = 'none';
   $('#dash').hidden = false;
   // Prime the audio context with a silent tone so iOS lets us play later.
@@ -723,7 +843,7 @@ function renderList(list, newIds = []) {
   const grid = $('#grid');
   if (!list || list.length === 0) {
     grid.innerHTML = state.view === 'done'
-      ? '<div class="empty">No completed or cancelled orders yet. Finished orders land here so you can reopen or reprint them.</div>'
+      ? '<div class="empty">No completed or cancelled orders for the selected dates. Use the date bar above to pick another day or range.</div>'
       : '<div class="empty">No active orders. Sit tight — they\'ll appear here as they come in.</div>';
     return;
   }
@@ -746,15 +866,15 @@ function wireCardButtons() {
 
 async function loadDone() {
   const grid = $('#grid');
-  grid.innerHTML = '<div class="empty">Loading recent orders…</div>';
+  grid.innerHTML = '<div class="empty">Loading orders…</div>';
   try {
-    const res = await fetch('/api/staff/orders?view=done', { cache: 'no-store' });
+    const res = await fetch(`/api/staff/orders?view=done&from=${state.from}&to=${state.to}`, { cache: 'no-store' });
     if (res.status === 401) { $('#logoutBtn').click(); return; }
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     state.doneOrders = data.orders || [];
   } catch (e) {
-    grid.innerHTML = '<div class="empty">Couldn\'t load recent orders. Tap ↻ to retry.</div>';
+    grid.innerHTML = '<div class="empty">Couldn\'t load orders. Tap ↻ to retry.</div>';
     return;
   }
   if (state.view === 'done') renderList(state.doneOrders);
@@ -776,9 +896,78 @@ async function loadSummary(silent) {
   if (state.view === 'summary' && s) renderSummary(s);
 }
 
+async function loadReport(silent) {
+  const grid = $('#grid');
+  if (!silent) grid.innerHTML = '<div class="empty">Loading report…</div>';
+  let data;
+  try {
+    const res = await fetch(`/api/staff/summary?from=${state.from}&to=${state.to}`, { cache: 'no-store' });
+    if (res.status === 401) { $('#logoutBtn').click(); return; }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    data = await res.json();
+  } catch (e) {
+    if (!silent) grid.innerHTML = '<div class="empty">Couldn\'t load the report. Tap ↻ to retry.</div>';
+    return;
+  }
+  if (state.view === 'zreport' && data?.summary) renderReport(data.summary, data.orders || []);
+}
+
+function statusText(s) {
+  return ({ pending_payment: 'unpaid', pending_accept: 'new', accepted: 'accepted', ready: 'ready',
+    out_for_delivery: 'out', completed: 'completed', cancelled: 'cancelled', failed: 'failed' })[s] || s;
+}
+function dayShort(iso) {
+  return new Date(iso).toLocaleDateString('en-GB', { timeZone: 'Europe/London', day: '2-digit', month: '2-digit' });
+}
+
+function renderReport(s, orders) {
+  const gbp = p => `£${((p || 0) / 100).toFixed(2)}`;
+  const fmtDay = ymd => new Date(ymd + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+  const rangeLabel = s.from === s.to ? fmtDay(s.from) : `${fmtDay(s.from)} → ${fmtDay(s.to)}`;
+  const rows = orders.map(o => `
+    <tr class="${o.status === 'cancelled' ? 'void' : ''}">
+      <td>${formatTime(o.createdAt)} <span class="muted">${escapeHtml(dayShort(o.createdAt))}</span></td>
+      <td>#${escapeHtml(o.id)}</td>
+      <td>${o.fulfillment === 'delivery' ? 'Delivery' : 'Collection'}</td>
+      <td>${o.paymentMethod === 'card' ? 'Card' : 'Cash'}</td>
+      <td>${escapeHtml(statusText(o.status))}${o.refunded ? ' · refunded' : ''}</td>
+      <td style="text-align:right">${gbp(o.totalP)}</td>
+    </tr>`).join('');
+  $('#grid').innerHTML = `
+    <div class="zreport">
+      <div class="zhead">
+        <div>
+          <div class="zt">Z report</div>
+          <div class="zsub">${escapeHtml(rangeLabel)}</div>
+        </div>
+        <button id="zprint" class="zprintbtn">Print report</button>
+      </div>
+      <div class="zfig">
+        <div class="zbig">${gbp(s.grossP)}<span>taken · ${s.orderCount} order${s.orderCount === 1 ? '' : 's'}</span></div>
+        <div class="zg">
+          <div><b>${gbp(s.avgP)}</b><span>avg order</span></div>
+          <div><b>${gbp(s.card.grossP)}</b><span>card (${s.card.count})</span></div>
+          <div><b>${gbp(s.cash.grossP)}</b><span>cash (${s.cash.count})</span></div>
+          <div><b>${s.collection}</b><span>collection</span></div>
+          <div><b>${s.delivery}</b><span>delivery</span></div>
+          <div><b>${s.completed}</b><span>completed</span></div>
+          <div><b>${s.cancelled}</b><span>cancelled</span></div>
+          <div><b>${gbp(s.refundedP)}</b><span>refunded</span></div>
+          <div><b>${gbp(s.serviceFeeP)}</b><span>service fees</span></div>
+          <div><b>${gbp(s.deliveryFeeP)}</b><span>delivery fees</span></div>
+        </div>
+      </div>
+      <table class="zlog">
+        <thead><tr><th>Time</th><th>Ref</th><th>Type</th><th>Pay</th><th>Status</th><th style="text-align:right">Total</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="6" class="muted" style="text-align:center;padding:18px">No orders in this range.</td></tr>'}</tbody>
+      </table>
+    </div>`;
+  $('#zprint').addEventListener('click', () => window.print());
+}
+
 function renderSummary(s) {
   const gbp = p => `£${((p || 0) / 100).toFixed(2)}`;
-  const dateLabel = new Date(s.date + 'T12:00:00')
+  const dateLabel = new Date(s.from + 'T12:00:00')
     .toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
   $('#grid').innerHTML = `
     <div class="summary">

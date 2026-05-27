@@ -43,43 +43,47 @@ export async function listActiveOrders(env, { limit = 100 } = {}) {
   return active;
 }
 
-const DONE_STATUSES = new Set(['completed', 'cancelled']);
+export const DONE_STATUSES = new Set(['completed', 'cancelled']);
 
-// Finished orders (completed / cancelled), newest first. Staff history view —
-// lets the kitchen re-open or reprint a recent order. We sort the lightweight
-// key metadata first and only fetch the values for the page we return, so a
-// long order history doesn't mean a huge fan-out of KV reads.
-export async function listDoneOrders(env, { limit = 50 } = {}) {
-  const list = await env.ORDERS_KV.list({ prefix: 'orders:', limit: 1000 });
-  const recent = list.keys
-    .filter(k => DONE_STATUSES.has(k.metadata?.status))
-    .sort((a, b) => new Date(b.metadata?.createdAt || 0) - new Date(a.metadata?.createdAt || 0))
-    .slice(0, limit);
-  const out = [];
-  for (const k of recent) {
-    const raw = await env.ORDERS_KV.get(k.name);
-    if (raw) { try { out.push(JSON.parse(raw)); } catch {} }
-  }
-  return out;
-}
-
-// London calendar date (YYYY-MM-DD) — the shop's local "today", DST-safe.
+// London calendar date (YYYY-MM-DD) — the shop's local day, DST-safe.
 export function londonDay(iso = new Date().toISOString()) {
   return new Date(iso).toLocaleDateString('en-CA', { timeZone: 'Europe/London' });
 }
 
-// All orders created on a given London day (YYYY-MM-DD). Filters on the
-// lightweight key metadata first, then only fetches that day's values — a
-// day's orders is a small set, so this stays cheap.
-export async function listOrdersOnDay(env, ymd) {
+// All orders created within an inclusive London-day range (YYYY-MM-DD strings),
+// newest first. Filters on the lightweight key metadata first and only fetches
+// the matching values, so we don't fan out a KV read for every order ever
+// placed. Caps the scan at 1000 keys (plenty for these shops' volumes).
+export async function listOrdersBetween(env, fromYmd, toYmd) {
   const list = await env.ORDERS_KV.list({ prefix: 'orders:', limit: 1000 });
-  const todays = list.keys.filter(k => k.metadata?.createdAt && londonDay(k.metadata.createdAt) === ymd);
+  const inRange = list.keys.filter(k => {
+    const cd = k.metadata?.createdAt;
+    if (!cd) return false;
+    const d = londonDay(cd);
+    return d >= fromYmd && d <= toYmd;
+  });
+  inRange.sort((a, b) => new Date(b.metadata.createdAt) - new Date(a.metadata.createdAt));
   const out = [];
-  for (const k of todays) {
+  for (const k of inRange) {
     const raw = await env.ORDERS_KV.get(k.name);
     if (raw) { try { out.push(JSON.parse(raw)); } catch {} }
   }
   return out;
+}
+
+const YMD_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+// Resolve an inclusive {from,to} London-day range from request query params.
+// Accepts ?date= (single day) or ?from=&?to=; defaults to today, and to=from
+// when only one bound is given. Out-of-order bounds are swapped.
+export function resolveDayRange(url) {
+  const p = url.searchParams;
+  const date = p.get('date');
+  if (YMD_RE.test(date || '')) return { from: date, to: date };
+  let from = YMD_RE.test(p.get('from') || '') ? p.get('from') : londonDay();
+  let to = YMD_RE.test(p.get('to') || '') ? p.get('to') : from;
+  if (from > to) [from, to] = [to, from];
+  return { from, to };
 }
 
 export async function incrSlotCount(slotIso, env) {
