@@ -17,19 +17,7 @@ import { normalisePhoneE164UK } from '../_lib/sms.js';
 import { readCustomerSession } from '../_lib/customer-auth.js';
 import { getCustomer, putCustomer, upsertAddress, updateContactDetails } from '../_lib/customer.js';
 
-export const onRequestPost = async (ctx) => {
-  // TEMP DEBUG (go-live): wrap the whole handler so any unhandled throw is
-  // returned as a readable message instead of a bare platform 502. Revert
-  // once payments are confirmed working.
-  try {
-    return await handleOrderRequest(ctx);
-  } catch (e) {
-    console.error('order handler crashed', e);
-    return errJson('DEBUG order crash: ' + (e && e.message ? e.message : String(e)), 502);
-  }
-};
-
-const handleOrderRequest = async ({ request, env }) => {
+export const onRequestPost = async ({ request, env }) => {
   let input;
   try { input = await request.json(); }
   catch { return errJson('Invalid JSON', 400); }
@@ -234,9 +222,7 @@ const handleOrderRequest = async ({ request, env }) => {
       // those surface client-side at confirm time. Treat any throw as a
       // service error.
       console.error('Stripe PI failed', e);
-      // TEMP DEBUG (go-live): surface Stripe's actual message to diagnose the
-      // 502. Revert to the generic message once payments are confirmed working.
-      return errJson('Payment error: ' + (e?.message || 'unknown error'), 502);
+      return errJson('Payment service unavailable — please try again.', 502);
     }
   }
 

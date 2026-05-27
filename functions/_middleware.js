@@ -28,22 +28,7 @@ const CSP = [
 ].join('; ');
 
 export const onRequest = async (context) => {
-  // TEMP DEBUG (go-live): catch any downstream handler crash / missing response
-  // and surface it as JSON instead of a bare 502. Revert once payments work.
-  let res;
-  try {
-    res = await context.next();
-  } catch (e) {
-    console.error('middleware caught downstream error', e);
-    return new Response(JSON.stringify({ error: 'MW DEBUG: ' + (e && e.message ? e.message : String(e)) }), {
-      status: 502, headers: { 'Content-Type': 'application/json' },
-    });
-  }
-  if (!res) {
-    return new Response(JSON.stringify({ error: 'MW DEBUG: downstream returned no Response' }), {
-      status: 502, headers: { 'Content-Type': 'application/json' },
-    });
-  }
+  const res = await context.next();
   const h = new Headers(res.headers);
   for (const [k, v] of Object.entries(SECURITY_HEADERS)) h.set(k, v);
   if (!h.has('Content-Security-Policy')) h.set('Content-Security-Policy', CSP);
