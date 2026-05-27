@@ -1,6 +1,8 @@
-/* POST /api/stripe-webhook — handles payment_intent.succeeded / failed. */
+/* POST /api/stripe-webhook — handles payment_intent.succeeded / failed.
+   Backstop for the client-side confirm: markOrderPaid is idempotent, so if the
+   thank-you page already promoted the order this is a no-op. */
 import { verifyWebhook } from '../_lib/stripe.js';
-import { getOrder, putOrder, recordOptIn } from '../_lib/kv.js';
+import { getOrder, putOrder, markOrderPaid } from '../_lib/kv.js';
 
 export const onRequestPost = async ({ request, env }) => {
   const raw = await request.text();
@@ -9,26 +11,10 @@ export const onRequestPost = async ({ request, env }) => {
   if (!event) return new Response('bad signature', { status: 400 });
 
   if (event.type === 'payment_intent.succeeded') {
-    const pi = event.data.object;
-    const orderId = pi.metadata?.orderId;
+    const orderId = event.data.object.metadata?.orderId;
     if (!orderId) return new Response('no order id', { status: 200 });
     const order = await getOrder(orderId, env);
-    if (!order) return new Response('order not found', { status: 200 });
-    if (order.status === 'pending_payment') {
-      order.status = 'pending_accept';
-      order.payment.state = 'paid';
-      order.payment.paidAt = new Date().toISOString();
-      order.history.push({ at: order.payment.paidAt, event: 'paid' });
-      await putOrder(order, env);
-
-      // No customer email here - we only email once the kitchen accepts.
-      if (order.marketing.email) {
-        await recordOptIn({ kind: 'email', value: order.customer.email, source: 'checkout' }, env);
-      }
-      if (order.marketing.sms) {
-        await recordOptIn({ kind: 'sms', value: order.customer.phone, source: 'checkout' }, env);
-      }
-    }
+    if (order) await markOrderPaid(order, env);   // no-op if already promoted
   } else if (event.type === 'payment_intent.payment_failed') {
     const pi = event.data.object;
     const orderId = pi.metadata?.orderId;

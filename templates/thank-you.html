@@ -102,7 +102,13 @@
 <script>
   const params = new URLSearchParams(location.search);
   const ref = (params.get('ref') || '').toUpperCase();
-  if (ref) document.getElementById('ref').textContent = ref;
+  if (ref) {
+    document.getElementById('ref').textContent = ref;
+    // Promote a just-paid card order into the kitchen queue right away (verified
+    // server-side), so staff see it within one poll instead of waiting for the
+    // Stripe webhook. Harmless no-op for cash / already-promoted orders.
+    fetch(`/api/order/${encodeURIComponent(ref)}/confirm`, { method: 'POST' }).catch(() => {});
+  }
 </script>
 </body>
 </html>

@@ -20,6 +20,24 @@ export async function getOrder(id, env) {
   try { return JSON.parse(raw); } catch { return null; }
 }
 
+// Promote a paid card order into the kitchen queue. Idempotent — only acts on a
+// pending_payment order. Shared by the Stripe webhook and the client-side
+// confirm so the kitchen sees the order the instant payment succeeds, without
+// waiting for webhook delivery.
+export async function markOrderPaid(order, env) {
+  if (!order || order.status !== 'pending_payment') return false;
+  const at = new Date().toISOString();
+  order.status = 'pending_accept';
+  order.payment = order.payment || {};
+  order.payment.state = 'paid';
+  order.payment.paidAt = at;
+  order.history.push({ at, event: 'paid' });
+  await putOrder(order, env);
+  if (order.marketing?.email) await recordOptIn({ kind: 'email', value: order.customer.email, source: 'checkout' }, env);
+  if (order.marketing?.sms) await recordOptIn({ kind: 'sms', value: order.customer.phone, source: 'checkout' }, env);
+  return true;
+}
+
 const KITCHEN_VISIBLE_STATUSES = new Set([
   'pending_accept',     // paid (or cash) — waiting for staff to accept
   'accepted',           // staff accepted with a ready time

@@ -115,6 +115,14 @@ export async function createRefund({ paymentIntentId, refundApplicationFee = tru
   return call('/refunds', body, env, opts);
 }
 
+/* Retrieve a PaymentIntent (on the connected account for direct charges).
+   Used to verify a payment really succeeded before promoting the order. */
+export async function retrievePaymentIntent(id, connectedAccountId, env) {
+  const opts = { method: 'GET' };
+  if (connectedAccountId) opts.stripeAccount = connectedAccountId;
+  return call(`/payment_intents/${encodeURIComponent(id)}`, null, env, opts);
+}
+
 /* Create a Customer on the connected account. Used the first time a
    signed-in user opts to save a card for that shop. Customer IDs are
    per-connected-account (one shop's cus_xxx isn't usable elsewhere). */
