@@ -330,6 +330,38 @@
   .modal .cancel { background: transparent; border: 2px solid var(--ink) !important; }
   .modal .confirm { background: var(--green); color: #fff; }
 
+  /* ============================== New-order alarm popup */
+  .ovl.alarm { background: rgba(60,0,0,0.6); z-index: 60; }
+  .ovl.alarm .modal {
+    border-color: var(--red);
+    border-width: 4px;
+    max-width: 440px;
+    animation: alarmpulse 1.1s ease-in-out infinite;
+  }
+  @keyframes alarmpulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(199,30,30,.55); }
+    50% { box-shadow: 0 0 0 14px rgba(199,30,30,0); }
+  }
+  .alarm-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .alarm-head h2 { margin: 0; color: var(--red); font-size: 1.3rem; }
+  .alarm-head .ref { font-size: 1.3rem; }
+  .alarm-queue {
+    margin-left: auto;
+    background: var(--red); color: #fff;
+    border-radius: 999px; padding: 4px 11px;
+    font-weight: 700; font-size: 0.8rem; white-space: nowrap;
+  }
+  .alarm-body { max-height: 42vh; overflow-y: auto; margin-bottom: 14px; }
+  .alarm-body .lines { border-top: 0; padding-top: 0; }
+  .alarm-prep-label { text-align: center; color: var(--grey); font-size: 0.85rem; margin: 2px 0 8px; }
+  .alarm-actions { display: flex; gap: 8px; }
+  .alarm-actions button {
+    flex: 1; border: 0; border-radius: 10px; padding: 14px;
+    font-weight: 700; font-size: 1.02rem; min-height: 52px;
+  }
+  .alarm-actions .reject { background: transparent; color: var(--red); border: 2px solid var(--red) !important; flex: 0 0 38%; }
+  .alarm-actions .accept { background: var(--green); color: #fff; }
+
   /* ============================== Print */
   @media print {
     header, .actions, .ovl, .topbar, .pin-screen { display: none !important; }
@@ -400,6 +432,33 @@
   </div>
 </div>
 
+<!-- ============================== New-order alarm popup -->
+<div class="ovl alarm" id="alarmOvl" role="alertdialog" aria-modal="true" aria-labelledby="alarmTitle">
+  <div class="modal">
+    <div class="alarm-head">
+      <h2 id="alarmTitle">🔔 New order</h2>
+      <span class="ref" id="alarmRef"></span>
+      <span class="alarm-queue" id="alarmQueue">new</span>
+    </div>
+    <div class="alarm-body" id="alarmBody"></div>
+    <div class="prep-grid" id="alarmPrep">
+      <button data-min="15">15</button>
+      <button data-min="20">20</button>
+      <button data-min="25" class="active">25</button>
+      <button data-min="30">30</button>
+      <button data-min="35">35</button>
+      <button data-min="40">40</button>
+      <button data-min="45">45</button>
+      <button data-min="60">60</button>
+    </div>
+    <div class="alarm-prep-label">ready in (mins) — pick before accepting</div>
+    <div class="alarm-actions">
+      <button class="reject" id="alarmReject">Reject</button>
+      <button class="accept" id="alarmAccept">Accept</button>
+    </div>
+  </div>
+</div>
+
 <script>
 'use strict';
 
@@ -443,6 +502,9 @@ const state = {
   soundOn: localStorage.getItem('ricos-sound') !== 'off',
   pollHandle: null,
   lastPollAt: 0,
+  alarmHandle: null,   // setInterval for the repeating new-order chime
+  alarmId: null,       // order id currently shown in the alarm popup
+  alarmMin: 25,        // prep minutes selected in the alarm popup
 };
 
 function setSoundLabel() {
@@ -484,6 +546,9 @@ $('#pinForm').addEventListener('submit', async (e) => {
 $('#logoutBtn').addEventListener('click', () => {
   document.cookie = 'rs=; Max-Age=0; Path=/; Secure; SameSite=Lax';
   if (state.pollHandle) clearInterval(state.pollHandle);
+  stopAlarm();
+  $('#alarmOvl').classList.remove('open');
+  state.alarmId = null;
   $('#dash').hidden = true;
   $('#pinScreen').style.display = 'grid';
   $('#pinInput').value = '';
@@ -523,17 +588,16 @@ async function poll() {
 }
 
 function handleOrders(orders) {
-  // Detect new orders since last poll.
   const newIds = orders
     .filter(o => o.status === 'pending_accept' && !state.seenIds.has(o.id))
     .map(o => o.id);
-  if (newIds.length > 0 && state.seenIds.size > 0) {
-    if (state.soundOn) audio.chime();
-  }
   for (const o of orders) state.seenIds.add(o.id);
 
   state.orders = orders;
   renderGrid(newIds);
+  // The repeating alarm + popup are driven entirely by whether any orders are
+  // still waiting to be accepted — that set IS the queue.
+  syncAlarm();
 }
 
 function renderGrid(newIds) {
@@ -573,11 +637,7 @@ function renderCard(o, isNew) {
     ? `<span class="pill scheduled">${formatTime(o.schedule)}</span>`
     : '';
 
-  const lines = (o.totals.lines || []).map(l => `
-    <li>
-      <span class="qty">${l.qty}×</span>
-      <span class="name">${escapeHtml(l.name)}${l.spice ? ` <span class="mod" style="background:#ffe1d4;color:#a8331a;font-weight:600">${escapeHtml(l.spice)}</span>` : ''}${l.meal ? ' <span class="mod">(meal)</span>' : ''}${l.mealChoices && l.mealChoices.length ? ` <span class="mod">(${l.mealChoices.map(escapeHtml).join(', ')})</span>` : ''}${l.modifiers && l.modifiers.length ? ` <span class="mod">(${l.modifiers.map(escapeHtml).join(', ')})</span>` : ''}</span>
-    </li>`).join('');
+  const lines = lineItemsHtml(o);
 
   const addr = o.address ? `<div style="font-size:0.85rem;color:var(--grey);margin-top:4px">${escapeHtml(o.address.line1)}${o.address.line2 ? ', ' + escapeHtml(o.address.line2) : ''}, ${escapeHtml(o.address.postcode)}${o.address.notes ? `<br><em>${escapeHtml(o.address.notes)}</em>` : ''}</div>` : '';
 
@@ -653,6 +713,118 @@ function escapeHtml(s) {
   }[c]));
 }
 
+function lineItemsHtml(o) {
+  return (o.totals.lines || []).map(l => `
+    <li>
+      <span class="qty">${l.qty}×</span>
+      <span class="name">${escapeHtml(l.name)}${l.spice ? ` <span class="mod" style="background:#ffe1d4;color:#a8331a;font-weight:600">${escapeHtml(l.spice)}</span>` : ''}${l.meal ? ' <span class="mod">(meal)</span>' : ''}${l.mealChoices && l.mealChoices.length ? ` <span class="mod">(${l.mealChoices.map(escapeHtml).join(', ')})</span>` : ''}${l.modifiers && l.modifiers.length ? ` <span class="mod">(${l.modifiers.map(escapeHtml).join(', ')})</span>` : ''}</span>
+    </li>`).join('');
+}
+
+/* ============================== New-order alarm + queue
+   Orders still in 'pending_accept' ARE the queue. While any exist we show a
+   demanding popup for the oldest one and repeat the chime until it's accepted
+   or rejected; clearing one advances to the next automatically. */
+function pendingQueue() {
+  // listActiveOrders already returns oldest-first.
+  return state.orders.filter(o => o.status === 'pending_accept');
+}
+
+function syncAlarm() {
+  const q = pendingQueue();
+  if (q.length === 0) {
+    stopAlarm();
+    $('#alarmOvl').classList.remove('open');
+    state.alarmId = null;
+    return;
+  }
+  const cur = q[0];
+  if (state.alarmId !== cur.id) {
+    state.alarmId = cur.id;
+    state.alarmMin = 25;
+    renderAlarm(cur, q.length);
+  } else {
+    $('#alarmQueue').textContent = q.length > 1 ? `${q.length} waiting` : 'new';
+  }
+  $('#alarmOvl').classList.add('open');
+  startAlarm();
+}
+
+function renderAlarm(o, qlen) {
+  $('#alarmRef').textContent = `#${o.id}`;
+  $('#alarmQueue').textContent = qlen > 1 ? `${qlen} waiting` : 'new';
+
+  const fulfillment = o.fulfillment === 'delivery' ? 'Delivery' : 'Collection';
+  const pay = o.paymentMethod === 'card' ? 'Paid by card'
+    : (o.paymentMethod === 'cash_collection' ? 'CASH on collection' : 'CASH on delivery');
+  const sched = o.schedule && o.schedule !== 'asap' ? ` · for ${formatTime(o.schedule)}` : ' · ASAP';
+  const addr = o.address
+    ? `<div style="font-size:0.88rem;color:var(--grey);margin-top:4px">${escapeHtml(o.address.line1)}${o.address.line2 ? ', ' + escapeHtml(o.address.line2) : ''}, ${escapeHtml(o.address.postcode)}${o.address.notes ? `<br><em>${escapeHtml(o.address.notes)}</em>` : ''}</div>`
+    : '';
+
+  $('#alarmBody').innerHTML = `
+    <div style="font-weight:700;margin-bottom:6px">${fulfillment}${sched} · ${pay}</div>
+    <ul class="lines">${lineItemsHtml(o)}</ul>
+    <div class="totals">
+      <div class="total"><span>Total</span><span>£${(o.totals.totalP/100).toFixed(2)}</span></div>
+    </div>
+    <div class="who" style="margin-top:10px">
+      <strong>${escapeHtml(o.customer.name)}</strong>
+      <a href="tel:${escapeHtml(o.customer.phone)}">${escapeHtml(o.customer.phone)}</a>
+      ${addr}
+    </div>`;
+
+  $$('#alarmPrep button').forEach(x => x.classList.toggle('active', Number(x.dataset.min) === state.alarmMin));
+}
+
+function startAlarm() {
+  if (state.alarmHandle) return;
+  if (state.soundOn) audio.chime();
+  state.alarmHandle = setInterval(() => { if (state.soundOn) audio.chime(); }, 2500);
+}
+function stopAlarm() {
+  if (state.alarmHandle) { clearInterval(state.alarmHandle); state.alarmHandle = null; }
+}
+
+$$('#alarmPrep button').forEach(b => {
+  b.addEventListener('click', () => {
+    $$('#alarmPrep button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    state.alarmMin = Number(b.dataset.min);
+  });
+});
+
+$('#alarmAccept').addEventListener('click', async () => {
+  const id = state.alarmId;
+  if (!id) return;
+  $('#alarmAccept').disabled = true;
+  try {
+    await acceptOrder(id, state.alarmMin);
+    state.alarmId = null;   // force the next pending order to render fresh
+    await poll();           // poll() -> syncAlarm() advances or closes
+  } catch (e) {
+    alert(e.message || 'Could not accept — try again.');
+  } finally {
+    $('#alarmAccept').disabled = false;
+  }
+});
+
+$('#alarmReject').addEventListener('click', async () => {
+  const id = state.alarmId;
+  if (!id) return;
+  if (!confirm('Reject this order? The customer is notified (card orders need a manual refund).')) return;
+  $('#alarmReject').disabled = true;
+  try {
+    await sendStatus(id, 'cancelled');
+    state.alarmId = null;
+    await poll();
+  } catch (e) {
+    alert(e.message || 'Could not reject — try again.');
+  } finally {
+    $('#alarmReject').disabled = false;
+  }
+});
+
 /* ============================== Accept modal */
 let acceptingId = null;
 let acceptMin = 25;
@@ -672,22 +844,28 @@ $('#acceptConfirm').addEventListener('click', async () => {
   if (!acceptingId) return;
   $('#acceptConfirm').disabled = true;
   try {
-    const res = await fetch(`/api/staff/orders/${acceptingId}/accept`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prepMinutes: acceptMin }),
-    });
-    if (!res.ok) {
-      const j = await res.json().catch(() => ({}));
-      alert(j.error || `Error ${res.status}`);
-      return;
-    }
+    await acceptOrder(acceptingId, acceptMin);
     closeAccept();
     poll();
+  } catch (e) {
+    alert(e.message || 'Could not accept — try again.');
   } finally {
     $('#acceptConfirm').disabled = false;
   }
 });
+
+async function acceptOrder(id, prepMinutes) {
+  const res = await fetch(`/api/staff/orders/${id}/accept`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prepMinutes }),
+  });
+  if (!res.ok) {
+    const j = await res.json().catch(() => ({}));
+    throw new Error(j.error || `Error ${res.status}`);
+  }
+  return res.json();
+}
 
 function openAccept(id) {
   acceptingId = id;
@@ -701,21 +879,25 @@ function closeAccept() {
 }
 
 /* ============================== Status updates */
+async function sendStatus(id, status, reason) {
+  const res = await fetch(`/api/staff/orders/${id}/status`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(reason ? { status, reason } : { status }),
+  });
+  if (!res.ok) {
+    const j = await res.json().catch(() => ({}));
+    throw new Error(j.error || `Error ${res.status}`);
+  }
+  return res.json();
+}
+
 async function updateStatus(id, status) {
   try {
-    const res = await fetch(`/api/staff/orders/${id}/status`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status }),
-    });
-    if (!res.ok) {
-      const j = await res.json().catch(() => ({}));
-      alert(j.error || `Error ${res.status}`);
-      return;
-    }
+    await sendStatus(id, status);
     poll();
   } catch (e) {
-    alert('Network error — try again.');
+    alert(e.message || 'Network error — try again.');
   }
 }
 
