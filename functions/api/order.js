@@ -192,7 +192,9 @@ export const onRequestPost = async ({ request, env }) => {
       // those surface client-side at confirm time. Treat any throw as a
       // service error.
       console.error('Stripe PI failed', e);
-      return errJson('Payment service unavailable — please try again.', 502);
+      // TEMP DEBUG (go-live): surface Stripe's actual message to diagnose the
+      // 502. Revert to the generic message once payments are confirmed working.
+      return errJson('Payment error: ' + (e?.message || 'unknown error'), 502);
     }
   }
 
