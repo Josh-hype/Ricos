@@ -233,6 +233,9 @@
     background: var(--paper);
     border-bottom: 1px solid var(--line);
   }
+  /* The .datebar display:flex above would otherwise override the [hidden]
+     attribute, so re-assert it — this is what keeps the bar off Live/Summary. */
+  .datebar[hidden] { display: none; }
   .datebar button {
     border: 1.5px solid var(--ink);
     background: #fff;
