@@ -564,6 +564,30 @@
   @media (prefers-reduced-motion: reduce) {
     .card.new, .topbar .pulse { animation: none !important; }
   }
+
+  /* ============================== Small screens (phones; the Sunmi T2 is
+     large enough for the default layout). Stops the header overflowing and
+     drops the board to a single column. */
+  @media (max-width: 720px) {
+    .topbar { flex-wrap: wrap; gap: 8px 10px; padding: 8px 12px; }
+    .topbar .logo { height: 30px; width: 30px; }
+    /* Tabs onto their own full-width row; scroll if a device is very narrow. */
+    .tabs { order: 3; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .tab { flex: 0 0 auto; padding: 8px 13px; }
+    .topbar button { padding: 6px 10px; font-size: 0.85rem; }
+
+    .datebar { padding: 8px 12px; gap: 6px; }
+    .datebar .dbspacer { display: none; }
+    .datebar button { padding: 6px 10px; font-size: 0.8rem; }
+    .datebar label { font-size: 0.8rem; }
+    .datebar input[type=date] { padding: 5px 6px; }
+
+    .grid { grid-template-columns: 1fr; gap: 10px; padding: 12px; }
+
+    .ovl { padding: 10px; }
+    .modal, .ovl.alarm .modal { max-width: 100%; }
+    .zfig { gap: 12px; }
+  }
 </style>
 </head>
 <body>
