@@ -656,6 +656,9 @@ const audio = (() => {
   let ctx = null;
   const ensure = () => {
     if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+    // Browsers suspend the context (autoplay policy, or when the tab was
+    // backgrounded); resume so the chime actually plays.
+    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
     return ctx;
   };
   function tone(freq, ms, when = 0, vol = 0.3) {
@@ -677,8 +680,15 @@ const audio = (() => {
       tone(1320, 220, 0.18);
       tone(880, 180, 0.42);
     },
+    unlock() { try { ensure(); } catch {} },
   };
 })();
+
+// Any tap/click/key on the device resumes a suspended AudioContext, so the
+// new-order chime reliably rings even if the page was opened without a gesture
+// (e.g. an existing session) or the tab had been backgrounded.
+['pointerdown', 'keydown'].forEach(ev =>
+  document.addEventListener(ev, () => audio.unlock(), { capture: true }));
 
 /* ============================== State */
 const state = {
@@ -1252,6 +1262,7 @@ $('#alarmAccept').addEventListener('click', async () => {
   try {
     await acceptOrder(id, state.alarmMin);
     state.alarmId = null;   // force the next pending order to render fresh
+    setView('live');        // land on the live board after accepting
     await poll();           // poll() -> syncAlarm() advances or closes
   } catch (e) {
     alert(e.message || 'Could not accept — try again.');
