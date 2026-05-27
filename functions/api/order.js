@@ -9,7 +9,7 @@
 
 import { getConfig } from '../_lib/config.js';
 import { computeTotals } from '../_lib/totals.js';
-import { validateDeliveryPostcode } from '../_lib/postcode.js';
+import { resolveDelivery } from '../_lib/delivery.js';
 import { isOpenNow, isSlotValid, listSlots } from '../_lib/hours.js';
 import { createPaymentIntent, createCustomer } from '../_lib/stripe.js';
 import { putOrder, newOrderId, recordOptIn, incrSlotCount } from '../_lib/kv.js';
@@ -36,21 +36,19 @@ export const onRequestPost = async ({ request, env }) => {
   // Fulfillment.
   const fulfillment = input.fulfillment === 'delivery' ? 'delivery' : 'collection';
   let address = null;
+  let deliveryFeeP = null;
   if (fulfillment === 'delivery') {
     if (!config.fulfillment.delivery.enabled) return errJson('Delivery is not available right now.', 400);
-    const pc = validateDeliveryPostcode(
-      input.deliveryAddress?.postcode,
-      config.fulfillment.delivery.allowedOutcodes,
-      config.fulfillment.delivery.areaDescription,
-    );
-    if (!pc.ok) return errJson(pc.reason, 400);
+    const dq = await resolveDelivery(input.deliveryAddress?.postcode, config);
+    if (!dq.ok) return errJson(dq.reason, 400);
+    deliveryFeeP = dq.feePence;
     const line1 = (input.deliveryAddress?.line1 || '').trim();
     if (line1.length < 2) return errJson('Please enter your delivery address.', 400);
     address = {
       line1,
       line2: (input.deliveryAddress?.line2 || '').trim(),
       city: config.business.address.city,
-      postcode: pc.postcode,
+      postcode: dq.postcode,
       notes: (input.deliveryAddress?.notes || '').trim().slice(0, 280),
     };
   }
@@ -74,7 +72,7 @@ export const onRequestPost = async ({ request, env }) => {
   }
 
   // Totals (server-side; client never trusted for prices).
-  const totals = computeTotals(input, config);
+  const totals = computeTotals(input, config, { deliveryFeeP });
   if (!totals.ok) return errJson(totals.reason, 400);
 
   // Payment method.

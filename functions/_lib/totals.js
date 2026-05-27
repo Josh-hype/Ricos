@@ -5,7 +5,7 @@
 import { getMenu } from './menu.js';
 import { normalisePostcode } from './postcode.js';
 
-export function computeTotals(input, config) {
+export function computeTotals(input, config, opts = {}) {
   const menu = getMenu();
   const itemsById = indexMenu(menu);
   const lines = [];
@@ -83,15 +83,21 @@ export function computeTotals(input, config) {
     discountLabel = config.promo.autoOnlineDiscount.label;
   }
 
-  // Delivery fee — per-outcode if configured (feeByOutcode), else the
-  // default feePence. Outcode is derived from the delivery postcode.
+  // Delivery fee. /api/order resolves it via resolveDelivery (outcode OR
+  // radius mode) and passes it in opts.deliveryFeeP. Fall back to the outcode
+  // lookup for any caller that doesn't pass it, so the function stays
+  // self-contained.
   let deliveryFeeP = 0;
   if (fulfillment === 'delivery') {
-    const d = config.fulfillment.delivery;
-    const p = normalisePostcode(input.deliveryAddress?.postcode);
-    const byOutcode = d.feeByOutcode || {};
-    const override = p && byOutcode[p.outcode];
-    deliveryFeeP = Number.isFinite(override) ? override : d.feePence;
+    if (opts.deliveryFeeP != null) {
+      deliveryFeeP = opts.deliveryFeeP;
+    } else {
+      const d = config.fulfillment.delivery;
+      const p = normalisePostcode(input.deliveryAddress?.postcode);
+      const byOutcode = d.feeByOutcode || {};
+      const override = p && byOutcode[p.outcode];
+      deliveryFeeP = Number.isFinite(override) ? override : d.feePence;
+    }
   }
 
   // Per-order platform/service fee (kept by the platform operator).

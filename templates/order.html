@@ -1578,6 +1578,7 @@ function loadState() {
     cart: [],
     mode: 'deliver',
     postcode: null,
+    deliveryFeeP: null,
     user: null,
     activeCategory: null,
   };
@@ -2044,6 +2045,14 @@ function deliveryFeeGBP() {
   if (state.mode !== 'deliver') return 0;
   const d = window.SHOP_CONFIG?.fulfillment?.delivery;
   if (!d) return 2.00; // fallback until config loads
+  // Radius shops: use the server-quoted fee once a postcode is checked; before
+  // that, preview the lowest band so the total isn't misleadingly £0.
+  if (d.mode === 'radius') {
+    if (Number.isFinite(state.deliveryFeeP)) return state.deliveryFeeP / 100;
+    const bands = d.radius?.bands || [];
+    const lowest = bands.length ? Math.min(...bands.map(b => Number(b.feePence) || 0)) : 0;
+    return lowest / 100;
+  }
   const outcode = state.postcode ? state.postcode.split(' ')[0].toUpperCase() : null;
   const byOutcode = d.feeByOutcode || {};
   const p = (outcode && Number.isFinite(byOutcode[outcode])) ? byOutcode[outcode] : d.feePence;
@@ -2186,7 +2195,29 @@ function applyMode(mode) {
   document.getElementById('modeDeliver').setAttribute('aria-selected', String(mode === 'deliver'));
   document.getElementById('serviceMode').textContent = mode === 'collect' ? 'Collection' : 'Delivery in {{shopCity}}';
 
-  // If a postcode is already set, re-validate against the new mode.
+  // Radius shops: delivery distance can't be re-checked locally, so clear a
+  // stored postcode when switching to delivery and prompt a fresh check.
+  // Collection needs no distance, so a stored postcode is fine there.
+  const dCfg = window.SHOP_CONFIG?.fulfillment?.delivery;
+  if (dCfg?.mode === 'radius') {
+    if (mode === 'deliver' && state.postcode) {
+      state.postcode = null;
+      state.deliveryFeeP = null;
+      saveState();
+      const msg = document.getElementById('pcMessage');
+      msg.className = 'pc-message';
+      msg.textContent = 'Enter your postcode to check delivery.';
+      renderCart();
+      return;
+    }
+    state.deliveryFeeP = null;
+    saveState();
+    renderCart();
+    refreshPCMessage();
+    return;
+  }
+
+  // Outcode shops: re-validate the stored postcode against the new mode.
   // Switching to delivery with an out-of-ring-road postcode will reject it.
   if (state.postcode) {
     const recheck = validatePostcode(state.postcode, mode);
@@ -2211,11 +2242,16 @@ function refreshPCMessage() {
   if (state.postcode) {
     msg.className = 'pc-message ok';
     const verb = state.mode === 'collect' ? 'Collection' : 'Delivery';
-    msg.innerHTML = `✓ ${verb} confirmed for <strong>${state.postcode}</strong>. <button class="change" type="button" id="changePc">Change</button>`;
+    const d = window.SHOP_CONFIG?.fulfillment?.delivery;
+    const extra = (state.mode === 'deliver' && d?.mode === 'radius' && Number.isFinite(state.deliveryFeeP))
+      ? ` — delivery £${(state.deliveryFeeP / 100).toFixed(2)}` : '';
+    msg.innerHTML = `✓ ${verb} confirmed for <strong>${state.postcode}</strong>${extra}. <button class="change" type="button" id="changePc">Change</button>`;
     document.getElementById('changePc').addEventListener('click', () => {
       state.postcode = null;
+      state.deliveryFeeP = null;
       saveState();
       refreshPCMessage();
+      renderCart();
       document.getElementById('postcode').focus();
     });
   } else {
@@ -2224,12 +2260,14 @@ function refreshPCMessage() {
   }
 }
 
-document.getElementById('postcodeForm').addEventListener('submit', (e) => {
+document.getElementById('postcodeForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const input = document.getElementById('postcode');
-  const result = validatePostcode(input.value, state.mode);
   const msg = document.getElementById('pcMessage');
-  if (!result.ok) {
+  const raw = input.value;
+  const d = window.SHOP_CONFIG?.fulfillment?.delivery;
+
+  const showError = (result) => {
     msg.className = 'pc-message err';
     msg.innerHTML = '✕ ' + result.reason;
     if (result.suggestCollection) {
@@ -2237,9 +2275,36 @@ document.getElementById('postcodeForm').addEventListener('submit', (e) => {
       const sw = document.getElementById('switchToCollect');
       if (sw) sw.addEventListener('click', () => applyMode('collect'));
     }
+  };
+
+  // Radius shops checking delivery: distance is computed server-side
+  // (geocode + straight-line distance), so ask /api/delivery-quote.
+  if (state.mode === 'deliver' && d?.mode === 'radius') {
+    if (!raw || !raw.trim()) { msg.className = 'pc-message err'; msg.innerHTML = '✕ Enter a postcode.'; return; }
+    msg.className = 'pc-message';
+    msg.textContent = 'Checking your postcode…';
+    let result;
+    try {
+      const res = await fetch('/api/delivery-quote?postcode=' + encodeURIComponent(raw));
+      result = await res.json();
+    } catch {
+      result = { ok: false, reason: "Couldn't check that just now — please try again, or call the shop." };
+    }
+    if (!result.ok) { showError(result); return; }
+    state.postcode = result.postcode;
+    state.deliveryFeeP = Number.isFinite(result.feePence) ? result.feePence : null;
+    saveState();
+    input.value = '';
+    refreshPCMessage();
+    renderCart();
     return;
   }
+
+  // Outcode shops (and collection): validate locally against the area list.
+  const result = validatePostcode(raw, state.mode);
+  if (!result.ok) { showError(result); return; }
   state.postcode = result.formatted;
+  state.deliveryFeeP = null;
   saveState();
   input.value = '';
   refreshPCMessage();

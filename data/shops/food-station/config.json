@@ -41,18 +41,19 @@
     "collection": { "enabled": true },
     "delivery": {
       "enabled": true,
-      "_comment_feePence": "Menu states: Easingwold delivery £1, then +£1 per extra mile. The per-mile surcharge can't be expressed by outcode alone. TODO confirm how to charge beyond Easingwold (extra outcodes + their fees, or a flat zone rate).",
-      "feePence": 100,
+      "_comment_mode": "Radius/distance delivery. The customer postcode is geocoded (postcodes.io, free, no key) and the straight-line distance from the shop selects a band fee. Origin defaults to the shop's own postcode (business.address.postcode); set radius.origin {lat,lng} to override. Matches the old site's £1 + £1/mile rings (1-mile bands, £1-£5, max 5 miles).",
+      "mode": "radius",
       "minimumOrderPence": 1200,
-      "_comment_areaDescription": "Used in delivery error messages: 'we deliver {areaDescription} only'.",
-      "areaDescription": "around Easingwold",
-      "_comment_postcodes": "Easingwold is YO61. TODO confirm any further outcodes the shop delivers to (and their per-mile fees).",
-      "allowedOutcodes": [
-        "YO61"
-      ],
-      "_comment_feeByOutcode": "Per-outcode delivery fee in pence. YO61 (Easingwold) = £1.00 (100p).",
-      "feeByOutcode": {
-        "YO61": 100
+      "areaDescription": "within 5 miles of Easingwold",
+      "radius": {
+        "maxMiles": 5,
+        "bands": [
+          { "maxMiles": 1, "feePence": 100 },
+          { "maxMiles": 2, "feePence": 200 },
+          { "maxMiles": 3, "feePence": 300 },
+          { "maxMiles": 4, "feePence": 400 },
+          { "maxMiles": 5, "feePence": 500 }
+        ]
       }
     }
   },

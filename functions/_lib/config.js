@@ -21,10 +21,12 @@ export function getPublicConfig() {
       collection: { enabled: config.fulfillment.collection.enabled },
       delivery: {
         enabled: config.fulfillment.delivery.enabled,
+        mode: config.fulfillment.delivery.mode || 'outcode',
         feePence: config.fulfillment.delivery.feePence,
         feeByOutcode: config.fulfillment.delivery.feeByOutcode || {},
         minimumOrderPence: config.fulfillment.delivery.minimumOrderPence,
         allowedOutcodes: config.fulfillment.delivery.allowedOutcodes,
+        radius: config.fulfillment.delivery.radius || null,
       },
     },
     hours: config.hours,
