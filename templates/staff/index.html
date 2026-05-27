@@ -273,11 +273,15 @@
   .zg div { display: flex; flex-direction: column; }
   .zg b { font-size: 1.15rem; }
   .zg span { color: var(--grey); font-size: 0.78rem; }
-  .zlog { width: 100%; border-collapse: collapse; background: var(--paper); border: 2px solid var(--ink); border-radius: 14px; overflow: hidden; }
-  .zlog th, .zlog td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); font-size: 0.9rem; vertical-align: top; }
-  .zlog th { background: var(--ink); color: var(--paper); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
-  .zlog tr.void td { color: var(--grey); }
-  .zlog .muted { color: var(--grey); font-size: 0.8rem; }
+  /* The Z report's order cards browse on screen; they're hidden when printing
+     so a printed Z report is just the figures (the actual end-of-day reading). */
+  .zorders {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 14px;
+    margin-top: 4px;
+  }
 
   /* ============================== Summary view */
   .summary {
@@ -338,6 +342,7 @@
   .card.collapsible .chev { color: var(--grey); font-size: 0.85rem; transition: transform 0.12s; }
   .card.collapsible.open .chev { transform: rotate(90deg); }
   .head-total { margin-left: auto; font-family: 'Anton', sans-serif; font-size: 1.4rem; }
+  .head-date { color: var(--grey); font-size: 0.82rem; }
   .card-body { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
   .card-body[hidden] { display: none; }
   .ref {
@@ -518,14 +523,13 @@
 
   /* ============================== Print */
   @media print {
-    header, .actions, .ovl, .topbar, .pin-screen, .datebar, .zprintbtn, #refreshBtn { display: none !important; }
+    header, .actions, .ovl, .topbar, .pin-screen, .datebar, .zprintbtn, .zorders, #refreshBtn { display: none !important; }
     body { background: #fff; color: #000; }
     .grid { display: block; padding: 0; }
     .card { page-break-after: always; box-shadow: none; border: 1.5px solid #000; max-width: 76mm; }
     .zreport { color: #000; }
-    .zfig, .zlog { border-color: #000 !important; }
+    .zfig { border-color: #000 !important; }
     .zbig { color: #000; }
-    .zlog th { background: #000 !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
 
   /* Reduce motion */
@@ -937,28 +941,11 @@ async function loadReport(silent) {
   if (state.view === 'zreport' && data?.summary) renderReport(data.summary, data.orders || []);
 }
 
-function statusText(s) {
-  return ({ pending_payment: 'unpaid', pending_accept: 'new', accepted: 'accepted', ready: 'ready',
-    out_for_delivery: 'out', completed: 'completed', cancelled: 'cancelled', failed: 'failed' })[s] || s;
-}
-function dayShort(iso) {
-  return new Date(iso).toLocaleDateString('en-GB', { timeZone: 'Europe/London', day: '2-digit', month: '2-digit' });
-}
-
 function renderReport(s, orders) {
   const gbp = p => `£${((p || 0) / 100).toFixed(2)}`;
   const fmtDay = ymd => new Date(ymd + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
   const rangeLabel = s.from === s.to ? fmtDay(s.from) : `${fmtDay(s.from)} → ${fmtDay(s.to)}`;
-  const rows = orders.map(o => `
-    <tr class="${o.status === 'cancelled' ? 'void' : ''}">
-      <td>${formatTime(o.createdAt)} <span class="muted">${escapeHtml(dayShort(o.createdAt))}</span></td>
-      <td>#${escapeHtml(o.id)}</td>
-      <td>${o.fulfillment === 'delivery' ? 'Delivery' : 'Collection'}</td>
-      <td>${o.paymentMethod === 'card' ? 'Card' : 'Cash'}</td>
-      <td>${escapeHtml(statusText(o.status))}${o.refunded ? ' · refunded' : ''}</td>
-      <td style="text-align:right">${gbp(o.totalP)}</td>
-    </tr>`).join('');
-  $('#grid').innerHTML = `
+  const figures = `
     <div class="zreport">
       <div class="zhead">
         <div>
@@ -982,12 +969,13 @@ function renderReport(s, orders) {
           <div><b>${gbp(s.deliveryFeeP)}</b><span>delivery fees</span></div>
         </div>
       </div>
-      <table class="zlog">
-        <thead><tr><th>Time</th><th>Ref</th><th>Type</th><th>Pay</th><th>Status</th><th style="text-align:right">Total</th></tr></thead>
-        <tbody>${rows || '<tr><td colspan="6" class="muted" style="text-align:center;padding:18px">No orders in this range.</td></tr>'}</tbody>
-      </table>
     </div>`;
+  const cards = orders.length
+    ? `<div class="zorders">${orders.map(o => renderCard(o, false, true, true)).join('')}</div>`
+    : '<div class="empty">No orders in this range.</div>';
+  $('#grid').innerHTML = figures + cards;
   $('#zprint').addEventListener('click', () => window.print());
+  wireCardButtons();   // wires the collapse/expand toggles on the report's cards
 }
 
 function renderSummary(s) {
@@ -1022,7 +1010,7 @@ function renderSummary(s) {
     </div>`;
 }
 
-function renderCard(o, isNew, collapsed = false) {
+function renderCard(o, isNew, collapsed = false, readOnly = false) {
   const cls = ['card'];
   if (isNew) cls.push('new');
   if (isLate(o)) cls.push('late');
@@ -1084,8 +1072,12 @@ function renderCard(o, isNew, collapsed = false) {
   } else if (o.status === 'completed' || o.status === 'cancelled') {
     actions = `<button class="btn-print" data-id="${o.id}">Print</button>`;
   }
+  if (readOnly) actions = '';   // Z report cards are view-only
 
-  const ready = o.readyAt ? `<div class="when">ready ${formatTime(o.readyAt)}</div>` : `<div class="when">${placedAgo}</div>`;
+  const dateLabel = formatDate(o.createdAt);
+  const ready = o.readyAt
+    ? `<div class="when">${dateLabel} · ready ${formatTime(o.readyAt)}</div>`
+    : `<div class="when">${dateLabel} · ${placedAgo}</div>`;
 
   const detail = `
       <ul class="lines">${lines}</ul>
@@ -1106,6 +1098,7 @@ function renderCard(o, isNew, collapsed = false) {
       <div class="card-head">
         <span class="chev">▸</span>
         <span class="ref">#${escapeHtml(o.id)}</span>
+        <span class="head-date">${dateLabel}</span>
         ${statusPill}
         ${refundPill}
         <span class="head-total">£${(o.totals.totalP/100).toFixed(2)}</span>
@@ -1146,7 +1139,11 @@ function humanAgo(d) {
 }
 
 function formatTime(iso) {
-  return new Date(iso).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  return new Date(iso).toLocaleTimeString('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit' });
+}
+
+function formatDate(iso) {
+  return new Date(iso).toLocaleDateString('en-GB', { timeZone: 'Europe/London', day: '2-digit', month: 'short' });
 }
 
 function escapeHtml(s) {

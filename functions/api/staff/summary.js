@@ -42,16 +42,6 @@ export const onRequestGet = async ({ request, env }) => {
     inProgress: valid.filter(o => ['pending_accept', 'accepted', 'ready', 'out_for_delivery'].includes(o.status)).length,
   };
 
-  // Compact order log for the Z report (already newest-first).
-  const log = orders.map(o => ({
-    id: o.id,
-    createdAt: o.createdAt,
-    status: o.status,
-    paymentMethod: o.paymentMethod,
-    fulfillment: o.fulfillment,
-    totalP: o.totals?.totalP || 0,
-    refunded: o.payment?.refund?.state === 'succeeded',
-  }));
-
-  return Response.json({ summary, orders: log }, { headers: { 'Cache-Control': 'no-store' } });
+  // Full orders (newest-first) so the Z report can show each one in detail.
+  return Response.json({ summary, orders }, { headers: { 'Cache-Control': 'no-store' } });
 };
