@@ -42,10 +42,26 @@ export const onRequestPost = async ({ request, env, params }) => {
     amount = remaining;
     reason = '';
   } else {
-    amount = Math.round(Number(body.amountP) || 0);
-    reason = (body.reason || 'partial refund').toString().trim().slice(0, 280);
-    if (!(amount > 0)) return j({ error: 'Choose an amount to refund.' }, 400);
+    // Partial = sum of the selected lines' exact discounted share of what the
+    // customer paid: lineTotal × (subtotal − discount) / subtotal. Computed here
+    // (not trusted from the client) from the order's own totals. Per-order fees
+    // (delivery/service) are not refunded with individual items.
+    const lines = order.totals?.lines || [];
+    const sub = order.totals?.subtotalP || 0;
+    const disc = order.totals?.discountP || 0;
+    const shareOf = (l) => (sub > 0 ? Math.round((l.lineTotalP || 0) * (sub - disc) / sub) : (l.lineTotalP || 0));
+    const idxs = Array.isArray(body.lineIndexes) ? body.lineIndexes : [];
+    const names = [];
+    amount = 0;
+    for (const raw of idxs) {
+      const l = lines[Number(raw)];
+      if (!l) continue;
+      amount += shareOf(l);
+      names.push(`${l.qty}× ${l.name}`);
+    }
+    if (!(amount > 0)) return j({ error: 'Choose at least one item to refund.' }, 400);
     if (amount > remaining) amount = remaining;
+    reason = (body.reason || names.join(', ') || 'partial refund').toString().trim().slice(0, 280);
   }
 
   try {

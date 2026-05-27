@@ -1481,16 +1481,29 @@ function openRefund(id) {
   const total = o.totals.totalP || 0;
   const pmt = o.payment || {};
   const prior = pmt.refundedTotalP || (pmt.refund?.state === 'succeeded' ? pmt.refund.amountP : 0) || 0;
-  refundCtx = { id, total, prior, remaining: total - prior, mode: 'full', selected: new Set(), lines: o.totals.lines || [] };
+  refundCtx = {
+    id, total, prior, remaining: total - prior, mode: 'full', selected: new Set(),
+    lines: o.totals.lines || [],
+    sub: o.totals.subtotalP || 0,
+    disc: o.totals.discountP || 0,
+  };
   renderRefund(o);
   $('#refundOvl').classList.add('open');
+}
+
+// Each line's exact discounted share of what the customer paid (mirrors the
+// server). Per-order fees aren't refunded with individual items.
+function lineShareP(i) {
+  const c = refundCtx, l = c.lines[i];
+  if (!l) return 0;
+  return c.sub > 0 ? Math.round((l.lineTotalP || 0) * (c.sub - c.disc) / c.sub) : (l.lineTotalP || 0);
 }
 
 function refundAmountP() {
   if (!refundCtx) return 0;
   if (refundCtx.mode === 'full') return refundCtx.remaining;
   let sum = 0;
-  refundCtx.selected.forEach(i => { sum += (refundCtx.lines[i]?.lineTotalP || 0); });
+  refundCtx.selected.forEach(i => { sum += lineShareP(i); });
   return Math.min(sum, refundCtx.remaining);
 }
 
@@ -1509,8 +1522,11 @@ function renderRefund(o) {
     <label class="refund-item">
       <input type="checkbox" data-i="${i}" ${c.selected.has(i) ? 'checked' : ''} />
       <span>${l.qty}× ${escapeHtml(l.name)}</span>
-      <b>${gbp(l.lineTotalP)}</b>
+      <b>${gbp(lineShareP(i))}</b>
     </label>`).join('');
+  const discNote = c.disc > 0
+    ? '<div class="refund-sum" style="margin:-4px 0 8px">Each amount is the item\'s share after the discount.</div>'
+    : '';
   $('#refundTitle').textContent = `Refund #${o.id}`;
   $('#refundBody').innerHTML = `
     <div class="refund-sum">${gbp(c.total)} total${priorLine}</div>
@@ -1518,6 +1534,7 @@ function renderRefund(o) {
       <button class="rmode ${c.mode === 'full' ? 'active' : ''}" data-mode="full">Full refund ${gbp(c.remaining)}</button>
       <button class="rmode ${c.mode === 'partial' ? 'active' : ''}" data-mode="partial">By item</button>
     </div>
+    ${c.mode === 'partial' ? discNote : ''}
     <div class="refund-items" ${c.mode === 'partial' ? '' : 'hidden'}>${items || '<div class="muted" style="color:var(--grey)">No itemised lines on this order.</div>'}</div>`;
   $$('#refundBody .rmode').forEach(b => b.addEventListener('click', () => { c.mode = b.dataset.mode; renderRefund(o); }));
   $$('#refundBody .refund-item input').forEach(cb => cb.addEventListener('change', () => {
@@ -1548,7 +1565,7 @@ $('#refundConfirm').addEventListener('click', async () => {
     const res = await fetch(`/api/staff/orders/${c.id}/refund`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(full ? { mode: 'full' } : { mode: 'partial', amountP: amt, reason }),
+      body: JSON.stringify(full ? { mode: 'full' } : { mode: 'partial', lineIndexes: [...c.selected], reason }),
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok || data.ok === false) { alert(data.error || `Refund failed (${res.status}).`); return; }
