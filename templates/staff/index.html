@@ -337,13 +337,19 @@
     gap: 6px 8px;
   }
 
-  /* Collapsible cards (Recent view): tap the header to expand. */
-  .card.collapsible .card-head { cursor: pointer; align-items: center; }
+  /* Collapsible cards (Recent / Z report): tap the header to expand. Each card
+     sizes to its own content (align-self:start) so expanding one doesn't stretch
+     its neighbours into tall empty boxes. The header is two fixed rows so every
+     collapsed card is the same height regardless of how many status pills it has. */
+  .card.collapsible { align-self: start; }
+  .chead { cursor: pointer; }
+  .chead-top { display: flex; align-items: center; gap: 8px; }
+  .chead-sub { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
   .card.collapsible .chev { color: var(--grey); font-size: 0.85rem; transition: transform 0.12s; }
   .card.collapsible.open .chev { transform: rotate(90deg); }
   .head-total { margin-left: auto; font-family: 'Anton', sans-serif; font-size: 1.4rem; }
   .head-date { color: var(--grey); font-size: 0.82rem; }
-  .card-body { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+  .card-body { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
   .card-body[hidden] { display: none; }
   .ref {
     font-family: 'Anton', sans-serif;
@@ -881,7 +887,7 @@ function wireCardButtons() {
   $$('.card .btn-print').forEach(b => b.addEventListener('click', () => printOrder(b.dataset.id)));
   // Expand/collapse Recent cards by tapping their header (ignore button/link taps).
   $$('.card.collapsible').forEach(card => {
-    const head = card.querySelector('.card-head');
+    const head = card.querySelector('.chead');
     head.addEventListener('click', (e) => {
       if (e.target.closest('button') || e.target.closest('a')) return;
       const body = card.querySelector('.card-body');
@@ -1095,13 +1101,17 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
   if (collapsed) {
     return `
     <article class="${cls.join(' ')}">
-      <div class="card-head">
-        <span class="chev">▸</span>
-        <span class="ref">#${escapeHtml(o.id)}</span>
-        <span class="head-date">${dateLabel}</span>
-        ${statusPill}
-        ${refundPill}
-        <span class="head-total">£${(o.totals.totalP/100).toFixed(2)}</span>
+      <div class="chead">
+        <div class="chead-top">
+          <span class="chev">▸</span>
+          <span class="ref">#${escapeHtml(o.id)}</span>
+          <span class="head-total">£${(o.totals.totalP/100).toFixed(2)}</span>
+        </div>
+        <div class="chead-sub">
+          <span class="head-date">${dateLabel}</span>
+          ${statusPill}
+          ${refundPill}
+        </div>
       </div>
       <div class="card-body" hidden>
         <div class="card-head">${fulfillmentPill}${cashPill}${schedPill}${ready}</div>
