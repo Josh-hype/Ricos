@@ -1798,7 +1798,7 @@ function itemDetailHTML(item) {
   let photo;
   let photoClass = 'item-detail-photo';
   if (item.image) {
-    photo = `<img src="${item.image}" alt="${escapeHTML(item.name)}" />`;
+    photo = `<img src="${item.image}" alt="${escapeHTML(item.name)}" loading="lazy" decoding="async" />`;
   } else if (item.drink) {
     photo = drinkSVG(item.id, item.drink);
   } else {

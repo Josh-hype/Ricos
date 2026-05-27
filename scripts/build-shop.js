@@ -31,6 +31,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -58,8 +59,8 @@ const copies = [
   // [from inside shop folder, to inside repo]
   ['config.json',      'data/_active/config.json'],
   ['menu.json',        'data/_active/menu.json'],
-  ['menu-visual.json', 'public/menu-visual.json'],
   ['logo.png',         'public/logo.png'],
+  // menu-visual.json is handled separately below (base64 image extraction).
 ];
 
 for (const [src, dest] of copies) {
@@ -72,6 +73,55 @@ for (const [src, dest] of copies) {
   fs.mkdirSync(path.dirname(to), { recursive: true });
   fs.copyFileSync(from, to);
   console.log(`build-shop: ${slug}/${src} -> ${dest}`);
+}
+
+/* menu-visual.json: pull any inline base64 images out into separate, cacheable
+   files and rewrite the JSON to reference them by URL. A photo-heavy menu can be
+   2-3MB of base64 inline, and the order page must download the whole thing before
+   it can render — slow first paint, and re-downloaded every visit (the JSON is
+   served no-store). Extracting the images drops the JSON to tens of KB (fast
+   render) and lets the photos load lazily and cache immutably under
+   /assets/menu/ (hashed filenames, so they cache-bust only when changed). */
+{
+  const srcMenu = path.join(shopDir, 'menu-visual.json');
+  if (!fs.existsSync(srcMenu)) {
+    console.error(`build-shop: missing data/shops/${slug}/menu-visual.json`);
+    process.exit(1);
+  }
+  const menuImgDir = path.join(repoRoot, 'public', 'assets', 'menu');
+  const written = new Set();
+
+  function extractImage(dataUri) {
+    const m = /^data:image\/([a-z0-9.+-]+);base64,(.+)$/is.exec(dataUri);
+    if (!m) return dataUri; // non-base64 data URI (e.g. svg+utf8) — leave inline
+    const ext = m[1].toLowerCase() === 'jpeg' ? 'jpg' : m[1].toLowerCase();
+    const buf = Buffer.from(m[2], 'base64');
+    const hash = crypto.createHash('sha256').update(buf).digest('hex').slice(0, 16);
+    const name = `menu-${hash}.${ext}`;
+    if (!written.has(name)) {
+      fs.mkdirSync(menuImgDir, { recursive: true });
+      fs.writeFileSync(path.join(menuImgDir, name), buf);
+      written.add(name);
+    }
+    return `/assets/menu/${name}`;
+  }
+  function walk(node) {
+    if (Array.isArray(node)) return node.map(walk);
+    if (node && typeof node === 'object') {
+      const o = {};
+      for (const [k, v] of Object.entries(node)) o[k] = walk(v);
+      return o;
+    }
+    if (typeof node === 'string' && node.startsWith('data:image/')) return extractImage(node);
+    return node;
+  }
+
+  const rewritten = walk(JSON.parse(fs.readFileSync(srcMenu, 'utf8')));
+  const outMenu = path.join(repoRoot, 'public', 'menu-visual.json');
+  fs.mkdirSync(path.dirname(outMenu), { recursive: true });
+  const json = JSON.stringify(rewritten);
+  fs.writeFileSync(outMenu, json);
+  console.log(`build-shop: ${slug}/menu-visual.json -> public/menu-visual.json (${written.size} image(s) extracted, ${(json.length / 1024).toFixed(0)}KB JSON)`);
 }
 
 /* Per-shop static assets (food photos etc.): copy data/shops/<slug>/assets/*
