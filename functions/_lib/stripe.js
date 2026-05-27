@@ -103,6 +103,18 @@ export async function createPaymentIntent({
   return call('/payment_intents', body, env, opts);
 }
 
+/* Refund a PaymentIntent in full on the connected account. For Connect direct
+   charges, refund_application_fee returns the platform's application fee to the
+   connected account too — used when an order is rejected so the platform keeps
+   nothing. Idempotent per PaymentIntent, so a retry can't double-refund. */
+export async function createRefund({ paymentIntentId, refundApplicationFee = true }, connectedAccountId, env) {
+  const body = { payment_intent: paymentIntentId };
+  if (refundApplicationFee) body.refund_application_fee = true;
+  const opts = { idempotencyKey: `refund_${paymentIntentId}` };
+  if (connectedAccountId) opts.stripeAccount = connectedAccountId;
+  return call('/refunds', body, env, opts);
+}
+
 /* Create a Customer on the connected account. Used the first time a
    signed-in user opts to save a card for that shop. Customer IDs are
    per-connected-account (one shop's cus_xxx isn't usable elsewhere). */

@@ -737,7 +737,7 @@ function wireCardButtons() {
   $$('.card .btn-out').forEach(b => b.addEventListener('click', () => updateStatus(b.dataset.id, 'out_for_delivery')));
   $$('.card .btn-complete').forEach(b => b.addEventListener('click', () => updateStatus(b.dataset.id, 'completed')));
   $$('.card .btn-cancel').forEach(b => b.addEventListener('click', () => {
-    if (confirm('Cancel this order? The customer will need a manual refund if they paid by card.')) {
+    if (confirm('Cancel this order? The customer is notified and any card payment is refunded automatically.')) {
       updateStatus(b.dataset.id, 'cancelled');
     }
   }));
@@ -822,6 +822,11 @@ function renderCard(o, isNew) {
   const statusPill = stLabel[o.status]
     ? `<span class="pill ${stPillCls[o.status]}">${stLabel[o.status]}</span>`
     : '';
+  const refundPill = (o.status === 'cancelled' && o.paymentMethod === 'card' && o.payment?.refund)
+    ? (o.payment.refund.state === 'succeeded'
+        ? '<span class="pill s-completed">refunded</span>'
+        : '<span class="pill s-cancelled">refund: manual</span>')
+    : '';
   const fulfillmentPill = o.fulfillment === 'delivery'
     ? '<span class="pill delivery">delivery</span>'
     : '<span class="pill collection">collection</span>';
@@ -872,6 +877,7 @@ function renderCard(o, isNew) {
       <div class="card-head">
         <span class="ref">#${escapeHtml(o.id)}</span>
         ${statusPill}
+        ${refundPill}
         ${fulfillmentPill}
         ${cashPill}
         ${schedPill}
@@ -1010,12 +1016,13 @@ $('#alarmAccept').addEventListener('click', async () => {
 $('#alarmReject').addEventListener('click', async () => {
   const id = state.alarmId;
   if (!id) return;
-  if (!confirm('Reject this order? The customer is notified (card orders need a manual refund).')) return;
+  if (!confirm('Reject this order? The customer is notified and any card payment is refunded automatically.')) return;
   $('#alarmReject').disabled = true;
   try {
-    await sendStatus(id, 'cancelled');
+    const r = await sendStatus(id, 'cancelled');
     state.alarmId = null;
     await poll();
+    noteRefund(r);
   } catch (e) {
     alert(e.message || 'Could not reject — try again.');
   } finally {
@@ -1090,10 +1097,18 @@ async function sendStatus(id, status, reason) {
   return res.json();
 }
 
+// Alert staff only when the automatic refund failed — they must do it by hand.
+function noteRefund(result) {
+  if (result && result.refund && result.refund.ok === false) {
+    alert('Order rejected — but the automatic card refund FAILED.\nPlease refund it manually in Stripe.\n\n' + (result.refund.error || ''));
+  }
+}
+
 async function updateStatus(id, status) {
   try {
-    await sendStatus(id, status);
+    const r = await sendStatus(id, status);
     poll();
+    noteRefund(r);
   } catch (e) {
     alert(e.message || 'Network error — try again.');
   }
