@@ -329,8 +329,17 @@
   .card-head {
     display: flex;
     align-items: baseline;
-    gap: 8px;
+    flex-wrap: wrap;
+    gap: 6px 8px;
   }
+
+  /* Collapsible cards (Recent view): tap the header to expand. */
+  .card.collapsible .card-head { cursor: pointer; align-items: center; }
+  .card.collapsible .chev { color: var(--grey); font-size: 0.85rem; transition: transform 0.12s; }
+  .card.collapsible.open .chev { transform: rotate(90deg); }
+  .head-total { margin-left: auto; font-family: 'Anton', sans-serif; font-size: 1.4rem; }
+  .card-body { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+  .card-body[hidden] { display: none; }
   .ref {
     font-family: 'Anton', sans-serif;
     font-size: 1.6rem;
@@ -850,7 +859,8 @@ function renderList(list, newIds = []) {
       : '<div class="empty">No active orders. Sit tight — they\'ll appear here as they come in.</div>';
     return;
   }
-  grid.innerHTML = list.map(o => renderCard(o, newIds.includes(o.id))).join('');
+  const collapsed = state.view === 'done';
+  grid.innerHTML = list.map(o => renderCard(o, newIds.includes(o.id), collapsed)).join('');
   wireCardButtons();
 }
 
@@ -865,6 +875,18 @@ function wireCardButtons() {
     }
   }));
   $$('.card .btn-print').forEach(b => b.addEventListener('click', () => printOrder(b.dataset.id)));
+  // Expand/collapse Recent cards by tapping their header (ignore button/link taps).
+  $$('.card.collapsible').forEach(card => {
+    const head = card.querySelector('.card-head');
+    head.addEventListener('click', (e) => {
+      if (e.target.closest('button') || e.target.closest('a')) return;
+      const body = card.querySelector('.card-body');
+      if (!body) return;
+      const willOpen = body.hasAttribute('hidden');
+      body.toggleAttribute('hidden', !willOpen);
+      card.classList.toggle('open', willOpen);
+    });
+  });
 }
 
 async function loadDone() {
@@ -1000,13 +1022,14 @@ function renderSummary(s) {
     </div>`;
 }
 
-function renderCard(o, isNew) {
+function renderCard(o, isNew, collapsed = false) {
   const cls = ['card'];
   if (isNew) cls.push('new');
   if (isLate(o)) cls.push('late');
   const stClass = { accepted: 'st-accepted', ready: 'st-ready', out_for_delivery: 'st-out', completed: 'st-completed', cancelled: 'st-cancelled' };
   if (stClass[o.status]) cls.push(stClass[o.status]);
   if (o.status === 'completed' || o.status === 'cancelled') cls.push('done');
+  if (collapsed) cls.push('collapsible');
 
   const placedAgo = humanAgo(new Date(o.createdAt));
   const stLabel = { pending_accept: 'new', accepted: 'accepted', ready: 'ready', out_for_delivery: 'out for delivery', completed: 'completed', cancelled: 'cancelled' };
@@ -1064,6 +1087,36 @@ function renderCard(o, isNew) {
 
   const ready = o.readyAt ? `<div class="when">ready ${formatTime(o.readyAt)}</div>` : `<div class="when">${placedAgo}</div>`;
 
+  const detail = `
+      <ul class="lines">${lines}</ul>
+      <div class="who">
+        <strong>${escapeHtml(o.customer.name)}</strong>
+        <a href="tel:${escapeHtml(o.customer.phone)}">${escapeHtml(o.customer.phone)}</a>
+        ${addr}
+      </div>
+      ${totals}
+      <div class="actions">${actions}</div>`;
+
+  // Recent cards start collapsed: just ref + status + total. Tapping the header
+  // expands the full order. Live cards always show everything (the kitchen
+  // needs it at a glance).
+  if (collapsed) {
+    return `
+    <article class="${cls.join(' ')}">
+      <div class="card-head">
+        <span class="chev">▸</span>
+        <span class="ref">#${escapeHtml(o.id)}</span>
+        ${statusPill}
+        ${refundPill}
+        <span class="head-total">£${(o.totals.totalP/100).toFixed(2)}</span>
+      </div>
+      <div class="card-body" hidden>
+        <div class="card-head">${fulfillmentPill}${cashPill}${schedPill}${ready}</div>
+        ${detail}
+      </div>
+    </article>`;
+  }
+
   return `
     <article class="${cls.join(' ')}">
       <div class="card-head">
@@ -1075,14 +1128,7 @@ function renderCard(o, isNew) {
         ${schedPill}
         ${ready}
       </div>
-      <ul class="lines">${lines}</ul>
-      <div class="who">
-        <strong>${escapeHtml(o.customer.name)}</strong>
-        <a href="tel:${escapeHtml(o.customer.phone)}">${escapeHtml(o.customer.phone)}</a>
-        ${addr}
-      </div>
-      ${totals}
-      <div class="actions">${actions}</div>
+      ${detail}
     </article>`;
 }
 
