@@ -6,6 +6,11 @@
 # rule loops with Cloudflare's own /staff -> /staff/ behaviour and triggers
 # ERR_TOO_MANY_REDIRECTS.
 
+# Apple Pay / Google Pay domain verification. Stripe (and Apple) fetch this
+# well-known file to verify the domain; we point it at Stripe's canonical hosted
+# copy so it never goes stale. Same file for every shop/domain.
+/.well-known/apple-developer-merchantid-domain-association  https://stripe.com/files/apple-pay/apple-developer-merchantid-domain-association  302
+
 # Canonical host: www.ricosyork.co.uk -> ricosyork.co.uk (apex).
 # This keeps the origin consistent so getAddress.io's domain-locked
 # autocomplete token (registered against the apex) matches every request.

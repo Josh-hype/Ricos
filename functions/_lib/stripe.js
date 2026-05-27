@@ -146,6 +146,26 @@ export async function detachPaymentMethod(paymentMethodId, connectedAccountId, e
   return call(`/payment_methods/${encodeURIComponent(paymentMethodId)}/detach`, {}, env, opts);
 }
 
+/* Payment Method Domains — register the shop's web domain so wallet buttons
+   (Apple Pay / Google Pay) render in Elements. For Connect DIRECT charges this
+   MUST be done on the connected account (pass connectedAccountId), not the
+   platform — the Dashboard can't register domains for direct-charge accounts. */
+export async function listPaymentMethodDomains(domainName, connectedAccountId, env) {
+  const opts = { method: 'GET' };
+  if (connectedAccountId) opts.stripeAccount = connectedAccountId;
+  return call(`/payment_method_domains?domain_name=${encodeURIComponent(domainName)}`, null, env, opts);
+}
+export async function createPaymentMethodDomain(domainName, connectedAccountId, env) {
+  const opts = {};
+  if (connectedAccountId) opts.stripeAccount = connectedAccountId;
+  return call('/payment_method_domains', { domain_name: domainName }, env, opts);
+}
+export async function validatePaymentMethodDomain(id, connectedAccountId, env) {
+  const opts = {};
+  if (connectedAccountId) opts.stripeAccount = connectedAccountId;
+  return call(`/payment_method_domains/${id}/validate`, {}, env, opts);
+}
+
 export async function verifyWebhook(rawBody, sigHeader, env) {
   if (!sigHeader || !env.STRIPE_WEBHOOK_SECRET) return null;
   const parts = Object.fromEntries(sigHeader.split(',').map(s => s.split('=')));
