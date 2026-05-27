@@ -154,9 +154,21 @@ export function orderRejectedEmail(order, config, reason) {
   const tradingName = config.business.tradingName;
   const tradingNameHtml = escapeHtml(tradingName);
   const phone = escapeHtml(config.business.phone || '');
-  const refundLine = order.paymentMethod === 'card'
-    ? `<p>Your card payment will be refunded automatically within 5–10 working days.</p>`
-    : '';
+  // Reflect the actual refund outcome recorded on the order. A succeeded
+  // auto-refund states the exact amount returned; a paid card order whose
+  // auto-refund failed (being refunded manually) still assures the customer of
+  // the amount. An unpaid card order (never charged) gets no refund line.
+  const p = order.payment || {};
+  const isPaidCard = order.paymentMethod === 'card'
+    && (p.state === 'refunded' || p.state === 'paid' || !!p.refund);
+  let refundLine = '';
+  if (isPaidCard) {
+    const amountP = p.refund?.amountP || order.totals.totalP;
+    const amount = `£${(amountP / 100).toFixed(2)}`;
+    refundLine = p.refund?.state === 'succeeded'
+      ? `<p>We've refunded <strong>${amount}</strong> to your card — it usually appears within 5–10 working days.</p>`
+      : `<p>Your card payment of <strong>${amount}</strong> will be refunded within 5–10 working days.</p>`;
+  }
   const reasonLine = reason
     ? `<p><strong>Reason:</strong> ${escapeHtml(reason)}</p>`
     : '';
