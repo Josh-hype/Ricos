@@ -43,6 +43,26 @@ export async function listActiveOrders(env, { limit = 100 } = {}) {
   return active;
 }
 
+const DONE_STATUSES = new Set(['completed', 'cancelled']);
+
+// Finished orders (completed / cancelled), newest first. Staff history view —
+// lets the kitchen re-open or reprint a recent order. We sort the lightweight
+// key metadata first and only fetch the values for the page we return, so a
+// long order history doesn't mean a huge fan-out of KV reads.
+export async function listDoneOrders(env, { limit = 50 } = {}) {
+  const list = await env.ORDERS_KV.list({ prefix: 'orders:', limit: 1000 });
+  const recent = list.keys
+    .filter(k => DONE_STATUSES.has(k.metadata?.status))
+    .sort((a, b) => new Date(b.metadata?.createdAt || 0) - new Date(a.metadata?.createdAt || 0))
+    .slice(0, limit);
+  const out = [];
+  for (const k of recent) {
+    const raw = await env.ORDERS_KV.get(k.name);
+    if (raw) { try { out.push(JSON.parse(raw)); } catch {} }
+  }
+  return out;
+}
+
 export async function incrSlotCount(slotIso, env) {
   const key = `slot:${slotIso}`;
   const raw = await env.SLOTS_KV.get(key);

@@ -110,23 +110,47 @@
   .topbar {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 12px 20px;
+    gap: 12px;
+    padding: 10px 16px;
   }
-  .topbar h1 {
-    font-family: 'Archivo Black', sans-serif;
-    margin: 0;
-    font-size: 1.1rem;
-    letter-spacing: 0.04em;
+  .topbar .logo {
+    height: 36px; width: 36px;
+    border-radius: 9px;
+    object-fit: cover;
+    background: #fff;
+    flex: 0 0 auto;
   }
-  .topbar .badge {
-    background: var(--yellow);
-    color: var(--ink);
-    border-radius: 999px;
-    padding: 3px 10px;
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 11px;
+    padding: 3px;
+  }
+  .tab {
+    background: transparent;
+    color: var(--paper);
+    border: 0;
+    padding: 8px 16px;
+    border-radius: 8px;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.92rem;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: background 0.12s;
   }
+  .tab.active { background: var(--yellow); color: var(--ink); }
+  .tab-count {
+    background: var(--red);
+    color: #fff;
+    border-radius: 999px;
+    padding: 1px 7px;
+    font-size: 0.74rem;
+    min-width: 20px;
+    text-align: center;
+  }
+  .tab.active .tab-count { background: var(--ink); color: var(--yellow); }
   .topbar .spacer { flex: 1; }
   .topbar .pulse {
     width: 10px; height: 10px; border-radius: 50%;
@@ -148,6 +172,9 @@
     padding: 6px 12px;
     font-size: 0.9rem;
   }
+  #refreshBtn { font-size: 1.1rem; line-height: 1; padding: 6px 11px; }
+  #refreshBtn.spin { animation: spin 0.5s linear; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   /* ============================== Grid */
   .grid {
@@ -187,6 +214,15 @@
   }
   .card.late { border-color: var(--red); }
 
+  /* Subtle left-edge accent by status */
+  .card.st-accepted  { box-shadow: inset 5px 0 0 var(--blue), 0 6px 0 rgba(0,0,0,.05); }
+  .card.st-ready     { box-shadow: inset 5px 0 0 #c9a800, 0 6px 0 rgba(0,0,0,.05); }
+  .card.st-out       { box-shadow: inset 5px 0 0 var(--blue), 0 6px 0 rgba(0,0,0,.05); }
+  .card.st-completed { box-shadow: inset 5px 0 0 var(--green); }
+  .card.st-cancelled { box-shadow: inset 5px 0 0 var(--grey); }
+  .card.done { background: #faf6ec; }
+  .card.done .ref { color: var(--grey); }
+
   .card-head {
     display: flex;
     align-items: baseline;
@@ -210,6 +246,12 @@
   .pill.delivery   { background: #d1e2f3; color: var(--blue); }
   .pill.cash       { background: #fde7c8; color: var(--orange); }
   .pill.scheduled  { background: #efe2c1; color: #6b5410; }
+  .pill.s-new       { background: #ffe0b3; color: #9a4b00; }
+  .pill.s-accepted  { background: #d7e9ff; color: var(--blue); }
+  .pill.s-ready     { background: #fff0a8; color: #6b5410; }
+  .pill.s-out       { background: #d1e2f3; color: var(--blue); }
+  .pill.s-completed { background: #cfe9d7; color: var(--green); }
+  .pill.s-cancelled { background: #f3d2d2; color: var(--red); }
 
   .when { color: var(--grey); font-size: 0.85rem; margin-left: auto; }
 
@@ -394,10 +436,14 @@
 <div id="dash" hidden>
   <header>
     <div class="topbar">
-      <h1>{{shopShortName}} orders</h1>
-      <span class="badge" id="countBadge">0</span>
+      <img src="/logo.png" class="logo" alt="" />
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-view="live" role="tab">Live<span class="tab-count" id="liveCount">0</span></button>
+        <button class="tab" data-view="done" role="tab">Recent</button>
+      </div>
       <div class="spacer"></div>
-      <span class="pulse" id="pulse" title="Live"></span>
+      <span class="pulse" id="pulse" title="Live — refreshes automatically"></span>
+      <button id="refreshBtn" title="Refresh now" aria-label="Refresh">↻</button>
       <button id="soundToggle" title="Toggle sound">🔔 On</button>
       <button id="logoutBtn">Logout</button>
     </div>
@@ -505,6 +551,8 @@ const state = {
   alarmHandle: null,   // setInterval for the repeating new-order chime
   alarmId: null,       // order id currently shown in the alarm popup
   alarmMin: 25,        // prep minutes selected in the alarm popup
+  view: 'live',        // 'live' (kitchen queue) or 'done' (recent history)
+  doneOrders: [],      // cache for the Recent view
 };
 
 function setSoundLabel() {
@@ -516,6 +564,21 @@ $('#soundToggle').addEventListener('click', () => {
   localStorage.setItem('ricos-sound', state.soundOn ? 'on' : 'off');
   setSoundLabel();
   if (state.soundOn) audio.chime(); // unlock audio context
+});
+
+/* ============================== View tabs (Live queue / Recent history) */
+function setView(view) {
+  state.view = view;
+  $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === view));
+  if (view === 'done') loadDone();
+  else renderList(state.orders);
+}
+$$('.tab').forEach(t => t.addEventListener('click', () => setView(t.dataset.view)));
+$('#refreshBtn').addEventListener('click', () => {
+  $('#refreshBtn').classList.add('spin');
+  setTimeout(() => $('#refreshBtn').classList.remove('spin'), 500);
+  if (state.view === 'done') loadDone();
+  else poll();
 });
 
 /* ============================== Auth */
@@ -594,21 +657,29 @@ function handleOrders(orders) {
   for (const o of orders) state.seenIds.add(o.id);
 
   state.orders = orders;
-  renderGrid(newIds);
+  $('#liveCount').textContent = orders.length;
+  // Only repaint the grid when the Live tab is showing; the Recent tab keeps
+  // its own list. Polling continues in the background so the alarm still fires
+  // even while staff are looking at history.
+  if (state.view === 'live') renderList(orders, newIds);
   // The repeating alarm + popup are driven entirely by whether any orders are
   // still waiting to be accepted — that set IS the queue.
   syncAlarm();
 }
 
-function renderGrid(newIds) {
+function renderList(list, newIds = []) {
   const grid = $('#grid');
-  $('#countBadge').textContent = state.orders.length;
-  if (state.orders.length === 0) {
-    grid.innerHTML = '<div class="empty">No active orders. Sit tight — they\'ll appear here as they come in.</div>';
+  if (!list || list.length === 0) {
+    grid.innerHTML = state.view === 'done'
+      ? '<div class="empty">No completed or cancelled orders yet. Finished orders land here so you can reopen or reprint them.</div>'
+      : '<div class="empty">No active orders. Sit tight — they\'ll appear here as they come in.</div>';
     return;
   }
-  grid.innerHTML = state.orders.map(o => renderCard(o, newIds.includes(o.id))).join('');
-  // Wire card buttons.
+  grid.innerHTML = list.map(o => renderCard(o, newIds.includes(o.id))).join('');
+  wireCardButtons();
+}
+
+function wireCardButtons() {
   $$('.card .btn-accept').forEach(b => b.addEventListener('click', () => openAccept(b.dataset.id)));
   $$('.card .btn-ready').forEach(b => b.addEventListener('click', () => updateStatus(b.dataset.id, 'ready')));
   $$('.card .btn-out').forEach(b => b.addEventListener('click', () => updateStatus(b.dataset.id, 'out_for_delivery')));
@@ -621,12 +692,36 @@ function renderGrid(newIds) {
   $$('.card .btn-print').forEach(b => b.addEventListener('click', () => printOrder(b.dataset.id)));
 }
 
+async function loadDone() {
+  const grid = $('#grid');
+  grid.innerHTML = '<div class="empty">Loading recent orders…</div>';
+  try {
+    const res = await fetch('/api/staff/orders?view=done', { cache: 'no-store' });
+    if (res.status === 401) { $('#logoutBtn').click(); return; }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    state.doneOrders = data.orders || [];
+  } catch (e) {
+    grid.innerHTML = '<div class="empty">Couldn\'t load recent orders. Tap ↻ to retry.</div>';
+    return;
+  }
+  if (state.view === 'done') renderList(state.doneOrders);
+}
+
 function renderCard(o, isNew) {
   const cls = ['card'];
   if (isNew) cls.push('new');
   if (isLate(o)) cls.push('late');
+  const stClass = { accepted: 'st-accepted', ready: 'st-ready', out_for_delivery: 'st-out', completed: 'st-completed', cancelled: 'st-cancelled' };
+  if (stClass[o.status]) cls.push(stClass[o.status]);
+  if (o.status === 'completed' || o.status === 'cancelled') cls.push('done');
 
   const placedAgo = humanAgo(new Date(o.createdAt));
+  const stLabel = { pending_accept: 'new', accepted: 'accepted', ready: 'ready', out_for_delivery: 'out for delivery', completed: 'completed', cancelled: 'cancelled' };
+  const stPillCls = { pending_accept: 's-new', accepted: 's-accepted', ready: 's-ready', out_for_delivery: 's-out', completed: 's-completed', cancelled: 's-cancelled' };
+  const statusPill = stLabel[o.status]
+    ? `<span class="pill ${stPillCls[o.status]}">${stLabel[o.status]}</span>`
+    : '';
   const fulfillmentPill = o.fulfillment === 'delivery'
     ? '<span class="pill delivery">delivery</span>'
     : '<span class="pill collection">collection</span>';
@@ -666,6 +761,8 @@ function renderCard(o, isNew) {
     actions = `
       <button class="btn-complete" data-id="${o.id}">→ Complete</button>
       <button class="btn-print" data-id="${o.id}">Print</button>`;
+  } else if (o.status === 'completed' || o.status === 'cancelled') {
+    actions = `<button class="btn-print" data-id="${o.id}">Print</button>`;
   }
 
   const ready = o.readyAt ? `<div class="when">ready ${formatTime(o.readyAt)}</div>` : `<div class="when">${placedAgo}</div>`;
@@ -674,6 +771,7 @@ function renderCard(o, isNew) {
     <article class="${cls.join(' ')}">
       <div class="card-head">
         <span class="ref">#${escapeHtml(o.id)}</span>
+        ${statusPill}
         ${fulfillmentPill}
         ${cashPill}
         ${schedPill}
