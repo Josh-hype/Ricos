@@ -180,24 +180,49 @@ const handleOrderRequest = async ({ request, env }) => {
       && cvcThresholdP > 0
       && totals.totalP > cvcThresholdP;
 
+    // Only attach the stored Stripe Customer when actually saving a card or
+    // paying with a saved one. A plain new-card payment must NOT carry a
+    // customer — a stale/test-mode cus_ id would otherwise break the live
+    // PaymentIntent — so a signed-in new-card order behaves like a guest one.
+    const piParamsFor = (custId) => ({
+      amountP: totals.totalP,
+      currency: 'gbp',
+      orderId: id,
+      customerEmail: email,
+      connectedAccountId,
+      applicationFeeP: totals.serviceFeeP || 0,
+      customerId: (saveCard || paymentMethodIdInput) ? (custId || undefined) : undefined,
+      setupFutureUsage: saveCard && custId ? 'off_session' : undefined,
+      paymentMethodId: paymentMethodIdInput || undefined,
+      requireCvcRecollection,
+    });
+
     try {
-      const pi = await createPaymentIntent({
-        amountP: totals.totalP,
-        currency: 'gbp',
-        orderId: id,
-        customerEmail: email,
-        connectedAccountId,
-        applicationFeeP: totals.serviceFeeP || 0,
-        // Only attach the stored Stripe Customer when actually saving a card
-        // or paying with a saved one. A plain new-card payment must NOT carry a
-        // customer — a stale/test-mode cus_ id would otherwise break the live
-        // PaymentIntent. This makes a signed-in new-card order behave exactly
-        // like a guest order.
-        customerId: (saveCard || paymentMethodIdInput) ? (stripeCustomerId || undefined) : undefined,
-        setupFutureUsage: saveCard && stripeCustomerId ? 'off_session' : undefined,
-        paymentMethodId: paymentMethodIdInput || undefined,
-        requireCvcRecollection,
-      }, env);
+      let pi;
+      try {
+        pi = await createPaymentIntent(piParamsFor(stripeCustomerId), env);
+      } catch (e) {
+        // A stored Stripe Customer can be stale — e.g. created in test mode and
+        // gone from the now-live connected account. When saving a new card we
+        // self-heal: create a fresh customer and retry once (also repairing the
+        // customer's KV record for next time). A saved-card payment can't be
+        // recovered — the card lived on the missing customer — so surface a
+        // clear message asking for a new card.
+        const missingCustomer = e?.stripe?.code === 'resource_missing' && e?.stripe?.param === 'customer';
+        if (missingCustomer && saveCard && !paymentMethodIdInput && storedCustomer) {
+          const fresh = await createCustomer({
+            email, name, phone,
+            metadata: { app_customer_id: storedCustomer.id, app_contact: storedCustomer.contact },
+          }, connectedAccountId, env);
+          stripeCustomerId = fresh.id;
+          storedCustomer.stripeCustomerId = stripeCustomerId;
+          pi = await createPaymentIntent(piParamsFor(stripeCustomerId), env);
+        } else if (missingCustomer && paymentMethodIdInput) {
+          return errJson('That saved card is no longer available. Please pay with a new card.', 402);
+        } else {
+          throw e;
+        }
+      }
       order.payment.intentId = pi.id;
       order.payment.clientSecret = pi.client_secret;
       order.payment.connectedAccountId = connectedAccountId;
