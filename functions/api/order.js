@@ -17,7 +17,19 @@ import { normalisePhoneE164UK } from '../_lib/sms.js';
 import { readCustomerSession } from '../_lib/customer-auth.js';
 import { getCustomer, putCustomer, upsertAddress, updateContactDetails } from '../_lib/customer.js';
 
-export const onRequestPost = async ({ request, env }) => {
+export const onRequestPost = async (ctx) => {
+  // TEMP DEBUG (go-live): wrap the whole handler so any unhandled throw is
+  // returned as a readable message instead of a bare platform 502. Revert
+  // once payments are confirmed working.
+  try {
+    return await handleOrderRequest(ctx);
+  } catch (e) {
+    console.error('order handler crashed', e);
+    return errJson('DEBUG order crash: ' + (e && e.message ? e.message : String(e)), 502);
+  }
+};
+
+const handleOrderRequest = async ({ request, env }) => {
   let input;
   try { input = await request.json(); }
   catch { return errJson('Invalid JSON', 400); }
