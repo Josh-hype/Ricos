@@ -188,7 +188,12 @@ const handleOrderRequest = async ({ request, env }) => {
         customerEmail: email,
         connectedAccountId,
         applicationFeeP: totals.serviceFeeP || 0,
-        customerId: stripeCustomerId || undefined,
+        // Only attach the stored Stripe Customer when actually saving a card
+        // or paying with a saved one. A plain new-card payment must NOT carry a
+        // customer — a stale/test-mode cus_ id would otherwise break the live
+        // PaymentIntent. This makes a signed-in new-card order behave exactly
+        // like a guest order.
+        customerId: (saveCard || paymentMethodIdInput) ? (stripeCustomerId || undefined) : undefined,
         setupFutureUsage: saveCard && stripeCustomerId ? 'off_session' : undefined,
         paymentMethodId: paymentMethodIdInput || undefined,
         requireCvcRecollection,
