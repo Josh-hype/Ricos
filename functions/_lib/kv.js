@@ -12,6 +12,8 @@ export async function putOrder(order, env) {
       fulfillment: order.fulfillment,
     },
   });
+  // Keep the live-orders index in step so the staff dashboard never has to scan.
+  await syncActiveIndex(order, env);
 }
 
 export async function getOrder(id, env) {
@@ -27,20 +29,60 @@ const KITCHEN_VISIBLE_STATUSES = new Set([
   'out_for_delivery',   // driver out
 ]);
 
-export async function listActiveOrders(env, { limit = 100 } = {}) {
-  const list = await env.ORDERS_KV.list({ prefix: 'orders:', limit });
+/* ---- Active-orders index --------------------------------------------------
+   The staff dashboard polls every few seconds. Doing a KV list() on each poll
+   is slow and burns the (free-tier) list quota, so instead we keep ONE key
+   holding the live set of kitchen-visible orders. putOrder maintains it, so a
+   poll is a single get() — no scan. To self-heal any drift (e.g. two orders
+   created in the same instant racing the index write), the read path does a
+   full rebuild from the authoritative order docs at most once per minute, so
+   an order can never be permanently missing from the board. */
+const ACTIVE_INDEX_KEY = 'index:active';
+const ACTIVE_RECONCILE_MS = 60000;
+
+async function readActiveIndex(env) {
+  try {
+    const raw = await env.ORDERS_KV.get(ACTIVE_INDEX_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return null;
+}
+
+// Incremental upsert/remove for one order. Never lists — uses the order object
+// we already have in hand.
+async function syncActiveIndex(order, env) {
+  const idx = await readActiveIndex(env);
+  const existing = idx && Array.isArray(idx.orders) ? idx.orders : [];
+  let orders = existing.filter(o => o.id !== order.id);
+  if (KITCHEN_VISIBLE_STATUSES.has(order.status)) orders.push(order);
+  // Preserve the reconcile clock; if there was no index yet, force a rebuild on
+  // the next read (rebuiltAt=0) so any pre-existing active orders get picked up.
+  const rebuiltAt = idx && idx.rebuiltAt ? idx.rebuiltAt : 0;
+  await env.ORDERS_KV.put(ACTIVE_INDEX_KEY, JSON.stringify({ rebuiltAt, orders }));
+}
+
+// Authoritative rebuild from the per-order docs. The only place that lists.
+async function rebuildActiveIndex(env) {
+  const list = await env.ORDERS_KV.list({ prefix: 'orders:', limit: 1000 });
   const active = [];
   for (const k of list.keys) {
-    const status = k.metadata?.status;
-    if (status && KITCHEN_VISIBLE_STATUSES.has(status)) {
+    if (KITCHEN_VISIBLE_STATUSES.has(k.metadata?.status)) {
       const raw = await env.ORDERS_KV.get(k.name);
-      if (raw) {
-        try { active.push(JSON.parse(raw)); } catch {}
-      }
+      if (raw) { try { active.push(JSON.parse(raw)); } catch {} }
     }
   }
-  active.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  await env.ORDERS_KV.put(ACTIVE_INDEX_KEY, JSON.stringify({ rebuiltAt: Date.now(), orders: active }));
   return active;
+}
+
+export async function listActiveOrders(env) {
+  const idx = await readActiveIndex(env);
+  const fresh = idx && Array.isArray(idx.orders)
+    && (Date.now() - (idx.rebuiltAt || 0)) <= ACTIVE_RECONCILE_MS;
+  const orders = fresh ? idx.orders : await rebuildActiveIndex(env);
+  return orders
+    .filter(o => KITCHEN_VISIBLE_STATUSES.has(o.status))
+    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 }
 
 export const DONE_STATUSES = new Set(['completed', 'cancelled']);

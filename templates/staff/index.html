@@ -834,10 +834,12 @@ async function poll() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     state.lastPollAt = Date.now();
+    state.pollTick = (state.pollTick || 0) + 1;
     $('#pulse').classList.remove('stale');
     handleOrders(data.orders || []);
-    // Keep the Summary figures live too, without blanking the view.
-    if (state.view === 'summary') loadSummary(true);
+    // Refresh the Summary figures periodically (~30s), not on every 5s poll —
+    // it does a date-range scan, so we keep it off the live cadence.
+    if (state.view === 'summary' && state.pollTick % 6 === 0) loadSummary(true);
   } catch (e) {
     console.error('poll failed', e);
     $('#pulse').classList.add('stale');
