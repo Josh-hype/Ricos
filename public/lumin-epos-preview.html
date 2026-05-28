@@ -1,0 +1,854 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Lumin EPOS — Point of Sale</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#0070F0; --blue-600:#0061D6; --blue-700:#0050B4; --blue-tint:#E9F2FF; --blue-tint-2:#F4F8FF;
+  --ink:#0B1A2E; --ink-2:#33445C; --muted:#7488A0; --muted-2:#9AABBF;
+  --canvas:#EEF2F7; --panel:#FFFFFF; --line:#E4EAF1; --line-2:#EFF3F8;
+  --green:#0E9F6E; --green-tint:#E4F6EE;
+  --amber:#B7791F; --amber-bg:#F4A82E; --amber-tint:#FBF1DF;
+  --red:#E0464B; --red-tint:#FBECEC;
+  --r:16px; --r-sm:11px; --r-lg:22px;
+  --sh-sm:0 1px 2px rgba(11,26,46,.05), 0 1px 3px rgba(11,26,46,.04);
+  --sh:0 4px 14px rgba(11,26,46,.06), 0 1px 3px rgba(11,26,46,.05);
+  --sh-lg:0 24px 60px rgba(11,26,46,.18), 0 6px 18px rgba(11,26,46,.10);
+  --mono:'DM Mono',ui-monospace,monospace;
+  --sans:'Hanken Grotesk',-apple-system,system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--sans); color:var(--ink); background:var(--canvas);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  overflow:hidden; font-feature-settings:"ss01","cv01";
+}
+.mono{font-family:var(--mono); font-feature-settings:"tnum"; letter-spacing:-.02em}
+.tnum{font-variant-numeric:tabular-nums}
+button{font-family:inherit; cursor:pointer; border:none; background:none; color:inherit}
+::selection{background:var(--blue-tint)}
+
+/* ---------- shell ---------- */
+.app{
+  display:grid; grid-template-columns:84px 1fr; height:100vh; min-height:100vh;
+}
+@media(min-width:1100px){ .app{grid-template-columns:96px 1fr} }
+
+/* ---------- nav rail ---------- */
+.rail{
+  background:linear-gradient(180deg,#0B1A2E 0%, #0E2237 100%);
+  display:flex; flex-direction:column; align-items:center; padding:18px 0 14px;
+  position:relative; z-index:5;
+}
+.rail::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 60% at 0% 0%,rgba(0,112,240,.22),transparent 60%);pointer-events:none}
+.brand{
+  width:48px;height:48px;border-radius:14px;
+  background:linear-gradient(150deg,#2D9BFF,#0070F0 55%,#0050B4);
+  display:grid;place-items:center;box-shadow:0 8px 20px rgba(0,112,240,.45);
+  position:relative; margin-bottom:26px; flex:none;
+}
+.brand svg{width:25px;height:25px}
+.nav{display:flex;flex-direction:column;gap:6px;width:100%;align-items:center;flex:1}
+.nav-btn{
+  width:62px;height:60px;border-radius:15px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:5px;color:#8CA2BC;
+  transition:.18s cubic-bezier(.4,0,.2,1); position:relative;
+}
+.nav-btn svg{width:23px;height:23px;stroke-width:1.9}
+.nav-btn span{font-size:10.5px;font-weight:600;letter-spacing:.01em}
+.nav-btn:hover{color:#D6E4F5;background:rgba(255,255,255,.05)}
+.nav-btn.active{color:#fff;background:rgba(0,112,240,.18)}
+.nav-btn.active::before{content:"";position:absolute;left:-13px;top:50%;transform:translateY(-50%);width:4px;height:26px;background:var(--blue);border-radius:0 4px 4px 0;box-shadow:0 0 14px var(--blue)}
+.rail-foot{display:flex;flex-direction:column;align-items:center;gap:14px;width:100%}
+.rail-divider{width:40px;height:1px;background:rgba(255,255,255,.09)}
+.avatar{
+  width:44px;height:44px;border-radius:13px;background:linear-gradient(140deg,#3a4d66,#22344b);
+  display:grid;place-items:center;color:#cde0f5;font-weight:700;font-size:15px;
+  border:1.5px solid rgba(255,255,255,.12);
+}
+
+/* ---------- stage ---------- */
+.stage{position:relative;overflow:hidden}
+.view{position:absolute;inset:0;display:none;flex-direction:column}
+.view.active{display:flex;animation:viewIn .4s cubic-bezier(.16,1,.3,1)}
+@keyframes viewIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---------- topbar ---------- */
+.topbar{
+  display:flex;align-items:center;gap:18px;padding:16px 24px 14px;flex:none;
+}
+.loc{display:flex;flex-direction:column;gap:1px}
+.loc .name{font-size:18px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.loc .sub{font-size:12.5px;color:var(--muted);font-weight:500}
+.chev{width:15px;height:15px;color:var(--muted-2)}
+.top-spacer{flex:1}
+.chip{
+  display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px;border-radius:11px;
+  background:var(--panel);border:1px solid var(--line);font-size:13px;font-weight:600;color:var(--ink-2);
+  box-shadow:var(--sh-sm);
+}
+.chip.live{color:var(--green)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(14,159,110,.5);animation:pulse 2.4s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(14,159,110,.45)}70%{box-shadow:0 0 0 7px rgba(14,159,110,0)}100%{box-shadow:0 0 0 0 rgba(14,159,110,0)}}
+.clock{font-size:13px;color:var(--ink-2);font-weight:600}
+
+/* ---------- SALE view ---------- */
+.sale-grid{display:grid;grid-template-columns:1fr 392px;flex:1;min-height:0;gap:0}
+@media(min-width:1400px){ .sale-grid{grid-template-columns:1fr 428px} }
+.catalog{display:flex;flex-direction:column;min-height:0;padding:0 8px 8px 24px}
+
+.searchwrap{position:relative;margin-bottom:14px}
+.search{
+  width:100%;height:52px;border-radius:14px;border:1px solid var(--line);background:var(--panel);
+  padding:0 16px 0 46px;font-size:15px;font-weight:500;color:var(--ink);box-shadow:var(--sh-sm);transition:.16s;
+}
+.search::placeholder{color:var(--muted-2)}
+.search:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-tint)}
+.search-ico{position:absolute;left:15px;top:50%;transform:translateY(-50%);width:20px;height:20px;color:var(--muted-2)}
+.scan{position:absolute;right:9px;top:9px;height:34px;width:34px;border-radius:9px;background:var(--blue-tint);display:grid;place-items:center;color:var(--blue)}
+.scan svg{width:19px;height:19px}
+
+.cats{display:flex;gap:9px;margin-bottom:16px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.cat{
+  height:38px;padding:0 16px;border-radius:11px;background:var(--panel);border:1px solid var(--line);
+  font-size:13.5px;font-weight:600;color:var(--ink-2);white-space:nowrap;transition:.15s;display:flex;align-items:center;gap:7px;flex:none;
+}
+.cat .cdot{width:8px;height:8px;border-radius:3px}
+.cat:hover{border-color:var(--muted-2)}
+.cat.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.cat.active .cdot{background:#fff !important}
+
+.products{
+  flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));
+  gap:12px;align-content:start;padding:2px 16px 24px 2px;
+}
+.products::-webkit-scrollbar{width:8px}
+.products::-webkit-scrollbar-thumb{background:#D4DEEA;border-radius:8px}
+.tile{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px;
+  display:flex;flex-direction:column;justify-content:space-between;min-height:124px;text-align:left;
+  box-shadow:var(--sh-sm);transition:.16s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;
+  animation:tileIn .45s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes tileIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+.tile:hover{transform:translateY(-3px);box-shadow:var(--sh);border-color:#CFE0F6}
+.tile:active{transform:translateY(0) scale(.98)}
+.tile .emoji{font-size:26px;line-height:1}
+.tile .swatch{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:21px}
+.tile .pname{font-size:13.5px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
+.tile .pprice{font-size:13px;color:var(--ink-2);font-weight:600;margin-top:3px}
+.tile .badge{position:absolute;top:10px;right:10px;font-size:9.5px;font-weight:700;color:var(--amber);background:var(--amber-tint);padding:2px 7px;border-radius:6px;letter-spacing:.02em}
+.tile.added::after{content:"";position:absolute;inset:0;border:2px solid var(--blue);border-radius:var(--r);animation:flashAdd .5s ease}
+@keyframes flashAdd{0%{opacity:1}100%{opacity:0}}
+
+/* ---------- ORDER TICKET ---------- */
+.ticket{
+  background:var(--panel);margin:0 16px 16px 0;border-radius:var(--r-lg);border:1px solid var(--line);
+  box-shadow:var(--sh);display:flex;flex-direction:column;min-height:0;overflow:hidden;
+}
+.ticket-head{padding:18px 20px 14px;border-bottom:1px solid var(--line-2);display:flex;align-items:center;justify-content:space-between}
+.ticket-head .t-title{font-size:15.5px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:9px}
+.t-count{background:var(--blue-tint);color:var(--blue);font-size:11px;font-weight:800;padding:2px 8px;border-radius:20px}
+.t-order{font-size:11.5px;color:var(--muted);font-weight:500;margin-top:2px}
+.t-clear{font-size:12.5px;color:var(--muted);font-weight:600;padding:6px 8px;border-radius:8px;transition:.15s}
+.t-clear:hover{color:var(--red);background:var(--red-tint)}
+
+.customer{
+  margin:12px 16px 4px;display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:13px;
+  background:var(--blue-tint-2);border:1px dashed #BBD6F7;transition:.15s;
+}
+.customer:hover{background:var(--blue-tint)}
+.customer .c-ic{width:34px;height:34px;border-radius:10px;background:var(--blue);display:grid;place-items:center;color:#fff;flex:none}
+.customer .c-ic svg{width:18px;height:18px}
+.customer .c-tx{font-size:13px;font-weight:700}
+.customer .c-sub{font-size:11.5px;color:var(--muted);font-weight:500}
+
+.lines{flex:1;overflow-y:auto;padding:8px 8px 4px;min-height:60px}
+.lines::-webkit-scrollbar{width:7px}
+.lines::-webkit-scrollbar-thumb{background:#D4DEEA;border-radius:8px}
+.line{
+  display:flex;gap:11px;padding:11px 12px;border-radius:13px;transition:.14s;position:relative;
+  animation:lineIn .32s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes lineIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+.line:hover{background:var(--blue-tint-2)}
+.line .l-em{font-size:19px;width:40px;height:40px;border-radius:11px;display:grid;place-items:center;flex:none}
+.line .l-mid{flex:1;min-width:0}
+.line .l-name{font-size:13.5px;font-weight:700;letter-spacing:-.01em}
+.line .l-mods{font-size:11.5px;color:var(--muted);font-weight:500;margin-top:2px;line-height:1.45}
+.line .l-mods .mod-add{color:var(--blue);cursor:pointer;font-weight:600}
+.line .l-right{display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;flex:none}
+.line .l-price{font-size:13.5px;font-weight:700}
+.qty{display:flex;align-items:center;gap:0;background:var(--canvas);border-radius:9px;padding:2px;margin-top:6px}
+.qty button{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;color:var(--ink-2);font-weight:700;transition:.12s}
+.qty button:hover{background:#fff;color:var(--blue);box-shadow:var(--sh-sm)}
+.qty .qv{min-width:24px;text-align:center;font-size:13px;font-weight:700}
+
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--muted-2);flex:1;padding:30px}
+.empty svg{width:46px;height:46px;color:#CBD7E6}
+.empty p{font-size:13.5px;font-weight:600;color:var(--muted)}
+
+.ticket-foot{border-top:1px solid var(--line-2);padding:14px 18px 16px;background:linear-gradient(180deg,#fff,#FBFCFE)}
+.qa{display:flex;gap:8px;margin-bottom:13px}
+.qa button{
+  flex:1;height:40px;border-radius:11px;border:1px solid var(--line);background:var(--panel);
+  font-size:12.5px;font-weight:700;color:var(--ink-2);display:flex;align-items:center;justify-content:center;gap:6px;transition:.15s;
+}
+.qa button svg{width:16px;height:16px}
+.qa button:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-tint-2)}
+.qa button.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.totals{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
+.trow{display:flex;justify-content:space-between;font-size:13px;color:var(--ink-2);font-weight:500}
+.trow.disc{color:var(--green);font-weight:600}
+.trow.grand{font-size:15px;color:var(--ink);font-weight:800;padding-top:9px;border-top:1px dashed var(--line);margin-top:1px}
+.trow.grand .mono{font-size:19px;font-weight:500}
+.charge{
+  width:100%;height:62px;border-radius:16px;background:linear-gradient(135deg,#0A86FF,#0070F0 60%,#0058C4);
+  color:#fff;font-size:16px;font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;justify-content:space-between;
+  padding:0 22px;box-shadow:0 10px 24px rgba(0,112,240,.34);transition:.18s;position:relative;overflow:hidden;
+}
+.charge:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(0,112,240,.42)}
+.charge:active{transform:translateY(0)}
+.charge:disabled{background:#C7D4E3;box-shadow:none;color:#fff;cursor:not-allowed;transform:none}
+.charge .c-amt{font-family:var(--mono);font-size:19px;font-weight:500}
+.charge svg{width:20px;height:20px}
+
+/* ---------- TABLES view ---------- */
+.pad{padding:4px 26px 26px;flex:1;overflow-y:auto}
+.section-h{display:flex;align-items:center;justify-content:space-between;margin:6px 0 18px}
+.section-h h2{font-size:21px;font-weight:800;letter-spacing:-.025em}
+.section-h p{font-size:13px;color:var(--muted);font-weight:500;margin-top:2px}
+.legend{display:flex;gap:16px}
+.legend span{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--ink-2)}
+.legend i{width:11px;height:11px;border-radius:4px;display:block}
+
+.floor{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:14px}
+.table{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;min-height:128px;
+  display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--sh-sm);transition:.18s;position:relative;overflow:hidden;
+  animation:tileIn .4s cubic-bezier(.16,1,.3,1) both;
+}
+.table:hover{transform:translateY(-3px);box-shadow:var(--sh)}
+.table .t-top{display:flex;align-items:flex-start;justify-content:space-between}
+.table .t-no{font-size:17px;font-weight:800;letter-spacing:-.02em}
+.table .t-seats{font-size:11.5px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:4px;margin-top:2px}
+.table .t-seats svg{width:13px;height:13px}
+.t-state{font-size:10.5px;font-weight:800;padding:4px 9px;border-radius:8px;letter-spacing:.02em;text-transform:uppercase}
+.table .t-foot{display:flex;align-items:flex-end;justify-content:space-between}
+.table .t-amt{font-family:var(--mono);font-size:16px;font-weight:500}
+.table .t-time{font-size:11px;color:var(--muted);font-weight:600}
+.table.s-open{border-style:dashed;border-color:#CBD7E6;background:#FBFCFE}
+.table.s-open .t-no{color:var(--muted)}
+.table.s-seated{border-left:4px solid var(--blue)}
+.s-seated .t-state{background:var(--blue-tint);color:var(--blue)}
+.table.s-attn{border-left:4px solid var(--amber-bg)}
+.s-attn .t-state{background:var(--amber-tint);color:var(--amber)}
+.table.s-pay{border-left:4px solid var(--green)}
+.s-pay .t-state{background:var(--green-tint);color:var(--green)}
+.t-openlabel{font-size:12px;color:var(--muted-2);font-weight:600}
+
+/* ---------- REPORTS view ---------- */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+@media(max-width:1200px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--sh-sm);animation:tileIn .4s cubic-bezier(.16,1,.3,1) both}
+.kpi .k-lab{font-size:12px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:7px}
+.kpi .k-lab svg{width:15px;height:15px}
+.kpi .k-val{font-size:28px;font-weight:800;letter-spacing:-.03em;margin-top:8px;font-feature-settings:"tnum"}
+.kpi .k-delta{font-size:12px;font-weight:700;margin-top:5px;display:inline-flex;align-items:center;gap:4px}
+.k-delta.up{color:var(--green)} .k-delta.down{color:var(--red)}
+.k-delta svg{width:13px;height:13px}
+
+.rep-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:14px}
+@media(max-width:1100px){.rep-grid{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px 22px;box-shadow:var(--sh-sm)}
+.card h3{font-size:15px;font-weight:800;letter-spacing:-.02em;margin-bottom:2px}
+.card .c-sub{font-size:12px;color:var(--muted);font-weight:500;margin-bottom:16px}
+.chart{display:flex;align-items:flex-end;gap:10px;height:188px;padding-top:8px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:9px;height:100%}
+.bar-track{flex:1;width:100%;display:flex;align-items:flex-end}
+.bar{width:100%;border-radius:8px 8px 4px 4px;background:linear-gradient(180deg,#54A8FF,#0070F0);transition:.2s;animation:grow 1s cubic-bezier(.16,1,.3,1) both}
+.bar:hover{filter:brightness(1.08)}
+.bar.peak{background:linear-gradient(180deg,#0070F0,#0050B4)}
+@keyframes grow{from{height:0}}
+.bar-lab{font-size:11px;color:var(--muted);font-weight:600}
+.toplist{display:flex;flex-direction:column;gap:3px}
+.toprow{display:flex;align-items:center;gap:13px;padding:11px 8px;border-radius:11px;transition:.14s}
+.toprow:hover{background:var(--blue-tint-2)}
+.toprow .ti-em{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:18px;flex:none}
+.toprow .ti-name{font-size:13.5px;font-weight:700;flex:1}
+.toprow .ti-meta{font-size:11.5px;color:var(--muted);font-weight:500}
+.toprow .ti-val{font-family:var(--mono);font-size:13px;font-weight:500}
+
+/* ---------- PAYMENT MODAL ---------- */
+.scrim{position:fixed;inset:0;background:rgba(11,26,46,.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:50;padding:24px}
+.scrim.open{display:flex;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}}
+.modal{
+  width:min(880px,96vw);max-height:92vh;background:var(--panel);border-radius:26px;box-shadow:var(--sh-lg);
+  display:grid;grid-template-columns:1fr 1fr;overflow:hidden;animation:modalIn .34s cubic-bezier(.16,1,.3,1);
+}
+@keyframes modalIn{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:none}}
+.m-left{padding:30px 30px 26px;display:flex;flex-direction:column;background:linear-gradient(165deg,#0B1A2E,#11283F)}
+.m-left .m-lab{color:#7FA6CC;font-size:12.5px;font-weight:600;letter-spacing:.02em}
+.m-left .m-total{color:#fff;font-family:var(--mono);font-size:46px;font-weight:500;letter-spacing:-.03em;margin-top:6px}
+.m-summary{margin-top:auto;display:flex;flex-direction:column;gap:9px;padding-top:22px}
+.m-srow{display:flex;justify-content:space-between;color:#A9C2DB;font-size:13px;font-weight:500}
+.m-srow.b{color:#fff;font-weight:700;font-size:14.5px;padding-top:11px;border-top:1px solid rgba(255,255,255,.13)}
+.tenders{display:flex;gap:8px;margin-top:20px}
+.tender{flex:1;height:52px;border-radius:13px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);color:#cfe0f2;font-size:12.5px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:.15s}
+.tender svg{width:19px;height:19px}
+.tender:hover{background:rgba(255,255,255,.1)}
+.tender.sel{background:var(--blue);color:#fff;border-color:var(--blue)}
+.m-right{padding:26px;display:flex;flex-direction:column}
+.m-right .m-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.m-right h3{font-size:16px;font-weight:800;letter-spacing:-.02em}
+.m-close{width:36px;height:36px;border-radius:10px;background:var(--canvas);display:grid;place-items:center;color:var(--ink-2);transition:.15s}
+.m-close:hover{background:var(--red-tint);color:var(--red)}
+.amount-field{height:64px;border-radius:14px;background:var(--canvas);border:1px solid var(--line);display:flex;align-items:center;padding:0 20px;font-family:var(--mono);font-size:28px;font-weight:500;justify-content:flex-end;margin-bottom:16px}
+.pad-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;flex:1}
+.key{border-radius:13px;background:var(--panel);border:1px solid var(--line);font-size:21px;font-weight:700;display:grid;place-items:center;transition:.12s;min-height:54px;box-shadow:var(--sh-sm)}
+.key:hover{background:var(--blue-tint-2);border-color:var(--blue)}
+.key:active{transform:scale(.96)}
+.key.fn{background:var(--canvas);font-size:14px;color:var(--ink-2);font-weight:700}
+.m-done{height:60px;border-radius:15px;background:linear-gradient(135deg,#0E9F6E,#0B8A5E);color:#fff;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:9px;margin-top:14px;box-shadow:0 8px 20px rgba(14,159,110,.3);transition:.16s}
+.m-done:hover{transform:translateY(-2px)}
+.m-done svg{width:20px;height:20px}
+
+/* success */
+.done-card{position:absolute;inset:0;background:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:2}
+.done-card.show{display:flex;animation:fadeIn .25s ease}
+.tick{width:88px;height:88px;border-radius:50%;background:var(--green-tint);display:grid;place-items:center}
+.tick svg{width:46px;height:46px;color:var(--green);stroke-width:2.4}
+.done-card h2{font-size:23px;font-weight:800;letter-spacing:-.02em}
+.done-card p{font-size:14px;color:var(--muted);font-weight:500}
+.done-actions{display:flex;gap:10px;margin-top:8px}
+.done-actions button{height:46px;padding:0 20px;border-radius:12px;font-size:13.5px;font-weight:700}
+.da-print{background:var(--canvas);color:var(--ink-2);border:1px solid var(--line)}
+.da-new{background:var(--blue);color:#fff}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:13px 20px;border-radius:13px;font-size:13.5px;font-weight:600;box-shadow:var(--sh-lg);z-index:90;opacity:0;transition:.3s cubic-bezier(.16,1,.3,1);display:flex;align-items:center;gap:9px}
+.toast svg{width:17px;height:17px;color:#5FD3A3}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- ===== RAIL ===== -->
+  <aside class="rail">
+    <div class="brand" title="Lumin EPOS">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L4 7v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7l-8-5z" fill="#fff" opacity=".18"/><path d="M9 11l2.2 2.4L15 8.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <nav class="nav">
+      <button class="nav-btn active" data-view="sale"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M3 9h18M7 21h10"/></svg><span>Sale</span></button>
+      <button class="nav-btn" data-view="tables"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Tables</span></button>
+      <button class="nav-btn" data-view="orders"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 5h6M9 5a2 2 0 10-4 0M9 5H5a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2h-4M9 5a2 2 0 104 0M8 12h8M8 16h5"/></svg><span>Orders</span></button>
+      <button class="nav-btn" data-view="reports"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18M8 15l3-4 3 2 4-6"/></svg><span>Reports</span></button>
+    </nav>
+    <div class="rail-foot">
+      <button class="nav-btn" data-view="reports"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-2.6 1.32V21a2 2 0 01-4 0v-.09A1.65 1.65 0 007 19.6a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 002.6 14a1.65 1.65 0 00-1.51-1H1a2 2 0 010-4h.09A1.65 1.65 0 002.6 7.4l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 007 5.09V5a2 2 0 014 0v.09a1.65 1.65 0 002.6 1.32l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span>Setup</span></button>
+      <div class="rail-divider"></div>
+      <div class="avatar" title="Amelia · Manager">AR</div>
+    </div>
+  </aside>
+
+  <!-- ===== STAGE ===== -->
+  <section class="stage">
+
+    <!-- ===== SALE VIEW ===== -->
+    <div class="view active" id="view-sale">
+      <div class="topbar">
+        <div class="loc">
+          <div class="name">Northgate Coffee <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></div>
+          <div class="sub">Till 1 · High Street, York</div>
+        </div>
+        <div class="top-spacer"></div>
+        <div class="chip live"><span class="dot"></span> Online</div>
+        <div class="chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 7h6"/></svg> Printer ready</div>
+        <div class="chip clock" id="clock">—</div>
+      </div>
+
+      <div class="sale-grid">
+        <!-- catalog -->
+        <div class="catalog">
+          <div class="searchwrap">
+            <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+            <input class="search" id="search" placeholder="Search items, scan a barcode, or type a price…" />
+            <button class="scan" title="Scan barcode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2M7 8v8M11 8v8M15 8v8"/></svg></button>
+          </div>
+          <div class="cats" id="cats"></div>
+          <div class="products" id="products"></div>
+        </div>
+
+        <!-- order ticket -->
+        <div class="ticket">
+          <div class="ticket-head">
+            <div>
+              <div class="t-title">Current order <span class="t-count" id="tcount">0</span></div>
+              <div class="t-order mono">#A-1047 · Dine in</div>
+            </div>
+            <button class="t-clear" id="clearBtn">Clear</button>
+          </div>
+
+          <div class="customer" id="addCust">
+            <div class="c-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></div>
+            <div style="flex:1">
+              <div class="c-tx">Add customer</div>
+              <div class="c-sub">Attach loyalty · 320 pts available</div>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
+          </div>
+
+          <div class="lines" id="lines"></div>
+
+          <div class="ticket-foot">
+            <div class="qa">
+              <button id="discBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 9h.01M15 15h.01M5 19L19 5M7 5a2 2 0 100 4 2 2 0 000-4zM17 15a2 2 0 100 4 2 2 0 000-4z"/></svg> Discount</button>
+              <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h9M16 3v4M8 3v4M3 11h18"/></svg> Hold</button>
+              <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg> Note</button>
+            </div>
+            <div class="totals">
+              <div class="trow"><span>Subtotal</span><span class="mono tnum" id="subT">£0.00</span></div>
+              <div class="trow disc" id="discRow" style="display:none"><span id="discLab">Discount · 10%</span><span class="mono tnum" id="discVal">−£0.00</span></div>
+              <div class="trow"><span>VAT included (20%)</span><span class="mono tnum" id="vatT">£0.00</span></div>
+              <div class="trow grand"><span>Total</span><span class="mono tnum" id="grandT">£0.00</span></div>
+            </div>
+            <button class="charge" id="chargeBtn" disabled>
+              <span>Charge</span>
+              <span class="c-amt tnum" id="chargeAmt">£0.00</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== TABLES VIEW ===== -->
+    <div class="view" id="view-tables">
+      <div class="topbar">
+        <div class="loc">
+          <div class="name">Floor plan <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></div>
+          <div class="sub">Ground floor · 9 of 14 tables active</div>
+        </div>
+        <div class="top-spacer"></div>
+        <div class="legend">
+          <span><i style="background:#CBD7E6"></i>Open</span>
+          <span><i style="background:var(--blue)"></i>Seated</span>
+          <span><i style="background:var(--amber-bg)"></i>Needs attention</span>
+          <span><i style="background:var(--green)"></i>Paying</span>
+        </div>
+      </div>
+      <div class="pad">
+        <div class="floor" id="floor"></div>
+      </div>
+    </div>
+
+    <!-- ===== ORDERS VIEW (light) ===== -->
+    <div class="view" id="view-orders">
+      <div class="topbar">
+        <div class="loc"><div class="name">Live orders</div><div class="sub">Kitchen & counter queue</div></div>
+      </div>
+      <div class="pad">
+        <div class="section-h"><div><h2>In progress</h2><p>Tickets fire to the kitchen the moment you charge.</p></div></div>
+        <div class="floor" id="orders"></div>
+      </div>
+    </div>
+
+    <!-- ===== REPORTS VIEW ===== -->
+    <div class="view" id="view-reports">
+      <div class="topbar">
+        <div class="loc"><div class="name">Today at a glance</div><div class="sub">Thursday · live since 06:45</div></div>
+        <div class="top-spacer"></div>
+        <div class="chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"/></svg> Today</div>
+      </div>
+      <div class="pad">
+        <div class="kpis" id="kpis"></div>
+        <div class="rep-grid">
+          <div class="card">
+            <h3>Sales by hour</h3>
+            <div class="c-sub">Net takings · peak at 12:00</div>
+            <div class="chart" id="chart"></div>
+          </div>
+          <div class="card">
+            <h3>Top sellers</h3>
+            <div class="c-sub">By units sold today</div>
+            <div class="toplist" id="toplist"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+</div>
+
+<!-- ===== PAYMENT MODAL ===== -->
+<div class="scrim" id="scrim">
+  <div class="modal">
+    <div class="m-left">
+      <div class="m-lab">Amount due</div>
+      <div class="m-total mono" id="mTotal">£0.00</div>
+      <div class="tenders">
+        <button class="tender sel" data-t="card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Card</button>
+        <button class="tender" data-t="cash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>Cash</button>
+        <button class="tender" data-t="split"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3M16 3h3a2 2 0 012 2v3M8 21H5a2 2 0 01-2-2v-3M16 21h3a2 2 0 002-2v-3M12 3v18"/></svg>Split</button>
+      </div>
+      <div class="m-summary">
+        <div class="m-srow"><span>Subtotal</span><span class="mono" id="mSub">£0.00</span></div>
+        <div class="m-srow" id="mDiscRow" style="display:none"><span id="mDiscLab">Discount</span><span class="mono" id="mDisc">−£0.00</span></div>
+        <div class="m-srow"><span>VAT (incl.)</span><span class="mono" id="mVat">£0.00</span></div>
+        <div class="m-srow b"><span>Total</span><span class="mono" id="mGrand">£0.00</span></div>
+      </div>
+    </div>
+    <div class="m-right">
+      <div class="m-head">
+        <h3 id="mMode">Card payment</h3>
+        <button class="m-close" id="mClose"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      </div>
+      <div class="amount-field mono" id="amtField">£0.00</div>
+      <div class="pad-grid" id="keypad"></div>
+      <button class="m-done" id="mDone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg> <span id="mDoneLab">Take card payment</span></button>
+    </div>
+
+    <!-- success overlay -->
+    <div class="done-card" id="doneCard">
+      <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <h2>Payment complete</h2>
+      <p id="doneSub">£0.00 · Card · Receipt sent</p>
+      <div class="done-actions">
+        <button class="da-print">Print receipt</button>
+        <button class="da-new" id="newSale">New sale</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6L9 17l-5-5"/></svg><span id="toastTx">Added</span></div>
+
+<script>
+/* ============ DATA ============ */
+const CATS = [
+  {id:'coffee', name:'Coffee', color:'#0070F0'},
+  {id:'cold',   name:'Cold drinks', color:'#16A6C9'},
+  {id:'bakery', name:'Bakery', color:'#E0883B'},
+  {id:'food',   name:'Food', color:'#0E9F6E'},
+  {id:'retail', name:'Retail', color:'#8B5CF6'},
+];
+const PRODUCTS = [
+  {id:1, c:'coffee', n:'Flat White', p:3.40, e:'☕', bg:'#EAF3FF', mods:['Oat milk','Extra shot']},
+  {id:2, c:'coffee', n:'Cappuccino', p:3.40, e:'☕', bg:'#EAF3FF'},
+  {id:3, c:'coffee', n:'Latte', p:3.60, e:'☕', bg:'#EAF3FF', mods:['Oat milk']},
+  {id:4, c:'coffee', n:'Espresso', p:2.60, e:'☕', bg:'#EAF3FF'},
+  {id:5, c:'coffee', n:'Americano', p:3.10, e:'☕', bg:'#EAF3FF'},
+  {id:6, c:'coffee', n:'Mocha', p:3.80, e:'☕', bg:'#EAF3FF', badge:'Popular'},
+  {id:7, c:'coffee', n:'Cortado', p:3.20, e:'☕', bg:'#EAF3FF'},
+  {id:8, c:'coffee', n:'Hot Chocolate', p:3.50, e:'🍫', bg:'#F6EDE4'},
+  {id:9, c:'cold', n:'Iced Latte', p:3.90, e:'🧊', bg:'#E6F6FA'},
+  {id:10,c:'cold', n:'Cold Brew', p:4.10, e:'🧊', bg:'#E6F6FA', badge:'New'},
+  {id:11,c:'cold', n:'Sparkling Water', p:2.20, e:'💧', bg:'#E6F6FA'},
+  {id:12,c:'cold', n:'Orange Juice', p:2.80, e:'🍊', bg:'#FCEFE0'},
+  {id:13,c:'cold', n:'Iced Matcha', p:4.20, e:'🍵', bg:'#E9F6EC'},
+  {id:14,c:'bakery', n:'Butter Croissant', p:2.90, e:'🥐', bg:'#F9F0DF', badge:'Popular'},
+  {id:15,c:'bakery', n:'Pain au Chocolat', p:3.10, e:'🥐', bg:'#F9F0DF'},
+  {id:16,c:'bakery', n:'Cinnamon Bun', p:3.40, e:'🍥', bg:'#F9F0DF'},
+  {id:17,c:'bakery', n:'Blueberry Muffin', p:2.80, e:'🧁', bg:'#F9F0DF'},
+  {id:18,c:'bakery', n:'Banana Bread', p:3.20, e:'🍌', bg:'#F9F0DF'},
+  {id:19,c:'food', n:'Avocado Toast', p:7.50, e:'🥑', bg:'#E9F6EC'},
+  {id:20,c:'food', n:'Bacon Roll', p:5.20, e:'🥓', bg:'#FCEFE0'},
+  {id:21,c:'food', n:'Halloumi Wrap', p:6.80, e:'🌯', bg:'#E9F6EC'},
+  {id:22,c:'food', n:'Soup of the Day', p:5.50, e:'🍲', bg:'#FCEFE0'},
+  {id:23,c:'food', n:'Granola Bowl', p:5.90, e:'🥣', bg:'#E9F6EC'},
+  {id:24,c:'retail', n:'House Beans 250g', p:9.00, e:'🫘', bg:'#F0EAFB', badge:'Popular'},
+  {id:25,c:'retail', n:'Keep Cup', p:14.00, e:'🥤', bg:'#F0EAFB'},
+  {id:26,c:'retail', n:'Tote Bag', p:8.00, e:'👜', bg:'#F0EAFB'},
+  {id:27,c:'retail', n:'Gift Card', p:25.00, e:'🎁', bg:'#F0EAFB'},
+];
+const TABLES = [
+  {n:'T1', seats:2, state:'seated', amt:14.20, time:'18m'},
+  {n:'T2', seats:2, state:'open'},
+  {n:'T3', seats:4, state:'pay', amt:48.60, time:'52m'},
+  {n:'T4', seats:4, state:'seated', amt:22.10, time:'9m'},
+  {n:'T5', seats:2, state:'attn', amt:9.40, time:'34m'},
+  {n:'T6', seats:6, state:'seated', amt:71.30, time:'25m'},
+  {n:'T7', seats:2, state:'open'},
+  {n:'T8', seats:4, state:'seated', amt:31.00, time:'12m'},
+  {n:'T9', seats:2, state:'attn', amt:6.80, time:'41m'},
+  {n:'T10',seats:4, state:'open'},
+  {n:'T11',seats:2, state:'seated', amt:11.50, time:'6m'},
+  {n:'T12',seats:8, state:'pay', amt:124.00, time:'1h 04m'},
+  {n:'T13',seats:2, state:'open'},
+  {n:'T14',seats:4, state:'seated', amt:27.40, time:'15m'},
+];
+const STATE_LABEL = {open:'Open', seated:'Seated', attn:'Bill flagged', pay:'Paying'};
+const TOP = [
+  {n:'Flat White', e:'☕', bg:'#EAF3FF', units:84, val:'£285.60'},
+  {n:'Butter Croissant', e:'🥐', bg:'#F9F0DF', units:61, val:'£176.90'},
+  {n:'Avocado Toast', e:'🥑', bg:'#E9F6EC', units:38, val:'£285.00'},
+  {n:'Cold Brew', e:'🧊', bg:'#E6F6FA', units:33, val:'£135.30'},
+  {n:'House Beans 250g', e:'🫘', bg:'#F0EAFB', units:19, val:'£171.00'},
+];
+const HOURS = [
+  {h:'7', v:38},{h:'8', v:72},{h:'9', v:64},{h:'10', v:51},{h:'11', v:79},
+  {h:'12', v:100},{h:'13', v:92},{h:'14', v:58},{h:'15', v:47},{h:'16', v:35}
+];
+
+/* ============ STATE ============ */
+let order = [];      // {id, qty, mods:[]}
+let activeCat = 'coffee';
+let discount = 0;    // fraction
+const VAT = 0.20;
+const gbp = n => '£' + n.toFixed(2);
+const $ = s => document.querySelector(s);
+
+/* ============ NAV ============ */
+document.querySelectorAll('.nav-btn[data-view]').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    const v = b.dataset.view;
+    document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+    const target = $('#view-'+v) || $('#view-reports');
+    target.classList.add('active');
+  });
+});
+
+/* ============ CATEGORIES ============ */
+const catsEl = $('#cats');
+catsEl.innerHTML = `<button class="cat active" data-cat="all"><span class="cdot" style="background:#7488A0"></span>All</button>` +
+  CATS.map(c=>`<button class="cat" data-cat="${c.id}"><span class="cdot" style="background:${c.color}"></span>${c.name}</button>`).join('');
+catsEl.addEventListener('click', e=>{
+  const b = e.target.closest('.cat'); if(!b) return;
+  catsEl.querySelectorAll('.cat').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  activeCat = b.dataset.cat;
+  $('#search').value='';
+  renderProducts();
+});
+
+/* ============ PRODUCTS ============ */
+function renderProducts(filter=''){
+  const grid = $('#products');
+  let list = PRODUCTS.filter(p=>{
+    const inCat = activeCat==='all' || p.c===activeCat;
+    const inSearch = !filter || p.n.toLowerCase().includes(filter.toLowerCase());
+    return (filter ? inSearch : inCat && inSearch);
+  });
+  grid.innerHTML = list.map((p,i)=>`
+    <button class="tile" data-id="${p.id}" style="animation-delay:${Math.min(i*22,300)}ms">
+      ${p.badge?`<span class="badge">${p.badge}</span>`:''}
+      <div class="swatch" style="background:${p.bg}">${p.e}</div>
+      <div>
+        <div class="pname">${p.n}</div>
+        <div class="pprice mono">${gbp(p.p)}</div>
+      </div>
+    </button>`).join('') || `<div style="grid-column:1/-1;color:var(--muted);font-weight:600;padding:30px;text-align:center">No items match “${filter}”.</div>`;
+}
+$('#products').addEventListener('click', e=>{
+  const t = e.target.closest('.tile'); if(!t) return;
+  addToOrder(+t.dataset.id);
+  t.classList.add('added'); setTimeout(()=>t.classList.remove('added'),500);
+});
+$('#search').addEventListener('input', e=> renderProducts(e.target.value));
+
+/* ============ ORDER ============ */
+function addToOrder(id){
+  const ex = order.find(o=>o.id===id && o.mods.length===0);
+  if(ex){ ex.qty++; } else {
+    const p = PRODUCTS.find(x=>x.id===id);
+    order.push({id, qty:1, mods:[]});
+  }
+  renderOrder();
+  const p = PRODUCTS.find(x=>x.id===id);
+  showToast(p.n + ' added');
+}
+function renderOrder(){
+  const wrap = $('#lines');
+  $('#tcount').textContent = order.reduce((a,o)=>a+o.qty,0);
+  if(order.length===0){
+    wrap.innerHTML = `<div class="empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 01-8 0"/></svg>
+      <p>Tap an item to start the order</p></div>`;
+  } else {
+    wrap.innerHTML = order.map((o,idx)=>{
+      const p = PRODUCTS.find(x=>x.id===o.id);
+      const modTxt = o.mods.length ? o.mods.join(' · ') : (p.mods?`<span class="mod-add" data-add="${idx}">+ add ${p.mods[0]}</span>`:'');
+      return `<div class="line">
+        <div class="l-em" style="background:${p.bg}">${p.e}</div>
+        <div class="l-mid">
+          <div class="l-name">${p.n}</div>
+          <div class="l-mods">${modTxt||''}</div>
+          <div class="qty">
+            <button data-dec="${idx}">−</button>
+            <span class="qv tnum">${o.qty}</span>
+            <button data-inc="${idx}">+</button>
+          </div>
+        </div>
+        <div class="l-right">
+          <div class="l-price mono tnum">${gbp(p.p*o.qty)}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  recompute();
+}
+$('#lines').addEventListener('click', e=>{
+  const inc=e.target.closest('[data-inc]'), dec=e.target.closest('[data-dec]'), add=e.target.closest('[data-add]');
+  if(inc){ order[+inc.dataset.inc].qty++; renderOrder(); }
+  if(dec){ const i=+dec.dataset.dec; order[i].qty--; if(order[i].qty<=0) order.splice(i,1); renderOrder(); }
+  if(add){ const i=+add.dataset.add; const p=PRODUCTS.find(x=>x.id===order[i].id); order[i].mods=[p.mods[0]]; renderOrder(); showToast(p.mods[0]+' added'); }
+});
+
+function recompute(){
+  const sub = order.reduce((a,o)=>a+PRODUCTS.find(x=>x.id===o.id).p*o.qty,0);
+  const discAmt = sub*discount;
+  const net = sub - discAmt;
+  const vat = net - net/(1+VAT);
+  $('#subT').textContent = gbp(sub);
+  $('#vatT').textContent = gbp(vat);
+  $('#grandT').textContent = gbp(net);
+  $('#chargeAmt').textContent = gbp(net);
+  $('#chargeBtn').disabled = order.length===0;
+  $('#discRow').style.display = discount>0 ? 'flex':'none';
+  $('#discVal').textContent = '−'+gbp(discAmt);
+  return {sub, discAmt, net, vat};
+}
+
+/* discount toggle */
+$('#discBtn').addEventListener('click', ()=>{
+  if(order.length===0){ showToast('Add items first'); return; }
+  discount = discount>0 ? 0 : 0.10;
+  $('#discBtn').classList.toggle('on', discount>0);
+  recompute();
+  showToast(discount>0?'10% discount applied':'Discount removed');
+});
+$('#clearBtn').addEventListener('click', ()=>{ order=[]; discount=0; $('#discBtn').classList.remove('on'); renderOrder(); });
+
+/* ============ TABLES ============ */
+$('#floor').innerHTML = TABLES.map((t,i)=>{
+  const cls = 's-'+t.state;
+  return `<div class="table ${cls}" style="animation-delay:${i*30}ms">
+    <div class="t-top">
+      <div><div class="t-no">${t.n}</div><div class="t-seats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c0-3 3-5 7-5s7 2 7 5"/></svg>${t.seats} seats</div></div>
+      <span class="t-state">${STATE_LABEL[t.state]}</span>
+    </div>
+    <div class="t-foot">
+      ${t.state==='open' ? `<span class="t-openlabel">Tap to seat →</span>` :
+        `<span class="t-amt tnum">${gbp(t.amt)}</span><span class="t-time">${t.time}</span>`}
+    </div>
+  </div>`;
+}).join('');
+
+/* ============ ORDERS (mini) ============ */
+$('#orders').innerHTML = [
+  {id:'#A-1046', items:'2× Flat White · 1× Croissant', t:'fired 2m ago', s:'seated'},
+  {id:'#A-1045', items:'1× Avocado Toast · 1× OJ', t:'fired 5m ago', s:'attn'},
+  {id:'#A-1044', items:'3× Latte · 2× Muffin', t:'ready', s:'pay'},
+].map((o,i)=>`<div class="table s-${o.s}" style="animation-delay:${i*40}ms">
+  <div class="t-top"><div class="t-no mono" style="font-size:14px">${o.id}</div><span class="t-state">${o.s==='pay'?'Ready':o.s==='attn'?'Cooking':'Queued'}</span></div>
+  <div style="font-size:12.5px;color:var(--ink-2);font-weight:600;line-height:1.5">${o.items}</div>
+  <div class="t-time">${o.t}</div>
+</div>`).join('');
+
+/* ============ REPORTS ============ */
+$('#kpis').innerHTML = [
+  {l:'Net sales',ic:'<path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>',v:'£2,847',d:'+12.4%',up:true},
+  {l:'Transactions',ic:'<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M3 9h18"/>',v:'318',d:'+8.1%',up:true},
+  {l:'Avg. basket',ic:'<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.7a2 2 0 002-1.6L23 6H6"/>',v:'£8.95',d:'+3.9%',up:true},
+  {l:'Refunds',ic:'<path d="M3 7v6h6M21 17a9 9 0 00-15-6.7L3 13"/>',v:'£18.40',d:'−40%',up:true},
+].map((k,i)=>`<div class="kpi" style="animation-delay:${i*60}ms">
+  <div class="k-lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${k.ic}</svg>${k.l}</div>
+  <div class="k-val">${k.v}</div>
+  <div class="k-delta ${k.up?'up':'down'}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M7 17L17 7M17 7H9M17 7v8"/></svg>${k.d} <span style="color:var(--muted);font-weight:500">vs last Thu</span></div>
+</div>`).join('');
+
+$('#chart').innerHTML = HOURS.map(h=>`
+  <div class="bar-col">
+    <div class="bar-track"><div class="bar ${h.v>=95?'peak':''}" style="height:${h.v}%"></div></div>
+    <div class="bar-lab">${h.h}</div>
+  </div>`).join('');
+
+$('#toplist').innerHTML = TOP.map(t=>`
+  <div class="toprow">
+    <div class="ti-em" style="background:${t.bg}">${t.e}</div>
+    <div style="flex:1"><div class="ti-name">${t.n}</div><div class="ti-meta">${t.units} sold</div></div>
+    <div class="ti-val tnum">${t.val}</div>
+  </div>`).join('');
+
+/* ============ PAYMENT MODAL ============ */
+let payMode='card', amtStr='';
+const scrim=$('#scrim');
+function openPay(){
+  const {sub,discAmt,net,vat} = recompute();
+  $('#mTotal').textContent=gbp(net);
+  $('#mGrand').textContent=gbp(net);
+  $('#mSub').textContent=gbp(sub);
+  $('#mVat').textContent=gbp(vat);
+  $('#mDiscRow').style.display = discount>0?'flex':'none';
+  $('#mDisc').textContent='−'+gbp(discAmt);
+  amtStr=''; $('#amtField').textContent=gbp(net);
+  $('#doneCard').classList.remove('show');
+  scrim.classList.add('open');
+  setTender('card');
+}
+$('#chargeBtn').addEventListener('click', ()=>{ if(order.length) openPay(); });
+$('#mClose').addEventListener('click', ()=> scrim.classList.remove('open'));
+scrim.addEventListener('click', e=>{ if(e.target===scrim) scrim.classList.remove('open'); });
+
+function setTender(t){
+  payMode=t;
+  document.querySelectorAll('.tender').forEach(x=>x.classList.toggle('sel',x.dataset.t===t));
+  const map={card:'Card payment',cash:'Cash payment',split:'Split payment'};
+  const lab={card:'Take card payment',cash:'Confirm cash',split:'Continue to split'};
+  $('#mMode').textContent=map[t]; $('#mDoneLab').textContent=lab[t];
+}
+document.querySelectorAll('.tender').forEach(b=> b.addEventListener('click',()=>setTender(b.dataset.t)));
+
+/* keypad */
+const keys=['1','2','3','4','5','6','7','8','9','C','0','⌫'];
+$('#keypad').innerHTML=keys.map(k=>`<button class="key ${(k==='C'||k==='⌫')?'fn':''}" data-k="${k}">${k}</button>`).join('');
+$('#keypad').addEventListener('click', e=>{
+  const b=e.target.closest('.key'); if(!b) return;
+  const k=b.dataset.k;
+  if(k==='C') amtStr='';
+  else if(k==='⌫') amtStr=amtStr.slice(0,-1);
+  else amtStr=(amtStr+k).slice(0,7);
+  const val = amtStr? (parseInt(amtStr,10)/100):0;
+  $('#amtField').textContent = amtStr? gbp(val) : $('#mGrand').textContent;
+});
+
+$('#mDone').addEventListener('click', ()=>{
+  const net = recompute().net;
+  $('#doneSub').textContent = `${gbp(net)} · ${payMode==='cash'?'Cash':payMode==='split'?'Split':'Card'} · Receipt sent`;
+  $('#doneCard').classList.add('show');
+});
+$('#newSale').addEventListener('click', ()=>{
+  scrim.classList.remove('open');
+  order=[]; discount=0; $('#discBtn').classList.remove('on'); renderOrder();
+});
+
+/* ============ MISC ============ */
+$('#addCust').addEventListener('click', ()=> showToast('Customer lookup opened'));
+let toastT;
+function showToast(msg){
+  $('#toastTx').textContent=msg;
+  const t=$('#toast'); t.classList.add('show');
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),1600);
+}
+function tick(){
+  const d=new Date();
+  $('#clock').textContent = d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+}
+tick(); setInterval(tick,10000);
+
+/* init */
+renderProducts();
+renderOrder();
+/* seed a couple of items so the order looks alive on first load */
+addToOrder(1); addToOrder(14); addToOrder(1);
+</script>
+</body>
+</html>
