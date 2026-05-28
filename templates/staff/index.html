@@ -684,11 +684,67 @@ button{cursor:pointer;border:0;background:none}
 .pdc-new{background:var(--blue);color:#fff}
 .pdc-new:hover{background:var(--blue-600)}
 
+/* Sale stages: the mode picker and the details form take the full pane,
+   so they're grid items that span both columns. Catalog + ticket use the
+   1fr 392px layout for the menu stage. Visibility is driven by [hidden]. */
+.sale-stage{grid-column:1 / -1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:32px 24px 40px}
+.sale-stage[hidden]{display:none}
+.catalog[hidden],.ticket[hidden]{display:none}
+.stage-inner{width:100%;max-width:760px;display:flex;flex-direction:column;gap:18px}
+.stage-inner h1{font-size:26px;font-weight:800;letter-spacing:-.025em;text-align:center;margin-top:8px}
+.stage-sub{color:var(--muted);font-size:14px;font-weight:500;text-align:center;margin:-6px 0 8px}
+
+.mode-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:6px}
+.mode-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:24px 22px;display:flex;flex-direction:column;gap:8px;text-align:left;
+  box-shadow:var(--sh-sm);transition:.18s cubic-bezier(.4,0,.2,1);min-height:160px;cursor:pointer;
+}
+.mode-card:hover{transform:translateY(-3px);box-shadow:var(--sh);border-color:#CFE0F6}
+.mode-card:active{transform:translateY(0) scale(.985)}
+.mode-card .mode-ic{font-size:36px;line-height:1}
+.mode-card .mode-name{font-size:18px;font-weight:800;letter-spacing:-.02em;margin-top:6px}
+.mode-card .mode-desc{font-size:13px;color:var(--muted);font-weight:500;line-height:1.4}
+
+/* Customer details form */
+.stage-form{max-width:520px}
+.stage-head{display:flex;align-items:center;gap:12px;position:relative}
+.stage-back{
+  background:var(--panel);border:1px solid var(--line);border-radius:11px;
+  height:38px;padding:0 14px;font-size:13px;font-weight:600;color:var(--ink-2);
+  box-shadow:var(--sh-sm);transition:.15s;
+}
+.stage-back:hover{border-color:var(--blue);color:var(--blue)}
+.stage-head h1{flex:1;text-align:center;margin-right:80px;font-size:22px}
+#saleForm{display:flex;flex-direction:column;gap:14px;margin-top:4px}
+.field{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--ink-2)}
+.field em{color:var(--muted);font-style:normal;font-weight:500}
+.field input{
+  height:46px;border:1px solid var(--line);border-radius:12px;background:var(--panel);
+  padding:0 14px;font-size:15px;font-weight:500;color:var(--ink);
+  box-shadow:var(--sh-sm);transition:.15s;font-family:var(--sans);
+}
+.field input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-tint)}
+.form-error{color:var(--red);font-size:13px;font-weight:600;min-height:18px;margin:-4px 0}
+.form-continue{
+  height:54px;border-radius:14px;
+  background:linear-gradient(135deg,#0A86FF,#0070F0 60%,#0058C4);color:#fff;
+  font-size:15px;font-weight:800;letter-spacing:-.01em;
+  box-shadow:0 10px 24px rgba(0,112,240,.34);transition:.18s;border:0;margin-top:6px;
+}
+.form-continue:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(0,112,240,.42)}
+.form-continue:active{transform:translateY(0)}
+.form-continue:disabled{background:#C7D4E3;box-shadow:none;cursor:not-allowed;transform:none}
+
 /* Sale: responsive */
 @media(max-width:980px){
   .sale{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) minmax(0,46vh)}
   .catalog{padding:0 14px 8px}
   .ticket{margin:0 14px 14px}
+  /* On narrow layouts the stage panels stop being grid items - they fill the
+     stacked rows instead, so the row 2 (ticket) collapses to height 0 and
+     the stage gets the whole pane. */
+  .sale-stage{grid-column:1;grid-row:1 / -1}
 }
 
 /* Small screens — collapse rail to horizontal top strip */
@@ -800,7 +856,71 @@ button{cursor:pointer;border:0;background:none}
     </main>
 
     <section class="sale" id="saleView" hidden aria-label="Counter sale">
-      <div class="catalog">
+      <!-- Stage 1: pick the sale mode (walk in / collection / delivery) -->
+      <div class="sale-stage" id="saleStageMode">
+        <div class="stage-inner">
+          <h1>New sale</h1>
+          <p class="stage-sub">Who's this order for?</p>
+          <div class="mode-options">
+            <button type="button" class="mode-card" data-mode="walkin">
+              <span class="mode-ic" aria-hidden="true">🚶</span>
+              <span class="mode-name">Walk in</span>
+              <span class="mode-desc">Anonymous counter sale — no details needed.</span>
+            </button>
+            <button type="button" class="mode-card" data-mode="collection">
+              <span class="mode-ic" aria-hidden="true">🛍️</span>
+              <span class="mode-name">Collection</span>
+              <span class="mode-desc">Customer collects later — take a name &amp; phone.</span>
+            </button>
+            <button type="button" class="mode-card" data-mode="delivery">
+              <span class="mode-ic" aria-hidden="true">🛵</span>
+              <span class="mode-name">Delivery</span>
+              <span class="mode-desc">Send it out — needs address &amp; phone.</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stage 2: customer details form (delivery / collection only) -->
+      <div class="sale-stage" id="saleStageForm" hidden>
+        <div class="stage-inner stage-form">
+          <div class="stage-head">
+            <button type="button" class="stage-back" id="saleFormBack">← Back</button>
+            <h1 id="saleFormTitle">Customer details</h1>
+          </div>
+          <form id="saleForm" autocomplete="off" novalidate>
+            <label class="field">
+              <span>Customer name</span>
+              <input type="text" id="cfName" required maxlength="60" />
+            </label>
+            <label class="field">
+              <span>Phone</span>
+              <input type="tel" id="cfPhone" required inputmode="tel" maxlength="30" />
+            </label>
+            <label class="field" id="cfL1Field" hidden>
+              <span>Address line 1</span>
+              <input type="text" id="cfL1" maxlength="120" />
+            </label>
+            <label class="field" id="cfL2Field" hidden>
+              <span>Address line 2 <em>(optional)</em></span>
+              <input type="text" id="cfL2" maxlength="120" />
+            </label>
+            <label class="field" id="cfPcField" hidden>
+              <span>Postcode</span>
+              <input type="text" id="cfPc" maxlength="10" autocapitalize="characters" />
+            </label>
+            <label class="field" id="cfNotesField" hidden>
+              <span>Driver notes <em>(optional)</em></span>
+              <input type="text" id="cfNotes" maxlength="280" />
+            </label>
+            <div class="form-error" id="cfError" aria-live="polite"></div>
+            <button type="submit" class="form-continue" id="cfContinue">Continue to menu →</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Stage 3: catalog + ticket -->
+      <div class="catalog" id="saleCatalog" hidden>
         <div class="searchwrap">
           <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
           <input class="search-input" id="saleSearch" placeholder="Search the menu…" autocomplete="off" />
@@ -811,18 +931,19 @@ button{cursor:pointer;border:0;background:none}
         </div>
       </div>
 
-      <div class="ticket">
+      <div class="ticket" id="saleTicket" hidden>
         <div class="ticket-head">
           <div>
             <div class="t-title">Current order <span class="t-count" id="saleCount">0</span></div>
-            <div class="t-sub">Counter sale · cash</div>
+            <div class="t-sub" id="saleModeSub">Walk in · cash</div>
           </div>
-          <button class="t-clear" id="saleClear">Clear</button>
+          <button class="t-clear" id="saleChangeMode" type="button" title="Cancel sale and start over">Change</button>
         </div>
         <div class="t-lines" id="saleLines"></div>
         <div class="ticket-foot">
           <div class="t-totals">
             <div class="trow"><span>Subtotal</span><span class="mono" id="saleSub">£0.00</span></div>
+            <div class="trow" id="saleDeliveryRow" hidden><span>Delivery</span><span class="mono" id="saleDelivery">£0.00</span></div>
             <div class="trow" id="saleFeeRow" hidden><span>Service fee</span><span class="mono" id="saleFee">£0.00</span></div>
             <div class="trow grand"><span>Total</span><span class="mono" id="saleGrand">£0.00</span></div>
           </div>
@@ -1892,22 +2013,127 @@ const sale = {
   menu: [],             // /api/menu — canonical priceP per item (pence)
   visual: [],           // /menu-visual.json — category icons / display names
   byId: new Map(),      // item id -> canonical item
-  serviceFeeP: 0,       // mirrors config.serviceFeePence so the till shows the same line item the server adds
+  config: null,         // /api/config — for delivery fee + serviceFeeP
+  serviceFeeP: 0,
   activeCat: 'all',
   search: '',
   cart: [],             // [{id, qty}] — modifiers/meal/spice not in V1
   submitting: false,
-  pay: { tenderedP: 0 },// keypad-entered cash amount in pence
+  pay: { tenderedP: 0 },
+  stage: 'mode',        // 'mode' | 'form' | 'menu'
+  mode: 'walkin',       // 'walkin' | 'collection' | 'delivery'
+  customer: null,       // {name, phone, address?:{line1,line2,postcode,notes}} once captured
+  deliveryFeeP: 0,      // resolved client-side from config.feeByOutcode for display (server is authoritative)
 };
 
 async function initSaleView() {
   // Lazy: only load the menu the first time Sale is opened.
   if (!sale.ready && !sale.loading) await loadSaleData();
+  // Always start at mode pick when the user hits Sale — even when they come
+  // back to the tab — unless an order is already in progress.
+  if (sale.cart.length === 0 && sale.stage !== 'menu') {
+    setSaleStage('mode');
+  } else {
+    setSaleStage(sale.stage);
+  }
   renderSaleCats();
   renderSaleProducts();
   renderSaleTicket();
-  // Defer focus so it doesn't fight the tab-switch animation.
-  setTimeout(() => { const s = $('#saleSearch'); if (s && document.activeElement !== s) s.blur(); }, 0);
+}
+
+function setSaleStage(stage) {
+  sale.stage = stage;
+  $('#saleStageMode').hidden = stage !== 'mode';
+  $('#saleStageForm').hidden = stage !== 'form';
+  $('#saleCatalog').hidden = stage !== 'menu';
+  $('#saleTicket').hidden = stage !== 'menu';
+  if (stage === 'form') setTimeout(() => $('#cfName').focus(), 50);
+  if (stage === 'menu') renderSaleTicket();
+}
+
+function pickSaleMode(mode) {
+  sale.mode = mode;
+  if (mode === 'walkin') {
+    sale.customer = null;
+    sale.deliveryFeeP = 0;
+    setSaleStage('menu');
+    return;
+  }
+  // Reset the form when entering it.
+  $('#cfError').textContent = '';
+  $('#cfName').value = '';
+  $('#cfPhone').value = '';
+  $('#cfL1').value = '';
+  $('#cfL2').value = '';
+  $('#cfPc').value = '';
+  $('#cfNotes').value = '';
+  const isDelivery = mode === 'delivery';
+  $('#cfL1Field').hidden = !isDelivery;
+  $('#cfL2Field').hidden = !isDelivery;
+  $('#cfPcField').hidden = !isDelivery;
+  $('#cfNotesField').hidden = !isDelivery;
+  $('#saleFormTitle').textContent = isDelivery ? 'Delivery details' : 'Collection details';
+  $('#cfContinue').textContent = 'Continue to menu →';
+  setSaleStage('form');
+}
+
+$$('#saleStageMode .mode-card').forEach(b =>
+  b.addEventListener('click', () => pickSaleMode(b.dataset.mode))
+);
+
+$('#saleFormBack').addEventListener('click', () => setSaleStage('mode'));
+
+$('#saleForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const name = $('#cfName').value.trim();
+  const phone = $('#cfPhone').value.trim();
+  if (name.length < 2) { return formError('Please enter the customer\'s name.'); }
+  if (phone.length < 6) { return formError('Please enter a contact phone number.'); }
+  const customer = { name, phone };
+  if (sale.mode === 'delivery') {
+    const line1 = $('#cfL1').value.trim();
+    const postcode = $('#cfPc').value.trim().toUpperCase();
+    if (line1.length < 2) return formError('Please enter the delivery address.');
+    if (postcode.length < 5) return formError('Please enter a valid postcode.');
+    customer.address = {
+      line1,
+      line2: $('#cfL2').value.trim(),
+      postcode,
+      notes: $('#cfNotes').value.trim(),
+    };
+    sale.deliveryFeeP = lookupDeliveryFeeP(postcode);
+  } else {
+    sale.deliveryFeeP = 0;
+  }
+  sale.customer = customer;
+  setSaleStage('menu');
+});
+
+function formError(msg) {
+  $('#cfError').textContent = msg;
+}
+
+// Client-side preview of the delivery fee (outcode-mode only). Server still
+// owns the authoritative number via resolveDelivery — this is just so the
+// till's totals match before the order is submitted.
+function lookupDeliveryFeeP(postcode) {
+  if (!sale.config?.fulfillment?.delivery) return 0;
+  const d = sale.config.fulfillment.delivery;
+  if ((d.mode || 'outcode') !== 'outcode') return d.feePence || 0;
+  const outcode = postcode.replace(/\s+/g, '').slice(0, -3);
+  const override = d.feeByOutcode?.[outcode];
+  return Number.isFinite(override) ? override : (d.feePence || 0);
+}
+
+function modeSubLine() {
+  if (sale.mode === 'walkin') return 'Walk in · cash';
+  const who = sale.customer?.name || '';
+  if (sale.mode === 'collection') return `Collection — ${who} · cash`;
+  if (sale.mode === 'delivery') {
+    const pc = sale.customer?.address?.postcode || '';
+    return `Delivery to ${pc} — ${who} · cash`;
+  }
+  return 'Counter sale · cash';
 }
 
 async function loadSaleData() {
@@ -1923,6 +2149,7 @@ async function loadSaleData() {
     const cfg = configRes && configRes.ok ? await configRes.json() : null;
     sale.menu = Array.isArray(menu) ? menu : [];
     sale.visual = Array.isArray(visual) ? visual : [];
+    sale.config = cfg;
     sale.serviceFeeP = cfg && Number.isFinite(cfg.serviceFeePence) ? cfg.serviceFeePence : 0;
     sale.byId.clear();
     for (const cat of sale.menu) {
@@ -1991,7 +2218,10 @@ function cartSubP() {
   }
   return s;
 }
-function cartTotalP() { return cartSubP() + (sale.cart.length ? sale.serviceFeeP : 0); }
+function cartTotalP() {
+  if (!sale.cart.length) return 0;
+  return cartSubP() + sale.serviceFeeP + (sale.mode === 'delivery' ? sale.deliveryFeeP : 0);
+}
 
 function renderSaleTicket() {
   const wrap = $('#saleLines');
@@ -2033,12 +2263,20 @@ function renderSaleTicket() {
   $('#saleGrand').textContent = `£${(totalP / 100).toFixed(2)}`;
   $('#saleChargeAmt').textContent = `£${(totalP / 100).toFixed(2)}`;
   $('#saleCharge').disabled = sale.cart.length === 0;
+  $('#saleModeSub').textContent = modeSubLine();
   const feeRow = $('#saleFeeRow');
   if (sale.serviceFeeP > 0 && sale.cart.length) {
     feeRow.hidden = false;
     $('#saleFee').textContent = `£${(sale.serviceFeeP / 100).toFixed(2)}`;
   } else {
     feeRow.hidden = true;
+  }
+  const delRow = $('#saleDeliveryRow');
+  if (sale.mode === 'delivery' && sale.cart.length) {
+    delRow.hidden = false;
+    $('#saleDelivery').textContent = `£${(sale.deliveryFeeP / 100).toFixed(2)}`;
+  } else {
+    delRow.hidden = true;
   }
 }
 
@@ -2087,9 +2325,15 @@ $('#saleLines').addEventListener('click', (e) => {
   else if (b.dataset.act === 'rm') sale.cart.splice(i, 1);
   renderSaleTicket();
 });
-$('#saleClear').addEventListener('click', () => {
-  if (!sale.cart.length) return;
-  if (confirm('Clear this order?')) clearCart();
+$('#saleChangeMode').addEventListener('click', () => {
+  // Cancels the in-progress sale entirely: drops the cart and the captured
+  // customer, returns to the mode picker. Confirm so a stray tap doesn't bin
+  // a half-built ticket.
+  if (sale.cart.length && !confirm('Cancel this sale and start over?')) return;
+  clearCart();
+  sale.customer = null;
+  sale.deliveryFeeP = 0;
+  setSaleStage('mode');
 });
 
 // Charge -> payment modal
@@ -2168,10 +2412,15 @@ $('#payConfirm').addEventListener('click', async () => {
   $('#payConfirm').querySelector('span').textContent = 'Sending…';
   try {
     const items = sale.cart.map(c => ({ id: c.id, qty: c.qty }));
+    const payload = { items, mode: sale.mode };
+    if (sale.customer) {
+      payload.customer = { name: sale.customer.name, phone: sale.customer.phone };
+      if (sale.customer.address) payload.address = sale.customer.address;
+    }
     const res = await fetch('/api/staff/counter-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items }),
+      body: JSON.stringify(payload),
     });
     const data = await res.json().catch(() => ({}));
     if (res.status === 401) { $('#logoutBtn').click(); return; }
@@ -2201,6 +2450,9 @@ $('#payConfirm').addEventListener('click', async () => {
 
 $('#payNewSale').addEventListener('click', () => {
   clearCart();
+  sale.customer = null;
+  sale.deliveryFeeP = 0;
+  setSaleStage('mode');
   closePayModal();
 });
 

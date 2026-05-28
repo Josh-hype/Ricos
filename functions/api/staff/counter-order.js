@@ -1,20 +1,32 @@
 /* POST /api/staff/counter-order — record an in-person till sale (PIN-gated).
    The till is the EPOS Sale view: staff tap items, take payment at the
-   counter, and submit here. The client sends item ids + qty + modifiers,
-   NEVER prices — we recompute totals from the canonical menu so the till
-   can't be tampered with into selling at the wrong price.
+   counter, and submit here. The client sends item ids + qty + modifiers
+   plus a sale mode (walkin / collection / delivery) and any customer
+   details — NEVER prices, so the till can't be tampered with into
+   selling at the wrong price; we recompute totals from the canonical
+   menu.
 
-   The order is persisted with status='accepted' and payment.state='paid' so
-   it lands on Live (already accepted — staff just took the payment, no
-   second-stage accept dialog needed) and counts in Today / Z report
-   alongside web orders. paymentMethod is 'counter_cash' for now; when the
-   Stripe Terminal SDK lands for the Sunmi T2 reader, that'll grow a
+   Modes:
+     walkin     — anonymous counter sale, fulfillment 'collection'
+     collection — named pickup, fulfillment 'collection' (customer phone
+                  so the kitchen can call when ready)
+     delivery   — sent out, fulfillment 'delivery' (address validated via
+                  resolveDelivery, delivery fee applied)
+
+   The order is persisted with status='accepted' and payment.state='paid'
+   so it lands on Live (already accepted — staff just took the payment,
+   no second-stage accept dialog needed) and counts in Today / Z report
+   alongside web orders. paymentMethod is 'counter_cash' for now; when
+   the Stripe Terminal SDK lands for the Sunmi T2 reader, that'll grow a
    'counter_card' branch. */
 
 import { requireStaff } from '../../_lib/auth.js';
 import { getConfig } from '../../_lib/config.js';
 import { computeTotals } from '../../_lib/totals.js';
+import { resolveDelivery } from '../../_lib/delivery.js';
 import { putOrder, newOrderId } from '../../_lib/kv.js';
+
+const MODES = new Set(['walkin', 'collection', 'delivery']);
 
 export const onRequestPost = async ({ request, env }) => {
   const denied = await requireStaff(request, env);
@@ -27,13 +39,45 @@ export const onRequestPost = async ({ request, env }) => {
   const items = Array.isArray(body.items) ? body.items : [];
   if (items.length === 0) return err('Add at least one item before charging.', 400);
 
+  const mode = MODES.has(body.mode) ? body.mode : 'walkin';
+  const fulfillment = mode === 'delivery' ? 'delivery' : 'collection';
   const config = getConfig();
-  // Counter sales are collection (handed over the counter); suppressPromo so
-  // the 10% online discount doesn't apply in person.
+
+  // Customer. Walk-ins get a placeholder; collection / delivery need a name
+  // and phone so the kitchen can chase if there's a problem.
+  const rawName = String(body.customer?.name || '').trim().slice(0, 60);
+  const rawPhone = String(body.customer?.phone || '').trim().slice(0, 30);
+  const name = rawName || (mode === 'walkin' ? 'Walk-in' : '');
+  if (mode !== 'walkin' && name.length < 2) return err('Customer name is required.', 400);
+  if (mode !== 'walkin' && rawPhone.length < 6) return err('Customer phone is required.', 400);
+
+  // Delivery: validate address + resolve fee via the same path the website uses.
+  let address = null;
+  let deliveryFeeP = null;
+  if (mode === 'delivery') {
+    if (!config.fulfillment.delivery.enabled) {
+      return err('Delivery is not configured for this shop.', 400);
+    }
+    const dq = await resolveDelivery(body.address?.postcode, config);
+    if (!dq.ok) return err(dq.reason, 400);
+    deliveryFeeP = dq.feePence;
+    const line1 = String(body.address?.line1 || '').trim().slice(0, 120);
+    if (line1.length < 2) return err('Please enter a delivery address.', 400);
+    address = {
+      line1,
+      line2: String(body.address?.line2 || '').trim().slice(0, 120),
+      city: config.business.address.city,
+      postcode: dq.postcode,
+      notes: String(body.address?.notes || '').trim().slice(0, 280),
+    };
+  }
+
+  // Counter sales pay menu price face-to-face — the 10% online discount
+  // doesn't apply. Server still owns the maths.
   const totals = computeTotals(
-    { items, fulfillment: 'collection' },
+    { items, fulfillment, deliveryAddress: address ? { postcode: address.postcode } : undefined },
     config,
-    { suppressPromo: true },
+    { suppressPromo: true, deliveryFeeP: deliveryFeeP ?? undefined },
   );
   if (!totals.ok) return err(totals.reason, 400);
 
@@ -44,23 +88,22 @@ export const onRequestPost = async ({ request, env }) => {
   const readyAt = new Date(Date.now() + prepMin * 60000).toISOString();
 
   const id = newOrderId();
-  const name = String(body.customerName || '').trim().slice(0, 60) || 'Counter sale';
   const order = {
     id,
     createdAt: at,
     status: 'accepted',
-    source: 'counter',
-    fulfillment: 'collection',
+    source: `counter-${mode}`,
+    fulfillment,
     schedule: 'asap',
     readyAt,
-    customer: { name, email: '', phone: '' },
-    address: null,
+    customer: { name, email: '', phone: rawPhone },
+    address,
     totals,
     paymentMethod: 'counter_cash',
     payment: { state: 'paid', paidAt: at, tender: 'cash' },
     marketing: { email: false, sms: false },
     history: [
-      { at, event: 'created', source: 'counter' },
+      { at, event: 'created', source: `counter-${mode}` },
       { at, event: 'paid', tender: 'cash' },
       { at, event: 'accepted', readyAt },
     ],
