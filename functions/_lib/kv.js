@@ -80,11 +80,18 @@ export async function listActiveOrders(env, { limit = 100 } = {}) {
     if (status && KITCHEN_VISIBLE_STATUSES.has(status)) {
       const raw = await env.ORDERS_KV.get(k.name);
       if (raw) {
-        try { active.push(JSON.parse(raw)); } catch {}
+        try {
+          const o = JSON.parse(raw);
+          // Re-check the body status; the list metadata can briefly lag the
+          // actual order doc and we don't want completed/cancelled orders to
+          // leak onto Live in those windows.
+          if (KITCHEN_VISIBLE_STATUSES.has(o.status)) active.push(o);
+        } catch {}
       }
     }
   }
-  active.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  // Newest first — the kitchen wants the latest order on the left.
+  active.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   return active;
 }
 

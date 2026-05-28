@@ -191,13 +191,12 @@ button{cursor:pointer;border:0;background:none}
 .card{
   background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
   padding:16px;display:flex;flex-direction:column;gap:10px;
-  box-shadow:var(--sh-sm);position:relative;transition:.16s;animation:cardIn .35s cubic-bezier(.16,1,.3,1) both;
+  box-shadow:var(--sh-sm);position:relative;transition:.16s;
 }
-@keyframes cardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .card:hover{box-shadow:var(--sh)}
 .card.new{
   border-color:var(--amber-bg);background:#FFFCF3;
-  animation:cardIn .35s cubic-bezier(.16,1,.3,1) both, blink 1.2s ease-in-out 4 .5s;
+  animation:blink 1.2s ease-in-out 4;
 }
 @keyframes blink{
   0%,100%{box-shadow:0 0 0 0 rgba(244,168,46,.4)}
@@ -497,7 +496,7 @@ button{cursor:pointer;border:0;background:none}
 
 /* Reduce motion */
 @media (prefers-reduced-motion:reduce){
-  .card.new,.pulse,.ovl.alarm .modal,.tab{animation:none !important}
+  .card.new,.pulse,.ovl.alarm .modal{animation:none !important}
 }
 
 /* Small screens — collapse rail to horizontal top strip */
@@ -791,7 +790,12 @@ function setView(view) {
   if (view === 'done') loadDone();
   else if (view === 'summary') loadSummary(false);
   else if (view === 'zreport') loadReport(false);
-  else renderList(state.orders);
+  else {
+    renderList(state.orders);
+    // Keep the live-render signature in step with what's on screen so the
+    // next poll's no-change skip works correctly.
+    state.lastLiveSig = liveSignature(state.orders);
+  }
 }
 $$('.tab').forEach(t => t.addEventListener('click', () => setView(t.dataset.view)));
 $('#refreshBtn').addEventListener('click', () => {
@@ -891,6 +895,16 @@ async function poll() {
   }
 }
 
+// Signature of the Live grid — used to skip re-rendering when nothing visible
+// has changed, so the 5s poll doesn't flash the cards. Includes everything a
+// card actually shows: id/status/readyAt/refund-amount, plus the late flag
+// (which is time-based, so it flips this on its own at the right moment).
+function liveSignature(orders) {
+  return orders.map(o =>
+    `${o.id}:${o.status}:${o.readyAt || ''}:${(o.payment && o.payment.refundedTotalP) || 0}:${isLate(o) ? 'L' : ''}`
+  ).join('|');
+}
+
 function handleOrders(orders) {
   const newIds = orders
     .filter(o => o.status === 'pending_accept' && !state.seenIds.has(o.id))
@@ -899,10 +913,15 @@ function handleOrders(orders) {
 
   state.orders = orders;
   $('#liveCount').textContent = orders.length;
-  // Only repaint the grid when the Live tab is showing; the Recent tab keeps
-  // its own list. Polling continues in the background so the alarm still fires
-  // even while staff are looking at history.
-  if (state.view === 'live') renderList(orders, newIds);
+  // Only repaint the Live grid when something visible has actually changed —
+  // keeps polling silent in the background instead of re-rendering every 5s.
+  if (state.view === 'live') {
+    const sig = liveSignature(orders);
+    if (sig !== state.lastLiveSig || newIds.length) {
+      state.lastLiveSig = sig;
+      renderList(orders, newIds);
+    }
+  }
   // The repeating alarm + popup are driven entirely by whether any orders are
   // still waiting to be accepted — that set IS the queue.
   syncAlarm();
