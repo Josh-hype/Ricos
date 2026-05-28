@@ -3,12 +3,16 @@
    range; pending_payment (card never paid) and cancelled orders are excluded
    from the money but still surfaced as counts. Also returns a compact order log
    so the Z-report view can list every order in the range. */
-import { requireStaff } from '../../_lib/auth.js';
+import { requireStaff, requireManager } from '../../_lib/auth.js';
 import { listOrdersBetween, resolveDayRange } from '../../_lib/kv.js';
 
 export const onRequestGet = async ({ request, env }) => {
   const denied = await requireStaff(request, env);
   if (denied) return denied;
+  // Financial views are manager-gated when MANAGER_PIN_HASH is configured.
+  // Shops that haven't set one keep the old behaviour (any staff can view).
+  const mgrDenied = await requireManager(request, env);
+  if (mgrDenied) return mgrDenied;
 
   const { from, to } = resolveDayRange(new URL(request.url));
   const orders = await listOrdersBetween(env, from, to);

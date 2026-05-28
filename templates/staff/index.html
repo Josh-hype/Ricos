@@ -1095,6 +1095,23 @@ button{cursor:pointer;border:0;background:none}
   </div>
 </div>
 
+<!-- ============================== Manager PIN modal (Today / Z report)
+     Shown when staff opens a financial view and the shop has
+     MANAGER_PIN_HASH configured. Skipped silently for shops that haven't
+     enabled the gate. -->
+<div class="ovl" id="mgrOvl" role="dialog" aria-modal="true" aria-labelledby="mgrTitle">
+  <div class="modal">
+    <h2 id="mgrTitle">Manager PIN</h2>
+    <p style="color:var(--muted);font-size:13.5px;font-weight:500;margin-bottom:14px;text-align:center">Today's summary and the Z report are manager-only.</p>
+    <input type="number" inputmode="numeric" pattern="[0-9]*" class="pin-input" id="mgrPin" maxlength="8" placeholder="••••" />
+    <div class="pin-error" id="mgrError" aria-live="polite"></div>
+    <div class="row">
+      <button class="cancel" id="mgrCancel" type="button">Cancel</button>
+      <button class="confirm" id="mgrConfirm" type="button">Unlock</button>
+    </div>
+  </div>
+</div>
+
 <!-- ============================== Item-detail modal (Sale view)
      Mirrors the website's item modal: spice level, option groups, meal
      upgrade + meal-choice dropdowns. Built dynamically per item. -->
@@ -1218,12 +1235,17 @@ const state = {
   alarmHandle: null,   // setInterval for the repeating new-order chime
   alarmId: null,       // order id currently shown in the alarm popup
   alarmMin: 25,        // prep minutes selected in the alarm popup
-  view: 'live',        // live | summary | zreport
+  view: 'live',        // live | summary | zreport | sale
   summaryOrders: [],   // cache of today's orders shown under the Today view
   lastSummarySig: '',  // skip re-render when nothing changed (keeps cards still)
   from: '',            // selected London-day range (Z report)
   to: '',
+  managerUnlocked: false, // optimistic flag — server still validates via the manager cookie
+  pendingMgrTarget: null, // tab we're trying to open behind the manager PIN gate
 };
+
+const IDLE_MS = 90 * 1000;
+let idleHandle = null;
 
 function setSoundLabel() {
   $('#soundToggle').textContent = state.soundOn ? '🔔 On' : '🔕 Off';
@@ -1285,7 +1307,14 @@ function setView(view) {
     state.lastLiveSig = liveSignature(state.orders);
   }
 }
-$$('.tab').forEach(t => t.addEventListener('click', () => setView(t.dataset.view)));
+$$('.tab').forEach(t => t.addEventListener('click', () => {
+  const v = t.dataset.view;
+  if ((v === 'summary' || v === 'zreport') && !state.managerUnlocked) {
+    openManagerModal(v);
+    return;
+  }
+  setView(v);
+}));
 $('#refreshBtn').addEventListener('click', () => {
   $('#refreshBtn').classList.add('spin');
   setTimeout(() => $('#refreshBtn').classList.remove('spin'), 500);
@@ -1335,7 +1364,14 @@ $('#pinForm').addEventListener('submit', async (e) => {
 
 $('#logoutBtn').addEventListener('click', () => {
   document.cookie = 'rs=; Max-Age=0; Path=/; Secure; SameSite=Lax';
+  // Drop the manager session too so the next person at the till has to
+  // re-enter both PINs to view financials. Fire-and-forget — server clears
+  // the HttpOnly cookie via Set-Cookie on the response.
+  fetch('/api/staff/manager-logout', { method: 'POST', cache: 'no-store' }).catch(() => {});
+  state.managerUnlocked = false;
   if (state.pollHandle) clearInterval(state.pollHandle);
+  if (idleHandle) { clearTimeout(idleHandle); idleHandle = null; }
+  state.authed = false;
   stopAlarm();
   $('#alarmOvl').classList.remove('open');
   state.alarmId = null;
@@ -1356,6 +1392,7 @@ function enterDashboard() {
   }
   poll();
   state.pollHandle = setInterval(poll, 5000);
+  resetIdle();
 }
 
 /* ============================== Poll + render */
@@ -1484,6 +1521,12 @@ async function loadSummary(silent) {
   try {
     const res = await fetch('/api/staff/summary', { cache: 'no-store' });
     if (res.status === 401) { $('#logoutBtn').click(); return; }
+    if (res.status === 403) {
+      // Manager cookie expired or never set on this device — re-prompt.
+      state.managerUnlocked = false;
+      if (!silent) openManagerModal('summary');
+      return;
+    }
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     data = await res.json();
   } catch (e) {
@@ -1506,6 +1549,11 @@ async function loadReport(silent) {
   try {
     const res = await fetch(`/api/staff/summary?from=${state.from}&to=${state.to}`, { cache: 'no-store' });
     if (res.status === 401) { $('#logoutBtn').click(); return; }
+    if (res.status === 403) {
+      state.managerUnlocked = false;
+      if (!silent) openManagerModal('zreport');
+      return;
+    }
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     data = await res.json();
   } catch (e) {
@@ -2821,6 +2869,90 @@ $('#payNewSale').addEventListener('click', () => {
   setSaleStage('mode');
   closePayModal();
 });
+
+/* ============================== Manager PIN (Today + Z report)
+   Both views hit /api/staff/summary; the server returns 403 with
+   error: 'manager-locked' when MANAGER_PIN_HASH is configured and the
+   manager cookie isn't present, and we prompt here. Shops without the
+   env var set get 200s directly and never see this modal. */
+
+function openManagerModal(targetView) {
+  state.pendingMgrTarget = targetView;
+  $('#mgrPin').value = '';
+  $('#mgrError').textContent = '';
+  $('#mgrOvl').classList.add('open');
+  setTimeout(() => $('#mgrPin').focus(), 50);
+}
+function closeManagerModal() {
+  state.pendingMgrTarget = null;
+  $('#mgrOvl').classList.remove('open');
+}
+$('#mgrCancel').addEventListener('click', closeManagerModal);
+$('#mgrOvl').addEventListener('click', (e) => { if (e.target.id === 'mgrOvl') closeManagerModal(); });
+$('#mgrPin').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#mgrConfirm').click(); });
+
+$('#mgrConfirm').addEventListener('click', async () => {
+  const pin = $('#mgrPin').value.trim();
+  if (!pin) { $('#mgrError').textContent = 'Enter the manager PIN.'; return; }
+  $('#mgrConfirm').disabled = true;
+  try {
+    const res = await fetch('/api/staff/manager-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.status === 401) { $('#mgrError').textContent = data.error || 'Wrong PIN.'; return; }
+    if (res.status === 429) { $('#mgrError').textContent = data.error || 'Too many attempts.'; return; }
+    if (res.status === 400 && data.error?.startsWith('Manager protection')) {
+      // The server says the gate isn't configured — treat as unlocked so the
+      // user can still get into the view they tried to open.
+      state.managerUnlocked = true;
+      const target = state.pendingMgrTarget;
+      closeManagerModal();
+      if (target) setView(target);
+      return;
+    }
+    if (!res.ok) { $('#mgrError').textContent = data.error || `Error ${res.status}`; return; }
+    state.managerUnlocked = true;
+    const target = state.pendingMgrTarget;
+    closeManagerModal();
+    if (target) setView(target);
+  } catch (e) {
+    $('#mgrError').textContent = 'Network error — try again.';
+  } finally {
+    $('#mgrConfirm').disabled = false;
+  }
+});
+
+/* ============================== Idle timer (90s)
+   Any pointer / key / touch / wheel input resets the timer. When it fires
+   we snap back to the Sale → mode picker, and end the manager session so
+   financials re-prompt next time. Polling for new web orders keeps running
+   in the background regardless of where the page lands. */
+function resetIdle() {
+  if (!state.authed) return;
+  if (idleHandle) clearTimeout(idleHandle);
+  idleHandle = setTimeout(onIdle, IDLE_MS);
+}
+function onIdle() {
+  // Stay put while staff is mid-task in any modal (accepting an order,
+  // refunding, taking payment, picking item options, entering a manager
+  // PIN). Re-arm so we check again 90s after they close it.
+  const modalOpen = $$('.ovl.open').length > 0;
+  if (modalOpen) { resetIdle(); return; }
+  // Drop manager unlock so the next visitor has to re-prove themselves.
+  if (state.managerUnlocked) {
+    fetch('/api/staff/manager-logout', { method: 'POST', cache: 'no-store' }).catch(() => {});
+    state.managerUnlocked = false;
+  }
+  // Force the Sale → mode picker (every Sale click already resets to that
+  // stage, so this matches the manual flow).
+  setView('sale');
+}
+['pointerdown', 'keydown', 'touchstart', 'wheel'].forEach(ev =>
+  document.addEventListener(ev, resetIdle, { capture: true, passive: true })
+);
 
 /* ============================== Auto-detect existing session */
 (async () => {
