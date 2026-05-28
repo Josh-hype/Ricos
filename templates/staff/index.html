@@ -505,7 +505,10 @@ button{cursor:pointer;border:0;background:none}
 .sale{flex:1;display:grid;grid-template-columns:1fr 392px;gap:0;min-height:0;overflow:hidden}
 @media(min-width:1400px){.sale{grid-template-columns:1fr 428px}}
 
-.catalog{display:flex;flex-direction:column;min-height:0;padding:0 8px 8px 24px}
+/* min-width:0 stops the catalog column from being forced wider by the
+   nowrap category chips inside (grid items default to min-width:auto,
+   which would otherwise push the ticket column off-screen). */
+.catalog{display:flex;flex-direction:column;min-height:0;min-width:0;padding:0 8px 8px 24px}
 .searchwrap{position:relative;margin-bottom:14px}
 .search-input{
   width:100%;height:50px;border-radius:14px;border:1px solid var(--line);background:var(--panel);
@@ -516,7 +519,7 @@ button{cursor:pointer;border:0;background:none}
 .search-input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-tint)}
 .search-ico{position:absolute;left:15px;top:50%;transform:translateY(-50%);width:20px;height:20px;color:var(--muted-2)}
 
-.cats{display:flex;gap:9px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.cats{display:flex;gap:9px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;min-width:0}
 .cats::-webkit-scrollbar{display:none}
 .cat-chip{
   height:38px;padding:0 14px;border-radius:11px;background:var(--panel);border:1px solid var(--line);
@@ -553,7 +556,7 @@ button{cursor:pointer;border:0;background:none}
 .ticket{
   background:var(--panel);margin:0 16px 16px 0;border-radius:var(--r-lg);
   border:1px solid var(--line);box-shadow:var(--sh);
-  display:flex;flex-direction:column;min-height:0;overflow:hidden;
+  display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden;
 }
 .ticket-head{padding:18px 20px 14px;border-bottom:1px solid var(--line-2);display:flex;align-items:center;justify-content:space-between;gap:10px}
 .t-title{font-size:15.5px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:9px}
