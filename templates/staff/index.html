@@ -558,13 +558,9 @@ button{cursor:pointer;border:0;background:none}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M3 9h18M7 21h10"/></svg>
         <span>Live <span class="tab-count" id="liveCount">0</span></span>
       </button>
-      <button class="tab" data-view="done" role="tab" title="Recent">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-        <span>Recent</span>
-      </button>
-      <button class="tab" data-view="summary" role="tab" title="Summary">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18M8 15l3-4 3 2 4-6"/></svg>
-        <span>Summary</span>
+      <button class="tab" data-view="summary" role="tab" title="Today's summary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <span>Today</span>
       </button>
       <button class="tab" data-view="zreport" role="tab" title="Z report">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 5h6M9 5a2 2 0 10-4 0M9 5H5a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2h-4M9 5a2 2 0 104 0M8 12h8M8 16h5"/></svg>
@@ -735,9 +731,10 @@ const state = {
   alarmHandle: null,   // setInterval for the repeating new-order chime
   alarmId: null,       // order id currently shown in the alarm popup
   alarmMin: 25,        // prep minutes selected in the alarm popup
-  view: 'live',        // live | done (Recent) | summary | zreport
-  doneOrders: [],      // cache for the Recent view
-  from: '',            // selected London-day range (Recent + Z report)
+  view: 'live',        // live | summary | zreport
+  summaryOrders: [],   // cache of today's orders shown under the Today view
+  lastSummarySig: '',  // skip re-render when nothing changed (keeps cards still)
+  from: '',            // selected London-day range (Z report)
   to: '',
 };
 
@@ -776,19 +773,17 @@ function applyRangeToInputs() {
   $('#dateTo').value = state.to;
 }
 function reloadRangeView() {
-  if (state.view === 'done') loadDone();
-  else if (state.view === 'zreport') loadReport(false);
+  if (state.view === 'zreport') loadReport(false);
 }
 
 /* ============================== View tabs */
 function setView(view) {
   state.view = view;
   $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === view));
-  const usesRange = (view === 'done' || view === 'zreport');
+  const usesRange = (view === 'zreport');
   $('#dateBar').hidden = !usesRange;
   if (usesRange) applyRangeToInputs();
-  if (view === 'done') loadDone();
-  else if (view === 'summary') loadSummary(false);
+  if (view === 'summary') loadSummary(false);
   else if (view === 'zreport') loadReport(false);
   else {
     renderList(state.orders);
@@ -801,8 +796,7 @@ $$('.tab').forEach(t => t.addEventListener('click', () => setView(t.dataset.view
 $('#refreshBtn').addEventListener('click', () => {
   $('#refreshBtn').classList.add('spin');
   setTimeout(() => $('#refreshBtn').classList.remove('spin'), 500);
-  if (state.view === 'done') loadDone();
-  else if (state.view === 'summary') loadSummary(false);
+  if (state.view === 'summary') loadSummary(false);
   else if (state.view === 'zreport') loadReport(false);
   else poll();
 });
@@ -930,13 +924,10 @@ function handleOrders(orders) {
 function renderList(list, newIds = []) {
   const grid = $('#grid');
   if (!list || list.length === 0) {
-    grid.innerHTML = state.view === 'done'
-      ? '<div class="empty">No completed or cancelled orders for the selected dates. Use the date bar above to pick another day or range.</div>'
-      : '<div class="empty">No active orders. Sit tight — they\'ll appear here as they come in.</div>';
+    grid.innerHTML = '<div class="empty">No active orders. Sit tight — they\'ll appear here as they come in.</div>';
     return;
   }
-  const collapsed = state.view === 'done';
-  grid.innerHTML = list.map(o => renderCard(o, newIds.includes(o.id), collapsed)).join('');
+  grid.innerHTML = list.map(o => renderCard(o, newIds.includes(o.id))).join('');
   wireCardButtons();
 }
 
@@ -983,36 +974,36 @@ function wireCardButtons() {
   });
 }
 
-async function loadDone() {
-  const grid = $('#grid');
-  grid.innerHTML = '<div class="empty">Loading orders…</div>';
-  try {
-    const res = await fetch(`/api/staff/orders?view=done&from=${state.from}&to=${state.to}`, { cache: 'no-store' });
-    if (res.status === 401) { $('#logoutBtn').click(); return; }
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    state.doneOrders = data.orders || [];
-  } catch (e) {
-    grid.innerHTML = '<div class="empty">Couldn\'t load orders. Tap ↻ to retry.</div>';
-    return;
-  }
-  if (state.view === 'done') renderList(state.doneOrders);
+// Signature for the Today view — same idea as liveSignature, so the background
+// poll doesn't reset open/expanded cards when nothing's actually changed.
+function summarySignature(data) {
+  const s = data && data.summary ? data.summary : {};
+  const ordSig = (data && data.orders ? data.orders : [])
+    .map(o => `${o.id}:${o.status}:${(o.payment && o.payment.refundedTotalP) || 0}`)
+    .join('|');
+  return `${s.grossP || 0}:${s.orderCount || 0}:${s.completed || 0}:${s.cancelled || 0}:${s.inProgress || 0}|${ordSig}`;
 }
 
 async function loadSummary(silent) {
   const grid = $('#grid');
   if (!silent) grid.innerHTML = '<div class="empty">Loading today\'s figures…</div>';
-  let s;
+  let data;
   try {
     const res = await fetch('/api/staff/summary', { cache: 'no-store' });
     if (res.status === 401) { $('#logoutBtn').click(); return; }
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    s = (await res.json()).summary;
+    data = await res.json();
   } catch (e) {
-    if (!silent) grid.innerHTML = '<div class="empty">Couldn\'t load the summary. Tap ↻ to retry.</div>';
+    if (!silent) grid.innerHTML = '<div class="empty">Couldn\'t load today\'s summary. Tap ↻ to retry.</div>';
     return;
   }
-  if (state.view === 'summary' && s) renderSummary(s);
+  if (state.view !== 'summary' || !data?.summary) return;
+  state.summaryOrders = data.orders || [];
+  const sig = summarySignature(data);
+  if (sig !== state.lastSummarySig || !silent) {
+    state.lastSummarySig = sig;
+    renderSummary(data);
+  }
 }
 
 async function loadReport(silent) {
@@ -1068,10 +1059,15 @@ function renderReport(s, orders) {
   wireCardButtons();   // wires the collapse/expand toggles on the report's cards
 }
 
-function renderSummary(s) {
+function renderSummary(data) {
+  const s = data.summary;
+  const orders = data.orders || [];
   const gbp = p => `£${((p || 0) / 100).toFixed(2)}`;
   const dateLabel = new Date(s.from + 'T12:00:00')
     .toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+  const cards = orders.length
+    ? `<div class="zorders">${orders.map(o => renderCard(o, false, true)).join('')}</div>`
+    : '<div class="empty" style="grid-column:1/-1">No orders yet today.</div>';
   $('#grid').innerHTML = `
     <div class="summary">
       <div class="hero">
@@ -1097,7 +1093,9 @@ function renderSummary(s) {
         <div class="row"><span>Cancelled</span><b>${s.cancelled}</b></div>
       </div>
       <div class="stat"><div class="v">${gbp(s.serviceFeeP)}</div><div class="k">Service fees (platform)</div></div>
-    </div>`;
+    </div>
+    ${cards}`;
+  wireCardButtons();
 }
 
 function renderCard(o, isNew, collapsed = false, readOnly = false) {
@@ -1445,7 +1443,7 @@ let refundCtx = null;
 
 function findOrder(id) {
   return (state.orders || []).find(o => o.id === id)
-    || (state.doneOrders || []).find(o => o.id === id)
+    || (state.summaryOrders || []).find(o => o.id === id)
     || null;
 }
 
@@ -1545,7 +1543,7 @@ $('#refundConfirm').addEventListener('click', async () => {
     const data = await res.json().catch(() => ({}));
     if (!res.ok || data.ok === false) { alert(data.error || `Refund failed (${res.status}).`); return; }
     closeRefund();
-    if (state.view === 'done') loadDone();
+    if (state.view === 'summary') loadSummary(false);
     else if (state.view === 'zreport') loadReport(false);
     else poll();
   } catch (e) {
