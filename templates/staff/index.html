@@ -499,6 +499,194 @@ button{cursor:pointer;border:0;background:none}
   .card.new,.pulse,.ovl.alarm .modal{animation:none !important}
 }
 
+/* ============================== Sale view (counter EPOS) */
+.sale[hidden]{display:none}
+.sale{flex:1;display:grid;grid-template-columns:1fr 392px;gap:0;min-height:0;overflow:hidden}
+@media(min-width:1400px){.sale{grid-template-columns:1fr 428px}}
+
+.catalog{display:flex;flex-direction:column;min-height:0;padding:0 8px 8px 24px}
+.searchwrap{position:relative;margin-bottom:14px}
+.search-input{
+  width:100%;height:50px;border-radius:14px;border:1px solid var(--line);background:var(--panel);
+  padding:0 16px 0 46px;font-size:15px;font-weight:500;color:var(--ink);
+  box-shadow:var(--sh-sm);transition:.16s;font-family:var(--sans);
+}
+.search-input::placeholder{color:var(--muted-2)}
+.search-input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-tint)}
+.search-ico{position:absolute;left:15px;top:50%;transform:translateY(-50%);width:20px;height:20px;color:var(--muted-2)}
+
+.cats{display:flex;gap:9px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.cat-chip{
+  height:38px;padding:0 14px;border-radius:11px;background:var(--panel);border:1px solid var(--line);
+  font-size:13.5px;font-weight:600;color:var(--ink-2);white-space:nowrap;transition:.15s;
+  display:flex;align-items:center;gap:7px;flex:none;
+}
+.cat-chip:hover{border-color:var(--muted-2)}
+.cat-chip.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+.products{
+  flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));
+  gap:12px;align-content:start;padding:2px 16px 24px 2px;
+}
+.products::-webkit-scrollbar{width:8px}
+.products::-webkit-scrollbar-thumb{background:#D4DEEA;border-radius:8px}
+.tile{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px;
+  display:flex;flex-direction:column;justify-content:space-between;min-height:122px;text-align:left;
+  box-shadow:var(--sh-sm);transition:.16s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;
+  cursor:pointer;
+}
+.tile:hover{transform:translateY(-3px);box-shadow:var(--sh);border-color:#CFE0F6}
+.tile:active{transform:translateY(0) scale(.98)}
+.tile .swatch{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:21px;background:var(--blue-tint-2);flex:none}
+.tile .pname{font-size:13.5px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
+.tile .pprice{font-size:13px;color:var(--ink-2);font-weight:600;margin-top:3px;font-family:var(--mono)}
+.tile.added::after{content:"";position:absolute;inset:0;border:2px solid var(--blue);border-radius:var(--r);animation:flashAdd .55s ease;pointer-events:none}
+@keyframes flashAdd{0%{opacity:1}100%{opacity:0}}
+
+.sale-empty{
+  grid-column:1/-1;text-align:center;padding:60px 16px;color:var(--muted);font-size:14px;font-weight:500;
+}
+
+.ticket{
+  background:var(--panel);margin:0 16px 16px 0;border-radius:var(--r-lg);
+  border:1px solid var(--line);box-shadow:var(--sh);
+  display:flex;flex-direction:column;min-height:0;overflow:hidden;
+}
+.ticket-head{padding:18px 20px 14px;border-bottom:1px solid var(--line-2);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.t-title{font-size:15.5px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:9px}
+.t-count{background:var(--blue-tint);color:var(--blue);font-size:11px;font-weight:800;padding:2px 8px;border-radius:20px;font-family:var(--mono);min-width:24px;text-align:center}
+.t-sub{font-size:11.5px;color:var(--muted);font-weight:500;margin-top:2px}
+.t-clear{font-size:12.5px;color:var(--muted);font-weight:600;padding:6px 8px;border-radius:8px;transition:.15s;background:transparent;border:0}
+.t-clear:hover{color:var(--red);background:var(--red-tint)}
+
+.t-lines{flex:1;overflow-y:auto;padding:8px 8px 4px;min-height:60px}
+.t-lines::-webkit-scrollbar{width:7px}
+.t-lines::-webkit-scrollbar-thumb{background:#D4DEEA;border-radius:8px}
+
+.t-line{
+  display:flex;gap:11px;padding:11px 12px;border-radius:13px;transition:.14s;position:relative;
+  animation:lineIn .32s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes lineIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+.t-line:hover{background:var(--blue-tint-2)}
+.t-line .l-em{font-size:19px;width:40px;height:40px;border-radius:11px;display:grid;place-items:center;flex:none;background:var(--blue-tint-2)}
+.t-line .l-mid{flex:1;min-width:0}
+.t-line .l-name{font-size:13.5px;font-weight:700;letter-spacing:-.01em;line-height:1.25}
+.t-line .l-right{display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;flex:none;gap:6px}
+.t-line .l-price{font-size:13.5px;font-weight:700;font-family:var(--mono)}
+.t-line .l-rm{background:transparent;border:0;color:var(--muted-2);font-size:18px;line-height:1;padding:2px 4px;border-radius:6px}
+.t-line .l-rm:hover{background:var(--red-tint);color:var(--red)}
+.qty-ctrl{display:flex;align-items:center;gap:0;background:var(--canvas);border-radius:9px;padding:2px;margin-top:6px}
+.qty-ctrl button{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;color:var(--ink-2);font-weight:700;transition:.12s;background:transparent;border:0}
+.qty-ctrl button:hover{background:#fff;color:var(--blue);box-shadow:var(--sh-sm)}
+.qty-ctrl .qv{min-width:24px;text-align:center;font-size:13px;font-weight:700;font-family:var(--mono)}
+
+.t-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--muted-2);flex:1;padding:30px 20px;text-align:center}
+.t-empty svg{width:46px;height:46px;color:#CBD7E6;stroke-width:1.6}
+.t-empty p{font-size:13.5px;font-weight:600;color:var(--muted)}
+
+.ticket-foot{border-top:1px solid var(--line-2);padding:14px 18px 16px;background:linear-gradient(180deg,#fff,#FBFCFE)}
+.t-totals{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
+.trow{display:flex;justify-content:space-between;font-size:13px;color:var(--ink-2);font-weight:500}
+.trow .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.trow.grand{font-size:15px;color:var(--ink);font-weight:800;padding-top:9px;border-top:1px dashed var(--line);margin-top:1px}
+.trow.grand .mono{font-size:19px;font-weight:500}
+
+.charge-btn{
+  width:100%;height:60px;border-radius:16px;
+  background:linear-gradient(135deg,#0A86FF,#0070F0 60%,#0058C4);color:#fff;
+  font-size:16px;font-weight:800;letter-spacing:-.01em;
+  display:flex;align-items:center;justify-content:space-between;padding:0 22px;
+  box-shadow:0 10px 24px rgba(0,112,240,.34);transition:.18s;border:0;
+}
+.charge-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 14px 30px rgba(0,112,240,.42)}
+.charge-btn:active{transform:translateY(0)}
+.charge-btn:disabled{background:#C7D4E3;box-shadow:none;color:#fff;cursor:not-allowed;transform:none}
+.charge-btn .c-amt{font-family:var(--mono);font-size:19px;font-weight:500}
+
+/* Pay modal */
+.ovl.pay-ovl{padding:16px}
+.ovl.pay-ovl .modal{
+  width:min(820px,96vw);max-width:96vw;max-height:92vh;padding:0;
+  display:grid;grid-template-columns:1fr 1fr;overflow:hidden;border-radius:24px;position:relative;
+}
+@media(max-width:780px){
+  .ovl.pay-ovl .modal{grid-template-columns:1fr;max-height:96vh;overflow-y:auto}
+}
+.pay-left{padding:26px 26px 22px;display:flex;flex-direction:column;background:linear-gradient(165deg,#0B1A2E,#11283F);color:#fff;min-height:300px}
+.pay-left .p-lab{color:#7FA6CC;font-size:12.5px;font-weight:600;letter-spacing:.02em}
+.pay-left .p-total{color:#fff;font-family:var(--mono);font-size:42px;font-weight:500;letter-spacing:-.03em;margin-top:6px;line-height:1.1}
+.tenders{display:flex;gap:8px;margin-top:18px}
+.tender{
+  flex:1;height:46px;border-radius:13px;border:1px solid rgba(255,255,255,.16);
+  background:rgba(255,255,255,.05);color:#cfe0f2;font-size:12.5px;font-weight:700;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:.15s;
+  padding:6px 4px;
+}
+.tender svg{width:18px;height:18px;stroke-width:2}
+.tender:hover:not(:disabled){background:rgba(255,255,255,.1)}
+.tender.sel{background:var(--blue);color:#fff;border-color:var(--blue)}
+.tender:disabled{opacity:.4;cursor:not-allowed}
+.pay-summary{margin-top:auto;display:flex;flex-direction:column;gap:8px;padding-top:22px}
+.p-srow{display:flex;justify-content:space-between;color:#A9C2DB;font-size:13px;font-weight:500}
+.p-srow .mono{font-family:var(--mono)}
+.p-srow.b{color:#fff;font-weight:700;font-size:14.5px;padding-top:11px;border-top:1px solid rgba(255,255,255,.13)}
+
+.pay-right{padding:22px;display:flex;flex-direction:column;background:var(--panel);min-height:0}
+.pay-right .p-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.pay-right h2{font-size:16px;font-weight:800;letter-spacing:-.02em;margin:0}
+.p-close{
+  width:34px;height:34px;border-radius:10px;background:var(--canvas);display:grid;place-items:center;
+  color:var(--ink-2);transition:.15s;border:0;
+}
+.p-close:hover{background:var(--red-tint);color:var(--red)}
+.amount-field{
+  height:58px;border-radius:14px;background:var(--canvas);border:1px solid var(--line);
+  display:flex;align-items:center;padding:0 18px;font-family:var(--mono);font-size:25px;font-weight:500;
+  justify-content:flex-end;margin-bottom:6px;
+}
+.change-note{font-size:12px;color:var(--green);font-weight:700;text-align:right;margin:0 4px 8px;min-height:16px;font-family:var(--mono)}
+.change-note.short{color:var(--red)}
+.pad-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;flex:1;min-height:0}
+.pad-key{
+  border-radius:13px;background:var(--panel);border:1px solid var(--line);
+  font-size:20px;font-weight:700;display:grid;place-items:center;
+  transition:.12s;min-height:46px;box-shadow:var(--sh-sm);
+}
+.pad-key:hover{background:var(--blue-tint-2);border-color:var(--blue)}
+.pad-key:active{transform:scale(.96)}
+.pad-key.fn{background:var(--canvas);font-size:13px;color:var(--ink-2);font-weight:700}
+.pay-done{
+  height:54px;border-radius:14px;background:linear-gradient(135deg,#0E9F6E,#0B8A5E);color:#fff;
+  font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:9px;
+  margin-top:12px;box-shadow:0 8px 20px rgba(14,159,110,.3);transition:.16s;border:0;
+}
+.pay-done:hover:not(:disabled){transform:translateY(-2px)}
+.pay-done:disabled{background:#C7D4E3;box-shadow:none;cursor:not-allowed;transform:none}
+
+.pay-done-card{
+  position:absolute;inset:0;background:#fff;display:none;flex-direction:column;align-items:center;
+  justify-content:center;gap:14px;z-index:2;border-radius:24px;text-align:center;padding:24px;
+}
+.pay-done-card.show{display:flex;animation:fadeIn .25s ease}
+.pay-tick{width:80px;height:80px;border-radius:50%;background:var(--green-tint);display:grid;place-items:center}
+.pay-tick svg{width:42px;height:42px;color:var(--green);stroke-width:2.4}
+.pay-done-card h2{font-size:21px;font-weight:800;letter-spacing:-.02em;margin:0}
+.pay-done-card p{font-size:13.5px;color:var(--muted);font-weight:500;margin:0}
+.pay-done-card .pdc-actions{display:flex;gap:10px;margin-top:6px}
+.pay-done-card .pdc-actions button{height:46px;padding:0 22px;border-radius:12px;font-size:13.5px;font-weight:700;border:0}
+.pdc-new{background:var(--blue);color:#fff}
+.pdc-new:hover{background:var(--blue-600)}
+
+/* Sale: responsive */
+@media(max-width:980px){
+  .sale{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) minmax(0,46vh)}
+  .catalog{padding:0 14px 8px}
+  .ticket{margin:0 14px 14px}
+}
+
 /* Small screens — collapse rail to horizontal top strip */
 @media (max-width:720px){
   #dash{grid-template-columns:1fr;grid-template-rows:auto 1fr;height:100vh;overflow:hidden}
@@ -554,6 +742,10 @@ button{cursor:pointer;border:0;background:none}
       <img src="/logo.png" alt="{{shopShortName}}" />
     </div>
     <nav class="tabs" role="tablist">
+      <button class="tab" data-view="sale" role="tab" title="Counter sale">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.7a2 2 0 002-1.6L23 6H6"/></svg>
+        <span>Sale</span>
+      </button>
       <button class="tab active" data-view="live" role="tab" title="Live">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M3 9h18M7 21h10"/></svg>
         <span>Live <span class="tab-count" id="liveCount">0</span></span>
@@ -602,6 +794,41 @@ button{cursor:pointer;border:0;background:none}
     <main class="grid" id="grid">
       <div class="empty">No active orders. Sit tight — they'll appear here as they come in.</div>
     </main>
+
+    <section class="sale" id="saleView" hidden aria-label="Counter sale">
+      <div class="catalog">
+        <div class="searchwrap">
+          <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+          <input class="search-input" id="saleSearch" placeholder="Search the menu…" autocomplete="off" />
+        </div>
+        <div class="cats" id="saleCats"></div>
+        <div class="products" id="saleProducts">
+          <div class="sale-empty">Loading menu…</div>
+        </div>
+      </div>
+
+      <div class="ticket">
+        <div class="ticket-head">
+          <div>
+            <div class="t-title">Current order <span class="t-count" id="saleCount">0</span></div>
+            <div class="t-sub">Counter sale · cash</div>
+          </div>
+          <button class="t-clear" id="saleClear">Clear</button>
+        </div>
+        <div class="t-lines" id="saleLines"></div>
+        <div class="ticket-foot">
+          <div class="t-totals">
+            <div class="trow"><span>Subtotal</span><span class="mono" id="saleSub">£0.00</span></div>
+            <div class="trow" id="saleFeeRow" hidden><span>Service fee</span><span class="mono" id="saleFee">£0.00</span></div>
+            <div class="trow grand"><span>Total</span><span class="mono" id="saleGrand">£0.00</span></div>
+          </div>
+          <button class="charge-btn" id="saleCharge" disabled>
+            <span>Charge</span>
+            <span class="c-amt" id="saleChargeAmt">£0.00</span>
+          </button>
+        </div>
+      </div>
+    </section>
   </section>
 </div>
 
@@ -664,6 +891,54 @@ button{cursor:pointer;border:0;background:none}
     <div class="row">
       <button class="cancel" id="refundCancel">Close</button>
       <button class="confirm" id="refundConfirm">Refund</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== Counter-sale payment modal -->
+<div class="ovl pay-ovl" id="payOvl" role="dialog" aria-modal="true" aria-labelledby="payTitle">
+  <div class="modal">
+    <div class="pay-left">
+      <div class="p-lab">Amount due</div>
+      <div class="p-total mono" id="payTotal">£0.00</div>
+      <div class="tenders">
+        <button class="tender sel" data-tender="cash" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>
+          Cash
+        </button>
+        <button class="tender" data-tender="card" type="button" disabled title="Card via the Sunmi reader — coming soon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+          Card (soon)
+        </button>
+      </div>
+      <div class="pay-summary">
+        <div class="p-srow"><span id="paySubLab">Items</span><span class="mono" id="paySub">£0.00</span></div>
+        <div class="p-srow" id="payFeeRow" hidden><span>Service fee</span><span class="mono" id="payFee">£0.00</span></div>
+        <div class="p-srow b"><span>Total</span><span class="mono" id="payGrand">£0.00</span></div>
+      </div>
+    </div>
+    <div class="pay-right">
+      <div class="p-head">
+        <h2 id="payTitle">Cash payment</h2>
+        <button class="p-close" id="payClose" type="button" aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="amount-field mono" id="payAmount">£0.00</div>
+      <div class="change-note" id="payChange"></div>
+      <div class="pad-grid" id="payPad"></div>
+      <button class="pay-done" id="payConfirm" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg>
+        <span>Take cash payment</span>
+      </button>
+    </div>
+    <div class="pay-done-card" id="payDone">
+      <div class="pay-tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <h2>Payment complete</h2>
+      <p id="payDoneSub">£0.00 · Order #—</p>
+      <div class="pdc-actions">
+        <button class="pdc-new" id="payNewSale" type="button">New sale</button>
+      </div>
     </div>
   </div>
 </div>
@@ -781,7 +1056,13 @@ function setView(view) {
   state.view = view;
   $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === view));
   const usesRange = (view === 'zreport');
-  $('#dateBar').hidden = !usesRange;
+  const isSale = (view === 'sale');
+  $('#dateBar').hidden = !usesRange || isSale;
+  // Sale lives in its own panel beside the regular grid; swap visibility so
+  // the two never both fight for the .stage's flex space.
+  $('#saleView').hidden = !isSale;
+  $('#grid').hidden = isSale;
+  if (isSale) { initSaleView(); return; }
   if (usesRange) applyRangeToInputs();
   if (view === 'summary') loadSummary(false);
   else if (view === 'zreport') loadReport(false);
@@ -1594,6 +1875,330 @@ function printOrder(id) {
   window.print();
   setTimeout(() => $$('.card').forEach(c => c.style.display = ''), 250);
 }
+
+/* ============================== Sale view (counter EPOS)
+   Tap items to build a ticket; charge marks payment and POSTs to
+   /api/staff/counter-order, which recomputes totals server-side (the till
+   NEVER trusts client-side prices) and saves the order. The order then
+   appears on Live alongside web orders and counts in Today / Z report. */
+
+const sale = {
+  ready: false,
+  loading: false,
+  menu: [],             // /api/menu — canonical priceP per item (pence)
+  visual: [],           // /menu-visual.json — category icons / display names
+  byId: new Map(),      // item id -> canonical item
+  serviceFeeP: 0,       // mirrors config.serviceFeePence so the till shows the same line item the server adds
+  activeCat: 'all',
+  search: '',
+  cart: [],             // [{id, qty}] — modifiers/meal/spice not in V1
+  submitting: false,
+  pay: { tenderedP: 0 },// keypad-entered cash amount in pence
+};
+
+async function initSaleView() {
+  // Lazy: only load the menu the first time Sale is opened.
+  if (!sale.ready && !sale.loading) await loadSaleData();
+  renderSaleCats();
+  renderSaleProducts();
+  renderSaleTicket();
+  // Defer focus so it doesn't fight the tab-switch animation.
+  setTimeout(() => { const s = $('#saleSearch'); if (s && document.activeElement !== s) s.blur(); }, 0);
+}
+
+async function loadSaleData() {
+  sale.loading = true;
+  try {
+    const [menuRes, visualRes, configRes] = await Promise.all([
+      fetch('/api/menu', { cache: 'no-store' }),
+      fetch('/menu-visual.json', { cache: 'no-store' }).catch(() => null),
+      fetch('/api/config', { cache: 'no-store' }).catch(() => null),
+    ]);
+    const menu = menuRes.ok ? await menuRes.json() : [];
+    const visual = visualRes && visualRes.ok ? await visualRes.json() : [];
+    const cfg = configRes && configRes.ok ? await configRes.json() : null;
+    sale.menu = Array.isArray(menu) ? menu : [];
+    sale.visual = Array.isArray(visual) ? visual : [];
+    sale.serviceFeeP = cfg && Number.isFinite(cfg.serviceFeePence) ? cfg.serviceFeePence : 0;
+    sale.byId.clear();
+    for (const cat of sale.menu) {
+      for (const it of (cat.items || [])) {
+        sale.byId.set(it.id, { ...it, _catId: cat.id, _catName: cat.name });
+      }
+    }
+    sale.ready = true;
+  } catch (e) {
+    console.error('Sale: menu load failed', e);
+    $('#saleProducts').innerHTML = '<div class="sale-empty">Couldn\'t load the menu. Check your connection and tap Sale again.</div>';
+  } finally {
+    sale.loading = false;
+  }
+}
+
+function categoryIcon(catId) {
+  const v = sale.visual.find(c => c.id === catId);
+  return v?.icon || '•';
+}
+
+function renderSaleCats() {
+  const cats = sale.menu.map(c => ({ id: c.id, name: c.name, icon: categoryIcon(c.id) }));
+  $('#saleCats').innerHTML =
+    `<button type="button" class="cat-chip ${sale.activeCat === 'all' ? 'active' : ''}" data-cat="all">All</button>` +
+    cats.map(c => `<button type="button" class="cat-chip ${sale.activeCat === c.id ? 'active' : ''}" data-cat="${escapeHtml(c.id)}"><span>${escapeHtml(c.icon)}</span>${escapeHtml(c.name)}</button>`).join('');
+}
+
+function renderSaleProducts() {
+  const wrap = $('#saleProducts');
+  if (!sale.ready) {
+    wrap.innerHTML = '<div class="sale-empty">Loading menu…</div>';
+    return;
+  }
+  const q = sale.search.trim().toLowerCase();
+  const items = [];
+  for (const cat of sale.menu) {
+    // A live search ignores the category filter so staff can find anything
+    // by name; without a query we honour the chip selection.
+    if (!q && sale.activeCat !== 'all' && cat.id !== sale.activeCat) continue;
+    const icon = categoryIcon(cat.id);
+    for (const it of (cat.items || [])) {
+      if (q && !it.name.toLowerCase().includes(q)) continue;
+      items.push({ id: it.id, name: it.name, priceP: it.priceP, icon });
+    }
+  }
+  if (!items.length) {
+    wrap.innerHTML = `<div class="sale-empty">${q ? `No items match "${escapeHtml(sale.search)}".` : 'No items in this category.'}</div>`;
+    return;
+  }
+  wrap.innerHTML = items.map(p => `
+    <button type="button" class="tile" data-id="${escapeHtml(p.id)}">
+      <div class="swatch">${escapeHtml(p.icon)}</div>
+      <div>
+        <div class="pname">${escapeHtml(p.name)}</div>
+        <div class="pprice">£${(p.priceP / 100).toFixed(2)}</div>
+      </div>
+    </button>`).join('');
+}
+
+function cartSubP() {
+  let s = 0;
+  for (const c of sale.cart) {
+    const it = sale.byId.get(c.id);
+    if (it) s += (it.priceP || 0) * c.qty;
+  }
+  return s;
+}
+function cartTotalP() { return cartSubP() + (sale.cart.length ? sale.serviceFeeP : 0); }
+
+function renderSaleTicket() {
+  const wrap = $('#saleLines');
+  const count = sale.cart.reduce((a, c) => a + c.qty, 0);
+  $('#saleCount').textContent = count;
+  if (!sale.cart.length) {
+    wrap.innerHTML = `
+      <div class="t-empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 01-8 0"/></svg>
+        <p>Tap an item to start the order</p>
+      </div>`;
+  } else {
+    wrap.innerHTML = sale.cart.map((c, i) => {
+      const it = sale.byId.get(c.id);
+      if (!it) return '';
+      const icon = categoryIcon(it._catId);
+      const lineP = (it.priceP || 0) * c.qty;
+      return `
+        <div class="t-line">
+          <div class="l-em">${escapeHtml(icon)}</div>
+          <div class="l-mid">
+            <div class="l-name">${escapeHtml(it.name)}</div>
+            <div class="qty-ctrl">
+              <button type="button" data-act="dec" data-i="${i}" aria-label="Decrease quantity">−</button>
+              <span class="qv">${c.qty}</span>
+              <button type="button" data-act="inc" data-i="${i}" aria-label="Increase quantity">+</button>
+            </div>
+          </div>
+          <div class="l-right">
+            <button type="button" class="l-rm" data-act="rm" data-i="${i}" aria-label="Remove">×</button>
+            <div class="l-price">£${(lineP / 100).toFixed(2)}</div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+  const subP = cartSubP();
+  const totalP = cartTotalP();
+  $('#saleSub').textContent = `£${(subP / 100).toFixed(2)}`;
+  $('#saleGrand').textContent = `£${(totalP / 100).toFixed(2)}`;
+  $('#saleChargeAmt').textContent = `£${(totalP / 100).toFixed(2)}`;
+  $('#saleCharge').disabled = sale.cart.length === 0;
+  const feeRow = $('#saleFeeRow');
+  if (sale.serviceFeeP > 0 && sale.cart.length) {
+    feeRow.hidden = false;
+    $('#saleFee').textContent = `£${(sale.serviceFeeP / 100).toFixed(2)}`;
+  } else {
+    feeRow.hidden = true;
+  }
+}
+
+function addToCart(id) {
+  const ex = sale.cart.find(c => c.id === id);
+  if (ex) ex.qty = Math.min(20, ex.qty + 1);
+  else sale.cart.push({ id, qty: 1 });
+  renderSaleTicket();
+}
+
+function clearCart() {
+  sale.cart = [];
+  renderSaleTicket();
+}
+
+// Search + category chips
+$('#saleSearch').addEventListener('input', (e) => {
+  sale.search = e.target.value;
+  renderSaleProducts();
+});
+$('#saleCats').addEventListener('click', (e) => {
+  const b = e.target.closest('.cat-chip');
+  if (!b) return;
+  sale.activeCat = b.dataset.cat;
+  sale.search = '';
+  $('#saleSearch').value = '';
+  renderSaleCats();
+  renderSaleProducts();
+});
+$('#saleProducts').addEventListener('click', (e) => {
+  const t = e.target.closest('.tile');
+  if (!t) return;
+  const id = t.dataset.id;
+  addToCart(id);
+  t.classList.add('added');
+  setTimeout(() => t.classList.remove('added'), 550);
+});
+$('#saleLines').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-act]');
+  if (!b) return;
+  const i = Number(b.dataset.i);
+  const c = sale.cart[i];
+  if (!c) return;
+  if (b.dataset.act === 'inc') c.qty = Math.min(20, c.qty + 1);
+  else if (b.dataset.act === 'dec') { c.qty -= 1; if (c.qty <= 0) sale.cart.splice(i, 1); }
+  else if (b.dataset.act === 'rm') sale.cart.splice(i, 1);
+  renderSaleTicket();
+});
+$('#saleClear').addEventListener('click', () => {
+  if (!sale.cart.length) return;
+  if (confirm('Clear this order?')) clearCart();
+});
+
+// Charge -> payment modal
+$('#saleCharge').addEventListener('click', () => {
+  if (!sale.cart.length) return;
+  openPayModal();
+});
+
+function openPayModal() {
+  sale.pay.tenderedP = 0;
+  const totalP = cartTotalP();
+  const subP = cartSubP();
+  $('#payTotal').textContent = `£${(totalP / 100).toFixed(2)}`;
+  $('#payGrand').textContent = `£${(totalP / 100).toFixed(2)}`;
+  $('#paySub').textContent = `£${(subP / 100).toFixed(2)}`;
+  const feeRow = $('#payFeeRow');
+  if (sale.serviceFeeP > 0) {
+    feeRow.hidden = false;
+    $('#payFee').textContent = `£${(sale.serviceFeeP / 100).toFixed(2)}`;
+  } else {
+    feeRow.hidden = true;
+  }
+  $('#paySubLab').textContent = `Items (${sale.cart.reduce((a, c) => a + c.qty, 0)})`;
+  $('#payAmount').textContent = `£${(totalP / 100).toFixed(2)}`;
+  $('#payChange').textContent = '';
+  $('#payChange').classList.remove('short');
+  $('#payConfirm').disabled = false;
+  $('#payConfirm').querySelector('span').textContent = 'Take cash payment';
+  $('#payDone').classList.remove('show');
+  $('#payOvl').classList.add('open');
+}
+function closePayModal() {
+  $('#payOvl').classList.remove('open');
+}
+$('#payClose').addEventListener('click', closePayModal);
+$('#payOvl').addEventListener('click', (e) => { if (e.target.id === 'payOvl') closePayModal(); });
+
+// Build keypad (no need to live-rebuild)
+(function buildPad() {
+  const keys = ['1','2','3','4','5','6','7','8','9','C','0','⌫'];
+  $('#payPad').innerHTML = keys.map(k =>
+    `<button type="button" class="pad-key ${(k === 'C' || k === '⌫') ? 'fn' : ''}" data-k="${escapeHtml(k)}">${escapeHtml(k)}</button>`
+  ).join('');
+})();
+$('#payPad').addEventListener('click', (e) => {
+  const b = e.target.closest('.pad-key');
+  if (!b) return;
+  const k = b.dataset.k;
+  let s = String(sale.pay.tenderedP || '');
+  if (k === 'C') s = '';
+  else if (k === '⌫') s = s.slice(0, -1);
+  else s = (s + k).replace(/^0+(?=\d)/, '').slice(0, 7);
+  sale.pay.tenderedP = s ? Number(s) : 0;
+  const totalP = cartTotalP();
+  if (sale.pay.tenderedP === 0) {
+    $('#payAmount').textContent = `£${(totalP / 100).toFixed(2)}`;
+    $('#payChange').textContent = '';
+    $('#payChange').classList.remove('short');
+  } else {
+    $('#payAmount').textContent = `£${(sale.pay.tenderedP / 100).toFixed(2)}`;
+    const diff = sale.pay.tenderedP - totalP;
+    if (diff >= 0) {
+      $('#payChange').textContent = `Change £${(diff / 100).toFixed(2)}`;
+      $('#payChange').classList.remove('short');
+    } else {
+      $('#payChange').textContent = `Short £${(-diff / 100).toFixed(2)}`;
+      $('#payChange').classList.add('short');
+    }
+  }
+});
+
+$('#payConfirm').addEventListener('click', async () => {
+  if (sale.submitting || !sale.cart.length) return;
+  sale.submitting = true;
+  $('#payConfirm').disabled = true;
+  $('#payConfirm').querySelector('span').textContent = 'Sending…';
+  try {
+    const items = sale.cart.map(c => ({ id: c.id, qty: c.qty }));
+    const res = await fetch('/api/staff/counter-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.status === 401) { $('#logoutBtn').click(); return; }
+    if (!res.ok || !data.order) {
+      alert(data.error || `Couldn't take the payment (${res.status}). Try again.`);
+      $('#payConfirm').disabled = false;
+      $('#payConfirm').querySelector('span').textContent = 'Take cash payment';
+      return;
+    }
+    const o = data.order;
+    // Done card overlay inside the modal. New sale clears the cart.
+    $('#payDoneSub').textContent =
+      `£${(o.totals.totalP / 100).toFixed(2)} · Cash · Order #${o.id}`;
+    $('#payDone').classList.add('show');
+    // Order is already accepted/paid server-side — let the live poll find it
+    // so the kitchen sees it on Live alongside any web orders.
+    state.seenIds.add(o.id);
+    poll();
+  } catch (e) {
+    alert('Network error — try again.');
+    $('#payConfirm').disabled = false;
+    $('#payConfirm').querySelector('span').textContent = 'Take cash payment';
+  } finally {
+    sale.submitting = false;
+  }
+});
+
+$('#payNewSale').addEventListener('click', () => {
+  clearCart();
+  closePayModal();
+});
 
 /* ============================== Auto-detect existing session */
 (async () => {

@@ -74,10 +74,12 @@ export function computeTotals(input, config, opts = {}) {
 
   const fulfillment = input.fulfillment === 'delivery' ? 'delivery' : 'collection';
 
-  // Promo: 10% off online subtotal.
+  // Promo: 10% off online subtotal. Counter sales (taken in-person at the
+  // till) opt out via opts.suppressPromo — the online discount isn't intended
+  // for walk-ins, and the customer is paying the menu price face-to-face.
   let discountP = 0;
   let discountLabel = null;
-  if (config.promo?.autoOnlineDiscount?.enabled) {
+  if (config.promo?.autoOnlineDiscount?.enabled && !opts.suppressPromo) {
     const pct = config.promo.autoOnlineDiscount.percent;
     discountP = Math.round(subtotalP * (pct / 100));
     discountLabel = config.promo.autoOnlineDiscount.label;
