@@ -736,6 +736,81 @@ button{cursor:pointer;border:0;background:none}
 .form-continue:active{transform:translateY(0)}
 .form-continue:disabled{background:#C7D4E3;box-shadow:none;cursor:not-allowed;transform:none}
 
+/* Tile badge for items that have options (so staff know a tap opens the picker). */
+.tile-opts{
+  position:absolute;top:8px;right:10px;font-size:14px;color:var(--muted-2);
+  font-weight:700;line-height:1;
+}
+
+/* Item-detail modal (spice / options / meal pickers, mirrors the website) */
+.ovl.item-detail-ovl{padding:16px}
+.ovl.item-detail-ovl .modal.item-modal{
+  width:min(520px,96vw);max-height:92vh;padding:0;
+  display:flex;flex-direction:column;overflow:hidden;border-radius:22px;
+}
+.item-close{
+  position:absolute;top:14px;right:14px;
+  width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.85);
+  display:grid;place-items:center;color:var(--ink-2);transition:.15s;
+  border:0;z-index:3;backdrop-filter:blur(6px);
+}
+.item-close:hover{background:var(--red-tint);color:var(--red)}
+.item-modal-body{padding:22px 24px 18px;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+.item-name{font-size:20px;font-weight:800;letter-spacing:-.02em;margin-right:42px}
+.item-price{font-family:var(--mono);font-size:24px;font-weight:500;color:var(--blue)}
+.item-desc{font-size:13.5px;color:var(--muted);font-weight:500;line-height:1.45}
+
+.item-section{display:flex;flex-direction:column;gap:8px}
+.item-section .sec-label{font-size:12.5px;font-weight:700;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em}
+
+.spice-select, .meal-choice-sel{
+  width:100%;height:46px;border:1px solid var(--line);border-radius:12px;background:var(--panel);
+  padding:0 14px;font-size:15px;font-weight:600;color:var(--ink);font-family:var(--sans);
+  box-shadow:var(--sh-sm);transition:.15s;
+}
+.spice-select:focus, .meal-choice-sel:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-tint)}
+
+.opt-group{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+.opt-group .opt-legend{font-size:13px;font-weight:700;color:var(--ink-2);margin-bottom:2px}
+.opt-group .opt-legend em{font-weight:500;color:var(--muted);font-style:normal;margin-left:6px}
+.opt-choice{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);
+  border-radius:11px;cursor:pointer;transition:.12s;background:var(--panel);
+}
+.opt-choice:hover{border-color:var(--blue);background:var(--blue-tint-2)}
+.opt-choice input{flex:0 0 auto;width:18px;height:18px;accent-color:var(--blue)}
+.opt-choice span{flex:1;font-size:13.5px;font-weight:600}
+.opt-choice .opt-delta{font-family:var(--mono);font-weight:600;color:var(--ink-2)}
+.opt-required-err{color:var(--red);font-size:12.5px;font-weight:600;min-height:0}
+.opt-required-err:not(:empty){min-height:18px;margin-top:2px}
+
+.meal-toggle{
+  display:flex;align-items:center;gap:11px;padding:12px 14px;border:1.5px solid var(--line);
+  border-radius:13px;cursor:pointer;transition:.12s;background:var(--panel);
+}
+.meal-toggle:hover{border-color:var(--blue)}
+.meal-toggle.active{border-color:var(--blue);background:var(--blue-tint-2)}
+.meal-toggle input{width:20px;height:20px;accent-color:var(--blue);flex:0 0 auto}
+.meal-toggle span{flex:1;font-size:14px;font-weight:700}
+.meal-toggle .meal-add{font-family:var(--mono);color:var(--blue);font-weight:600}
+
+.meal-choices{display:flex;flex-direction:column;gap:10px}
+.meal-choice{display:flex;flex-direction:column;gap:5px;font-size:12.5px;font-weight:700;color:var(--ink-2)}
+
+.item-add{
+  height:54px;border-radius:14px;
+  background:linear-gradient(135deg,#0A86FF,#0070F0 60%,#0058C4);color:#fff;
+  font-size:15px;font-weight:800;letter-spacing:-.01em;
+  box-shadow:0 10px 24px rgba(0,112,240,.34);transition:.18s;border:0;margin-top:4px;
+  display:flex;align-items:center;justify-content:center;gap:9px;
+}
+.item-add:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(0,112,240,.42)}
+.item-add:active{transform:translateY(0)}
+.item-add.added{background:linear-gradient(135deg,#0E9F6E,#0B8A5E);box-shadow:0 10px 24px rgba(14,159,110,.3)}
+
+/* Cart-line modifier summary */
+.t-line .l-mods{font-size:11.5px;color:var(--muted);font-weight:500;margin-top:2px;line-height:1.4}
+
 /* Sale: responsive */
 @media(max-width:980px){
   .sale{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) minmax(0,46vh)}
@@ -1017,6 +1092,18 @@ button{cursor:pointer;border:0;background:none}
       <button class="cancel" id="refundCancel">Close</button>
       <button class="confirm" id="refundConfirm">Refund</button>
     </div>
+  </div>
+</div>
+
+<!-- ============================== Item-detail modal (Sale view)
+     Mirrors the website's item modal: spice level, option groups, meal
+     upgrade + meal-choice dropdowns. Built dynamically per item. -->
+<div class="ovl item-detail-ovl" id="itemOvl" role="dialog" aria-modal="true" aria-labelledby="itemTitle">
+  <div class="modal item-modal">
+    <button class="item-close" id="itemClose" type="button" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="item-modal-body" id="itemBody"></div>
   </div>
 </div>
 
@@ -2010,14 +2097,15 @@ function printOrder(id) {
 const sale = {
   ready: false,
   loading: false,
-  menu: [],             // /api/menu — canonical priceP per item (pence)
-  visual: [],           // /menu-visual.json — category icons / display names
-  byId: new Map(),      // item id -> canonical item
+  menu: [],             // /api/menu — canonical priceP per item (pence) + modifiers
+  visual: [],           // /menu-visual.json — display-side: options, meal config, spicy flag, desc, images
+  byId: new Map(),      // item id -> canonical item (priceP / modifiers / mealAddP / mealChoose)
+  byVisualId: new Map(),// item id -> visual item (name, desc, options, meal, spicy, image)
   config: null,         // /api/config — for delivery fee + serviceFeeP
   serviceFeeP: 0,
   activeCat: 'all',
   search: '',
-  cart: [],             // [{id, qty}] — modifiers/meal/spice not in V1
+  cart: [],             // [{id, qty, spice, meal, modifiers, mealChoices, _key}]
   submitting: false,
   pay: { tenderedP: 0 },
   stage: 'mode',        // 'mode' | 'form' | 'menu'
@@ -2026,16 +2114,22 @@ const sale = {
   deliveryFeeP: 0,      // resolved client-side from config.feeByOutcode for display (server is authoritative)
 };
 
+// Spice options match the website (templates/order.html). The picker only
+// renders for items where visual.spicy === true, so shops that don't flag
+// spicy items never see this list.
+const SPICE_OPTIONS = ['Plain', 'Smoky BBQ', 'Mango & Lime', 'Lemon & Herb', 'Mild', 'Hot', 'Extra Hot', 'Extreme'];
+
 async function initSaleView() {
   // Lazy: only load the menu the first time Sale is opened.
   if (!sale.ready && !sale.loading) await loadSaleData();
-  // Always start at mode pick when the user hits Sale — even when they come
-  // back to the tab — unless an order is already in progress.
-  if (sale.cart.length === 0 && sale.stage !== 'menu') {
-    setSaleStage('mode');
-  } else {
-    setSaleStage(sale.stage);
-  }
+  // Every tap of the Sale tab is a fresh sale: bin the in-progress cart and
+  // customer details, return to the mode picker. The "Change" button inside
+  // the menu stage offers the same reset with a confirm; this is the
+  // top-level "new sale" entry point.
+  sale.cart = [];
+  sale.customer = null;
+  sale.deliveryFeeP = 0;
+  setSaleStage('mode');
   renderSaleCats();
   renderSaleProducts();
   renderSaleTicket();
@@ -2151,10 +2245,20 @@ async function loadSaleData() {
     sale.visual = Array.isArray(visual) ? visual : [];
     sale.config = cfg;
     sale.serviceFeeP = cfg && Number.isFinite(cfg.serviceFeePence) ? cfg.serviceFeePence : 0;
+    // Canonical: priceP, modifiers, mealAddP, mealChoose — the till sends ids
+    // referencing these and the server recomputes the actual charge from them.
     sale.byId.clear();
     for (const cat of sale.menu) {
       for (const it of (cat.items || [])) {
         sale.byId.set(it.id, { ...it, _catId: cat.id, _catName: cat.name });
+      }
+    }
+    // Visual: option groups, meal config, spicy flag, description, image — same
+    // source the website renders from, so the till offers the same choices.
+    sale.byVisualId.clear();
+    for (const cat of sale.visual) {
+      for (const it of (cat.items || [])) {
+        sale.byVisualId.set(it.id, { ...it, _catId: cat.id });
       }
     }
     sale.ready = true;
@@ -2172,7 +2276,8 @@ function categoryIcon(catId) {
 }
 
 function renderSaleCats() {
-  const cats = sale.menu.map(c => ({ id: c.id, name: c.name, icon: categoryIcon(c.id) }));
+  // Drive off the visual menu so the order + names + icons match the website.
+  const cats = sale.visual.map(c => ({ id: c.id, name: c.name, icon: c.icon || '•' }));
   $('#saleCats').innerHTML =
     `<button type="button" class="cat-chip ${sale.activeCat === 'all' ? 'active' : ''}" data-cat="all">All</button>` +
     cats.map(c => `<button type="button" class="cat-chip ${sale.activeCat === c.id ? 'active' : ''}" data-cat="${escapeHtml(c.id)}"><span>${escapeHtml(c.icon)}</span>${escapeHtml(c.name)}</button>`).join('');
@@ -2186,14 +2291,19 @@ function renderSaleProducts() {
   }
   const q = sale.search.trim().toLowerCase();
   const items = [];
-  for (const cat of sale.menu) {
-    // A live search ignores the category filter so staff can find anything
-    // by name; without a query we honour the chip selection.
+  // Render from the visual menu so the till sees the same items in the same
+  // order, with the same descriptions, that the customer sees on the website.
+  // priceP comes from the canonical menu so the displayed price matches what
+  // the server will actually charge (visual.price is display-only — server
+  // never trusts it).
+  for (const cat of sale.visual) {
     if (!q && sale.activeCat !== 'all' && cat.id !== sale.activeCat) continue;
-    const icon = categoryIcon(cat.id);
+    const icon = cat.icon || '•';
     for (const it of (cat.items || [])) {
       if (q && !it.name.toLowerCase().includes(q)) continue;
-      items.push({ id: it.id, name: it.name, priceP: it.priceP, icon });
+      const canonical = sale.byId.get(it.id);
+      if (!canonical) continue; // menu drift — skip silently
+      items.push({ id: it.id, name: it.name, priceP: canonical.priceP, icon, hasOpts: itemNeedsDetail(it) });
     }
   }
   if (!items.length) {
@@ -2202,6 +2312,7 @@ function renderSaleProducts() {
   }
   wrap.innerHTML = items.map(p => `
     <button type="button" class="tile" data-id="${escapeHtml(p.id)}">
+      ${p.hasOpts ? '<span class="tile-opts" title="Has options">⋯</span>' : ''}
       <div class="swatch">${escapeHtml(p.icon)}</div>
       <div>
         <div class="pname">${escapeHtml(p.name)}</div>
@@ -2210,17 +2321,64 @@ function renderSaleProducts() {
     </button>`).join('');
 }
 
+function itemNeedsDetail(visualItem) {
+  if (!visualItem) return false;
+  if (visualItem.spicy) return true;
+  if (Array.isArray(visualItem.options) && visualItem.options.length) return true;
+  if (visualItem.meal) return true;
+  return false;
+}
+
+// Unit price (pence) for one cart line, including meal upgrade + modifier
+// deltas. Mirrors what computeTotals() does on the server, so the till's
+// displayed prices match what the customer is charged. Server is still the
+// authority — this is for the on-till totals only.
+function lineUnitP(c) {
+  const item = sale.byId.get(c.id);
+  if (!item) return 0;
+  let p = item.priceP || 0;
+  if (c.meal && item.mealAddP != null) p += item.mealAddP;
+  for (const modId of (c.modifiers || [])) {
+    const mod = item.modifiers?.find(m => m.id === modId);
+    if (mod) p += mod.priceDeltaP || 0;
+  }
+  return p;
+}
+
 function cartSubP() {
   let s = 0;
-  for (const c of sale.cart) {
-    const it = sale.byId.get(c.id);
-    if (it) s += (it.priceP || 0) * c.qty;
-  }
+  for (const c of sale.cart) s += lineUnitP(c) * c.qty;
   return s;
 }
 function cartTotalP() {
   if (!sale.cart.length) return 0;
   return cartSubP() + sale.serviceFeeP + (sale.mode === 'delivery' ? sale.deliveryFeeP : 0);
+}
+
+// Human summary of the chosen options on a cart line: spice level, meal flag,
+// meal-choice names, modifier labels. Matches the website's cart row layout.
+function lineModSummary(c) {
+  const parts = [];
+  if (c.spice) parts.push(c.spice);
+  if (c.meal) parts.push('meal');
+  if (Array.isArray(c.mealChoices) && c.mealChoices.length) {
+    const names = c.mealChoices.map(id => sale.byVisualId.get(id)?.name || id);
+    parts.push(names.join(', '));
+  }
+  if (Array.isArray(c.modifiers) && c.modifiers.length) {
+    const v = sale.byVisualId.get(c.id);
+    const labels = [];
+    for (const modId of c.modifiers) {
+      let label = null;
+      for (const grp of (v?.options || [])) {
+        const choice = grp.choices?.find(ch => ch.id === modId);
+        if (choice) { label = choice.label; break; }
+      }
+      labels.push(label || modId);
+    }
+    parts.push(labels.join(', '));
+  }
+  return parts.join(' · ');
 }
 
 function renderSaleTicket() {
@@ -2235,15 +2393,19 @@ function renderSaleTicket() {
       </div>`;
   } else {
     wrap.innerHTML = sale.cart.map((c, i) => {
-      const it = sale.byId.get(c.id);
-      if (!it) return '';
-      const icon = categoryIcon(it._catId);
-      const lineP = (it.priceP || 0) * c.qty;
+      const v = sale.byVisualId.get(c.id);
+      const canonical = sale.byId.get(c.id);
+      if (!canonical) return '';
+      const icon = categoryIcon(canonical._catId);
+      const name = v?.name || canonical.name;
+      const lineP = lineUnitP(c) * c.qty;
+      const mods = lineModSummary(c);
       return `
         <div class="t-line">
           <div class="l-em">${escapeHtml(icon)}</div>
           <div class="l-mid">
-            <div class="l-name">${escapeHtml(it.name)}</div>
+            <div class="l-name">${escapeHtml(name)}</div>
+            ${mods ? `<div class="l-mods">${escapeHtml(mods)}</div>` : ''}
             <div class="qty-ctrl">
               <button type="button" data-act="dec" data-i="${i}" aria-label="Decrease quantity">−</button>
               <span class="qv">${c.qty}</span>
@@ -2280,16 +2442,208 @@ function renderSaleTicket() {
   }
 }
 
-function addToCart(id) {
-  const ex = sale.cart.find(c => c.id === id);
-  if (ex) ex.qty = Math.min(20, ex.qty + 1);
-  else sale.cart.push({ id, qty: 1 });
+// Two same-config lines stack as one (qty++). Different spice / meal /
+// modifiers / mealChoices = separate lines, matching the website's cart.
+function lineKey(id, opts) {
+  const modIds = (opts.modifiers || []).slice().sort();
+  const choiceIds = (opts.mealChoices || []).slice();
+  return `${id}|${opts.spice || ''}|${opts.meal ? 'M' : ''}|${modIds.join(',')}|${choiceIds.join(',')}`;
+}
+
+function addToCart(id, opts = {}) {
+  const key = lineKey(id, opts);
+  const ex = sale.cart.find(c => c._key === key);
+  if (ex) { ex.qty = Math.min(20, ex.qty + 1); }
+  else {
+    sale.cart.push({
+      id,
+      qty: 1,
+      spice: opts.spice || null,
+      meal: !!opts.meal,
+      modifiers: (opts.modifiers || []).slice(),
+      mealChoices: (opts.mealChoices || []).slice(),
+      _key: key,
+    });
+  }
   renderSaleTicket();
 }
 
 function clearCart() {
   sale.cart = [];
   renderSaleTicket();
+}
+
+/* ============================== Item-detail modal
+   Mirrors the website's flow: spice level, option groups (single/multi),
+   meal upgrade + meal-choice dropdowns. On "Add to order" the chosen
+   modifier ids and meal-choice item ids are collected and the line goes
+   into the cart. Server still recomputes the actual price from them. */
+
+function openItemDetail(id) {
+  const v = sale.byVisualId.get(id);
+  const canonical = sale.byId.get(id);
+  if (!v || !canonical) return;
+  const body = $('#itemBody');
+  body.innerHTML = itemDetailHTML(v, canonical);
+  // Wire the live price recompute (selecting an option / meal updates it).
+  const priceEl = body.querySelector('#itemDetailPrice');
+  const mealInput = body.querySelector('.meal-toggle input');
+  const mealChoicesEl = body.querySelector('#mealChoices');
+  function recalc() {
+    let p = canonical.priceP || 0;
+    if (mealInput && mealInput.checked && canonical.mealAddP) p += canonical.mealAddP;
+    body.querySelectorAll('.opt-group input:checked').forEach(inp => {
+      const mod = canonical.modifiers?.find(m => m.id === inp.value);
+      if (mod) p += mod.priceDeltaP || 0;
+    });
+    if (priceEl) priceEl.textContent = `£${(p / 100).toFixed(2)}`;
+  }
+  body.querySelectorAll('.opt-group input').forEach(inp => inp.addEventListener('change', recalc));
+  if (mealInput) {
+    mealInput.addEventListener('change', () => {
+      mealInput.closest('.meal-toggle').classList.toggle('active', mealInput.checked);
+      if (mealChoicesEl) mealChoicesEl.style.display = mealInput.checked ? '' : 'none';
+      recalc();
+    });
+  }
+  recalc();
+  // Add to order button.
+  const addBtn = body.querySelector('.item-add');
+  addBtn.addEventListener('click', () => {
+    // Required option groups must have a selection (radios default-check the
+    // first choice, so this mainly catches required multi-select groups).
+    let optionErr = false;
+    body.querySelectorAll('.opt-group[data-required="1"]').forEach(grp => {
+      const errEl = grp.querySelector('[data-err]');
+      if (!grp.querySelector('input:checked')) {
+        if (errEl) errEl.textContent = `Please choose ${grp.dataset.label || 'an option'}.`;
+        optionErr = true;
+      } else if (errEl) { errEl.textContent = ''; }
+    });
+    if (optionErr) return;
+    // When the meal has side/drink pickers, require every one to be chosen.
+    const isMeal = mealInput ? mealInput.checked : false;
+    let mealChoices = [];
+    if (isMeal && mealChoicesEl) {
+      const selects = [...mealChoicesEl.querySelectorAll('select')];
+      const errEl = body.querySelector('#mealChoiceErr');
+      if (selects.some(s => !s.value)) {
+        if (errEl) errEl.textContent = 'Please choose the sides and drink.';
+        return;
+      }
+      if (errEl) errEl.textContent = '';
+      mealChoices = selects.map(s => s.value);
+    }
+    const spiceSel = body.querySelector('.spice-select');
+    const spice = spiceSel ? spiceSel.value : null;
+    const modifiers = [...body.querySelectorAll('.opt-group input:checked')].map(i => i.value);
+    addToCart(id, { spice, meal: isMeal, modifiers, mealChoices });
+    addBtn.classList.add('added');
+    addBtn.querySelector('span').textContent = '✓ Added';
+    setTimeout(closeItemDetail, 450);
+  });
+  $('#itemOvl').classList.add('open');
+}
+function closeItemDetail() { $('#itemOvl').classList.remove('open'); }
+$('#itemClose').addEventListener('click', closeItemDetail);
+$('#itemOvl').addEventListener('click', (e) => { if (e.target.id === 'itemOvl') closeItemDetail(); });
+
+function itemDetailHTML(v, canonical) {
+  const spice = v.spicy
+    ? `<div class="item-section">
+         <div class="sec-label">Spice level</div>
+         <select class="spice-select" aria-label="Spice level">
+           ${SPICE_OPTIONS.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('')}
+         </select>
+       </div>`
+    : '';
+  const options = Array.isArray(v.options) && v.options.length
+    ? `<div class="item-section">${v.options.map(g => optionGroupHTML(g, canonical)).join('')}</div>`
+    : '';
+  const meal = v.meal
+    ? `<div class="item-section">
+         <label class="meal-toggle">
+           <input type="checkbox" />
+           <span>${escapeHtml(v.meal.label || 'Make it a meal')}</span>
+           <span class="meal-add">+£${(Number(v.meal.addPrice) || 0).toFixed(2)}</span>
+         </label>
+         ${v.meal.choose
+            ? `<div class="meal-choices" id="mealChoices" style="display:none">
+                 ${mealChooseHTML(v.meal.choose)}
+                 <div class="opt-required-err" id="mealChoiceErr" aria-live="polite"></div>
+               </div>`
+            : ''}
+       </div>`
+    : '';
+  return `
+    <h2 class="item-name" id="itemTitle">${escapeHtml(v.name)}</h2>
+    ${v.desc ? `<p class="item-desc">${escapeHtml(v.desc)}</p>` : ''}
+    <div class="item-price" id="itemDetailPrice">£${((canonical.priceP || 0) / 100).toFixed(2)}</div>
+    ${spice}
+    ${options}
+    ${meal}
+    <button type="button" class="item-add"><span>+ Add to order</span></button>
+  `;
+}
+
+function optionGroupHTML(g, canonical) {
+  const type = g.select === 'multi' ? 'checkbox' : 'radio';
+  const required = !!g.required;
+  const gid = 'optg-' + Math.random().toString(36).slice(2, 8);
+  const rows = (g.choices || []).map((c, i) => {
+    const checked = (type === 'radio' && required && i === 0) ? 'checked' : '';
+    // Use the canonical priceDeltaP so the live total matches what the server
+    // will charge. visual.price is display-only and can drift.
+    const mod = canonical.modifiers?.find(m => m.id === c.id);
+    const deltaP = mod ? (mod.priceDeltaP || 0) : Math.round((Number(c.price) || 0) * 100);
+    const delta = deltaP ? `<span class="opt-delta">+£${(deltaP / 100).toFixed(2)}</span>` : '';
+    return `<label class="opt-choice">
+      <input type="${type}" name="${gid}" value="${escapeHtml(c.id)}" ${checked} />
+      <span>${escapeHtml(c.label)}</span>
+      ${delta}
+    </label>`;
+  }).join('');
+  return `
+    <fieldset class="opt-group" data-required="${required ? '1' : '0'}" data-label="${escapeHtml(g.label || 'an option')}">
+      <div class="opt-legend">${escapeHtml(g.label || '')}${required ? '' : ' <em>(optional)</em>'}</div>
+      ${rows}
+      <div class="opt-required-err" data-err aria-live="polite"></div>
+    </fieldset>
+  `;
+}
+
+// Meal choice dropdowns: each group draws from a menu category, optionally
+// narrowed by include/exclude lists, and renders `count` dropdowns.
+function mealChooseHTML(choose) {
+  const groups = Array.isArray(choose) ? choose : [];
+  const blocks = [];
+  for (const g of groups) {
+    const items = mealChoiceItems(g);
+    const optHTML = items.map(o => `<option value="${escapeHtml(o.id)}">${escapeHtml(o.name)}</option>`).join('');
+    const count = g.count || 1;
+    for (let i = 0; i < count; i++) {
+      const lbl = count > 1 ? `${g.label} ${i + 1}` : g.label;
+      blocks.push(`<label class="meal-choice">
+        <span>${escapeHtml(lbl)}</span>
+        <select class="meal-choice-sel"><option value="">Choose…</option>${optHTML}</select>
+      </label>`);
+    }
+  }
+  return blocks.join('');
+}
+function mealChoiceItems(group) {
+  const cat = sale.visual.find(c => c.id === group.category);
+  if (!cat) return [];
+  let items = cat.items || [];
+  if (Array.isArray(group.include)) {
+    const inc = new Set(group.include);
+    items = items.filter(it => inc.has(it.id));
+  }
+  if (Array.isArray(group.exclude)) {
+    const ex = new Set(group.exclude);
+    items = items.filter(it => !ex.has(it.id));
+  }
+  return items.map(it => ({ id: it.id, name: it.name }));
 }
 
 // Search + category chips
@@ -2310,9 +2664,14 @@ $('#saleProducts').addEventListener('click', (e) => {
   const t = e.target.closest('.tile');
   if (!t) return;
   const id = t.dataset.id;
-  addToCart(id);
-  t.classList.add('added');
-  setTimeout(() => t.classList.remove('added'), 550);
+  const visual = sale.byVisualId.get(id);
+  if (itemNeedsDetail(visual)) {
+    openItemDetail(id);
+  } else {
+    addToCart(id);
+    t.classList.add('added');
+    setTimeout(() => t.classList.remove('added'), 550);
+  }
 });
 $('#saleLines').addEventListener('click', (e) => {
   const b = e.target.closest('button[data-act]');
@@ -2411,7 +2770,14 @@ $('#payConfirm').addEventListener('click', async () => {
   $('#payConfirm').disabled = true;
   $('#payConfirm').querySelector('span').textContent = 'Sending…';
   try {
-    const items = sale.cart.map(c => ({ id: c.id, qty: c.qty }));
+    const items = sale.cart.map(c => ({
+      id: c.id,
+      qty: c.qty,
+      spice: c.spice || null,
+      meal: !!c.meal,
+      modifiers: Array.isArray(c.modifiers) ? c.modifiers : [],
+      mealChoices: Array.isArray(c.mealChoices) ? c.mealChoices : [],
+    }));
     const payload = { items, mode: sale.mode };
     if (sale.customer) {
       payload.customer = { name: sale.customer.name, phone: sale.customer.phone };
