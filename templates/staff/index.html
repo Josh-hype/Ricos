@@ -817,11 +817,16 @@ button{cursor:pointer;border:0;background:none}
 .form-continue:active{transform:translateY(0)}
 .form-continue:disabled{background:#C7D4E3;box-shadow:none;cursor:not-allowed;transform:none}
 
-/* Tile badge for items that have options (so staff know a tap opens the picker). */
+/* Category colour-coding + "has options" affordance on tiles. */
 .tile-opts{
-  position:absolute;top:8px;right:10px;font-size:14px;color:var(--muted-2);
-  font-weight:700;line-height:1;
+  position:absolute;top:8px;right:8px;min-width:22px;height:22px;padding:0 6px;border-radius:999px;
+  background:var(--blue-tint);color:var(--accent-strong);font-size:15px;font-weight:800;
+  line-height:22px;text-align:center;
 }
+.tile.has-opts{border-color:#CFE0F6}
+.tile-stripe{position:absolute;top:0;left:0;right:0;height:4px;border-radius:var(--r) var(--r) 0 0}
+.cat-dot{width:9px;height:9px;border-radius:50%;flex:none;box-shadow:0 0 0 2px rgba(255,255,255,.55)}
+.cat-chip.active .cat-dot{box-shadow:0 0 0 2px rgba(255,255,255,.35)}
 
 /* Item-detail modal (spice / options / meal pickers, mirrors the website) */
 .ovl.item-detail-ovl{padding:16px}
@@ -855,12 +860,14 @@ button{cursor:pointer;border:0;background:none}
 .opt-group .opt-legend{font-size:13px;font-weight:700;color:var(--ink-2);margin-bottom:2px}
 .opt-group .opt-legend em{font-weight:500;color:var(--muted);font-style:normal;margin-left:6px}
 .opt-choice{
-  display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);
-  border-radius:11px;cursor:pointer;transition:.12s;background:var(--panel);
+  display:flex;align-items:center;gap:10px;padding:13px 14px;min-height:48px;border:1.5px solid var(--line);
+  border-radius:12px;cursor:pointer;transition:var(--motion-fast) var(--ease-out);background:var(--panel);position:relative;
 }
 .opt-choice:hover{border-color:var(--blue);background:var(--blue-tint-2)}
-.opt-choice input{flex:0 0 auto;width:18px;height:18px;accent-color:var(--blue)}
-.opt-choice span{flex:1;font-size:13.5px;font-weight:600}
+.opt-choice:active{transform:scale(.99)}
+.opt-choice input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.opt-choice:has(input:checked){border-color:var(--blue);background:var(--blue-tint);box-shadow:inset 0 0 0 1px var(--blue)}
+.opt-choice span{flex:1;font-size:15px;font-weight:600}
 .opt-choice .opt-delta{font-family:var(--mono);font-weight:600;color:var(--ink-2)}
 .opt-required-err{color:var(--red);font-size:12.5px;font-weight:600;min-height:0}
 .opt-required-err:not(:empty){min-height:18px;margin-top:2px}
@@ -2523,12 +2530,21 @@ function categoryIcon(catId) {
   return v?.icon || '•';
 }
 
+// CVD-safe category colour — explicit menu-visual `color` if set, else a stable
+// palette by category index, so colour-coding works even before colours are set.
+const CAT_PALETTE = ['#0072B2', '#E69F00', '#009E73', '#D55E00', '#CC79A7', '#56B4E9', '#7C5CFC', '#0E9F6E', '#B26A00', '#0EA5E9'];
+function catColor(catId) {
+  const idx = sale.visual.findIndex(c => c.id === catId);
+  const c = idx >= 0 ? sale.visual[idx] : null;
+  return (c && c.color) || CAT_PALETTE[(idx < 0 ? 0 : idx) % CAT_PALETTE.length];
+}
+
 function renderSaleCats() {
   // Drive off the visual menu so the order + names + icons match the website.
   const cats = sale.visual.map(c => ({ id: c.id, name: c.name, icon: c.icon || '•' }));
   $('#saleCats').innerHTML =
     `<button type="button" class="cat-chip ${sale.activeCat === 'all' ? 'active' : ''}" data-cat="all">All</button>` +
-    cats.map(c => `<button type="button" class="cat-chip ${sale.activeCat === c.id ? 'active' : ''}" data-cat="${escapeHtml(c.id)}"><span>${escapeHtml(c.icon)}</span>${escapeHtml(c.name)}</button>`).join('');
+    cats.map(c => `<button type="button" class="cat-chip ${sale.activeCat === c.id ? 'active' : ''}" data-cat="${escapeHtml(c.id)}"><span class="cat-dot" style="background:${catColor(c.id)}"></span><span>${escapeHtml(c.icon)}</span>${escapeHtml(c.name)}</button>`).join('');
 }
 
 function renderSaleProducts() {
@@ -2551,7 +2567,7 @@ function renderSaleProducts() {
       if (q && !it.name.toLowerCase().includes(q)) continue;
       const canonical = sale.byId.get(it.id);
       if (!canonical) continue; // menu drift — skip silently
-      items.push({ id: it.id, name: it.name, priceP: canonical.priceP, icon, hasOpts: itemNeedsDetail(it) });
+      items.push({ id: it.id, name: it.name, priceP: canonical.priceP, icon, hasOpts: itemNeedsDetail(it), catId: cat.id });
     }
   }
   if (!items.length) {
@@ -2559,8 +2575,9 @@ function renderSaleProducts() {
     return;
   }
   wrap.innerHTML = items.map(p => `
-    <button type="button" class="tile" data-id="${escapeHtml(p.id)}">
-      ${p.hasOpts ? '<span class="tile-opts" title="Has options">⋯</span>' : ''}
+    <button type="button" class="tile ${p.hasOpts ? 'has-opts' : ''}" data-id="${escapeHtml(p.id)}">
+      <i class="tile-stripe" style="background:${catColor(p.catId)}"></i>
+      ${p.hasOpts ? '<span class="tile-opts" title="Tap to choose options">+</span>' : ''}
       <div class="swatch">${escapeHtml(p.icon)}</div>
       <div>
         <div class="pname">${escapeHtml(p.name)}</div>
