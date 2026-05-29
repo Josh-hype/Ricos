@@ -3,12 +3,12 @@
    operators configured) there's no named operator and full permissions are
    returned, preserving the original behaviour. */
 
-import { readSession } from '../../_lib/auth.js';
+import { resolveSession } from '../../_lib/auth.js';
 import { operatorsEnabled } from '../../_lib/operators.js';
 import { permissionsForRole, ALL_PERMISSIONS } from '../../_lib/permissions.js';
 
 export const onRequestGet = async ({ request, env }) => {
-  const s = await readSession(request.headers.get('Cookie'), env);
+  const s = await resolveSession(request, env);
   if (!s) {
     return new Response(JSON.stringify({ error: 'unauthorized' }), {
       status: 401, headers: { 'Content-Type': 'application/json' },

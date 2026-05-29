@@ -47,11 +47,10 @@ templates/staff/index.html ──(root: npm run build)──▶ public/staff/ind
 - **`app/native/android/EposHardwarePlugin.kt`** — the native plugin (printer/drawer/
   Tap-to-Pay), with TODOs for the Sunmi + Stripe Terminal SDKs.
 
-## ⚠️ Open decision for when you're back: auth across origins
+## Auth across origins — resolved (bearer token)
 In **bundled** mode the WebView origin is `https://localhost`, but the backend is the
-shop's domain — so requests are **cross-origin**. The current staff session is an
-**HttpOnly, SameSite=Lax cookie**, which a browser won't send on cross-site requests.
-So fully-bundled mode needs one of:
+shop's domain — so requests are **cross-origin**. The staff session is an HttpOnly,
+SameSite=Lax cookie, which a browser won't send on cross-site requests. The options were:
 - **(recommended) token auth** — issue a bearer token at login, store it in the app
   (Preferences), send it as `Authorization`; backend accepts it alongside the cookie.
   A focused, contained change to `_lib/auth.js` + `login.js` + the gated endpoints.
@@ -61,9 +60,14 @@ So fully-bundled mode needs one of:
   Same-origin, cookies just work, **zero backend change** — but online-only and the UI
   still loads from a URL. Great for an immediate on-device smoke test.
 
-I did **not** change the auth model unsupervised. The scaffold defaults to bundled +
-the fetch shim; flip to `server.url` (see `app/README.md`) for an instant first run,
-and we'll choose the real path together. Token auth is my recommendation.
+**Resolved → bearer token (implemented).** Login now also returns the signed session
+token — but only when the request carries `X-Client: app`, so the web response is
+unchanged and the token never appears in a browser body. The app stores it and sends
+`Authorization: Bearer <token>`. `resolveSession()` in `_lib/auth.js` accepts the
+cookie (web) OR the Bearer token (app) — the same signed token either way. CapacitorHttp
+is enabled so requests are proxied natively (no browser CORS). The web keeps using the
+HttpOnly cookie exactly as before. `server.url` remains available as a quick browser-style
+run (see `app/README.md`).
 
 ## Updates (no reinstall for UI tweaks)
 The APK shell rarely changes. UI updates flow via a live-update channel:
@@ -87,7 +91,7 @@ npx cap open android           # build / run / sign in Android Studio, install t
 - [x] `native.js` fetch shim + hardware facade + provisioning screen
 - [x] native plugin source (printer / drawer / Tap-to-Pay) with TODOs
 - [x] runbook + this architecture doc
-- [ ] decide + implement cross-origin auth (token) — **owner decision**
+- [x] cross-origin auth — bearer token + CapacitorHttp (web stays cookie-based)
 - [ ] wire Sunmi printer/drawer SDK into the plugin
 - [ ] Stripe Terminal Tap-to-Pay + `/api/staff/terminal/connection-token` (Phase 3)
 - [ ] live-update channel

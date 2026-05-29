@@ -10,6 +10,11 @@ export const onRequestPost = async ({ request, env }) => {
   try { body = await request.json(); } catch { return j({ error: 'Invalid JSON' }, 400); }
   const pin = String(body.pin || '');
   if (!/^\d{4,8}$/.test(pin)) return j({ error: 'PIN must be 4–8 digits.' }, 400);
+  // The native app sends "X-Client: app" and stores the returned token to send
+  // as a Bearer header (it can't use the cross-origin cookie). The web omits the
+  // header, so the token is never put in the body there — the HttpOnly cookie
+  // stays the only credential on the web.
+  const wantsToken = request.headers.get('X-Client') === 'app';
 
   const ip = request.headers.get('cf-connecting-ip') || 'unknown';
   if (env.STAFF_LOGIN_KV) {
@@ -29,6 +34,7 @@ export const onRequestPost = async ({ request, env }) => {
     return new Response(JSON.stringify({
       ok: true,
       operator: { id: op.id, name: op.name, role: op.role, colour: op.colour },
+      ...(wantsToken ? { token } : {}),
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json', 'Set-Cookie': sessionCookieHeader(token) },
@@ -40,7 +46,7 @@ export const onRequestPost = async ({ request, env }) => {
   if (!ok) return j({ error: 'Wrong PIN.' }, 401);
 
   const token = await makeSession(env);
-  return new Response(JSON.stringify({ ok: true }), {
+  return new Response(JSON.stringify({ ok: true, ...(wantsToken ? { token } : {}) }), {
     status: 200,
     headers: {
       'Content-Type': 'application/json',

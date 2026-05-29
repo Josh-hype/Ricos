@@ -1538,6 +1538,8 @@ $('#pinForm').addEventListener('submit', async (e) => {
 
 $('#logoutBtn').addEventListener('click', () => {
   document.cookie = 'rs=; Max-Age=0; Path=/; Secure; SameSite=Lax';
+  // In the native app, clear the stored Bearer token too (no-op on the web).
+  if (window.EPOSNative && window.EPOSNative.onSignOut) window.EPOSNative.onSignOut();
   // Drop the manager session too so the next person at the till has to
   // re-enter both PINs to view financials. Fire-and-forget — server clears
   // the HttpOnly cookie via Set-Cookie on the response.

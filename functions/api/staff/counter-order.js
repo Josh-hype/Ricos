@@ -20,7 +20,7 @@
    the Stripe Terminal SDK lands for the Sunmi T2 reader, that'll grow a
    'counter_card' branch. */
 
-import { requireStaff, readSession } from '../../_lib/auth.js';
+import { requireStaff, resolveSession } from '../../_lib/auth.js';
 import { getConfig } from '../../_lib/config.js';
 import { computeTotals } from '../../_lib/totals.js';
 import { resolveDelivery } from '../../_lib/delivery.js';
@@ -31,7 +31,7 @@ const MODES = new Set(['walkin', 'collection', 'delivery']);
 export const onRequestPost = async ({ request, env }) => {
   const denied = await requireStaff(request, env);
   if (denied) return denied;
-  const sess = await readSession(request.headers.get('Cookie'), env);
+  const sess = await resolveSession(request, env);
 
   let body;
   try { body = await request.json(); }

@@ -1,6 +1,6 @@
 /* POST /api/staff/orders/:id/accept — staff accepts an order and sets a
    ready time. Sends the customer the second confirmation email. */
-import { requireStaff, readSession } from '../../../../_lib/auth.js';
+import { requireStaff, resolveSession } from '../../../../_lib/auth.js';
 import { getConfig } from '../../../../_lib/config.js';
 import { getOrder, putOrder } from '../../../../_lib/kv.js';
 import { sendEmail, orderAcceptedEmail } from '../../../../_lib/email.js';
@@ -8,7 +8,7 @@ import { sendEmail, orderAcceptedEmail } from '../../../../_lib/email.js';
 export const onRequestPost = async ({ request, env, params }) => {
   const denied = await requireStaff(request, env);
   if (denied) return denied;
-  const sess = await readSession(request.headers.get('Cookie'), env);
+  const sess = await resolveSession(request, env);
 
   const id = String(params.id || '').toUpperCase();
   const order = await getOrder(id, env);

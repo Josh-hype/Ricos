@@ -88,21 +88,35 @@ export async function makeSession(env, operator = null) {
   return `${payload}.${sig}`;
 }
 
-// Returns the full signed session payload ({ exp, op?, name?, role?, colour? })
-// or null. Callers that only need "is there a valid session" just check non-null.
-export async function readSession(cookieHeader, env) {
-  if (!cookieHeader) return null;
-  const m = cookieHeader.match(new RegExp(`(?:^|;\\s*)${SESSION_COOKIE}=([^;]+)`));
-  if (!m) return null;
-  const [payload, sig] = m[1].split('.');
+// Verify a raw session token ("<payload>.<sig>") and return its claims, or null.
+async function verifySessionToken(token, env) {
+  if (!token) return null;
+  const [payload, sig] = token.split('.');
   if (!payload || !sig) return null;
-  const ok = await verify(payload, sig, env.SESSION_SECRET);
-  if (!ok) return null;
+  if (!(await verify(payload, sig, env.SESSION_SECRET))) return null;
   try {
     const data = JSON.parse(dec.decode(b64urlDecode(payload)));
     if (Date.now() > data.exp) return null;
     return data;
   } catch { return null; }
+}
+
+// Read the session from the cookie (web). Returns the full claims or null.
+export async function readSession(cookieHeader, env) {
+  if (!cookieHeader) return null;
+  const m = cookieHeader.match(new RegExp(`(?:^|;\\s*)${SESSION_COOKIE}=([^;]+)`));
+  return m ? verifySessionToken(m[1], env) : null;
+}
+
+// Resolve the session from EITHER the cookie (web) OR an Authorization: Bearer
+// token (the native app, which can't rely on a cross-origin cookie). It's the
+// same signed token in both cases, so the app path is no weaker than the web.
+export async function resolveSession(request, env) {
+  const fromCookie = await readSession(request.headers.get('Cookie'), env);
+  if (fromCookie) return fromCookie;
+  const auth = request.headers.get('Authorization') || '';
+  const m = auth.match(/^Bearer\s+(.+)$/i);
+  return m ? verifySessionToken(m[1].trim(), env) : null;
 }
 
 export function sessionCookieHeader(token) {
@@ -173,7 +187,7 @@ export async function readAuthToken(token, env) {
 }
 
 export async function requireStaff(request, env) {
-  const session = await readSession(request.headers.get('Cookie'), env);
+  const session = await resolveSession(request, env);
   if (!session) {
     return new Response(JSON.stringify({ error: 'unauthorized' }), {
       status: 401, headers: { 'Content-Type': 'application/json' }

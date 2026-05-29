@@ -6,7 +6,7 @@
    keeps the original single-staff-PIN behaviour. Adding the first operator
    switches the shop into per-operator mode and these permissions start to bite. */
 
-import { readSession, readAuthToken } from './auth.js';
+import { resolveSession, readAuthToken } from './auth.js';
 import { operatorsEnabled } from './operators.js';
 
 // Granular capabilities a role may hold.
@@ -51,7 +51,7 @@ export function permissionsForRole(role) {
    Populates `out` with { operator, approver? } so the caller can attribute /
    audit the action. */
 export async function requirePermission(request, env, perm, out = {}) {
-  const session = await readSession(request.headers.get('Cookie'), env);
+  const session = await resolveSession(request, env);
   if (!session) return resp({ error: 'unauthorized' }, 401);
   out.operator = session.op ? { id: session.op, name: session.name, role: session.role } : null;
 

@@ -33,11 +33,13 @@ npm run open:android
 After code changes to the staff UI, re-run from the root `npm run build`, then in
 `app/`: `npm run sync` (re-syncs www + `cap sync android`).
 
-## Quick on-device smoke test (no auth changes needed)
-Bundled mode talks to the shop backend cross-origin, which the cookie session
-doesn't allow yet (see `docs/PHASE2_APP.md` → "auth across origins"). For an
-**immediate** run on the T2 that just works, use **server.url** mode — the WebView
-loads the live (protected) staff page directly, same-origin, cookies intact:
+## Bundled mode works (token auth)
+Login returns a bearer token to the app (the web stays on its HttpOnly cookie); the
+app stores it and sends it as `Authorization`, and CapacitorHttp proxies requests
+natively (no CORS). So bundled mode talks to the provisioned shop backend out of the box.
+
+(Optional) **server.url** is still available as a quick browser-style run — the WebView
+loads the live staff page directly, same-origin:
 
 Add to `capacitor.config.json` temporarily:
 ```json
@@ -55,5 +57,6 @@ every request is routed to that backend. Re-provision by clearing app storage.
 - ✅ App loads the real staff EPOS (bundled) + provisioning + request routing shim.
 - ✅ Native plugin present: `printReceipt` / `kickDrawer` / `collectCardPayment` —
   currently resolve `{ ok:false, reason:'…-not-wired' }`.
-- ⏳ Sunmi printer/drawer SDK, Stripe Terminal Tap-to-Pay, token auth, live-update,
-  and wiring the Sale flow to the bridge — see the TODO list in `docs/PHASE2_APP.md`.
+- ✅ Token auth — bundled mode talks to the shop backend; the web is unchanged.
+- ⏳ Sunmi printer/drawer SDK, Stripe Terminal Tap-to-Pay, live-update, and wiring
+  the Sale flow to the bridge — see the TODO list in `docs/PHASE2_APP.md`.
