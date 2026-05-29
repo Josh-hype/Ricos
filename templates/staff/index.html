@@ -732,8 +732,18 @@ button{cursor:pointer;border:0;background:none}
   display:flex;align-items:center;padding:0 18px;font-family:var(--mono);font-size:25px;font-weight:500;
   justify-content:flex-end;margin-bottom:6px;
 }
-.change-note{font-size:12px;color:var(--green);font-weight:700;text-align:right;margin:0 4px 8px;min-height:16px;font-family:var(--mono)}
-.change-note.short{color:var(--red)}
+.change-note{font-size:15px;color:var(--green);font-weight:800;text-align:right;margin:0 4px 8px;min-height:20px;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.change-note.short{color:var(--amber)}
+.quick-cash{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.quick-cash:empty{display:none}
+.qcash{
+  height:44px;border-radius:11px;border:1.5px solid var(--line);background:var(--canvas);
+  font-size:14px;font-weight:700;color:var(--ink-2);font-family:var(--mono);
+  transition:var(--motion-fast) var(--ease-out);
+}
+.qcash:hover{border-color:var(--blue);color:var(--blue);background:#fff}
+.qcash:active{transform:scale(.96)}
+.qcash.exact{grid-column:1 / -1}
 .pad-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;flex:1;min-height:0}
 .pad-key{
   border-radius:13px;background:var(--panel);border:1px solid var(--line);
@@ -1316,9 +1326,9 @@ button{cursor:pointer;border:0;background:none}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>
           Cash
         </button>
-        <button class="tender" data-tender="card" type="button" disabled title="Card via the Sunmi reader — coming soon">
+        <button class="tender" data-tender="card" type="button" title="Record a card payment taken on your card machine">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-          Card (soon)
+          Card
         </button>
       </div>
       <div class="pay-summary">
@@ -1336,6 +1346,7 @@ button{cursor:pointer;border:0;background:none}
       </div>
       <div class="amount-field mono" id="payAmount">£0.00</div>
       <div class="change-note" id="payChange"></div>
+      <div class="quick-cash" id="payQuickCash"></div>
       <div class="pad-grid" id="payPad"></div>
       <button class="pay-done" id="payConfirm" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg>
@@ -2984,6 +2995,7 @@ $('#saleCharge').addEventListener('click', () => {
 
 function openPayModal() {
   sale.pay.tenderedP = 0;
+  sale.pay.tender = 'cash';
   const totalP = cartTotalP();
   const subP = cartSubP();
   $('#payTotal').textContent = `£${(totalP / 100).toFixed(2)}`;
@@ -2997,19 +3009,81 @@ function openPayModal() {
     feeRow.hidden = true;
   }
   $('#paySubLab').textContent = `Items (${sale.cart.reduce((a, c) => a + c.qty, 0)})`;
-  $('#payAmount').textContent = `£${(totalP / 100).toFixed(2)}`;
-  $('#payChange').textContent = '';
-  $('#payChange').classList.remove('short');
-  $('#payConfirm').disabled = false;
-  $('#payConfirm').querySelector('span').textContent = 'Take cash payment';
+  renderQuickCash();
+  setTender('cash');
   $('#payDone').classList.remove('show');
   $('#payOvl').classList.add('open');
+}
+
+// Cash vs Card (manual): card records the sale as paid-by-card (taken on the
+// shop's machine) — no keypad needed; the Stripe Terminal flow drops in here later.
+function setTender(tender) {
+  sale.pay.tender = tender;
+  $$('.tenders .tender').forEach(x => x.classList.toggle('sel', x.dataset.tender === tender));
+  const isCash = tender === 'cash';
+  $('#payTitle').textContent = isCash ? 'Cash payment' : 'Card payment';
+  ['#payAmount', '#payChange', '#payQuickCash', '#payPad'].forEach(s => { $(s).hidden = !isCash; });
+  if (isCash) syncPayAmount(); else updatePayConfirm();
+}
+
+// One-tap UK quick-cash: Exact (full width) + the next sensible notes above the total.
+function renderQuickCash() {
+  const totalP = cartTotalP();
+  const denoms = new Set();
+  [Math.ceil(totalP / 500) * 500, Math.ceil(totalP / 1000) * 1000, 2000, 5000]
+    .forEach(p => { if (p > totalP) denoms.add(p); });
+  const opts = [`<button type="button" class="qcash exact" data-p="${totalP}">Exact · £${(totalP / 100).toFixed(2)}</button>`]
+    .concat([...denoms].sort((a, b) => a - b).slice(0, 3).map(p => `<button type="button" class="qcash" data-p="${p}">£${(p / 100).toFixed(0)}</button>`));
+  $('#payQuickCash').innerHTML = opts.join('');
+}
+
+function syncPayAmount() {
+  const totalP = cartTotalP();
+  const t = sale.pay.tenderedP;
+  if (t === 0) {
+    $('#payAmount').textContent = `£${(totalP / 100).toFixed(2)}`;
+    $('#payChange').textContent = '';
+    $('#payChange').classList.remove('short');
+  } else {
+    $('#payAmount').textContent = `£${(t / 100).toFixed(2)}`;
+    const diff = t - totalP;
+    if (diff >= 0) { $('#payChange').textContent = `Change £${(diff / 100).toFixed(2)}`; $('#payChange').classList.remove('short'); }
+    else { $('#payChange').textContent = `Short £${(-diff / 100).toFixed(2)}`; $('#payChange').classList.add('short'); }
+  }
+  updatePayConfirm();
+}
+
+function updatePayConfirm() {
+  const btn = $('#payConfirm');
+  const lbl = btn.querySelector('span');
+  const totalP = cartTotalP();
+  if (sale.pay.tender === 'card') {
+    btn.disabled = false;
+    lbl.textContent = `Take card payment · £${(totalP / 100).toFixed(2)}`;
+    return;
+  }
+  const t = sale.pay.tenderedP;
+  if (t === 0) { btn.disabled = false; lbl.textContent = `Take cash · £${(totalP / 100).toFixed(2)}`; return; }
+  const diff = t - totalP;
+  if (diff < 0) { btn.disabled = true; lbl.textContent = `£${(-diff / 100).toFixed(2)} short`; }
+  else { btn.disabled = false; lbl.textContent = `Take £${(t / 100).toFixed(2)} · Change £${(diff / 100).toFixed(2)}`; }
 }
 function closePayModal() {
   $('#payOvl').classList.remove('open');
 }
 $('#payClose').addEventListener('click', closePayModal);
 $('#payOvl').addEventListener('click', (e) => { if (e.target.id === 'payOvl') closePayModal(); });
+$$('.tenders .tender').forEach(b => b.addEventListener('click', () => {
+  if (b.disabled) return;
+  sale.pay.tenderedP = 0;
+  setTender(b.dataset.tender);
+}));
+$('#payQuickCash').addEventListener('click', (e) => {
+  const b = e.target.closest('.qcash');
+  if (!b) return;
+  sale.pay.tenderedP = Number(b.dataset.p) || 0;
+  syncPayAmount();
+});
 
 // Build keypad (no need to live-rebuild)
 (function buildPad() {
@@ -3027,26 +3101,18 @@ $('#payPad').addEventListener('click', (e) => {
   else if (k === '⌫') s = s.slice(0, -1);
   else s = (s + k).replace(/^0+(?=\d)/, '').slice(0, 7);
   sale.pay.tenderedP = s ? Number(s) : 0;
-  const totalP = cartTotalP();
-  if (sale.pay.tenderedP === 0) {
-    $('#payAmount').textContent = `£${(totalP / 100).toFixed(2)}`;
-    $('#payChange').textContent = '';
-    $('#payChange').classList.remove('short');
-  } else {
-    $('#payAmount').textContent = `£${(sale.pay.tenderedP / 100).toFixed(2)}`;
-    const diff = sale.pay.tenderedP - totalP;
-    if (diff >= 0) {
-      $('#payChange').textContent = `Change £${(diff / 100).toFixed(2)}`;
-      $('#payChange').classList.remove('short');
-    } else {
-      $('#payChange').textContent = `Short £${(-diff / 100).toFixed(2)}`;
-      $('#payChange').classList.add('short');
-    }
-  }
+  syncPayAmount();
 });
 
 $('#payConfirm').addEventListener('click', async () => {
   if (sale.submitting || !sale.cart.length) return;
+  const isCash = sale.pay.tender !== 'card';
+  const totalP = cartTotalP();
+  if (isCash && sale.pay.tenderedP > 0 && sale.pay.tenderedP < totalP) return; // short (button is disabled)
+  // Wrong-magnitude guard (e.g. £200 typed for a £20 order).
+  if (isCash && sale.pay.tenderedP - totalP > 10000) {
+    if (!confirm(`Received £${(sale.pay.tenderedP / 100).toFixed(2)} — change £${((sale.pay.tenderedP - totalP) / 100).toFixed(2)}. Correct?`)) return;
+  }
   sale.submitting = true;
   $('#payConfirm').disabled = true;
   $('#payConfirm').querySelector('span').textContent = 'Sending…';
@@ -3059,7 +3125,7 @@ $('#payConfirm').addEventListener('click', async () => {
       modifiers: Array.isArray(c.modifiers) ? c.modifiers : [],
       mealChoices: Array.isArray(c.mealChoices) ? c.mealChoices : [],
     }));
-    const payload = { items, mode: sale.mode };
+    const payload = { items, mode: sale.mode, tender: isCash ? 'cash' : 'card' };
     if (sale.customer) {
       payload.customer = { name: sale.customer.name, phone: sale.customer.phone };
       if (sale.customer.address) payload.address = sale.customer.address;
@@ -3073,23 +3139,28 @@ $('#payConfirm').addEventListener('click', async () => {
     if (res.status === 401) { $('#logoutBtn').click(); return; }
     if (!res.ok || !data.order) {
       alert(data.error || `Couldn't take the payment (${res.status}). Try again.`);
-      $('#payConfirm').disabled = false;
-      $('#payConfirm').querySelector('span').textContent = 'Take cash payment';
+      updatePayConfirm();
       return;
     }
     const o = data.order;
-    // Done card overlay inside the modal. New sale clears the cart.
-    $('#payDoneSub').textContent =
-      `£${(o.totals.totalP / 100).toFixed(2)} · Cash · Order #${o.id}`;
+    // Lead the success card with the change to hand back (cash), else the tender.
+    const changeP = isCash && sale.pay.tenderedP > 0 ? Math.max(0, sale.pay.tenderedP - totalP) : 0;
+    if (changeP > 0) {
+      $('#payDone h2').textContent = 'Give change';
+      $('#payDoneSub').textContent = `£${(changeP / 100).toFixed(2)} change · Order #${o.id}`;
+    } else {
+      $('#payDone h2').textContent = 'Payment complete';
+      $('#payDoneSub').textContent = `£${(o.totals.totalP / 100).toFixed(2)} · ${isCash ? 'Cash' : 'Card'} · Order #${o.id}`;
+    }
     $('#payDone').classList.add('show');
+    if (isCash) { try { if (window.EPOSNative && window.EPOSNative.kickDrawer) window.EPOSNative.kickDrawer(); } catch (e) {} }
     // Order is already accepted/paid server-side — let the live poll find it
     // so the kitchen sees it on Live alongside any web orders.
     state.seenIds.add(o.id);
     poll();
   } catch (e) {
     alert('Network error — try again.');
-    $('#payConfirm').disabled = false;
-    $('#payConfirm').querySelector('span').textContent = 'Take cash payment';
+    updatePayConfirm();
   } finally {
     sale.submitting = false;
   }

@@ -24,7 +24,7 @@ export const onRequestGet = async ({ request, env }) => {
   const { from, to } = resolveDayRange(new URL(request.url));
   const orders = await listOrdersBetween(env, from, to);
 
-  const isCard = (o) => o.paymentMethod === 'card';
+  const isCard = (o) => o.paymentMethod === 'card' || o.paymentMethod === 'counter_card';
   const valid = orders.filter(o => o.status !== 'pending_payment' && o.status !== 'cancelled');
   const sum = (arr, f) => arr.reduce((a, o) => a + (f(o) || 0), 0);
   const grossP = sum(valid, o => o.totals?.totalP);

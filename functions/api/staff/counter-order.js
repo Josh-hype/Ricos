@@ -42,6 +42,9 @@ export const onRequestPost = async ({ request, env }) => {
 
   const mode = MODES.has(body.mode) ? body.mode : 'walkin';
   const fulfillment = mode === 'delivery' ? 'delivery' : 'collection';
+  // Tender: cash by default; 'card' records a sale paid by card on the shop's
+  // existing machine (Stripe Terminal capture drops in here later).
+  const tender = body.tender === 'card' ? 'card' : 'cash';
   const config = getConfig();
 
   // Customer. Walk-ins get a placeholder; collection / delivery need a name
@@ -100,13 +103,13 @@ export const onRequestPost = async ({ request, env }) => {
     customer: { name, email: '', phone: rawPhone },
     address,
     totals,
-    paymentMethod: 'counter_cash',
-    payment: { state: 'paid', paidAt: at, tender: 'cash' },
+    paymentMethod: tender === 'card' ? 'counter_card' : 'counter_cash',
+    payment: { state: 'paid', paidAt: at, tender },
     marketing: { email: false, sms: false },
     createdBy: sess?.op ? { id: sess.op, name: sess.name } : null,
     history: [
       { at, event: 'created', source: `counter-${mode}`, by: sess?.name || null },
-      { at, event: 'paid', tender: 'cash' },
+      { at, event: 'paid', tender },
       { at, event: 'accepted', readyAt },
     ],
   };
