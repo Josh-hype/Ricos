@@ -284,6 +284,8 @@ button{cursor:pointer;border:0;background:none}
   50%{box-shadow:0 0 0 8px rgba(244,168,46,0)}
 }
 .card.late{border-color:var(--red)}
+.card.aging-soon{border-left:4px solid var(--amber-bg)}
+.card.aging-over{border-left:4px solid var(--red);background:#FEF5F5}
 .card.st-accepted{border-left:4px solid var(--blue)}
 .card.st-ready{border-left:4px solid var(--amber-bg)}
 .card.st-out{border-left:4px solid var(--blue)}
@@ -307,6 +309,7 @@ button{cursor:pointer;border:0;background:none}
 .pill.collection{background:var(--green-tint);color:var(--green)}
 .pill.delivery{background:var(--blue-tint);color:var(--blue)}
 .pill.cash{background:var(--amber-tint);color:var(--amber)}
+.pill.paid-card{background:var(--blue-tint);color:var(--accent-strong)}
 .pill.scheduled{background:#F0E8DA;color:#6B5410}
 .pill.s-new{background:var(--amber-tint);color:var(--amber)}
 .pill.s-accepted{background:var(--blue-tint);color:var(--blue)}
@@ -1641,7 +1644,7 @@ async function poll() {
 // (which is time-based, so it flips this on its own at the right moment).
 function liveSignature(orders) {
   return orders.map(o =>
-    `${o.id}:${o.status}:${o.readyAt || ''}:${(o.payment && o.payment.refundedTotalP) || 0}:${isLate(o) ? 'L' : ''}`
+    `${o.id}:${o.status}:${o.readyAt || ''}:${(o.payment && o.payment.refundedTotalP) || 0}:${isLate(o) ? 'L' : ''}:${agingMins(o) ?? ''}`
   ).join('|');
 }
 
@@ -1859,6 +1862,8 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
   const cls = ['card'];
   if (isNew) cls.push('new');
   if (isLate(o)) cls.push('late');
+  const _am = agingMins(o);
+  if (_am !== null) { if (_am < 0) cls.push('aging-over'); else if (_am <= 5) cls.push('aging-soon'); }
   const stClass = { accepted: 'st-accepted', ready: 'st-ready', out_for_delivery: 'st-out', completed: 'st-completed', cancelled: 'st-cancelled' };
   if (stClass[o.status]) cls.push(stClass[o.status]);
   if (o.status === 'completed' || o.status === 'cancelled') cls.push('done');
@@ -1887,9 +1892,10 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
   const fulfillmentPill = o.fulfillment === 'delivery'
     ? '<span class="pill delivery">delivery</span>'
     : '<span class="pill collection">collection</span>';
-  const cashPill = o.paymentMethod !== 'card'
-    ? `<span class="pill cash">${o.paymentMethod === 'cash_collection' ? 'cash on collect' : 'cash on delivery'}</span>`
-    : '';
+  const isCardPay = o.paymentMethod === 'card' || o.paymentMethod === 'counter_card';
+  const cashPill = isCardPay
+    ? '<span class="pill paid-card">card</span>'
+    : '<span class="pill cash">cash</span>';
   const schedPill = o.schedule && o.schedule !== 'asap'
     ? `<span class="pill scheduled">${formatTime(o.schedule)}</span>`
     : '';
@@ -1930,9 +1936,17 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
   if (readOnly) actions = '';   // Z report cards are view-only
 
   const dateLabel = formatDate(o.createdAt);
-  const ready = o.readyAt
-    ? `<div class="when">${dateLabel} · ready ${formatTime(o.readyAt)}</div>`
-    : `<div class="when">${dateLabel} · ${placedAgo}</div>`;
+  let readyTxt;
+  const amr = agingMins(o);
+  if (amr !== null) {
+    const rel = amr > 0 ? `ready in ${amr} min` : (amr === 0 ? 'ready now' : `${-amr} min over`);
+    readyTxt = `${dateLabel} · ${rel}`;
+  } else if (o.readyAt) {
+    readyTxt = `${dateLabel} · ready ${formatTime(o.readyAt)}`;
+  } else {
+    readyTxt = `${dateLabel} · ${placedAgo}`;
+  }
+  const ready = `<div class="when">${readyTxt}</div>`;
 
   const detail = `
       <ul class="lines">${lines}</ul>
@@ -2004,6 +2018,14 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
 function isLate(o) {
   if (!o.readyAt) return false;
   return Date.now() > new Date(o.readyAt).getTime() + 5 * 60000;
+}
+
+// Minutes until the promised ready time for active orders (negative = overdue),
+// or null if N/A. Drives ageing colours + the countdown, and is part of the live
+// signature so cards refresh as time passes.
+function agingMins(o) {
+  if (!o.readyAt || !['accepted', 'ready', 'out_for_delivery'].includes(o.status)) return null;
+  return Math.round((new Date(o.readyAt).getTime() - Date.now()) / 60000);
 }
 
 function humanAgo(d) {
