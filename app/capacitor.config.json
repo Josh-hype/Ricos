@@ -1,0 +1,12 @@
+{
+  "appId": "uk.co.ricos.epos",
+  "appName": "EPOS Till",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false,
+    "backgroundColor": "#0B1A2E"
+  }
+}

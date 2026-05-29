@@ -1,0 +1,10 @@
+# Generated / build artifacts — never committed (mirrors the repo's golden rule).
+# Anchored to app/ so they don't also hide the source plugin in native/android/.
+node_modules/
+/www/
+/android/
+/ios/
+.gradle/
+*.keystore
+*.jks
+.DS_Store

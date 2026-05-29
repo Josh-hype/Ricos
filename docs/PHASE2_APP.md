@@ -1,0 +1,95 @@
+# Phase 2 — Sunmi T2 app (Capacitor wrapper)
+
+> Status: **scaffold** (structure + native bridge + provisioning + docs). It does
+> not produce a finished, signed APK yet — that needs the Android SDK + a physical
+> T2, which aren't available in the cloud build environment. Everything here is
+> written so it slots together on a Mac with Android Studio. Nothing in this folder
+> affects the live web EPOS or the Cloudflare build.
+
+## Decisions (locked with the owner)
+- **Wrap, don't rewrite** — a thin native Android shell (Capacitor) around the
+  existing web staff EPOS, plus native plug-ins for the hardware. One codebase
+  (golden rule #3): the app *is* the EPOS we already have.
+- **One APK + per-device provisioning** — a single app for all 20–30+ shops; each
+  device is set once to a shop (stores that shop's backend base URL). The app-layer
+  equivalent of `SHOP_SLUG`. No per-shop builds.
+- **Bundle UI + live-update** — ship the staff UI inside the APK (offline + off the
+  public web); push UI updates without a full reinstall (see "Updates" below).
+- **Native bridge** for Tap-to-Pay (Stripe Terminal) + the Sunmi printer/drawer;
+  the same web code falls back to cash + browser behaviour when run in a browser.
+- **Card = recorded manually for now** — Tap-to-Pay capture is scaffolded but not
+  wired until the reader path is confirmed (Phase 3).
+
+## How it fits together
+```
+templates/staff/index.html ──(root: npm run build)──▶ public/staff/index.html
+                                                            │
+                                   app/scripts/sync-web.mjs │ copies + injects shim
+                                                            ▼
+                              app/www/index.html  +  native.js / provision.js / plugins
+                                                            │  (npx cap add/sync android)
+                                                            ▼
+                                          android/  (generated APK project)
+                                                            │  + EposHardware native plugin
+                                                            ▼
+                                              Sunmi T2 (installable APK)
+```
+
+- **`app/web/native.js`** — loaded *before* the staff script in the app build. It:
+  - reads the provisioned shop base URL and exposes `window.EPOS_API_BASE`;
+  - transparently rewrites the staff page's relative `\`/api/…\`` + asset requests to
+    that backend (so we don't have to edit the 3,000-line staff template);
+  - exposes `window.EPOSNative` (printReceipt / kickDrawer / collectCardPayment),
+    which call the native plugin in the app and are safe no-ops on the web.
+- **`app/web/provision.js`** — first-run "set up this till" screen (enter the shop
+  site address; stored in localStorage + Capacitor Preferences).
+- **`app/web/plugins/epos-hardware.js`** — JS interface to the native Capacitor plugin.
+- **`app/native/android/EposHardwarePlugin.kt`** — the native plugin (printer/drawer/
+  Tap-to-Pay), with TODOs for the Sunmi + Stripe Terminal SDKs.
+
+## ⚠️ Open decision for when you're back: auth across origins
+In **bundled** mode the WebView origin is `https://localhost`, but the backend is the
+shop's domain — so requests are **cross-origin**. The current staff session is an
+**HttpOnly, SameSite=Lax cookie**, which a browser won't send on cross-site requests.
+So fully-bundled mode needs one of:
+- **(recommended) token auth** — issue a bearer token at login, store it in the app
+  (Preferences), send it as `Authorization`; backend accepts it alongside the cookie.
+  A focused, contained change to `_lib/auth.js` + `login.js` + the gated endpoints.
+- cookie `SameSite=None; Secure` + WebView third-party cookies + CORS-with-credentials
+  (fragile), or
+- **`server.url` quick-run** — point the WebView at the live (protected) staff URL.
+  Same-origin, cookies just work, **zero backend change** — but online-only and the UI
+  still loads from a URL. Great for an immediate on-device smoke test.
+
+I did **not** change the auth model unsupervised. The scaffold defaults to bundled +
+the fetch shim; flip to `server.url` (see `app/README.md`) for an instant first run,
+and we'll choose the real path together. Token auth is my recommendation.
+
+## Updates (no reinstall for UI tweaks)
+The APK shell rarely changes. UI updates flow via a live-update channel:
+- **Appflow** (Ionic, paid), or
+- a **DIY signed bundle**: host the synced `www/` as a zip on Cloudflare/R2, the app
+  checks a version endpoint on launch and swaps the web layer. (To build in Phase 3.)
+
+## Build / run (summary — full steps in `app/README.md`)
+```bash
+# 1. at repo root, build the staff UI
+SHOP_SLUG=ricos npm run build
+# 2. in app/
+cd app && npm install
+npm run prepare:android        # sync www + npx cap add android
+# 3. register the native plugin (see app/native/android/README.md)
+npx cap open android           # build / run / sign in Android Studio, install to the T2
+```
+
+## What's done vs TODO
+- [x] Capacitor project scaffold, config, web-sync pipeline
+- [x] `native.js` fetch shim + hardware facade + provisioning screen
+- [x] native plugin source (printer / drawer / Tap-to-Pay) with TODOs
+- [x] runbook + this architecture doc
+- [ ] decide + implement cross-origin auth (token) — **owner decision**
+- [ ] wire Sunmi printer/drawer SDK into the plugin
+- [ ] Stripe Terminal Tap-to-Pay + `/api/staff/terminal/connection-token` (Phase 3)
+- [ ] live-update channel
+- [ ] wire the Sale flow to call `EPOSNative.printReceipt` / `collectCardPayment`
+- [ ] signed release APK + Sunmi fleet distribution
