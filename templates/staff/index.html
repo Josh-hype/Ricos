@@ -883,7 +883,17 @@ button{cursor:pointer;border:0;background:none}
 .meal-toggle .meal-add{font-family:var(--mono);color:var(--blue);font-weight:600}
 
 .meal-choices{display:flex;flex-direction:column;gap:10px}
-.meal-choice{display:flex;flex-direction:column;gap:5px;font-size:12.5px;font-weight:700;color:var(--ink-2)}
+.meal-choice{display:flex;flex-direction:column;gap:7px;font-size:12.5px;font-weight:700;color:var(--ink-2)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border:1.5px solid var(--line);
+  border-radius:999px;background:var(--panel);font-size:15px;font-weight:600;color:var(--ink);cursor:pointer;
+  transition:var(--motion-fast) var(--ease-out);position:relative;
+}
+.chip:hover{border-color:var(--blue);background:var(--blue-tint-2)}
+.chip:active{transform:scale(.97)}
+.chip input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.chip:has(input:checked){border-color:var(--blue);background:var(--blue);color:#fff}
 
 .item-add{
   height:54px;border-radius:14px;
@@ -2762,6 +2772,9 @@ function openItemDetail(id) {
       if (mod) p += mod.priceDeltaP || 0;
     });
     if (priceEl) priceEl.textContent = `£${(p / 100).toFixed(2)}`;
+    const addEl = body.querySelector('.item-add');
+    const addLbl = addEl && addEl.querySelector('span');
+    if (addLbl && !addEl.classList.contains('added')) addLbl.textContent = `Add to order · £${(p / 100).toFixed(2)}`;
   }
   body.querySelectorAll('.opt-group input').forEach(inp => inp.addEventListener('change', recalc));
   if (mealInput) {
@@ -2790,17 +2803,18 @@ function openItemDetail(id) {
     const isMeal = mealInput ? mealInput.checked : false;
     let mealChoices = [];
     if (isMeal && mealChoicesEl) {
-      const selects = [...mealChoicesEl.querySelectorAll('select')];
+      const slots = [...mealChoicesEl.querySelectorAll('.meal-choice')];
       const errEl = body.querySelector('#mealChoiceErr');
-      if (selects.some(s => !s.value)) {
+      const picked = slots.map(s => s.querySelector('input:checked'));
+      if (picked.some(p => !p)) {
         if (errEl) errEl.textContent = 'Please choose the sides and drink.';
         return;
       }
       if (errEl) errEl.textContent = '';
-      mealChoices = selects.map(s => s.value);
+      mealChoices = picked.map(p => p.value);
     }
-    const spiceSel = body.querySelector('.spice-select');
-    const spice = spiceSel ? spiceSel.value : null;
+    const spiceInput = body.querySelector('input[name="spice"]:checked');
+    const spice = spiceInput ? spiceInput.value : null;
     const modifiers = [...body.querySelectorAll('.opt-group input:checked')].map(i => i.value);
     addToCart(id, { spice, meal: isMeal, modifiers, mealChoices });
     addBtn.classList.add('added');
@@ -2817,13 +2831,16 @@ function itemDetailHTML(v, canonical) {
   const spice = v.spicy
     ? `<div class="item-section">
          <div class="sec-label">Spice level</div>
-         <select class="spice-select" aria-label="Spice level">
-           ${SPICE_OPTIONS.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('')}
-         </select>
+         <div class="chips" id="spiceChips">
+           ${SPICE_OPTIONS.map((s, i) => `<label class="chip"><input type="radio" name="spice" value="${escapeHtml(s)}" ${i === 0 ? 'checked' : ''} /><span>${escapeHtml(s)}</span></label>`).join('')}
+         </div>
        </div>`
     : '';
-  const options = Array.isArray(v.options) && v.options.length
-    ? `<div class="item-section">${v.options.map(g => optionGroupHTML(g, canonical)).join('')}</div>`
+  // Required option groups first — front-load the choices that gate "Add".
+  const groups = (Array.isArray(v.options) ? v.options.slice() : [])
+    .sort((a, b) => (b.required ? 1 : 0) - (a.required ? 1 : 0));
+  const options = groups.length
+    ? `<div class="item-section">${groups.map(g => optionGroupHTML(g, canonical)).join('')}</div>`
     : '';
   const meal = v.meal
     ? `<div class="item-section">
@@ -2847,7 +2864,7 @@ function itemDetailHTML(v, canonical) {
     ${spice}
     ${options}
     ${meal}
-    <button type="button" class="item-add"><span>+ Add to order</span></button>
+    <button type="button" class="item-add"><span>Add to order</span></button>
   `;
 }
 
@@ -2877,21 +2894,20 @@ function optionGroupHTML(g, canonical) {
   `;
 }
 
-// Meal choice dropdowns: each group draws from a menu category, optionally
-// narrowed by include/exclude lists, and renders `count` dropdowns.
+// Meal choice pickers: each slot draws from a menu category, optionally narrowed
+// by include/exclude lists, rendered as tappable chips (one selectable per slot).
 function mealChooseHTML(choose) {
   const groups = Array.isArray(choose) ? choose : [];
   const blocks = [];
+  let slot = 0;
   for (const g of groups) {
     const items = mealChoiceItems(g);
-    const optHTML = items.map(o => `<option value="${escapeHtml(o.id)}">${escapeHtml(o.name)}</option>`).join('');
     const count = g.count || 1;
     for (let i = 0; i < count; i++) {
       const lbl = count > 1 ? `${g.label} ${i + 1}` : g.label;
-      blocks.push(`<label class="meal-choice">
-        <span>${escapeHtml(lbl)}</span>
-        <select class="meal-choice-sel"><option value="">Choose…</option>${optHTML}</select>
-      </label>`);
+      const name = `mc${slot++}`;
+      const chips = items.map(o => `<label class="chip"><input type="radio" name="${name}" value="${escapeHtml(o.id)}" /><span>${escapeHtml(o.name)}</span></label>`).join('');
+      blocks.push(`<div class="meal-choice"><span class="sec-label">${escapeHtml(lbl)}</span><div class="chips">${chips}</div></div>`);
     }
   }
   return blocks.join('');
