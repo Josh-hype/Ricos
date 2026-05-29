@@ -31,6 +31,7 @@ const MODES = new Set(['walkin', 'collection', 'delivery']);
 export const onRequestPost = async ({ request, env }) => {
   const denied = await requireStaff(request, env);
   if (denied) return denied;
+  const sess = await readSession(request.headers.get('Cookie'), env);
 
   let body;
   try { body = await request.json(); }
@@ -102,8 +103,9 @@ export const onRequestPost = async ({ request, env }) => {
     paymentMethod: 'counter_cash',
     payment: { state: 'paid', paidAt: at, tender: 'cash' },
     marketing: { email: false, sms: false },
+    createdBy: sess?.op ? { id: sess.op, name: sess.name } : null,
     history: [
-      { at, event: 'created', source: `counter-${mode}` },
+      { at, event: 'created', source: `counter-${mode}`, by: sess?.name || null },
       { at, event: 'paid', tender: 'cash' },
       { at, event: 'accepted', readyAt },
     ],

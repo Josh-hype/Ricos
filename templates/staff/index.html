@@ -117,6 +117,71 @@ button{cursor:pointer;border:0;background:none}
 }
 .avatar-btn:hover{background:rgba(224,70,75,.2);color:#fff;border-color:rgba(224,70,75,.4)}
 .avatar-btn svg{width:18px;height:18px;stroke-width:2}
+/* Operator avatar (rail foot) — same footprint as the logout avatar. */
+.op-avatar{
+  width:44px;height:44px;border-radius:13px;display:grid;place-items:center;
+  font-weight:800;font-size:15px;color:#fff;letter-spacing:-.02em;
+  background:linear-gradient(140deg,#3a4d66,#22344b);
+  border:1.5px solid rgba(255,255,255,.18);box-shadow:0 6px 16px rgba(0,0,0,.28);transition:.15s;
+}
+.op-avatar:hover{transform:translateY(-1px);filter:brightness(1.08)}
+.tab[hidden]{display:none}
+
+/* Operator identity pill (topbar) */
+.op-pill{
+  display:inline-flex;align-items:center;gap:9px;height:38px;padding:0 12px 0 7px;
+  border-radius:11px;background:var(--panel);border:1px solid var(--line);box-shadow:var(--sh-sm);transition:.15s;
+}
+.op-pill:hover{border-color:var(--blue)}
+.op-pill .dot{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:11.5px;background:var(--blue)}
+.op-pill .who{display:flex;flex-direction:column;line-height:1.06;text-align:left}
+.op-pill .who .nm{font-size:13px;font-weight:700}
+.op-pill .who .rl{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.role-badge{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;border-radius:999px;display:inline-block}
+.role-badge.owner{background:#EEE9FF;color:#7C5CFC}
+.role-badge.manager{background:var(--blue-tint);color:var(--blue)}
+.role-badge.staff{background:var(--green-tint);color:var(--green)}
+
+/* Account popover */
+.acct-pop{
+  position:fixed;left:14px;bottom:14px;z-index:70;width:244px;
+  background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--sh-lg);
+  padding:8px;display:none;
+}
+.acct-pop.open{display:block;animation:fadeIn .14s ease}
+.acct-pop .head{display:flex;align-items:center;gap:11px;padding:10px 10px 12px}
+.acct-pop .head .dot{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:16px;background:var(--blue);flex:none}
+.acct-pop .head .nm{font-weight:800;font-size:15px;letter-spacing:-.01em;margin-bottom:3px}
+.acct-pop .sep{height:1px;background:var(--line-2);margin:4px 4px}
+.acct-pop button.item{
+  width:100%;display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:12px;
+  font-size:14px;font-weight:600;color:var(--ink-2);text-align:left;
+}
+.acct-pop button.item:hover{background:var(--blue-tint-2);color:var(--blue)}
+.acct-pop button.item.danger:hover{background:var(--red-tint);color:var(--red)}
+.acct-pop button.item svg{width:18px;height:18px;stroke-width:2;flex:none}
+
+/* Staff management modal */
+.staff-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;max-height:42vh;overflow:auto}
+.staff-row{display:flex;align-items:center;gap:11px;padding:10px 12px;border:1px solid var(--line);border-radius:13px;background:var(--panel)}
+.staff-row .dot{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px;flex:none}
+.staff-row .nm{flex:1;font-weight:700;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.staff-row .act{display:flex;gap:6px;flex:none}
+.staff-row .act button{font-size:12px;font-weight:700;padding:6px 10px;border-radius:9px;border:1px solid var(--line);color:var(--ink-2);background:var(--panel)}
+.staff-row .act button:hover{border-color:var(--blue);color:var(--blue)}
+.staff-row .act button.rm:hover{border-color:var(--red);color:var(--red)}
+.staff-empty{color:var(--muted);font-size:13.5px;text-align:center;padding:18px 14px;border:1px dashed var(--line);border-radius:13px;margin-bottom:14px;line-height:1.5}
+.sf-head{font-size:12.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:2px 2px 10px}
+.sf-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.sf-field{display:flex;flex-direction:column;gap:5px}
+.sf-field.full{grid-column:1 / -1}
+.sf-field label{font-size:12px;font-weight:700;color:var(--ink-2)}
+.sf-field input,.sf-field select{
+  border:1px solid var(--line);border-radius:10px;padding:10px 11px;font-size:14px;background:var(--canvas);color:var(--ink);
+}
+.sf-field input:focus,.sf-field select:focus{outline:none;border-color:var(--blue);background:#fff;box-shadow:0 0 0 4px var(--blue-tint)}
+.sf-msg{font-size:12.5px;font-weight:600;min-height:16px;margin-bottom:8px;color:var(--muted)}
+.sf-msg.err{color:var(--red)} .sf-msg.ok{color:var(--green)}
 
 /* Stage */
 .stage{position:relative;overflow:hidden;display:flex;flex-direction:column;min-width:0}
@@ -862,7 +927,7 @@ button{cursor:pointer;border:0;background:none}
 <section id="pinScreen" class="pin-screen">
   <form id="pinForm" class="pin-card" autocomplete="off">
     <h1>{{shopShortName}} — staff orders</h1>
-    <div class="sub">Enter the staff PIN to continue</div>
+    <div class="sub" id="pinSub">Enter your PIN to continue</div>
     <input type="number" inputmode="numeric" pattern="[0-9]*" class="pin-input"
            id="pinInput" maxlength="8" placeholder="••••" autofocus required />
     <div class="pin-error" id="pinError" aria-live="polite"></div>
@@ -896,7 +961,8 @@ button{cursor:pointer;border:0;background:none}
     </nav>
     <div class="rail-foot">
       <div class="rail-divider"></div>
-      <button id="logoutBtn" class="avatar-btn" title="Logout">
+      <button id="opAvatar" class="op-avatar" title="Account" aria-haspopup="true">≡</button>
+      <button id="logoutBtn" class="avatar-btn" title="Sign out" hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
       </button>
     </div>
@@ -909,6 +975,10 @@ button{cursor:pointer;border:0;background:none}
         <div class="sub">Staff dashboard</div>
       </div>
       <div class="top-spacer"></div>
+      <button class="op-pill" id="opPill" title="Account" hidden>
+        <span class="dot" id="opPillDot">··</span>
+        <span class="who"><span class="nm" id="opPillName">—</span><span class="rl" id="opPillRole"></span></span>
+      </button>
       <div class="chip live"><span class="pulse" id="pulse" title="Live — refreshes automatically"></span> Live</div>
       <button id="refreshBtn" title="Refresh now" aria-label="Refresh">↻</button>
       <button id="soundToggle" title="Toggle sound">🔔 On</button>
@@ -1112,6 +1182,67 @@ button{cursor:pointer;border:0;background:none}
   </div>
 </div>
 
+<!-- ============================== Account popover (operator menu) -->
+<div class="acct-pop" id="acctPop" role="menu">
+  <div class="head">
+    <span class="dot" id="acctDot">≡</span>
+    <div><div class="nm" id="acctName">Staff</div><span class="role-badge staff" id="acctRole" style="display:none">staff</span></div>
+  </div>
+  <div class="sep"></div>
+  <button class="item" id="acctSwitch" type="button" hidden>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 16l-4-4 4-4M3 12h13M17 8l4 4-4 4M21 12H8"/></svg>
+    Switch operator
+  </button>
+  <button class="item" id="acctStaff" type="button" hidden>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+    Manage staff
+  </button>
+  <div class="sep"></div>
+  <button class="item danger" id="acctSignout" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+    Sign out
+  </button>
+</div>
+
+<!-- ============================== Manager-approval modal (action override) -->
+<div class="ovl" id="authzOvl" role="dialog" aria-modal="true" aria-labelledby="authzTitle">
+  <div class="modal">
+    <h2 id="authzTitle">Manager approval</h2>
+    <p id="authzSub" style="color:var(--muted);font-size:13.5px;font-weight:500;margin-bottom:14px;text-align:center">A manager PIN is needed to continue.</p>
+    <input type="number" inputmode="numeric" pattern="[0-9]*" class="pin-input" id="authzPin" maxlength="8" placeholder="••••" />
+    <div class="pin-error" id="authzError" aria-live="polite"></div>
+    <div class="row">
+      <button class="cancel" id="authzCancel" type="button">Cancel</button>
+      <button class="confirm" id="authzConfirm" type="button">Authorise</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== Manage-staff modal (operators CRUD) -->
+<div class="ovl" id="staffOvl" role="dialog" aria-modal="true" aria-labelledby="staffTitle">
+  <div class="modal" style="max-width:480px;text-align:left">
+    <h2 id="staffTitle">Manage staff</h2>
+    <div class="staff-list" id="staffList"></div>
+    <div class="sf-head" id="sfHead">Add operator</div>
+    <div class="sf-grid">
+      <div class="sf-field full"><label for="sfName">Name</label><input id="sfName" type="text" maxlength="40" placeholder="e.g. Sam" autocomplete="off" /></div>
+      <div class="sf-field"><label for="sfRole">Role</label>
+        <select id="sfRole">
+          <option value="staff">Staff</option>
+          <option value="manager">Manager</option>
+          <option value="owner">Owner</option>
+        </select>
+      </div>
+      <div class="sf-field"><label for="sfPin">PIN (4–8 digits)</label><input id="sfPin" type="number" inputmode="numeric" pattern="[0-9]*" maxlength="8" placeholder="••••" autocomplete="off" /></div>
+    </div>
+    <div class="sf-msg" id="sfMsg"></div>
+    <div class="row">
+      <button class="cancel" id="staffClose" type="button">Close</button>
+      <button class="confirm" id="sfSave" type="button">Add operator</button>
+    </div>
+  </div>
+</div>
+
 <!-- ============================== Item-detail modal (Sale view)
      Mirrors the website's item modal: spice level, option groups, meal
      upgrade + meal-choice dropdowns. Built dynamically per item. -->
@@ -1242,10 +1373,18 @@ const state = {
   to: '',
   managerUnlocked: false, // optimistic flag — server still validates via the manager cookie
   pendingMgrTarget: null, // tab we're trying to open behind the manager PIN gate
+  operatorsEnabled: false, // per-operator mode (from /api/staff/me)
+  operator: null,          // { id, name, role, colour } when signed in per-operator
+  perms: new Set(),        // permissions the signed-in operator holds
+  pendingAuth: null,       // in-flight manager-approval request { perm, resolve }
+  editingOpId: null,       // operator being edited in the staff modal
+  switching: false,        // soft re-auth (switch operator) in progress
 };
 
 const IDLE_MS = 90 * 1000;
+const SIGNOUT_MS = 5 * 60 * 1000; // per-operator auto sign-out after inactivity
 let idleHandle = null;
+let signoutHandle = null;
 
 function setSoundLabel() {
   $('#soundToggle').textContent = state.soundOn ? '🔔 On' : '🔕 Off';
@@ -1309,7 +1448,11 @@ function setView(view) {
 }
 $$('.tab').forEach(t => t.addEventListener('click', () => {
   const v = t.dataset.view;
-  if ((v === 'summary' || v === 'zreport') && !state.managerUnlocked) {
+  const financial = (v === 'summary' || v === 'zreport');
+  // Per-operator mode: the role decides access (these tabs are hidden for
+  // anyone without reports.view), so no manager-PIN prompt is needed. Legacy
+  // mode keeps the manager-PIN gate.
+  if (financial && !state.operatorsEnabled && !state.managerUnlocked) {
     openManagerModal(v);
     return;
   }
@@ -1371,21 +1514,26 @@ $('#logoutBtn').addEventListener('click', () => {
   state.managerUnlocked = false;
   if (state.pollHandle) clearInterval(state.pollHandle);
   if (idleHandle) { clearTimeout(idleHandle); idleHandle = null; }
+  if (signoutHandle) { clearTimeout(signoutHandle); signoutHandle = null; }
   state.authed = false;
   stopAlarm();
   $('#alarmOvl').classList.remove('open');
   state.alarmId = null;
+  $('#acctPop').classList.remove('open');
   $('#dash').hidden = true;
   $('#pinScreen').style.display = 'grid';
+  if (!state.switching) $('#pinSub').textContent = 'Enter your PIN to continue';
   $('#pinInput').value = '';
   $('#pinInput').focus();
 });
 
 function enterDashboard() {
   state.authed = true;
+  state.switching = false;
   if (!state.from) { state.from = state.to = ymdToday(); }
   $('#pinScreen').style.display = 'none';
   $('#dash').hidden = false;
+  loadMe();
   // Prime the audio context with a silent tone so iOS lets us play later.
   if (state.soundOn) {
     try { audio.chime(); } catch {}
@@ -2074,11 +2222,17 @@ $('#refundConfirm').addEventListener('click', async () => {
   const full = c.mode === 'full';
   const reason = full ? '' : [...c.selected].map(i => `${c.lines[i].qty}× ${c.lines[i].name}`).join(', ');
   if (!confirm(`Refund £${(amt / 100).toFixed(2)} to the customer's card?`)) return;
+  // Refunds need the 'refund' permission; if this operator lacks it, a manager
+  // approves with their PIN and we replay their one-action token on the request.
+  const authToken = await requirePerm('refund');
+  if (authToken === false) return;
   $('#refundConfirm').disabled = true;
   try {
+    const headers = { 'Content-Type': 'application/json' };
+    if (authToken) headers['X-Authorize-Token'] = authToken;
     const res = await fetch(`/api/staff/orders/${c.id}/refund`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify(full ? { mode: 'full' } : { mode: 'partial', lineIndexes: [...c.selected], reason }),
     });
     const data = await res.json().catch(() => ({}));
@@ -2934,6 +3088,20 @@ function resetIdle() {
   if (!state.authed) return;
   if (idleHandle) clearTimeout(idleHandle);
   idleHandle = setTimeout(onIdle, IDLE_MS);
+  // Per-operator mode also auto-signs-out after a longer idle, returning an
+  // unattended till to the PIN screen.
+  if (state.operatorsEnabled) {
+    if (signoutHandle) clearTimeout(signoutHandle);
+    signoutHandle = setTimeout(onSignoutIdle, SIGNOUT_MS);
+  }
+}
+function onSignoutIdle() {
+  if ($$('.ovl.open').length > 0) { // don't sign out mid-task
+    if (signoutHandle) clearTimeout(signoutHandle);
+    signoutHandle = setTimeout(onSignoutIdle, SIGNOUT_MS);
+    return;
+  }
+  $('#logoutBtn').click();
 }
 function onIdle() {
   // Stay put while staff is mid-task in any modal (accepting an order,
@@ -2953,6 +3121,253 @@ function onIdle() {
 ['pointerdown', 'keydown', 'touchstart', 'wheel'].forEach(ev =>
   document.addEventListener(ev, resetIdle, { capture: true, passive: true })
 );
+
+/* ============================== Operators, permissions & account
+   Per-operator identity layer. /api/staff/me reports who's signed in and what
+   they can do; the UI renders the identity and gates actions. In legacy mode
+   (no operators configured) operatorsEnabled is false and can() returns true
+   for everything, so behaviour is unchanged. */
+function initials(name) {
+  return (String(name || '').trim().split(/\s+/).slice(0, 2).map(s => s[0] || '').join('') || '··').toUpperCase();
+}
+function can(perm) {
+  return !state.operatorsEnabled || state.perms.has(perm);
+}
+
+async function loadMe() {
+  try {
+    const res = await fetch('/api/staff/me', { cache: 'no-store' });
+    if (res.ok) {
+      const d = await res.json();
+      state.operatorsEnabled = !!d.operatorsEnabled;
+      state.operator = d.operator || null;
+      state.perms = new Set(d.permissions || []);
+    }
+  } catch {}
+  renderOperator();
+  applyPermissions();
+}
+
+function renderOperator() {
+  const enabled = state.operatorsEnabled;
+  const op = state.operator;
+  // The account button is always available (it's also how the first operator
+  // gets set up); the topbar identity pill + "switch" only matter once
+  // operators exist. The bare logout avatar is folded into the account menu.
+  $('#opAvatar').hidden = false;
+  $('#logoutBtn').hidden = true;
+  $('#opPill').hidden = !(enabled && op);
+  $('#acctSwitch').hidden = !enabled;
+  $('#acctStaff').hidden = !can('operators.manage');
+
+  if (enabled && op) {
+    const ini = initials(op.name);
+    const col = op.colour || '#0070F0';
+    $('#opAvatar').textContent = ini;
+    $('#opAvatar').style.background = col;
+    $('#opPillDot').textContent = ini;
+    $('#opPillDot').style.background = col;
+    $('#opPillName').textContent = op.name;
+    $('#opPillRole').textContent = op.role;
+    $('#acctDot').textContent = ini;
+    $('#acctDot').style.background = col;
+    $('#acctName').textContent = op.name;
+    const rb = $('#acctRole');
+    rb.textContent = op.role;
+    rb.className = 'role-badge ' + op.role;
+    rb.style.display = '';
+  } else {
+    const fallback = 'linear-gradient(140deg,#3a4d66,#22344b)';
+    $('#opAvatar').textContent = '≡';
+    $('#opAvatar').style.background = fallback;
+    $('#acctDot').textContent = '≡';
+    $('#acctDot').style.background = fallback;
+    $('#acctName').textContent = 'Staff';
+    $('#acctRole').style.display = 'none';
+  }
+}
+
+function applyPermissions() {
+  const hideReports = state.operatorsEnabled && !can('reports.view');
+  $$('.tab[data-view="summary"], .tab[data-view="zreport"]').forEach(t => { t.hidden = hideReports; });
+  if (hideReports && (state.view === 'summary' || state.view === 'zreport')) setView('live');
+}
+
+/* Account popover */
+function toggleAcct(force) {
+  const p = $('#acctPop');
+  p.classList.toggle('open', force == null ? !p.classList.contains('open') : force);
+}
+$('#opAvatar').addEventListener('click', (e) => { e.stopPropagation(); toggleAcct(); });
+$('#opPill').addEventListener('click', (e) => { e.stopPropagation(); toggleAcct(); });
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#acctPop') && !e.target.closest('#opAvatar') && !e.target.closest('#opPill')) toggleAcct(false);
+});
+$('#acctSignout').addEventListener('click', () => { toggleAcct(false); $('#logoutBtn').click(); });
+$('#acctSwitch').addEventListener('click', () => { toggleAcct(false); switchOperator(); });
+$('#acctStaff').addEventListener('click', () => { toggleAcct(false); openStaffModal(); });
+
+function switchOperator() {
+  // Soft re-auth: tear the session down and show the PIN screen so another
+  // operator can sign in. enterDashboard() re-primes everything on success.
+  state.switching = true;
+  $('#logoutBtn').click();
+  $('#pinSub').textContent = 'Enter your PIN to switch operator';
+  state.switching = false;
+}
+
+/* Manager approval (action override). requirePerm(perm) resolves to:
+     null     — allowed, no token needed
+     <token>  — a manager authorised it; replay via the X-Authorize-Token header
+     false    — cancelled */
+const PERM_LABELS = {
+  refund: 'refund', discount: 'apply a discount', void: 'void this order',
+  'drawer.open': 'open the drawer', 'reports.view': 'view reports', 'operators.manage': 'manage staff',
+};
+function requirePerm(perm) {
+  return new Promise((resolve) => {
+    if (can(perm)) { resolve(null); return; }
+    state.pendingAuth = { perm, resolve };
+    $('#authzSub').innerHTML = `A manager PIN is needed to <b>${PERM_LABELS[perm] || perm}</b>.`;
+    $('#authzPin').value = '';
+    $('#authzError').textContent = '';
+    $('#authzOvl').classList.add('open');
+    setTimeout(() => $('#authzPin').focus(), 50);
+  });
+}
+function resolveAuth(val) {
+  $('#authzOvl').classList.remove('open');
+  const pa = state.pendingAuth;
+  state.pendingAuth = null;
+  if (pa) pa.resolve(val);
+}
+$('#authzCancel').addEventListener('click', () => resolveAuth(false));
+$('#authzOvl').addEventListener('click', (e) => { if (e.target.id === 'authzOvl') resolveAuth(false); });
+$('#authzPin').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#authzConfirm').click(); });
+$('#authzConfirm').addEventListener('click', async () => {
+  const pa = state.pendingAuth;
+  if (!pa) return;
+  const pin = $('#authzPin').value.trim();
+  if (!/^\d{4,8}$/.test(pin)) { $('#authzError').textContent = 'Enter a 4–8 digit PIN.'; return; }
+  $('#authzConfirm').disabled = true;
+  try {
+    const res = await fetch('/api/staff/authorize', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin, perm: pa.perm }),
+    });
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok || !d.token) { $('#authzError').textContent = d.error || `Error ${res.status}`; return; }
+    resolveAuth(d.token);
+  } catch {
+    $('#authzError').textContent = 'Network error — try again.';
+  } finally {
+    $('#authzConfirm').disabled = false;
+  }
+});
+
+/* Manage staff (operators CRUD) */
+function openStaffModal() {
+  resetStaffForm();
+  $('#staffOvl').classList.add('open');
+  loadStaffList();
+}
+function closeStaffModal() { $('#staffOvl').classList.remove('open'); }
+$('#staffClose').addEventListener('click', closeStaffModal);
+$('#staffOvl').addEventListener('click', (e) => { if (e.target.id === 'staffOvl') closeStaffModal(); });
+
+function resetStaffForm() {
+  state.editingOpId = null;
+  $('#sfName').value = '';
+  $('#sfRole').value = 'staff';
+  $('#sfPin').value = '';
+  $('#sfPin').placeholder = '••••';
+  $('#sfMsg').textContent = '';
+  $('#sfMsg').className = 'sf-msg';
+  $('#sfHead').textContent = 'Add operator';
+  $('#sfSave').textContent = 'Add operator';
+}
+function sfErr(m) { const e = $('#sfMsg'); e.textContent = m; e.className = 'sf-msg err'; }
+function sfOk(m) { const e = $('#sfMsg'); e.textContent = m; e.className = 'sf-msg ok'; }
+
+async function loadStaffList() {
+  const wrap = $('#staffList');
+  wrap.innerHTML = '<div class="staff-empty">Loading…</div>';
+  try {
+    const res = await fetch('/api/staff/operators', { cache: 'no-store' });
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) { wrap.innerHTML = `<div class="staff-empty">${escapeHtml(d.error || 'Could not load staff.')}</div>`; return; }
+    const ops = (d.operators || []).filter(o => o.active !== false);
+    if (!ops.length) {
+      wrap.innerHTML = '<div class="staff-empty">No staff yet. Add your first operator below to switch this shop to per-operator sign-in — each person gets their own PIN, role and sales attribution.</div>';
+      return;
+    }
+    wrap.innerHTML = ops.map(o => `
+      <div class="staff-row">
+        <span class="dot" style="background:${escapeHtml(o.colour || '#0070F0')}">${escapeHtml(initials(o.name))}</span>
+        <span class="nm">${escapeHtml(o.name)}</span>
+        <span class="role-badge ${escapeHtml(o.role)}">${escapeHtml(o.role)}</span>
+        <span class="act">
+          <button type="button" data-edit="${escapeHtml(o.id)}" data-nm="${escapeHtml(o.name)}" data-role="${escapeHtml(o.role)}">Edit</button>
+          <button type="button" class="rm" data-rm="${escapeHtml(o.id)}" data-nm="${escapeHtml(o.name)}">Remove</button>
+        </span>
+      </div>`).join('');
+  } catch {
+    wrap.innerHTML = '<div class="staff-empty">Network error.</div>';
+  }
+}
+$('#staffList').addEventListener('click', (e) => {
+  const ed = e.target.closest('[data-edit]');
+  const rm = e.target.closest('[data-rm]');
+  if (ed) {
+    state.editingOpId = ed.dataset.edit;
+    $('#sfName').value = ed.dataset.nm || '';
+    $('#sfRole').value = ed.dataset.role || 'staff';
+    $('#sfPin').value = '';
+    $('#sfPin').placeholder = 'leave blank to keep';
+    $('#sfHead').textContent = 'Edit operator';
+    $('#sfSave').textContent = 'Save changes';
+    $('#sfMsg').textContent = 'Leave PIN blank to keep it unchanged.';
+    $('#sfMsg').className = 'sf-msg';
+    $('#sfName').focus();
+  } else if (rm) {
+    if (confirm(`Remove ${rm.dataset.nm}? They won't be able to sign in.`)) removeOperator(rm.dataset.rm);
+  }
+});
+async function removeOperator(id) {
+  try {
+    const res = await fetch(`/api/staff/operators/${id}`, { method: 'DELETE' });
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) { alert(d.error || 'Could not remove operator.'); return; }
+    await loadStaffList();
+    loadMe();
+  } catch { alert('Network error — try again.'); }
+}
+$('#sfSave').addEventListener('click', async () => {
+  const name = $('#sfName').value.trim();
+  const role = $('#sfRole').value;
+  const pin = $('#sfPin').value.trim();
+  if (name.length < 2) { sfErr('Enter a name.'); return; }
+  const editing = !!state.editingOpId;
+  if ((!editing || pin) && !/^\d{4,8}$/.test(pin)) { sfErr('PIN must be 4–8 digits.'); return; }
+  $('#sfSave').disabled = true;
+  try {
+    const url = editing ? `/api/staff/operators/${state.editingOpId}` : '/api/staff/operators';
+    const payload = { name, role };
+    if (pin) payload.pin = pin;
+    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) { sfErr(d.error || `Error ${res.status}`); return; }
+    const wasFirst = !state.operatorsEnabled;
+    resetStaffForm();
+    await loadStaffList();
+    await loadMe(); // first add flips operatorsEnabled true and re-gates the UI
+    sfOk(wasFirst ? 'Operator added — per-operator sign-in is now on.' : (editing ? 'Saved.' : 'Operator added.'));
+  } catch {
+    sfErr('Network error — try again.');
+  } finally {
+    $('#sfSave').disabled = false;
+  }
+});
 
 /* ============================== Auto-detect existing session */
 (async () => {

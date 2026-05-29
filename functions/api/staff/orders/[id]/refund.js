@@ -9,14 +9,16 @@
 
    Verifies and records server-side; supports multiple partial refunds and won't
    over-refund. */
-import { requireStaff } from '../../../../_lib/auth.js';
+import { requirePermission } from '../../../../_lib/permissions.js';
+import { logAudit } from '../../../../_lib/audit.js';
 import { getConfig } from '../../../../_lib/config.js';
 import { getOrder, putOrder, recordRefund, refundedSoFar } from '../../../../_lib/kv.js';
 import { createRefund } from '../../../../_lib/stripe.js';
 import { sendEmail, orderRefundEmail } from '../../../../_lib/email.js';
 
 export const onRequestPost = async ({ request, env, params }) => {
-  const denied = await requireStaff(request, env);
+  const auth = {};
+  const denied = await requirePermission(request, env, 'refund', auth);
   if (denied) return denied;
 
   const id = String(params.id || '').toUpperCase();
@@ -73,7 +75,15 @@ export const onRequestPost = async ({ request, env, params }) => {
     }, p.connectedAccountId, env);
     const amt = refund.amount ?? amount;
     recordRefund(order, { amountP: amt, reason: reason || 'full refund', stripeId: refund.id });
+    // Attribute the refund to the operator (and approver, on manager override).
+    const last = order.history[order.history.length - 1];
+    if (last) { last.by = auth.operator?.name || null; if (auth.approver) last.approvedBy = auth.approver.name; }
     await putOrder(order, env);
+    await logAudit(env, {
+      op: auth.operator?.id || null, opName: auth.operator?.name || null,
+      approverId: auth.approver?.id || null, approverName: auth.approver?.name || null,
+      action: 'refund', target: id, details: { amountP: amt, mode, reason },
+    });
 
     if (order.customer?.email) {
       try {

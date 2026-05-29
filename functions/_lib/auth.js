@@ -72,13 +72,24 @@ function timingSafeEqual(a, b) {
   return r === 0;
 }
 
-export async function makeSession(env) {
+export async function makeSession(env, operator = null) {
   const exp = Date.now() + SESSION_TTL_HOURS * 3600 * 1000;
-  const payload = b64url(enc.encode(JSON.stringify({ exp })));
+  const data = { exp };
+  // Per-operator mode embeds the signed-in identity so every request knows who
+  // it is without a KV lookup. Legacy single-PIN sessions omit it.
+  if (operator) {
+    data.op = operator.id;
+    data.name = operator.name;
+    data.role = operator.role;
+    data.colour = operator.colour || null;
+  }
+  const payload = b64url(enc.encode(JSON.stringify(data)));
   const sig = await sign(payload, env.SESSION_SECRET);
   return `${payload}.${sig}`;
 }
 
+// Returns the full signed session payload ({ exp, op?, name?, role?, colour? })
+// or null. Callers that only need "is there a valid session" just check non-null.
 export async function readSession(cookieHeader, env) {
   if (!cookieHeader) return null;
   const m = cookieHeader.match(new RegExp(`(?:^|;\\s*)${SESSION_COOKIE}=([^;]+)`));
@@ -88,9 +99,9 @@ export async function readSession(cookieHeader, env) {
   const ok = await verify(payload, sig, env.SESSION_SECRET);
   if (!ok) return null;
   try {
-    const { exp } = JSON.parse(dec.decode(b64urlDecode(payload)));
-    if (Date.now() > exp) return null;
-    return { exp };
+    const data = JSON.parse(dec.decode(b64urlDecode(payload)));
+    if (Date.now() > data.exp) return null;
+    return data;
   } catch { return null; }
 }
 
@@ -133,6 +144,32 @@ export function managerSessionCookieHeader(token) {
 
 export function clearManagerCookieHeader() {
   return `${MANAGER_COOKIE}=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax`;
+}
+
+/* Manager-override authorisation token: a short-lived, signed attestation that
+   operator <op> (who holds <perm>) authorised one restricted action. Issued by
+   /api/staff/authorize and replayed by the client on the gated request via the
+   'X-Authorize-Token' header. Not a cookie — it's single-action and explicit. */
+const AUTH_TOKEN_TTL_MS = 2 * 60 * 1000;
+
+export async function makeAuthToken(env, { op, name, perm }) {
+  const payload = b64url(enc.encode(JSON.stringify({
+    t: 'authz', op, name, perm, exp: Date.now() + AUTH_TOKEN_TTL_MS,
+  })));
+  const sig = await sign(payload, env.SESSION_SECRET);
+  return `${payload}.${sig}`;
+}
+
+export async function readAuthToken(token, env) {
+  if (!token) return null;
+  const [payload, sig] = String(token).split('.');
+  if (!payload || !sig) return null;
+  if (!(await verify(payload, sig, env.SESSION_SECRET))) return null;
+  try {
+    const d = JSON.parse(dec.decode(b64urlDecode(payload)));
+    if (d.t !== 'authz' || Date.now() > d.exp) return null;
+    return d;
+  } catch { return null; }
 }
 
 export async function requireStaff(request, env) {

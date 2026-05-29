@@ -4,15 +4,22 @@
    from the money but still surfaced as counts. Also returns a compact order log
    so the Z-report view can list every order in the range. */
 import { requireStaff, requireManager } from '../../_lib/auth.js';
+import { operatorsEnabled } from '../../_lib/operators.js';
+import { requirePermission } from '../../_lib/permissions.js';
 import { listOrdersBetween, resolveDayRange } from '../../_lib/kv.js';
 
 export const onRequestGet = async ({ request, env }) => {
   const denied = await requireStaff(request, env);
   if (denied) return denied;
-  // Financial views are manager-gated when MANAGER_PIN_HASH is configured.
-  // Shops that haven't set one keep the old behaviour (any staff can view).
-  const mgrDenied = await requireManager(request, env);
-  if (mgrDenied) return mgrDenied;
+  // Financial views: per-operator mode requires the reports.view permission;
+  // otherwise fall back to the manager-PIN gate (unchanged for legacy shops).
+  if (await operatorsEnabled(env)) {
+    const pd = await requirePermission(request, env, 'reports.view');
+    if (pd) return pd;
+  } else {
+    const mgrDenied = await requireManager(request, env);
+    if (mgrDenied) return mgrDenied;
+  }
 
   const { from, to } = resolveDayRange(new URL(request.url));
   const orders = await listOrdersBetween(env, from, to);

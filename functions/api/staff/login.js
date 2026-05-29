@@ -2,6 +2,8 @@
    Rate-limited via env.STAFF_LOGIN_KV (best-effort; if missing, skipped). */
 
 import { checkPin, makeSession, sessionCookieHeader } from '../../_lib/auth.js';
+import { operatorsEnabled, findOperatorByPin } from '../../_lib/operators.js';
+import { logAudit } from '../../_lib/audit.js';
 
 export const onRequestPost = async ({ request, env }) => {
   let body;
@@ -18,6 +20,22 @@ export const onRequestPost = async ({ request, env }) => {
     await env.STAFF_LOGIN_KV.put(key, String(n + 1), { expirationTtl: 600 });
   }
 
+  // Per-operator mode: the PIN identifies a named operator (Toast/Square style).
+  if (await operatorsEnabled(env)) {
+    const op = await findOperatorByPin(env, pin);
+    if (!op) return j({ error: 'PIN not recognised.' }, 401);
+    const token = await makeSession(env, op);
+    await logAudit(env, { op: op.id, opName: op.name, action: 'login' });
+    return new Response(JSON.stringify({
+      ok: true,
+      operator: { id: op.id, name: op.name, role: op.role, colour: op.colour },
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json', 'Set-Cookie': sessionCookieHeader(token) },
+    });
+  }
+
+  // Legacy mode: single shared staff PIN.
   const ok = await checkPin(pin, env);
   if (!ok) return j({ error: 'Wrong PIN.' }, 401);
 
