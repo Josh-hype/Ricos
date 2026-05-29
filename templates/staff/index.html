@@ -2803,18 +2803,17 @@ function openItemDetail(id) {
     const isMeal = mealInput ? mealInput.checked : false;
     let mealChoices = [];
     if (isMeal && mealChoicesEl) {
-      const slots = [...mealChoicesEl.querySelectorAll('.meal-choice')];
+      const selects = [...mealChoicesEl.querySelectorAll('select')];
       const errEl = body.querySelector('#mealChoiceErr');
-      const picked = slots.map(s => s.querySelector('input:checked'));
-      if (picked.some(p => !p)) {
+      if (selects.some(s => !s.value)) {
         if (errEl) errEl.textContent = 'Please choose the sides and drink.';
         return;
       }
       if (errEl) errEl.textContent = '';
-      mealChoices = picked.map(p => p.value);
+      mealChoices = selects.map(s => s.value);
     }
-    const spiceInput = body.querySelector('input[name="spice"]:checked');
-    const spice = spiceInput ? spiceInput.value : null;
+    const spiceSel = body.querySelector('.spice-select');
+    const spice = spiceSel ? spiceSel.value : null;
     const modifiers = [...body.querySelectorAll('.opt-group input:checked')].map(i => i.value);
     addToCart(id, { spice, meal: isMeal, modifiers, mealChoices });
     addBtn.classList.add('added');
@@ -2831,9 +2830,9 @@ function itemDetailHTML(v, canonical) {
   const spice = v.spicy
     ? `<div class="item-section">
          <div class="sec-label">Spice level</div>
-         <div class="chips" id="spiceChips">
-           ${SPICE_OPTIONS.map((s, i) => `<label class="chip"><input type="radio" name="spice" value="${escapeHtml(s)}" ${i === 0 ? 'checked' : ''} /><span>${escapeHtml(s)}</span></label>`).join('')}
-         </div>
+         <select class="spice-select" aria-label="Spice level">
+           ${SPICE_OPTIONS.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('')}
+         </select>
        </div>`
     : '';
   // Required option groups first — front-load the choices that gate "Add".
@@ -2899,15 +2898,16 @@ function optionGroupHTML(g, canonical) {
 function mealChooseHTML(choose) {
   const groups = Array.isArray(choose) ? choose : [];
   const blocks = [];
-  let slot = 0;
   for (const g of groups) {
     const items = mealChoiceItems(g);
+    const optHTML = items.map(o => `<option value="${escapeHtml(o.id)}">${escapeHtml(o.name)}</option>`).join('');
     const count = g.count || 1;
     for (let i = 0; i < count; i++) {
       const lbl = count > 1 ? `${g.label} ${i + 1}` : g.label;
-      const name = `mc${slot++}`;
-      const chips = items.map(o => `<label class="chip"><input type="radio" name="${name}" value="${escapeHtml(o.id)}" /><span>${escapeHtml(o.name)}</span></label>`).join('');
-      blocks.push(`<div class="meal-choice"><span class="sec-label">${escapeHtml(lbl)}</span><div class="chips">${chips}</div></div>`);
+      blocks.push(`<label class="meal-choice">
+        <span>${escapeHtml(lbl)}</span>
+        <select class="meal-choice-sel"><option value="">Choose…</option>${optHTML}</select>
+      </label>`);
     }
   }
   return blocks.join('');
