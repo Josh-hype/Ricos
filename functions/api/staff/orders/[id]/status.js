@@ -3,7 +3,8 @@
 
    Sends a rejection email when status moves to 'cancelled' from a state
    where the customer has been waiting on the kitchen's decision. */
-import { requireStaff } from '../../../../_lib/auth.js';
+import { requirePermission } from '../../../../_lib/permissions.js';
+import { logAudit } from '../../../../_lib/audit.js';
 import { getConfig } from '../../../../_lib/config.js';
 import { getOrder, putOrder, recordRefund, refundedSoFar } from '../../../../_lib/kv.js';
 import { sendEmail, orderRejectedEmail } from '../../../../_lib/email.js';
@@ -43,7 +44,8 @@ async function refundOnReject(order, env) {
 }
 
 export const onRequestPost = async ({ request, env, params }) => {
-  const denied = await requireStaff(request, env);
+  const ctx = {};
+  const denied = await requirePermission(request, env, 'orders.manage', ctx);
   if (denied) return denied;
 
   const id = String(params.id || '').toUpperCase();
@@ -56,12 +58,22 @@ export const onRequestPost = async ({ request, env, params }) => {
   if (!ALLOWED.includes(status)) return j({ error: 'Invalid status.' }, 400);
   const reason = (body.reason || '').toString().trim().slice(0, 280);
 
+  // Cancelling auto-refunds a paid card order, so it needs the void permission
+  // (a manager can authorise it for a staff operator via the approval token).
+  const voidCtx = {};
+  if (status === 'cancelled') {
+    const vd = await requirePermission(request, env, 'void', voidCtx);
+    if (vd) return vd;
+  }
+
   const wasRejectable = REJECTABLE_FROM.has(order.status);
   order.status = status;
   order.history.push({
     at: new Date().toISOString(),
     event: status,
     ...(reason ? { reason } : {}),
+    ...(ctx.operator?.name ? { by: ctx.operator.name } : {}),
+    ...(voidCtx.approver?.name ? { approvedBy: voidCtx.approver.name } : {}),
   });
 
   // Refund a paid card order on rejection before persisting, so the order's
@@ -72,6 +84,14 @@ export const onRequestPost = async ({ request, env, params }) => {
   }
 
   await putOrder(order, env);
+
+  if (status === 'cancelled') {
+    await logAudit(env, {
+      op: ctx.operator?.id || null, opName: ctx.operator?.name || null,
+      approverId: voidCtx.approver?.id || null, approverName: voidCtx.approver?.name || null,
+      action: 'void', target: id, details: { reason: reason || null, refundedP: refund?.amountP ?? null },
+    });
+  }
 
   // Notify the customer when the kitchen rejects an order. The refund (if a
   // paid card order) has already been attempted above; a failure is flagged on

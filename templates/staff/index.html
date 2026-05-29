@@ -183,6 +183,17 @@ button{cursor:pointer;border:0;background:none}
 .sf-msg{font-size:12.5px;font-weight:600;min-height:16px;margin-bottom:8px;color:var(--muted)}
 .sf-msg.err{color:var(--red)} .sf-msg.ok{color:var(--green)}
 
+/* Activity log (audit) */
+#authzOvl{z-index:90}
+.audit-list{display:flex;flex-direction:column;gap:6px;max-height:54vh;overflow:auto;margin-bottom:14px}
+.audit-row{display:flex;gap:11px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.audit-row .ico{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:none;font-weight:800;font-size:14px}
+.audit-row .ab{flex:1;min-width:0}
+.audit-row .at{font-size:13.5px;font-weight:700;color:var(--ink)}
+.audit-row .am{font-size:12px;color:var(--muted);font-weight:500;margin-top:1px;word-break:break-word}
+.audit-row .tm{font-size:11.5px;color:var(--muted-2);font-weight:600;font-family:var(--mono);flex:none}
+.audit-empty{color:var(--muted);font-size:13.5px;text-align:center;padding:18px;border:1px dashed var(--line);border-radius:13px}
+
 /* Stage */
 .stage{position:relative;overflow:hidden;display:flex;flex-direction:column;min-width:0}
 
@@ -1201,6 +1212,10 @@ button{cursor:pointer;border:0;background:none}
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
     Manage staff
   </button>
+  <button class="item" id="acctAudit" type="button" hidden>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>
+    Activity log
+  </button>
   <div class="sep"></div>
   <button class="item danger" id="acctSignout" type="button">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
@@ -1244,6 +1259,16 @@ button{cursor:pointer;border:0;background:none}
       <button class="cancel" id="staffClose" type="button">Close</button>
       <button class="confirm" id="sfSave" type="button">Add operator</button>
     </div>
+  </div>
+</div>
+
+<!-- ============================== Activity-log modal (audit trail) -->
+<div class="ovl" id="auditOvl" role="dialog" aria-modal="true" aria-labelledby="auditTitle">
+  <div class="modal" style="max-width:540px;text-align:left">
+    <h2 id="auditTitle">Activity log</h2>
+    <p style="color:var(--muted);font-size:13px;font-weight:500;margin-bottom:12px">Today's sensitive actions — sign-ins, refunds, cancellations, manager approvals and staff changes.</p>
+    <div class="audit-list" id="auditList"></div>
+    <div class="row"><button class="cancel" id="auditClose" type="button">Close</button></div>
   </div>
 </div>
 
@@ -2067,9 +2092,11 @@ $('#alarmReject').addEventListener('click', async () => {
   const id = state.alarmId;
   if (!id) return;
   if (!confirm('Reject this order? The customer is notified and any card payment is refunded automatically.')) return;
+  const authToken = await requirePerm('void');
+  if (authToken === false) return;
   $('#alarmReject').disabled = true;
   try {
-    const r = await sendStatus(id, 'cancelled');
+    const r = await sendStatus(id, 'cancelled', undefined, authToken);
     state.alarmId = null;
     await poll();
     noteRefund(r);
@@ -2255,10 +2282,12 @@ $('#refundConfirm').addEventListener('click', async () => {
 });
 
 /* ============================== Status updates */
-async function sendStatus(id, status, reason) {
+async function sendStatus(id, status, reason, authToken) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (authToken) headers['X-Authorize-Token'] = authToken;
   const res = await fetch(`/api/staff/orders/${id}/status`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(reason ? { status, reason } : { status }),
   });
   if (!res.ok) {
@@ -2277,7 +2306,12 @@ function noteRefund(result) {
 
 async function updateStatus(id, status) {
   try {
-    const r = await sendStatus(id, status);
+    let authToken;
+    if (status === 'cancelled') {
+      authToken = await requirePerm('void'); // staff need a manager to approve
+      if (authToken === false) return;       // approval cancelled
+    }
+    const r = await sendStatus(id, status, undefined, authToken);
     poll();
     noteRefund(r);
   } catch (e) {
@@ -3165,6 +3199,7 @@ function renderOperator() {
   $('#opPill').hidden = !(enabled && op);
   $('#acctSwitch').hidden = !enabled;
   $('#acctStaff').hidden = !can('operators.manage');
+  $('#acctAudit').hidden = !can('reports.view');
 
   if (enabled && op) {
     const ini = initials(op.name);
@@ -3374,6 +3409,59 @@ $('#sfSave').addEventListener('click', async () => {
     $('#sfSave').disabled = false;
   }
 });
+
+/* Activity log (audit trail viewer) */
+function openAuditModal() { $('#auditOvl').classList.add('open'); loadAudit(); }
+function closeAuditModal() { $('#auditOvl').classList.remove('open'); }
+$('#auditClose').addEventListener('click', closeAuditModal);
+$('#auditOvl').addEventListener('click', (e) => { if (e.target.id === 'auditOvl') closeAuditModal(); });
+$('#acctAudit').addEventListener('click', () => { toggleAcct(false); openAuditModal(); });
+
+const AUDIT_META = {
+  login:                 { i: '→', c: 'var(--blue)',  bg: 'var(--blue-tint)',  label: 'Signed in' },
+  refund:                { i: '£', c: 'var(--red)',   bg: 'var(--red-tint)',   label: 'Refund' },
+  void:                  { i: '×', c: 'var(--red)',   bg: 'var(--red-tint)',   label: 'Order cancelled' },
+  authorize:             { i: '✓', c: 'var(--amber)', bg: 'var(--amber-tint)', label: 'Manager approval' },
+  'operator.create':     { i: '+', c: 'var(--green)', bg: 'var(--green-tint)', label: 'Staff added' },
+  'operator.update':     { i: '✎', c: 'var(--blue)',  bg: 'var(--blue-tint)',  label: 'Staff updated' },
+  'operator.deactivate': { i: '–', c: 'var(--muted)', bg: 'var(--line-2)',     label: 'Staff removed' },
+};
+function auditDetail(e) {
+  const who = e.opName || 'Staff';
+  const appr = e.approverName ? ` · approved by ${e.approverName}` : '';
+  const d = e.details || {};
+  if (e.action === 'refund') return `${who} refunded £${((d.amountP || 0) / 100).toFixed(2)} on #${e.target || ''}${appr}`;
+  if (e.action === 'void') return `${who} cancelled #${e.target || ''}${d.refundedP ? ` · £${(d.refundedP / 100).toFixed(2)} refunded` : ''}${appr}`;
+  if (e.action === 'authorize') return `${who} authorised "${d.perm || 'an action'}"`;
+  if (e.action === 'login') return `${who} signed in`;
+  if (e.action && e.action.startsWith('operator.')) return `${who} → ${d.name || e.target || ''}`;
+  return who;
+}
+function fmtAuditTime(iso) {
+  try { return new Date(iso).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/London' }); }
+  catch { return ''; }
+}
+async function loadAudit() {
+  const wrap = $('#auditList');
+  wrap.innerHTML = '<div class="audit-empty">Loading…</div>';
+  try {
+    const res = await fetch('/api/staff/audit', { cache: 'no-store' });
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) { wrap.innerHTML = `<div class="audit-empty">${escapeHtml(d.error || 'Could not load the log.')}</div>`; return; }
+    const entries = d.entries || [];
+    if (!entries.length) { wrap.innerHTML = '<div class="audit-empty">No activity logged today.</div>'; return; }
+    wrap.innerHTML = entries.map(e => {
+      const m = AUDIT_META[e.action] || { i: '•', c: 'var(--ink-2)', bg: 'var(--line-2)', label: e.action || 'action' };
+      return `<div class="audit-row">
+        <span class="ico" style="background:${m.bg};color:${m.c}">${escapeHtml(m.i)}</span>
+        <span class="ab"><div class="at">${escapeHtml(m.label)}</div><div class="am">${escapeHtml(auditDetail(e))}</div></span>
+        <span class="tm">${escapeHtml(fmtAuditTime(e.at))}</span>
+      </div>`;
+    }).join('');
+  } catch {
+    wrap.innerHTML = '<div class="audit-empty">Network error.</div>';
+  }
+}
 
 /* ============================== Auto-detect existing session */
 (async () => {
