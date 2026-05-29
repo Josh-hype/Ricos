@@ -87,15 +87,15 @@ button{cursor:pointer;border:0;background:none}
 .rail .brand img{width:100%;height:100%;object-fit:contain;border-radius:8px}
 .tabs{display:flex;flex-direction:column;gap:6px;width:100%;align-items:center;flex:1;padding:0}
 .tab{
-  width:62px;height:60px;border-radius:15px;
+  width:66px;height:62px;border-radius:16px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:4px;color:#8CA2BC;transition:.18s cubic-bezier(.4,0,.2,1);
+  gap:5px;color:#8CA2BC;transition:.18s cubic-bezier(.4,0,.2,1);
   position:relative;padding:0;background:transparent;border:0;
-  font-size:10.5px;font-weight:600;letter-spacing:.01em;
+  font-size:11px;font-weight:700;letter-spacing:.01em;
 }
 .tab svg{width:22px;height:22px;stroke-width:1.9}
 .tab:hover{color:#D6E4F5;background:rgba(255,255,255,.05)}
-.tab.active{color:#fff;background:rgba(0,112,240,.18)}
+.tab.active{color:#fff;background:rgba(0,112,240,.2);box-shadow:inset 0 0 0 1px rgba(120,180,255,.22)}
 .tab.active::before{
   content:"";position:absolute;left:-13px;top:50%;transform:translateY(-50%);
   width:4px;height:26px;background:var(--blue);border-radius:0 4px 4px 0;
@@ -187,9 +187,10 @@ button{cursor:pointer;border:0;background:none}
 .stage{position:relative;overflow:hidden;display:flex;flex-direction:column;min-width:0}
 
 /* Topbar */
-.topbar{display:flex;align-items:center;gap:14px;padding:16px 24px 12px;flex:none}
-.loc{display:flex;flex-direction:column;gap:1px;min-width:0}
-.loc .name{font-size:18px;font-weight:800;letter-spacing:-.02em}
+.topbar{display:flex;align-items:center;gap:14px;padding:15px 24px 13px;flex:none;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#FFFFFF,#FAFBFD)}
+.loc{display:flex;flex-direction:column;gap:2px;min-width:0}
+.loc .eyebrow{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;line-height:1}
+.loc .name{font-size:20px;font-weight:800;letter-spacing:-.025em;line-height:1.12}
 .loc .sub{font-size:12.5px;color:var(--muted);font-weight:500}
 .top-spacer{flex:1}
 .chip{
@@ -906,8 +907,11 @@ button{cursor:pointer;border:0;background:none}
   .rail-divider{display:none}
   .avatar-btn{width:38px;height:38px}
   .topbar{padding:10px 14px 6px;gap:8px;flex-wrap:wrap}
-  .topbar .loc .name{font-size:15px}
+  .topbar .loc .name{font-size:16px}
+  .topbar .loc .eyebrow{font-size:10px}
   .topbar .loc .sub{font-size:11.5px}
+  .op-pill .who{display:none}
+  .op-pill{padding:0 6px}
   .topbar .chip{height:34px;padding:0 10px;font-size:12px}
   .topbar button:not(.chip){height:34px;padding:0 10px;font-size:12px}
   .datebar{padding:6px 14px 10px;gap:6px}
@@ -971,8 +975,8 @@ button{cursor:pointer;border:0;background:none}
   <section class="stage">
     <div class="topbar">
       <div class="loc">
-        <div class="name">{{shopShortName}}</div>
-        <div class="sub">Staff dashboard</div>
+        <div class="eyebrow">{{shopShortName}}</div>
+        <div class="name" id="viewTitle">Live orders</div>
       </div>
       <div class="top-spacer"></div>
       <button class="op-pill" id="opPill" title="Account" hidden>
@@ -1428,6 +1432,8 @@ function reloadRangeView() {
 function setView(view) {
   state.view = view;
   $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === view));
+  const VIEW_TITLES = { sale: 'Counter sale', live: 'Live orders', summary: 'Today', zreport: 'Z report' };
+  const vt = $('#viewTitle'); if (vt) vt.textContent = VIEW_TITLES[view] || '';
   const usesRange = (view === 'zreport');
   const isSale = (view === 'sale');
   $('#dateBar').hidden = !usesRange || isSale;
