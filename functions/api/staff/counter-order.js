@@ -20,7 +20,7 @@
    the Stripe Terminal SDK lands for the Sunmi T2 reader, that'll grow a
    'counter_card' branch. */
 
-import { requireStaff } from '../../_lib/auth.js';
+import { requireStaff, readSession } from '../../_lib/auth.js';
 import { getConfig } from '../../_lib/config.js';
 import { computeTotals } from '../../_lib/totals.js';
 import { resolveDelivery } from '../../_lib/delivery.js';
