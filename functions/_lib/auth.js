@@ -93,8 +93,8 @@ async function verifySessionToken(token, env) {
   if (!token) return null;
   const [payload, sig] = token.split('.');
   if (!payload || !sig) return null;
-  if (!(await verify(payload, sig, env.SESSION_SECRET))) return null;
   try {
+    if (!(await verify(payload, sig, env.SESSION_SECRET))) return null;
     const data = JSON.parse(dec.decode(b64urlDecode(payload)));
     if (Date.now() > data.exp) return null;
     return data;
@@ -141,9 +141,8 @@ export async function readManagerSession(cookieHeader, env) {
   if (!m) return null;
   const [payload, sig] = m[1].split('.');
   if (!payload || !sig) return null;
-  const ok = await verify(payload, sig, env.SESSION_SECRET);
-  if (!ok) return null;
   try {
+    if (!(await verify(payload, sig, env.SESSION_SECRET))) return null;
     const { exp, scope } = JSON.parse(dec.decode(b64urlDecode(payload)));
     if (scope !== 'manager') return null;
     if (Date.now() > exp) return null;
@@ -178,8 +177,8 @@ export async function readAuthToken(token, env) {
   if (!token) return null;
   const [payload, sig] = String(token).split('.');
   if (!payload || !sig) return null;
-  if (!(await verify(payload, sig, env.SESSION_SECRET))) return null;
   try {
+    if (!(await verify(payload, sig, env.SESSION_SECRET))) return null;
     const d = JSON.parse(dec.decode(b64urlDecode(payload)));
     if (d.t !== 'authz' || Date.now() > d.exp) return null;
     return d;
