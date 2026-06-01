@@ -66,7 +66,7 @@ export const onRequestPost = async ({ request, env, params }) => {
   // (a manager can authorise it for a staff operator via the approval token).
   const voidCtx = {};
   if (status === 'cancelled') {
-    const vd = await requirePermission(request, env, 'void', voidCtx);
+    const vd = await requirePermission(request, env, 'void', voidCtx, { orderId: id });
     if (vd) return vd;
   }
 

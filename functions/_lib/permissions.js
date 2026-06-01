@@ -50,7 +50,7 @@ export function permissionsForRole(role) {
        supplied via the 'X-Authorize-Token' header.
    Populates `out` with { operator, approver? } so the caller can attribute /
    audit the action. */
-export async function requirePermission(request, env, perm, out = {}) {
+export async function requirePermission(request, env, perm, out = {}, opts = {}) {
   const csrf = csrfOriginCheck(request);
   if (csrf) return csrf;
   const session = await resolveSession(request, env);
@@ -74,6 +74,20 @@ export async function requirePermission(request, env, perm, out = {}) {
   if (token) {
     const auth = await readAuthToken(token, env);
     if (auth && (auth.perm === perm || auth.perm === '*')) {
+      // Order binding: an order-scoped gate (refund/void) must be satisfied by a
+      // token minted for THAT order — stops one approval refunding everything.
+      if (opts.orderId != null && auth.oid !== opts.orderId) {
+        return resp({ error: 'forbidden', need: perm, reason: 'order_mismatch' }, 403);
+      }
+      // Single-use: a token's jti can be redeemed once (best-effort via KV), so
+      // it can't be replayed for the rest of its 2-minute life.
+      if (auth.jti && env.STAFF_LOGIN_KV) {
+        const usedKey = `authz-used:${auth.jti}`;
+        if (await env.STAFF_LOGIN_KV.get(usedKey)) {
+          return resp({ error: 'forbidden', need: perm, reason: 'token_used' }, 403);
+        }
+        await env.STAFF_LOGIN_KV.put(usedKey, '1', { expirationTtl: 180 });
+      }
       out.approver = { id: auth.op, name: auth.name };
       return null;
     }

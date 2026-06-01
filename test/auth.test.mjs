@@ -47,6 +47,8 @@ ok('requireStaff denies (401 Response)', denied && denied.status === 401);
 const at = await auth.makeAuthToken(env, { op: 'm1', name: 'Boss', perm: 'refund' });
 const atRead = await auth.readAuthToken(at, env);
 ok('auth token round-trips', atRead && atRead.op === 'm1' && atRead.perm === 'refund');
+const atBound = await auth.readAuthToken(await auth.makeAuthToken(env, { op: 'm1', name: 'Boss', perm: 'refund', orderId: 'XYZ123' }), env);
+ok('auth token carries order id + jti', atBound && atBound.oid === 'XYZ123' && !!atBound.jti);
 
 // PIN hashing: keyed (preferred) and legacy bare SHA-256 both verify (P0-4).
 const te = new TextEncoder();

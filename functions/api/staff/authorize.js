@@ -19,6 +19,9 @@ export const onRequestPost = async ({ request, env }) => {
   try { body = await request.json(); } catch { return j({ error: 'Invalid JSON' }, 400); }
   const pin = String(body.pin || '');
   const perm = String(body.perm || '');
+  // The order this approval is for (when order-scoped, e.g. refund/void). The
+  // token is bound to it so it can't be replayed against a different order.
+  const orderId = String(body.orderId || '').toUpperCase() || null;
   if (!/^\d{4,8}$/.test(pin)) return j({ error: 'PIN must be 4–8 digits.' }, 400);
   if (!perm) return j({ error: 'Missing permission.' }, 400);
 
@@ -36,8 +39,8 @@ export const onRequestPost = async ({ request, env }) => {
     return j({ error: `${op.name} isn't allowed to authorise this.` }, 403);
   }
 
-  const token = await makeAuthToken(env, { op: op.id, name: op.name, perm });
-  await logAudit(env, { op: op.id, opName: op.name, action: 'authorize', details: { perm } });
+  const token = await makeAuthToken(env, { op: op.id, name: op.name, perm, orderId });
+  await logAudit(env, { op: op.id, opName: op.name, action: 'authorize', target: orderId, details: { perm, orderId } });
   return j({ ok: true, token, approver: { name: op.name, role: op.role } }, 200);
 };
 

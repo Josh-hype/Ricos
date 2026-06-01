@@ -2150,7 +2150,7 @@ $('#alarmReject').addEventListener('click', async () => {
   const id = state.alarmId;
   if (!id) return;
   if (!confirm('Reject this order? The customer is notified and any card payment is refunded automatically.')) return;
-  const authToken = await requirePerm('void');
+  const authToken = await requirePerm('void', id);
   if (authToken === false) return;
   $('#alarmReject').disabled = true;
   try {
@@ -2315,7 +2315,7 @@ $('#refundConfirm').addEventListener('click', async () => {
   if (!confirm(`Refund £${(amt / 100).toFixed(2)} to the customer's card?`)) return;
   // Refunds need the 'refund' permission; if this operator lacks it, a manager
   // approves with their PIN and we replay their one-action token on the request.
-  const authToken = await requirePerm('refund');
+  const authToken = await requirePerm('refund', c.id);
   if (authToken === false) return;
   $('#refundConfirm').disabled = true;
   try {
@@ -2366,8 +2366,8 @@ async function updateStatus(id, status) {
   try {
     let authToken;
     if (status === 'cancelled') {
-      authToken = await requirePerm('void'); // staff need a manager to approve
-      if (authToken === false) return;       // approval cancelled
+      authToken = await requirePerm('void', id); // staff need a manager to approve
+      if (authToken === false) return;           // approval cancelled
     }
     const r = await sendStatus(id, status, undefined, authToken);
     poll();
@@ -3400,10 +3400,10 @@ const PERM_LABELS = {
   refund: 'refund', discount: 'apply a discount', void: 'void this order',
   'drawer.open': 'open the drawer', 'reports.view': 'view reports', 'operators.manage': 'manage staff',
 };
-function requirePerm(perm) {
+function requirePerm(perm, orderId) {
   return new Promise((resolve) => {
     if (can(perm)) { resolve(null); return; }
-    state.pendingAuth = { perm, resolve };
+    state.pendingAuth = { perm, orderId: orderId || null, resolve };
     $('#authzSub').innerHTML = `A manager PIN is needed to <b>${PERM_LABELS[perm] || perm}</b>.`;
     $('#authzPin').value = '';
     $('#authzError').textContent = '';
@@ -3429,7 +3429,7 @@ $('#authzConfirm').addEventListener('click', async () => {
   try {
     const res = await fetch('/api/staff/authorize', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pin, perm: pa.perm }),
+      body: JSON.stringify({ pin, perm: pa.perm, orderId: pa.orderId }),
     });
     const d = await res.json().catch(() => ({}));
     if (!res.ok || !d.token) { $('#authzError').textContent = d.error || `Error ${res.status}`; return; }

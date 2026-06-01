@@ -183,9 +183,12 @@ export function clearManagerCookieHeader() {
    'X-Authorize-Token' header. Not a cookie — it's single-action and explicit. */
 const AUTH_TOKEN_TTL_MS = 2 * 60 * 1000;
 
-export async function makeAuthToken(env, { op, name, perm }) {
+export async function makeAuthToken(env, { op, name, perm, orderId = null }) {
   const payload = b64url(enc.encode(JSON.stringify({
-    t: 'authz', op, name, perm, exp: Date.now() + AUTH_TOKEN_TTL_MS,
+    t: 'authz', op, name, perm,
+    oid: orderId || null,                                   // binds the approval to one order
+    jti: b64url(crypto.getRandomValues(new Uint8Array(9))), // unique id for single-use
+    exp: Date.now() + AUTH_TOKEN_TTL_MS,
   })));
   const sig = await sign(payload, env.SESSION_SECRET);
   return `${payload}.${sig}`;

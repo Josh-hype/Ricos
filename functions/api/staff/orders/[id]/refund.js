@@ -17,11 +17,11 @@ import { createRefund } from '../../../../_lib/stripe.js';
 import { sendEmail, orderRefundEmail } from '../../../../_lib/email.js';
 
 export const onRequestPost = async ({ request, env, params }) => {
+  const id = String(params.id || '').toUpperCase();
   const auth = {};
-  const denied = await requirePermission(request, env, 'refund', auth);
+  const denied = await requirePermission(request, env, 'refund', auth, { orderId: id });
   if (denied) return denied;
 
-  const id = String(params.id || '').toUpperCase();
   const order = await getOrder(id, env);
   if (!order) return j({ error: 'Order not found.' }, 404);
 
