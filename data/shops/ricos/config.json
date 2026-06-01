@@ -44,7 +44,7 @@
       "feePence": 200,
       "_comment_minimumOrderPence": "Minimum FOOD subtotal (after discount) for delivery, in pence. Set to £12.50 so the all-in minimum a delivery customer pays is £15.00 (£12.50 food + £2.00 delivery + £0.50 service).",
       "minimumOrderPence": 1250,
-      "_comment_minimumIncludesFees": "When true, the customer-facing minimum-order message shows the all-in figure (food + delivery + service) e.g. '£15.00 (incl. delivery & service)' instead of the bare food subtotal. The underlying check is unchanged (still on the food subtotal).",
+      "_comment_minimumIncludesFees": "When true, the customer-facing minimum-order message shows the all-in figure (food + delivery + service) e.g. 'Minimum order £15.00' instead of the bare food subtotal. The underlying check is unchanged (still on the food subtotal).",
       "minimumIncludesFees": true,
       "_comment_areaDescription": "Free-text phrase used in error messages: 'we deliver {areaDescription} only'. Keep it natural so the surrounding text reads well.",
       "areaDescription": "inside the York ring road",

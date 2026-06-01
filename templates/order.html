@@ -2187,7 +2187,7 @@ function renderCart() {
   const underMin = state.mode === 'deliver' && minP > 0 && state.cart.length > 0 && netP < minP;
   const hintText = underMin
     ? (inclFees
-        ? `Add ${fmt((minP - netP) / 100)} more — ${fmt(shownMinP / 100)} minimum for delivery (incl. delivery & service)`
+        ? `Add ${fmt((minP - netP) / 100)} more — ${fmt(shownMinP / 100)} minimum order`
         : `Add ${fmt((minP - netP) / 100)} more for delivery (${fmt(minP / 100)} minimum)`)
     : '';
   for (const id of ['minHint', 'mMinHint']) {
@@ -3003,7 +3003,8 @@ function startCheckout() {
     if (netP < minP) {
       const inclFees = !!dCfg.minimumIncludesFees;
       const shownMinP = minP + (inclFees ? Math.round((deliveryFeeGBP() + serviceFeeGBP()) * 100) : 0);
-      alert(`Minimum delivery order is ${fmt(shownMinP / 100)}${inclFees ? ' (incl. delivery & service)' : ''}. Add ${fmt((minP - netP) / 100)} more, or switch to collection.`);
+      const lead = inclFees ? `Minimum order ${fmt(shownMinP / 100)}` : `Minimum delivery order is ${fmt(shownMinP / 100)}`;
+      alert(`${lead}. Add ${fmt((minP - netP) / 100)} more, or switch to collection.`);
       return;
     }
   }

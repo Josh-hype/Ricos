@@ -123,7 +123,9 @@ export function computeTotals(input, config, opts = {}) {
     const shownP = inclFees ? (minP + deliveryFeeP + serviceFeeP) : minP;
     return {
       ok: false,
-      reason: `Minimum delivery order is £${(shownP / 100).toFixed(2)}${inclFees ? ' (incl. delivery & service)' : ''}.`,
+      reason: inclFees
+        ? `Minimum order £${(shownP / 100).toFixed(2)}.`
+        : `Minimum delivery order is £${(shownP / 100).toFixed(2)}.`,
     };
   }
 
