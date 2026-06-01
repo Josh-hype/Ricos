@@ -32,6 +32,7 @@ export function getPublicConfig() {
         feePence: delivery.feePence,
         feeByOutcode: delivery.feeByOutcode || {},
         minimumOrderPence: delivery.minimumOrderPence,
+        minimumIncludesFees: !!delivery.minimumIncludesFees,
         allowedOutcodes: delivery.allowedOutcodes,
         radius: delivery.radius || null,
       },
