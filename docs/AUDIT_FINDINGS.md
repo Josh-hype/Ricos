@@ -20,6 +20,9 @@ Fixed, verified, and pushed to `dev` (worktree `claude/busy-cori-fNl5x`):
 - **Batch 5 — payments + account hardening** (`2b29f5c`, `f7125d3`): P1-6, P1-7, P3-31, P1-4, P1-5, P3-21, P3-23, P3-24, P3-25, P3-27, P3-32.
 - **Batch 6 — operator/audit/counter-sale** (`ec975b3`): P0-5, P2-7, P2-10, P2-6 (partial — crypto suffix; full HMAC chain still TODO).
 - **Batch 7 — build ops** (`8641bd3`): P0-8 (loud build warning; real values still pending), P2-26, P2-28.
+- **Batch 8 — customer order UI** (`014abbb`): P2-16, P2-18.
+- **Batch 9 — auth hardening** (`c1bf9e5`): P0-4 (keyed PIN hashing, backward-compatible + lockout-clear-on-success), P2-8 (CSRF/Origin gate).
+- **Batch 10 — small cleanups** (`5702809`): P3-47, P3-41, F-27 (app https-only).
 
 Each batch was verified with targeted Node unit checks (totals, refund ledger, PI-match,
 phone/id normalisation, operator guards) plus the 14/14 auth regression and a clean build of
@@ -28,15 +31,16 @@ both shops. Rico's customer-visible output is byte-identical where intended.
 **Needs YOU (can't complete unilaterally):**
 - **P0-8 values** — Food Station's real Stripe `connectedAccountId` + business `legalName` /
   `companyNumber` / `email` / `domain`. The build now warns loudly; supply the values to clear it.
-- **P0-4 PIN hashing** — keying/stretching the staff & manager PIN hashes is a breaking change:
-  `STAFF_PIN_HASH` / `MANAGER_PIN_HASH` must be regenerated under the new scheme or staff are
-  locked out. Needs a coordinated env-var update (the per-IP-lockout improvement is also pending).
+- **P0-4 PIN-hash regen** — keyed hashing now ships *backward-compatibly* (existing hashes still
+  work). To retire the weak SHA-256 path, regenerate each env var to the keyed value and update it
+  in Cloudflare: `printf %s "<PIN>" | openssl dgst -sha256 -hmac "<SESSION_SECRET>"` → set
+  `STAFF_PIN_HASH` and `MANAGER_PIN_HASH`. (Lockout-clear-on-success already shipped; a global
+  attempt cap is left to you — it carries a self-DoS trade-off.)
 
 **Recommend a dedicated tested pass (higher blast radius / coordinated / risky):**
 - **P0-3** manager-override token binding (orderId + single-use) — server + staff-UI change.
 - **P1-3** invalidate customer sessions on password reset — cross-cutting (logs everyone in once).
 - **P2-5** enforce `maxOrdersPerSlot` — async change on the ordering hot path.
-- **P2-8** CSRF/Origin on staff cookie routes — must not break the bearer/app path.
 - **P2-9** drop CSP `'unsafe-inline'` (nonce migration) — high risk across the large HTML files.
 - **P2-11** operator-PIN PBKDF2 — breaking for existing operator PINs.
 - **P2-13..16 / P2-25..30 app** — native app (token storage, https-only, CapacitorHttp/fetch shim) — needs on-device testing.
@@ -45,10 +49,11 @@ both shops. Rico's customer-visible output is byte-identical where intended.
 - **P2-27** — Rico's `wings-platter` / `mega-wings` cross-listed under both Wings and Platters is
   **intentional** (the two files agree, so there was never an active bug). No change — don't re-flag.
 
-**Remaining lower-value polish:** customer-UI items — P2-16 (Express/Apple-Pay clickable after
-choosing Cash — a real bug), P2-17 (radius shows cheapest band pre-postcode), P2-18 (float-pence
-display drift), P2-19 (service-fee fallback) — plus the P3 a11y labels, `alert()`→inline notices,
-landing-page `{{fontLink}}` (P3-47), Kotlin drawer TODO, etc. Happy to continue on request.
+**Left deliberately (no-op / design):** P2-17 (radius lowest-band preview is a documented choice)
+and P2-19 (the 50p service-fee fallback equals both shops' real fee).
+
+**Remaining P3 cosmetics (optional):** a11y `aria-label`s on cart/qty/item buttons, `alert()`→inline
+notices, the Kotlin drawer-API TODO comment, etc. Say the word to knock these out.
 
 ## Coverage (what was audited)
 
