@@ -30,7 +30,11 @@ export async function sendEmail({ to, subject, html, text, replyTo, fromName }, 
   });
   if (!res.ok) {
     const body = await res.text();
-    console.error('Resend error', res.status, body);
+    // Don't log the raw body — Resend echoes the recipient address (PII) into
+    // it. Log the status and the error name only.
+    let code = null;
+    try { code = JSON.parse(body)?.name || null; } catch {}
+    console.error('Resend error', res.status, code || '(body withheld)');
     return { error: body };
   }
   return await res.json();

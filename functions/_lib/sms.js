@@ -32,8 +32,8 @@ export async function sendSms({ to, body }, env) {
 export function normalisePhoneE164UK(raw) {
   if (!raw) return null;
   const digits = String(raw).replace(/[^\d+]/g, '');
-  if (digits.startsWith('+44') && digits.length >= 13) return digits;
+  if (digits.startsWith('+44') && digits.length === 13) return digits;
   if (digits.startsWith('07') && digits.length === 11) return `+44${digits.slice(1)}`;
-  if (digits.startsWith('44') && digits.length >= 12) return `+${digits}`;
+  if (digits.startsWith('44') && digits.length === 12) return `+${digits}`;
   return null;
 }

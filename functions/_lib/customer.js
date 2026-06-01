@@ -16,9 +16,17 @@ export async function putCustomer(customer, env) {
 }
 
 export function newCustomerId() {
+  // 12 chars from a 36-char alphabet, with rejection sampling so the modulo
+  // doesn't bias the first few characters (256 % 36 != 0).
   const alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  const buf = crypto.getRandomValues(new Uint8Array(12));
-  return [...buf].map(b => alphabet[b % alphabet.length]).join('');
+  const max = 256 - (256 % alphabet.length); // 252
+  let out = '';
+  while (out.length < 12) {
+    for (const b of crypto.getRandomValues(new Uint8Array(12 - out.length))) {
+      if (b < max) out += alphabet[b % alphabet.length];
+    }
+  }
+  return out;
 }
 
 // Public projection: never returns password hash, salt, or iteration count.
@@ -57,10 +65,10 @@ export function upsertAddress(customer, addr) {
   const now = new Date().toISOString();
 
   const next = {
-    line1: addr.line1.trim(),
-    line2: (addr.line2 || '').trim(),
-    city: (addr.city || '').trim(),
-    postcode: addr.postcode.trim().toUpperCase(),
+    line1: addr.line1.trim().slice(0, 100),
+    line2: (addr.line2 || '').trim().slice(0, 100),
+    city: (addr.city || '').trim().slice(0, 60),
+    postcode: addr.postcode.trim().toUpperCase().slice(0, 12),
     notes: (addr.notes || '').trim().slice(0, 280),
     lastUsedAt: now,
   };

@@ -20,8 +20,10 @@ export const onRequestPost = async ({ request, env }) => {
   const contact = normaliseContact(input.contact);
 
   if (name.length < 2) return errJson('Please enter your name.', 400);
+  if (name.length > 100) return errJson('That name is too long.', 400);
   if (!contact) return errJson('Please enter a valid email or UK mobile number.', 400);
   if (password.length < 6) return errJson('Password must be at least 6 characters.', 400);
+  if (password.length > 256) return errJson('Password is too long (max 256 characters).', 400);
 
   const existing = await getCustomer(contact.value, env);
   if (existing) return errJson('An account with that contact already exists. Try signing in.', 409);

@@ -14,12 +14,15 @@ export const onRequestPost = async ({ request, env }) => {
 
   const password = String(input.password || '');
   if (password.length < 6) return errJson('Password must be at least 6 characters.', 400);
+  if (password.length > 256) return errJson('Password is too long (max 256 characters).', 400);
 
   const decoded = await verifyResetToken(input.token, env);
   if (!decoded) return errJson('This reset link is invalid or has expired. Please request a new one.', 400);
 
   const customer = await getCustomer(decoded.contact, env);
-  if (!customer) return errJson('Account not found.', 404);
+  // Same response as a bad token — don't reveal that the token was valid but
+  // the account has since been removed.
+  if (!customer) return errJson('This reset link is invalid or has expired. Please request a new one.', 400);
 
   // Fingerprint match: the token was issued for this exact password hash.
   // If the password has already been changed since, the token is dead.

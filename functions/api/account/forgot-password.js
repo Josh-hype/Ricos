@@ -9,7 +9,7 @@ import { getCustomer } from '../../_lib/customer.js';
 import { sendEmail, passwordResetEmail } from '../../_lib/email.js';
 import { getConfig } from '../../_lib/config.js';
 
-export const onRequestPost = async ({ request, env }) => {
+export const onRequestPost = async ({ request, env, waitUntil }) => {
   // Generic OK response - leaks nothing about whether the contact exists.
   const ok = () => Response.json({ ok: true, message: "If we have an account for that contact and an email on file, we've sent you a reset link." });
 
@@ -28,12 +28,12 @@ export const onRequestPost = async ({ request, env }) => {
   const origin = new URL(request.url).origin;
   const resetUrl = `${origin}/reset-password?token=${encodeURIComponent(token)}`;
 
-  try {
-    const mail = passwordResetEmail({ name: customer.name, resetUrl }, getConfig());
-    await sendEmail({ to: customer.email, subject: mail.subject, html: mail.html, fromName: mail.fromName }, env);
-  } catch (e) {
-    console.warn('password reset email failed', e);
-  }
+  // Send in the background so a registered contact's response isn't slower than
+  // an unregistered one (the email round-trip would otherwise leak existence).
+  const mail = passwordResetEmail({ name: customer.name, resetUrl }, getConfig());
+  const send = sendEmail({ to: customer.email, subject: mail.subject, html: mail.html, fromName: mail.fromName }, env)
+    .catch((e) => console.warn('password reset email failed', e));
+  if (typeof waitUntil === 'function') waitUntil(send); else await send;
 
   return ok();
 };
