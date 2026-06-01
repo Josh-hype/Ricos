@@ -39,7 +39,7 @@ operator PIN breaks. To drop back to the shared single PIN (legacy `STAFF_PIN_HA
 ## NEXT (the T2 has arrived)
 **Sunmi T2 native app.** Scaffold + hardening in `app/` (`docs/PHASE2_APP.md`, `app/README.md`).
 
-**✅ Item 3 — app hardening DONE in code, verified headless (`tmp/native-test`), on-device test pending:**
+**✅ Item 3 — app hardening DONE in code, verified headless (`app/scripts/native-test.cjs`), on-device test pending:**
 - token + base URL → `@capacitor/preferences` (async bootstrap; off `localStorage`, migrates legacy);
 - fetch shim builds an explicit `RequestInit` (no more `Request`-as-init);
 - `provision.js` `await`s the Preferences write before reload;

@@ -97,7 +97,7 @@ npx cap open android           # build / run / sign in Android Studio, install t
 - [x] **app hardening:** token + base URL → `@capacitor/preferences` (async bootstrap, off
       localStorage); fetch shim builds an explicit `RequestInit`; provisioning awaits the
       write before reload; the shim re-asserts over CapacitorHttp so headers always inject
-      (verified headless — `tmp/native-test`; still smoke-test on-device)
+      (verified headless — `app/scripts/native-test.cjs` / `npm test`; still smoke-test on-device)
 - [x] **printer + drawer wired** to the Sunmi inner-printer service (drawer via ESC/POS
       `sendRAWData` kick) — needs the `com.sunmi:printerlibrary` Gradle dep + on-device test
 - [x] **Stripe Terminal scoped** → `docs/PHASE3_TERMINAL.md` (reader decision pending)

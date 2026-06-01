@@ -5,6 +5,7 @@
   "description": "Sunmi T2 Android wrapper (Capacitor) for the Rico's / Food Station staff EPOS. One APK, provisioned per device to a shop. Self-contained — does not affect the web build.",
   "type": "module",
   "scripts": {
+    "test": "node scripts/native-test.cjs",
     "sync-web": "node scripts/sync-web.mjs",
     "prepare:android": "npm run sync-web && cap add android",
     "sync": "npm run sync-web && cap sync android",
