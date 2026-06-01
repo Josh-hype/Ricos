@@ -41,10 +41,9 @@ both shops. Rico's customer-visible output is byte-identical where intended.
 - **P2-11** operator-PIN PBKDF2 — breaking for existing operator PINs.
 - **P2-13..16 / P2-25..30 app** — native app (token storage, https-only, CapacitorHttp/fetch shim) — needs on-device testing.
 
-**Open content decision:**
-- **P2-27** — Rico's `wings-platter` / `mega-wings` are cross-listed under both Wings and Platters
-  (consistently, in *both* files — so no active bug). Removing the Wings copies drops them from that
-  category for customers. Tell me the canonical category (or to leave both) and I'll apply it.
+**Resolved as by-design (owner confirmed):**
+- **P2-27** — Rico's `wings-platter` / `mega-wings` cross-listed under both Wings and Platters is
+  **intentional** (the two files agree, so there was never an active bug). No change — don't re-flag.
 
 **Remaining lower-value polish:** customer-UI items — P2-16 (Express/Apple-Pay clickable after
 choosing Cash — a real bug), P2-17 (radius shows cheapest band pre-postcode), P2-18 (float-pence

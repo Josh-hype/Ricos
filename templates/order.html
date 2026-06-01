@@ -2060,14 +2060,17 @@ function deliveryFeeGBP() {
 }
 
 function cartTotals() {
-  const sub = state.cart.reduce((s, l) => s + l.price * l.qty, 0);
+  // Compute in integer pence (mirroring the server's computeTotals) so the
+  // displayed total can't drift a penny from what Stripe is charged via
+  // floating-point pound arithmetic. Returns pounds for display.
+  const subP = state.cart.reduce((s, l) => s + Math.round((Number(l.price) || 0) * 100) * (Number(l.qty) || 0), 0);
   const promo = window.SHOP_CONFIG?.promo?.autoOnlineDiscount;
   const discountPct = (promo && promo.enabled) ? (Number(promo.percent) || 0) : 0;
-  const discount = sub * (discountPct / 100);
-  const delivery = deliveryFeeGBP();
-  const serviceFee = state.cart.length > 0 ? serviceFeeGBP() : 0;
-  const total = Math.max(0, sub - discount + delivery + serviceFee);
-  return { sub, discount, delivery, serviceFee, total };
+  const discountP = Math.round(subP * (discountPct / 100));
+  const deliveryP = Math.round(deliveryFeeGBP() * 100);
+  const serviceP = state.cart.length > 0 ? Math.round(serviceFeeGBP() * 100) : 0;
+  const totalP = Math.max(0, subP - discountP + deliveryP + serviceP);
+  return { sub: subP / 100, discount: discountP / 100, delivery: deliveryP / 100, serviceFee: serviceP / 100, total: totalP / 100 };
 }
 
 function cartLineHTML(line) {
@@ -3346,6 +3349,7 @@ function renderCheckout() {
        and on authorisation we create the order + confirm the payment using
        the same Elements instance the card form uses. */
     const expressSection = document.getElementById('express-checkout-section');
+    let expressAvailable = false;
     function mountExpressCheckout() {
       if (!ensureStripe()) return;
       expressElements = stripeInstance.elements({
@@ -3365,8 +3369,11 @@ function renderCheckout() {
       });
       ece.on('ready', (event) => {
         const m = event.availablePaymentMethods;
-        // Show the section only if at least one wallet is available.
-        expressSection.style.display = (m && (m.applePay || m.googlePay)) ? '' : 'none';
+        expressAvailable = !!(m && (m.applePay || m.googlePay));
+        // Show the section only if a wallet is available AND card is the chosen
+        // tender — never offer Apple/Google Pay once the customer picks Cash.
+        const cardSelected = (document.querySelector('input[name="payMethod"]:checked')?.value || 'card') === 'card';
+        expressSection.style.display = (expressAvailable && cardSelected) ? '' : 'none';
       });
       ece.on('confirm', placeExpressOrder);
       ece.mount('#express-checkout-element');
@@ -3555,6 +3562,9 @@ function renderCheckout() {
         const isCard = document.querySelector('input[name="payMethod"]:checked').value === 'card';
         document.getElementById('payment-element-wrap').style.display = isCard ? '' : 'none';
         savedWrap.style.display = (isCard && savedList.children.length > 0) ? '' : 'none';
+        // Hide Apple/Google Pay when Cash is chosen — tapping it would otherwise
+        // place a card order, silently overriding the cash choice.
+        if (expressSection) expressSection.style.display = (isCard && expressAvailable) ? '' : 'none';
         if (isCard && !checkoutData.selectedSavedPmId) ensureCardMounted();
       });
     });
