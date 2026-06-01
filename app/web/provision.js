@@ -18,8 +18,8 @@
   // 6-digit Restaurant ID → shop backend origin. The <slug>.pages.dev address always
   // works even when the public site uses a custom domain (Cloudflare keeps it live).
   var DIRECTORY = {
-    '100100': 'https://ricos.pages.dev',
-    '100200': 'https://food-station.pages.dev'
+    '190059': 'https://ricos.pages.dev',
+    '833541': 'https://food-station.pages.dev'
   };
 
   function prefs() {
