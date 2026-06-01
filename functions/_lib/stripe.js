@@ -178,6 +178,15 @@ export async function validatePaymentMethodDomain(id, connectedAccountId, env) {
   return call(`/payment_method_domains/${id}/validate`, {}, env, opts);
 }
 
+// Constant-time hex-string comparison for the webhook HMAC (avoids the early
+// exit of !==). Matches the standard the staff PIN / customer password use.
+function timingSafeEqualHex(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string' || a.length !== b.length) return false;
+  let r = 0;
+  for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return r === 0;
+}
+
 export async function verifyWebhook(rawBody, sigHeader, env) {
   if (!sigHeader || !env.STRIPE_WEBHOOK_SECRET) return null;
   const parts = Object.fromEntries(sigHeader.split(',').map(s => s.split('=')));
@@ -192,7 +201,7 @@ export async function verifyWebhook(rawBody, sigHeader, env) {
   const sigBuf = await crypto.subtle.sign('HMAC', key, enc.encode(`${t}.${rawBody}`));
   const computed = [...new Uint8Array(sigBuf)]
     .map(b => b.toString(16).padStart(2, '0')).join('');
-  if (computed !== v1) return null;
+  if (!timingSafeEqualHex(computed, v1)) return null;
   // Tolerance: 5 minutes.
   if (Math.abs(Date.now() / 1000 - Number(t)) > 300) return null;
   try { return JSON.parse(rawBody); } catch { return null; }

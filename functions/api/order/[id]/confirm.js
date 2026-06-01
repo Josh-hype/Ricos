@@ -6,7 +6,7 @@
    promoting, so it can't be spoofed by a crafted request. Idempotent and safe
    to call repeatedly; the webhook stays as the backstop. */
 import { getConfig } from '../../../_lib/config.js';
-import { getOrder, markOrderPaid } from '../../../_lib/kv.js';
+import { getOrder, markOrderPaid, paymentIntentMatchesOrder } from '../../../_lib/kv.js';
 import { retrievePaymentIntent } from '../../../_lib/stripe.js';
 
 export const onRequestPost = async ({ env, params }) => {
@@ -23,7 +23,7 @@ export const onRequestPost = async ({ env, params }) => {
 
   try {
     const pi = await retrievePaymentIntent(intentId, acct, env);
-    if (pi?.status === 'succeeded') {
+    if (pi?.status === 'succeeded' && paymentIntentMatchesOrder(pi, order)) {
       await markOrderPaid(order, env);
       return j({ status: 'pending_accept' });
     }

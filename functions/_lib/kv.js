@@ -33,9 +33,22 @@ export async function markOrderPaid(order, env) {
   order.payment.paidAt = at;
   order.history.push({ at, event: 'paid' });
   await putOrder(order, env);
-  if (order.marketing?.email) await recordOptIn({ kind: 'email', value: order.customer.email, source: 'checkout' }, env);
-  if (order.marketing?.sms) await recordOptIn({ kind: 'sms', value: order.customer.phone, source: 'checkout' }, env);
+  if (order.marketing?.email && order.customer?.email) await recordOptIn({ kind: 'email', value: order.customer.email, source: 'checkout' }, env);
+  if (order.marketing?.sms && order.customer?.phone) await recordOptIn({ kind: 'sms', value: order.customer.phone, source: 'checkout' }, env);
   return true;
+}
+
+// Defence-in-depth before promoting an order to paid: the succeeded
+// PaymentIntent must be this order's, in GBP, and cover at least the order
+// total — so a stray/other PI carrying the same metadata.orderId (or a future
+// code path) can't mark an order paid for the wrong amount.
+export function paymentIntentMatchesOrder(pi, order) {
+  if (!pi || !order) return false;
+  const intentId = order.payment?.intentId;
+  if (intentId && pi.id !== intentId) return false;
+  if (String(pi.currency || 'gbp').toLowerCase() !== 'gbp') return false;
+  const paid = Number(pi.amount_received ?? pi.amount ?? 0);
+  return paid >= (order.totals?.totalP || 0);
 }
 
 // Total already refunded on an order (pence). Tolerant of the legacy single
@@ -157,6 +170,10 @@ export async function getSlotCount(slotIso, env) {
 
 export async function recordOptIn({ kind, value, source }, env) {
   if (!value) return;
+  if (!env.MARKETING_KV) {
+    console.warn('recordOptIn: MARKETING_KV not bound — opt-in skipped');
+    return;
+  }
   const key = `${kind}:${value.toLowerCase()}`;
   await env.MARKETING_KV.put(key, JSON.stringify({
     value, source: source || null, optedInAt: new Date().toISOString(),
