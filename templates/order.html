@@ -203,13 +203,30 @@
     background: var(--yellow);
     color: var(--ink);
   }
-  /* Same pill, used inside the cart so people see/switch the mode by their order. */
+  /* In-cart Collection/Delivery switch: a flush segmented bar sitting right
+     under the cart header — matches the brutalist ink borders + yellow accent
+     instead of dropping a heavy dark pill onto the panel. */
   .cart-mode-toggle {
     display: flex;
-    width: 100%;
-    margin: 0 0 12px;
+    border-bottom: 2px solid var(--ink);
   }
-  .cart-mode-toggle button { flex: 1; text-align: center; }
+  .cart-mode-toggle button {
+    flex: 1;
+    padding: 9px 8px;
+    font-weight: 800;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    background: transparent;
+    border: 0;
+    border-right: 2px solid var(--ink);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .cart-mode-toggle button:last-child { border-right: 0; }
+  .cart-mode-toggle button:hover:not(.active) { background: rgba(0, 0, 0, 0.04); }
+  .cart-mode-toggle button.active { background: var(--yellow); color: var(--ink); }
   .pc-form {
     display: inline-flex;
     align-items: stretch;
@@ -1443,7 +1460,7 @@
       <div class="cart-header">
         Your order <span class="count-pill" id="cartHeaderCount">0</span>
       </div>
-      <div class="mode-toggle cart-mode-toggle" role="tablist" aria-label="Collection or delivery">
+      <div class="cart-mode-toggle" role="tablist" aria-label="Collection or delivery">
         <button class="cart-mode-btn" data-mode="collect" role="tab" aria-selected="false">Collection</button>
         <button class="cart-mode-btn" data-mode="deliver" role="tab" aria-selected="true">Delivery</button>
       </div>
@@ -1487,7 +1504,7 @@
       <h3 id="cartTitle">Your order</h3>
       <button class="modal-close" data-close-modal aria-label="Close">✕</button>
     </div>
-    <div class="mode-toggle cart-mode-toggle" role="tablist" aria-label="Collection or delivery">
+    <div class="cart-mode-toggle" role="tablist" aria-label="Collection or delivery">
       <button class="cart-mode-btn" data-mode="collect" role="tab" aria-selected="false">Collection</button>
       <button class="cart-mode-btn" data-mode="deliver" role="tab" aria-selected="true">Delivery</button>
     </div>
