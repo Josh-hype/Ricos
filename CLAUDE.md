@@ -142,6 +142,10 @@ Each project (`ricos`, the Food Station project, and any future shop):
   - SMS (Twilio): `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`
   - Sessions/staff: `SESSION_SECRET`, `STAFF_PIN_HASH` (staff log in with a
     PIN; store its hash, never the raw PIN)
+  - Till app setup: `TILL_SETUP_PASSWORD` (optional, per shop — the password a device
+    enters alongside its 6-digit Restaurant ID to provision the LumiPOS app to this
+    shop, verified by `/api/staff/device-setup`; unset ⇒ the app's "site address"
+    fallback is used instead. Make it different per shop.)
 - **Custom domain:** add it under the project's Custom domains.
 
 A push to `main` rebuilds **every** project (each with its own `SHOP_SLUG`).

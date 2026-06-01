@@ -6,7 +6,6 @@
   "type": "module",
   "scripts": {
     "test": "node scripts/native-test.cjs",
-    "brand": "node scripts/make-brand-assets.cjs",
     "assets": "capacitor-assets generate --android || echo 'asset generation skipped (icons unchanged)'",
     "sync-web": "node scripts/sync-web.mjs",
     "prepare:android": "npm run sync-web && cap add android && npm run assets",

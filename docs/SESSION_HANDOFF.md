@@ -50,6 +50,16 @@ operator PIN breaks. To drop back to the shared single PIN (legacy `STAFF_PIN_HA
   `/staff/index.inlineN.js` into `app/www/staff/` — without it the bundled till had **no JS** (blank).
   (All changes are under `app/` → zero web-build impact; clean build of both shops confirmed.)
 
+**✅ App rebranded to LumiPOS + friendlier setup (on `main`):** appName → "LumiPOS"; launcher
+icon from the Lumin "L" mark via `@capacitor/assets` (source: `app/assets/icon.png` — replace
+with the owner's exact square logo). New setup flow: **6-digit Restaurant ID + password** —
+`provision.js` resolves the ID via a bundled `DIRECTORY` (ricos=`100100`, food-station=`100200`)
+to the shop's `*.pages.dev` backend, then verifies the password at **`/api/staff/device-setup`**
+(checks per-shop secret `TILL_SETUP_PASSWORD`, fail-safe 503 when unset, rate-limited). The old
+"site address" entry is kept as a fallback so a till can't be locked out of setup. **Owner action:**
+set `TILL_SETUP_PASSWORD` (different per shop) in each Cloudflare project, or the ID path stays
+disabled (fallback only). Adding a shop = add its ID→URL to `DIRECTORY` + set its secret.
+
 **⏳ Still to do (need the Mac + T2 / a decision — can't be done from the sandbox):**
 1. **Build/sign the APK** on a Mac, install on the T2, provision to the prod URL.
 2. **Provision + token login** — confirm `X-Client: app` → bearer → `Authorization: Bearer` works
