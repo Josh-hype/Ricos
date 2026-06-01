@@ -6,7 +6,7 @@
 import { requireStaff, requireManager } from '../../_lib/auth.js';
 import { operatorsEnabled } from '../../_lib/operators.js';
 import { requirePermission } from '../../_lib/permissions.js';
-import { listOrdersBetween, resolveDayRange } from '../../_lib/kv.js';
+import { listOrdersBetween, resolveDayRange, refundedSoFar } from '../../_lib/kv.js';
 
 export const onRequestGet = async ({ request, env }) => {
   const denied = await requireStaff(request, env);
@@ -37,7 +37,10 @@ export const onRequestGet = async ({ request, env }) => {
     avgP: valid.length ? Math.round(grossP / valid.length) : 0,
     serviceFeeP: sum(valid, o => o.totals?.serviceFeeP),
     deliveryFeeP: sum(valid, o => o.totals?.deliveryFeeP),
-    refundedP: sum(orders.filter(o => o.payment?.refund?.state === 'succeeded'), o => o.payment.refund.amountP),
+    // Refunds: sum the canonical per-order total (handles the refunds[] ledger
+    // AND the legacy single-refund record) across every order in range —
+    // including cancelled ones, since a cancellation auto-refunds.
+    refundedP: sum(orders, o => refundedSoFar(o)),
     card: {
       count: valid.filter(isCard).length,
       grossP: sum(valid.filter(isCard), o => o.totals?.totalP),
