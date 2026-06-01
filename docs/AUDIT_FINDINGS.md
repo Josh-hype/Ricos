@@ -23,27 +23,40 @@ Fixed, verified, and pushed to `dev` (worktree `claude/busy-cori-fNl5x`):
 - **Batch 8 — customer order UI** (`014abbb`): P2-16, P2-18.
 - **Batch 9 — auth hardening** (`c1bf9e5`): P0-4 (keyed PIN hashing, backward-compatible + lockout-clear-on-success), P2-8 (CSRF/Origin gate).
 - **Batch 10 — small cleanups** (`5702809`): P3-47, P3-41, F-27 (app https-only).
+- **Batch 11 — override-token binding** (`fe064fd`): P0-3 (bind to order + single-use, server + staff UI).
+- **Batch 12 — slot capacity** (`6588285`): P2-5 (enforce maxOrdersPerSlot at submit).
+- **Batch 13 — session invalidation** (`f07963e`): P1-3 (password reset logs out other sessions).
+- **Batch 14 — EPOS UI polish** (`97e6035`): P2-33 (44px touch target), P2-36 (pay-modal default-hidden).
 
 Each batch was verified with targeted Node unit checks (totals, refund ledger, PI-match,
 phone/id normalisation, operator guards) plus the 14/14 auth regression and a clean build of
 both shops. Rico's customer-visible output is byte-identical where intended.
 
 **Needs YOU (can't complete unilaterally):**
-- **P0-8 values** — Food Station's real Stripe `connectedAccountId` + business `legalName` /
-  `companyNumber` / `email` / `domain`. The build now warns loudly; supply the values to clear it.
+- **P0-8 values (Food Station)** — real Stripe `connectedAccountId` + business `legalName` /
+  `companyNumber` / `email` / `domain`. Deferred until we work on Food Station specifically (per
+  owner); the build warns loudly until then.
 - **P0-4 PIN-hash regen** — keyed hashing now ships *backward-compatibly* (existing hashes still
   work). To retire the weak SHA-256 path, regenerate each env var to the keyed value and update it
   in Cloudflare: `printf %s "<PIN>" | openssl dgst -sha256 -hmac "<SESSION_SECRET>"` → set
   `STAFF_PIN_HASH` and `MANAGER_PIN_HASH`. (Lockout-clear-on-success already shipped; a global
   attempt cap is left to you — it carries a self-DoS trade-off.)
 
-**Recommend a dedicated tested pass (higher blast radius / coordinated / risky):**
-- **P0-3** manager-override token binding (orderId + single-use) — server + staff-UI change.
-- **P1-3** invalidate customer sessions on password reset — cross-cutting (logs everyone in once).
-- **P2-5** enforce `maxOrdersPerSlot` — async change on the ordering hot path.
-- **P2-9** drop CSP `'unsafe-inline'` (nonce migration) — high risk across the large HTML files.
-- **P2-11** operator-PIN PBKDF2 — breaking for existing operator PINs.
-- **P2-13..16 / P2-25..30 app** — native app (token storage, https-only, CapacitorHttp/fetch shim) — needs on-device testing.
+**Done since (Batches 11–14):** P0-3 (override token bound to order + single-use), P1-3 (session
+invalidation on reset), P2-5 (slot capacity), P2-8 (CSRF/Origin), P0-4 (keyed hashing + lockout-clear),
+P2-33/P2-36 (EPOS touch target + pay-modal default-hidden).
+
+**Won't-fix / blocked (documented):**
+- **P2-9** drop CSP `'unsafe-inline'` — the app JS lives in large inline `<script>` blocks and the HTML
+  is served statically (no per-response nonce possible), so this needs the inline JS extracted to
+  external `.js` files first. A real refactor; there are zero inline event handlers, so the path is
+  clean when tackled.
+- **P2-11** operator-PIN PBKDF2 — conflicts with the single-KV-read reverse-index login (PBKDF2's
+  per-user salt isn't deterministic). The current keyed HMAC already resists offline cracking — leaving.
+- **Native app** (token → encrypted Preferences, fetch-shim `Request` init, CapacitorHttp ordering) —
+  needs on-device testing; deferred to the Sunmi T2 app pass (https-only already shipped).
+- **EPOS UI polish still open (low value):** P2-34 (sale menu cached for the session), P2-35 (ticket
+  sub-header always "· cash"), P2-37 (countdown 1-min resolution). Do on request.
 
 **Resolved as by-design (owner confirmed):**
 - **P2-27** — Rico's `wings-platter` / `mega-wings` cross-listed under both Wings and Platters is
