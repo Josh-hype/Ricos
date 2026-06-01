@@ -9,6 +9,24 @@ pass was changed — this file is the to-fix backlog. Pick items by ID (e.g. "do
 > Several P0/P1 items touch **shared code that builds BOTH live shops** — test more than one
 > shop / check the Cloudflare preview before merging to `main` (golden rule: one codebase).
 
+## Progress (code-bug pass)
+
+Fixed, verified, and pushed to `dev` (worktree `claude/busy-cori-fNl5x`):
+
+- **Batch 1 — backend logic & crash-guards** (`059dd9a`): P0-1, P1-1, P2-3, P3-7, P3-9, P2-1, P2-2, P2-4, P3-10.
+- **Batch 2 — frontend bugs** (`e8d70ad`): P0-6, P0-7, P1-2, P1-10, P1-11, P1-12, P1-13, P2-31.
+- **Batch 3 — build/templating & data** (`0ae0ea1`): P1-8, P1-9, P2-20, P2-21, P2-22, P2-23, P2-24, P2-25, P2-29.
+
+Verification: 24/24 totals-logic + 11/11 crash-guard unit checks, 14/14 existing auth regression,
+both shops build at exit 0 with no unknown-token warnings, Rico's output byte-identical where intended.
+
+**Open — need a decision (not touched unilaterally):**
+- **P2-26** — delete vs move-to-`docs/` `public/lumin-epos-preview.html` (served publicly today). Outward-facing.
+- **P2-27** — Rico's `wings-platter` / `mega-wings` live in two categories each; removing one copy changes the live menu (which category is canonical?).
+- **P2-28** — `_template` has no `logo.png` (build fails for a freshly-copied shop): ship a placeholder PNG, or just document it?
+
+**Deferred to the security/config phase ("others"):** P0-2, P0-3, P0-4, P0-5, P0-8, P1-3, P1-4, P1-5, P1-6, P1-7, P1-14, the P2 auth/app/UI hardening items, and the P3 backlog.
+
 ## Coverage (what was audited)
 
 | Agent | Scope |
