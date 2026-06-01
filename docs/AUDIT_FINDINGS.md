@@ -9,23 +9,47 @@ pass was changed — this file is the to-fix backlog. Pick items by ID (e.g. "do
 > Several P0/P1 items touch **shared code that builds BOTH live shops** — test more than one
 > shop / check the Cloudflare preview before merging to `main` (golden rule: one codebase).
 
-## Progress (code-bug pass)
+## Progress
 
 Fixed, verified, and pushed to `dev` (worktree `claude/busy-cori-fNl5x`):
 
 - **Batch 1 — backend logic & crash-guards** (`059dd9a`): P0-1, P1-1, P2-3, P3-7, P3-9, P2-1, P2-2, P2-4, P3-10.
 - **Batch 2 — frontend bugs** (`e8d70ad`): P0-6, P0-7, P1-2, P1-10, P1-11, P1-12, P1-13, P2-31.
 - **Batch 3 — build/templating & data** (`0ae0ea1`): P1-8, P1-9, P2-20, P2-21, P2-22, P2-23, P2-24, P2-25, P2-29.
+- **Batch 4 — refund money-path** (`c4881df`): P0-2, P1-14.
+- **Batch 5 — payments + account hardening** (`2b29f5c`, `f7125d3`): P1-6, P1-7, P3-31, P1-4, P1-5, P3-21, P3-23, P3-24, P3-25, P3-27, P3-32.
+- **Batch 6 — operator/audit/counter-sale** (`ec975b3`): P0-5, P2-7, P2-10, P2-6 (partial — crypto suffix; full HMAC chain still TODO).
+- **Batch 7 — build ops** (`8641bd3`): P0-8 (loud build warning; real values still pending), P2-26, P2-28.
 
-Verification: 24/24 totals-logic + 11/11 crash-guard unit checks, 14/14 existing auth regression,
-both shops build at exit 0 with no unknown-token warnings, Rico's output byte-identical where intended.
+Each batch was verified with targeted Node unit checks (totals, refund ledger, PI-match,
+phone/id normalisation, operator guards) plus the 14/14 auth regression and a clean build of
+both shops. Rico's customer-visible output is byte-identical where intended.
 
-**Open — need a decision (not touched unilaterally):**
-- **P2-26** — delete vs move-to-`docs/` `public/lumin-epos-preview.html` (served publicly today). Outward-facing.
-- **P2-27** — Rico's `wings-platter` / `mega-wings` live in two categories each; removing one copy changes the live menu (which category is canonical?).
-- **P2-28** — `_template` has no `logo.png` (build fails for a freshly-copied shop): ship a placeholder PNG, or just document it?
+**Needs YOU (can't complete unilaterally):**
+- **P0-8 values** — Food Station's real Stripe `connectedAccountId` + business `legalName` /
+  `companyNumber` / `email` / `domain`. The build now warns loudly; supply the values to clear it.
+- **P0-4 PIN hashing** — keying/stretching the staff & manager PIN hashes is a breaking change:
+  `STAFF_PIN_HASH` / `MANAGER_PIN_HASH` must be regenerated under the new scheme or staff are
+  locked out. Needs a coordinated env-var update (the per-IP-lockout improvement is also pending).
 
-**Deferred to the security/config phase ("others"):** P0-2, P0-3, P0-4, P0-5, P0-8, P1-3, P1-4, P1-5, P1-6, P1-7, P1-14, the P2 auth/app/UI hardening items, and the P3 backlog.
+**Recommend a dedicated tested pass (higher blast radius / coordinated / risky):**
+- **P0-3** manager-override token binding (orderId + single-use) — server + staff-UI change.
+- **P1-3** invalidate customer sessions on password reset — cross-cutting (logs everyone in once).
+- **P2-5** enforce `maxOrdersPerSlot` — async change on the ordering hot path.
+- **P2-8** CSRF/Origin on staff cookie routes — must not break the bearer/app path.
+- **P2-9** drop CSP `'unsafe-inline'` (nonce migration) — high risk across the large HTML files.
+- **P2-11** operator-PIN PBKDF2 — breaking for existing operator PINs.
+- **P2-13..16 / P2-25..30 app** — native app (token storage, https-only, CapacitorHttp/fetch shim) — needs on-device testing.
+
+**Open content decision:**
+- **P2-27** — Rico's `wings-platter` / `mega-wings` are cross-listed under both Wings and Platters
+  (consistently, in *both* files — so no active bug). Removing the Wings copies drops them from that
+  category for customers. Tell me the canonical category (or to leave both) and I'll apply it.
+
+**Remaining lower-value polish:** customer-UI items — P2-16 (Express/Apple-Pay clickable after
+choosing Cash — a real bug), P2-17 (radius shows cheapest band pre-postcode), P2-18 (float-pence
+display drift), P2-19 (service-fee fallback) — plus the P3 a11y labels, `alert()`→inline notices,
+landing-page `{{fontLink}}` (P3-47), Kotlin drawer TODO, etc. Happy to continue on request.
 
 ## Coverage (what was audited)
 
