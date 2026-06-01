@@ -27,6 +27,7 @@ Fixed, verified, and pushed to `dev` (worktree `claude/busy-cori-fNl5x`):
 - **Batch 12 — slot capacity** (`6588285`): P2-5 (enforce maxOrdersPerSlot at submit).
 - **Batch 13 — session invalidation** (`f07963e`): P1-3 (password reset logs out other sessions).
 - **Batch 14 — EPOS UI polish** (`97e6035`): P2-33 (44px touch target), P2-36 (pay-modal default-hidden).
+- **Batch 15 — Z-report refund + till polish** (`1013a2b`, `b844157`): Z-report/Today refunded-total fix (was reading the obsolete refund field), P2-34 (stale till menu refresh), P2-35 (drop premature "· cash" ticket label). Delivery-minimum wording + in-cart toggle also shipped (`c37611b`/`8aa3db3`/`0b590e9`/`33b8f73`).
 
 Each batch was verified with targeted Node unit checks (totals, refund ledger, PI-match,
 phone/id normalisation, operator guards) plus the 14/14 auth regression and a clean build of
@@ -55,8 +56,10 @@ P2-33/P2-36 (EPOS touch target + pay-modal default-hidden).
   per-user salt isn't deterministic). The current keyed HMAC already resists offline cracking — leaving.
 - **Native app** (token → encrypted Preferences, fetch-shim `Request` init, CapacitorHttp ordering) —
   needs on-device testing; deferred to the Sunmi T2 app pass (https-only already shipped).
-- **EPOS UI polish still open (low value):** P2-34 (sale menu cached for the session), P2-35 (ticket
-  sub-header always "· cash"), P2-37 (countdown 1-min resolution). Do on request.
+- **EPOS UI polish:** P2-34 (stale till menu) + P2-35 (ticket "· cash" label) — DONE (`b844157`).
+  **P2-37 dropped (won't-fix, owner confirmed):** the countdown is whole-minutes and already updates
+  each minute; not worth touching the Live board's deliberate card-stability logic for a sub-minute
+  cosmetic gain.
 
 **Resolved as by-design (owner confirmed):**
 - **P2-27** — Rico's `wings-platter` / `mega-wings` cross-listed under both Wings and Platters is
@@ -410,9 +413,10 @@ though the customer got 100% back; a partial that happens to equal `total` wrong
 - **P2-36 · `templates/staff/index.html:1352`** — `#payAmount/#payChange/#payQuickCash/#payPad` have
   no `hidden` in source; they're only hidden by `setTender('card')`. Works today (default is cash)
   but brittle. Fix: add `hidden` in the HTML so the initial state is unambiguous. *(Staff F-014)*
-- **P2-37 · `templates/staff/index.html:1645`** — `liveSignature` includes `agingMins` (minute
-  resolution), so the "ready in X min" countdown only updates ~once/minute and the soon→over
-  transition is ±1 min. Fix: separate 60s render tick for active cards. *(Staff F-012)*
+- **P2-37 · `templates/staff/index.html:1645`** — **DROPPED (won't-fix, owner confirmed).** Was:
+  `liveSignature` includes `agingMins` (minute resolution) so the "ready in X min" countdown updates
+  ~once/minute. That's fine for a whole-minute countdown, and reworking it risks the Live board's
+  deliberate card-stability optimisation — not worth it. *(Staff F-012)*
 
 ---
 
