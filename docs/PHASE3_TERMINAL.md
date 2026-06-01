@@ -6,9 +6,17 @@
 > currently marks an order **paid with no capture** (P2-10), gated only by the `sell`
 > permission. This is the plan to close that.
 
-## The decision you have to make first: which reader?
+## Reader: ✅ DECIDED — BBPOS WisePOS E (purchased, awaiting delivery)
 
-The handoff lists three options. Verified facts (June 2026, Stripe docs) that decide it:
+The owner has bought a **BBPOS WisePOS E**. So the server work below (connection-token +
+`card_present` PI + capture-on-confirm) is the path; the native side uses the Terminal Android
+SDK to discover + connect the WisePOS E (over internet/Bluetooth). Tap-to-Pay-on-T2 and QR are
+off the table. Implementation waits for the reader to arrive so the full loop can be tested
+(start with Stripe's **simulated reader**, then swap in the WisePOS E).
+
+<details><summary>How the three options compared (for the record)</summary>
+
+Verified facts (June 2026, Stripe docs) that drove it:
 
 | Option | Hardware | How it captures | Verdict |
 |--------|----------|-----------------|---------|
@@ -17,16 +25,12 @@ The handoff lists three options. Verified facts (June 2026, Stripe docs) that de
 | **QR / hosted link** | none | regular PaymentIntent + QR the customer scans | ✅ **Cheapest interim.** No reader, no Terminal SDK — reuse the web PI flow, render a QR/short link, customer pays on their own phone. Slower at a busy counter and depends on the customer's phone, but ships fastest and works on every device. |
 
 **Recommendation:** **WisePOS E** for the real "tap at the counter" experience, with
-**QR** as a zero-hardware interim if you want card-at-counter live before a reader
-arrives. Treat **T2 Tap to Pay as off the table** unless Stripe confirms your specific
-unit. *(Owner action: check the T2's model/NFC against Stripe's supported-device list,
-and decide reader — see the question in chat.)*
+**QR** as a zero-hardware interim. Treat **T2 Tap to Pay as off the table** unless Stripe
+confirms the specific unit (it almost certainly won't).
 
-The server work below (connection-token endpoint + `card_present` PI + capture-on-
-confirm) is **identical for Tap to Pay and WisePOS E** — only the native reader
-discovery/connection differs. QR is a different, simpler flow (no Terminal SDK).
+</details>
 
-## Server (reader-agnostic — Tap to Pay & WisePOS E)
+## Server (reader-agnostic)
 
 All three new pieces live on the shop's **connected account** (direct charges), so every
 Stripe call passes `Stripe-Account: <connectedAccountId>` — the existing `call()` helper

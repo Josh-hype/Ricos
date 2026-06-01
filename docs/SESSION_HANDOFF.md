@@ -56,10 +56,12 @@ operator PIN breaks. To drop back to the shared single PIN (legacy `STAFF_PIN_HA
    on-device (server `resolveSession` accepts cookie OR bearer).
 3. **Hardware** — cash + card counter sale, **printer**, **cash drawer** (drawer/printer need the
    Sunmi Gradle dep added first — `app/native/android/README.md` step 3).
-4. **Stripe Terminal (Phase 3) — scoped in `docs/PHASE3_TERMINAL.md`; reader decision pending.**
-   Verified fact: the **T2 isn't on Stripe's Tap-to-Pay supported list** (likely no NFC) → realistic
-   options are **WisePOS E** (recommended) or **QR/hosted link**. Server work (connection-token +
-   `card_present` PI + capture-on-confirm, which also closes **P2-10**) is reader-agnostic.
+4. **Stripe Terminal (Phase 3) — scoped in `docs/PHASE3_TERMINAL.md`. Reader DECIDED: BBPOS
+   WisePOS E (purchased, awaiting delivery).** (The T2 isn't on Stripe's Tap-to-Pay list — no NFC.)
+   Implementation waits for the reader so the full loop can be tested (Stripe **simulated reader**
+   first). The server side — `/api/staff/terminal/connection-token` + a `card_present` PI (manual
+   capture) + a two-step `counter_card` (create-pending → capture-on-confirm → paid), which also
+   **closes P2-10** — is reader-agnostic and could be pre-built now if you want it ready on arrival.
 
 ## Remaining backlog (not blocking)
 - **Food Station launch:** fill real Stripe `connectedAccountId` + `business.{legalName,companyNumber,
