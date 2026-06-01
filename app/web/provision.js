@@ -52,7 +52,9 @@
     var ov = document.createElement('div');
     ov.id = 'eposProvision';
     ov.style.cssText =
-      'position:fixed;inset:0;z-index:99999;background:#0B1A2E;color:#fff;overflow:auto;' +
+      // Explicit offsets (NOT `inset:0` — the Sunmi T2s WebView doesn't honour the
+      // inset shorthand, which left this overlay collapsed below the 100vh PIN screen).
+      'position:fixed;top:0;left:0;right:0;bottom:0;z-index:2147483000;background:#0B1A2E;color:#fff;overflow:auto;' +
       'display:flex;align-items:center;justify-content:center;padding:24px;' +
       "font-family:'Hanken Grotesk',system-ui,-apple-system,sans-serif";
     ov.innerHTML =
@@ -85,6 +87,10 @@
       '</div>' +
       '</div>';
     document.body.appendChild(ov);
+    try { console.log('[provision] show() appended overlay'); } catch (e) {}
+    setTimeout(function () {
+      try { var r = ov.getBoundingClientRect(); console.log('[provision] overlay rect top=' + Math.round(r.top) + ' left=' + Math.round(r.left) + ' w=' + Math.round(r.width) + ' h=' + Math.round(r.height)); } catch (e) {}
+    }, 200);
 
     var idMode = document.getElementById('eposIdMode');
     var urlMode = document.getElementById('eposUrlMode');
