@@ -391,7 +391,8 @@ button{cursor:pointer;border:0;background:none}
 .card-menu{position:absolute;top:10px;right:10px;z-index:6}
 .card-menu .dots{
   background:transparent;border:0;color:var(--muted);
-  font-size:18px;line-height:1;padding:4px 8px;border-radius:8px;
+  font-size:18px;line-height:1;border-radius:8px;
+  min-width:44px;min-height:44px;display:grid;place-items:center;
 }
 .card-menu .dots:hover{background:var(--canvas);color:var(--ink)}
 .card-menu .menu{
@@ -1339,10 +1340,10 @@ button{cursor:pointer;border:0;background:none}
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
       </div>
-      <div class="amount-field mono" id="payAmount">£0.00</div>
-      <div class="change-note" id="payChange"></div>
-      <div class="quick-cash" id="payQuickCash"></div>
-      <div class="pad-grid" id="payPad"></div>
+      <div class="amount-field mono" id="payAmount" hidden>£0.00</div>
+      <div class="change-note" id="payChange" hidden></div>
+      <div class="quick-cash" id="payQuickCash" hidden></div>
+      <div class="pad-grid" id="payPad" hidden></div>
       <div class="pay-card-hint" id="payCardHint" hidden>Take the payment on your card machine, then tap below to record it.</div>
       <button class="pay-done" id="payConfirm" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg>
