@@ -10,23 +10,30 @@ export function getConfig() {
 
 /* Public-safe slice for the browser. Drops anything operational. */
 export function getPublicConfig() {
+  // Defensive reads: an incomplete shop config should not 500 /api/config for
+  // the whole site. Missing sections degrade to sensible empties.
+  const business = config.business || {};
+  const fulfillment = config.fulfillment || {};
+  const collection = fulfillment.collection || {};
+  const delivery = fulfillment.delivery || {};
+  const payments = config.payments || {};
   return {
     business: {
-      tradingName: config.business.tradingName,
-      address: config.business.address,
-      phone: config.business.phone,
-      email: config.business.email,
+      tradingName: business.tradingName,
+      address: business.address,
+      phone: business.phone,
+      email: business.email,
     },
     fulfillment: {
-      collection: { enabled: config.fulfillment.collection.enabled },
+      collection: { enabled: collection.enabled },
       delivery: {
-        enabled: config.fulfillment.delivery.enabled,
-        mode: config.fulfillment.delivery.mode || 'outcode',
-        feePence: config.fulfillment.delivery.feePence,
-        feeByOutcode: config.fulfillment.delivery.feeByOutcode || {},
-        minimumOrderPence: config.fulfillment.delivery.minimumOrderPence,
-        allowedOutcodes: config.fulfillment.delivery.allowedOutcodes,
-        radius: config.fulfillment.delivery.radius || null,
+        enabled: delivery.enabled,
+        mode: delivery.mode || 'outcode',
+        feePence: delivery.feePence,
+        feeByOutcode: delivery.feeByOutcode || {},
+        minimumOrderPence: delivery.minimumOrderPence,
+        allowedOutcodes: delivery.allowedOutcodes,
+        radius: delivery.radius || null,
       },
     },
     hours: config.hours,
@@ -34,10 +41,10 @@ export function getPublicConfig() {
     promo: config.promo,
     serviceFeePence: Number(config.serviceFeePence) || 0,
     payments: {
-      stripeEnabled: config.payments.stripeEnabled,
-      cashOnCollectionEnabled: config.payments.cashOnCollectionEnabled,
-      cashOnDeliveryEnabled: config.payments.cashOnDeliveryEnabled,
-      savedCardCvcThresholdPence: Number(config.payments.savedCardCvcThresholdPence) || 0,
+      stripeEnabled: payments.stripeEnabled,
+      cashOnCollectionEnabled: payments.cashOnCollectionEnabled,
+      cashOnDeliveryEnabled: payments.cashOnDeliveryEnabled,
+      savedCardCvcThresholdPence: Number(payments.savedCardCvcThresholdPence) || 0,
     },
     allergens: config.allergens,
     marketing: config.marketing,

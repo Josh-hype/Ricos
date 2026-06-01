@@ -39,10 +39,12 @@ export async function resolveDelivery(rawPostcode, config) {
     }
 
     const miles = milesBetween(origin, dest);
-    const bands = (r.bands || []).slice().sort((a, b) => a.maxMiles - b.maxMiles);
-    const band = bands.find((b) => miles <= b.maxMiles + 1e-9);
+    const bands = (r.bands || [])
+      .filter((b) => Number.isFinite(Number(b.maxMiles)) && Number.isFinite(Number(b.feePence)))
+      .sort((a, b) => Number(a.maxMiles) - Number(b.maxMiles));
+    const band = bands.find((b) => miles <= Number(b.maxMiles) + 1e-9);
     if (!band) {
-      const max = r.maxMiles || (bands.length ? bands[bands.length - 1].maxMiles : 0);
+      const max = r.maxMiles || (bands.length ? Number(bands[bands.length - 1].maxMiles) : 0);
       return {
         ok: false,
         reason: `Sorry, ${np.formatted} is outside our delivery area (within ${max} miles). You can still collect.`,
@@ -52,7 +54,7 @@ export async function resolveDelivery(rawPostcode, config) {
     return {
       ok: true,
       postcode: np.formatted,
-      feePence: band.feePence,
+      feePence: Number(band.feePence),
       distanceMiles: Math.round(miles * 10) / 10,
     };
   }

@@ -39,7 +39,7 @@ export function isOpenNow(config) {
 
   // Today's windows.
   const today = config.hours[dayName];
-  if (today && !today.closed) {
+  if (today && !today.closed && Array.isArray(today.windows)) {
     for (const w of today.windows) {
       const open = hhmmToMin(w.open);
       const close = hhmmToMin(w.close) - lastBuffer;
@@ -49,7 +49,7 @@ export function isOpenNow(config) {
 
   // Yesterday's windows that crossed midnight into today.
   const yesterday = config.hours[prevDay(dayName)];
-  if (yesterday && !yesterday.closed) {
+  if (yesterday && !yesterday.closed && Array.isArray(yesterday.windows)) {
     for (const w of yesterday.windows) {
       const close = hhmmToMin(w.close) - lastBuffer;
       if (close > 1440 && minutesOfDay <= (close - 1440)) return true;
@@ -75,7 +75,7 @@ export function listSlots(config) {
     const dayKey = ({ Sun:'sunday', Mon:'monday', Tue:'tuesday', Wed:'wednesday',
       Thu:'thursday', Fri:'friday', Sat:'saturday' })[weekdayShort];
     const conf = config.hours[dayKey];
-    if (!conf || conf.closed) continue;
+    if (!conf || conf.closed || !Array.isArray(conf.windows)) continue;
     for (const w of conf.windows) {
       const start = hhmmToMin(w.open);
       const end = hhmmToMin(w.close) - lastBuffer;

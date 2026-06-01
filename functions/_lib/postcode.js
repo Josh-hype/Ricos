@@ -10,7 +10,7 @@ export function normalisePostcode(raw) {
 }
 
 export function isOutcodeAllowed(outcode, allowed) {
-  if (!outcode) return false;
+  if (!outcode || !Array.isArray(allowed)) return false;
   return allowed.includes(outcode.toUpperCase());
 }
 

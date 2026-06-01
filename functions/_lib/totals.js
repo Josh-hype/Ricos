@@ -16,13 +16,13 @@ export function computeTotals(input, config, opts = {}) {
     if (!item) {
       return { ok: false, reason: `Unknown item: ${line.id}` };
     }
-    const qty = Math.max(1, Math.min(20, Number(line.qty) || 1));
+    const qty = Math.max(1, Math.min(20, Math.floor(Number(line.qty)) || 1));
     let lineP = item.priceP;
 
     if (line.meal && item.mealAddP != null) lineP += item.mealAddP;
 
     // Modifiers (size, sauce, etc.) — each modifier contributes priceDeltaP.
-    const modIds = Array.isArray(line.modifiers) ? line.modifiers : [];
+    const modIds = Array.isArray(line.modifiers) ? [...new Set(line.modifiers)] : [];
     const modSummaries = [];
     for (const modId of modIds) {
       const mod = item.modifiers?.find(x => x.id === modId);
@@ -72,6 +72,13 @@ export function computeTotals(input, config, opts = {}) {
     });
   }
 
+  // Reject an empty cart explicitly: a zero-item order would otherwise slip
+  // past the final totalP > 0 check because the service fee alone keeps it
+  // positive.
+  if (lines.length === 0 || subtotalP <= 0) {
+    return { ok: false, reason: 'Cart is empty.' };
+  }
+
   const fulfillment = input.fulfillment === 'delivery' ? 'delivery' : 'collection';
 
   // Promo: 10% off online subtotal. Counter sales (taken in-person at the
@@ -80,8 +87,8 @@ export function computeTotals(input, config, opts = {}) {
   let discountP = 0;
   let discountLabel = null;
   if (config.promo?.autoOnlineDiscount?.enabled && !opts.suppressPromo) {
-    const pct = config.promo.autoOnlineDiscount.percent;
-    discountP = Math.round(subtotalP * (pct / 100));
+    const pct = Math.max(0, Math.min(100, Number(config.promo.autoOnlineDiscount.percent) || 0));
+    discountP = Math.min(subtotalP, Math.round(subtotalP * (pct / 100)));
     discountLabel = config.promo.autoOnlineDiscount.label;
   }
 
@@ -91,9 +98,12 @@ export function computeTotals(input, config, opts = {}) {
   // self-contained.
   let deliveryFeeP = 0;
   if (fulfillment === 'delivery') {
-    if (opts.deliveryFeeP != null) {
-      deliveryFeeP = opts.deliveryFeeP;
+    const passed = opts.deliveryFeeP;
+    if (Number.isFinite(passed) && passed >= 0) {
+      deliveryFeeP = passed;
     } else {
+      // No (or invalid) fee passed in — fall back to the outcode lookup so a
+      // NaN/negative override can never corrupt or undercut the total.
       const d = config.fulfillment.delivery;
       const p = normalisePostcode(input.deliveryAddress?.postcode);
       const byOutcode = d.feeByOutcode || {};
