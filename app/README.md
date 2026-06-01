@@ -1,4 +1,4 @@
-# EPOS Till — Sunmi T2 app (Capacitor)
+# LumiPOS — Sunmi T2 app (Capacitor)
 
 A thin native Android wrapper around the existing web staff EPOS. **One APK for
 all shops**, provisioned per device. Self-contained: nothing here affects the web

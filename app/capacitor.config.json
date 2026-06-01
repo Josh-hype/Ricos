@@ -1,6 +1,6 @@
 {
   "appId": "uk.co.ricos.epos",
-  "appName": "EPOS Till",
+  "appName": "LumiPOS",
   "webDir": "www",
   "server": {
     "androidScheme": "https"
