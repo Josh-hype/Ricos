@@ -36,6 +36,28 @@ async function hmacKey(secret) {
   );
 }
 
+// Hex HMAC-SHA256 — used to verify PINs keyed by SESSION_SECRET so a leaked
+// STAFF_PIN_HASH / MANAGER_PIN_HASH can't be brute-forced offline.
+async function hmacHex(str, secret) {
+  const key = await hmacKey(secret);
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(str));
+  return [...new Uint8Array(sig)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Verify a PIN against a stored hash. Accepts the keyed HMAC-SHA256 (preferred —
+// a leaked hash alone can't be cracked offline) OR the legacy bare SHA-256, so
+// the *_PIN_HASH env vars can be regenerated to the keyed value with zero
+// downtime. To retire the weaker path, set the var to the keyed hash:
+//   printf %s "<PIN>" | openssl dgst -sha256 -hmac "<SESSION_SECRET>"
+async function verifyPinHash(pin, storedHash, env) {
+  if (!storedHash) return false;
+  const stored = storedHash.toLowerCase();
+  const keyed = await hmacHex(pin, env.SESSION_SECRET || '');
+  if (timingSafeEqual(keyed, stored)) return true;
+  const legacy = await sha256Hex(pin);
+  return timingSafeEqual(legacy, stored);
+}
+
 async function sign(payload, secret) {
   const key = await hmacKey(secret);
   const sig = await crypto.subtle.sign('HMAC', key, enc.encode(payload));
@@ -48,15 +70,11 @@ async function verify(payload, sig, secret) {
 }
 
 export async function checkPin(pin, env) {
-  if (!env.STAFF_PIN_HASH) return false;
-  const h = await sha256Hex(String(pin));
-  return timingSafeEqual(h, env.STAFF_PIN_HASH.toLowerCase());
+  return verifyPinHash(String(pin), env.STAFF_PIN_HASH, env);
 }
 
 export async function checkManagerPin(pin, env) {
-  if (!env.MANAGER_PIN_HASH) return false;
-  const h = await sha256Hex(String(pin));
-  return timingSafeEqual(h, env.MANAGER_PIN_HASH.toLowerCase());
+  return verifyPinHash(String(pin), env.MANAGER_PIN_HASH, env);
 }
 
 // Manager protection is opt-in: a shop that hasn't configured a manager PIN
@@ -185,7 +203,28 @@ export async function readAuthToken(token, env) {
   } catch { return null; }
 }
 
+/* CSRF defence for cookie-authenticated staff routes. A SameSite=Lax cookie is
+   still sent on cross-site top-level navigations, so on state-changing requests
+   we require the browser-set Origin to match our host. Bearer-token (app)
+   requests can't be forged cross-site, so they're exempt. Returns null when OK,
+   or a 403 Response when the Origin is cross-site. */
+export function csrfOriginCheck(request) {
+  if (/^Bearer\s+/i.test(request.headers.get('Authorization') || '')) return null;
+  const method = (request.method || 'GET').toUpperCase();
+  if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') return null;
+  const origin = request.headers.get('Origin');
+  if (!origin) return null; // browsers send Origin on these; absent ⇒ not a browser CSRF vector
+  try {
+    if (new URL(origin).host === new URL(request.url).host) return null;
+  } catch { /* malformed — fall through to 403 */ }
+  return new Response(JSON.stringify({ error: 'bad origin' }), {
+    status: 403, headers: { 'Content-Type': 'application/json' },
+  });
+}
+
 export async function requireStaff(request, env) {
+  const csrf = csrfOriginCheck(request);
+  if (csrf) return csrf;
   const session = await resolveSession(request, env);
   if (!session) {
     return new Response(JSON.stringify({ error: 'unauthorized' }), {

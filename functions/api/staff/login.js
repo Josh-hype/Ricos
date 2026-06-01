@@ -17,18 +17,22 @@ export const onRequestPost = async ({ request, env }) => {
   const wantsToken = request.headers.get('X-Client') === 'app';
 
   const ip = request.headers.get('cf-connecting-ip') || 'unknown';
+  const attemptsKey = `attempts:${ip}`;
   if (env.STAFF_LOGIN_KV) {
-    const key = `attempts:${ip}`;
-    const raw = await env.STAFF_LOGIN_KV.get(key);
+    const raw = await env.STAFF_LOGIN_KV.get(attemptsKey);
     const n = raw ? Number(raw) : 0;
     if (n >= 8) return j({ error: 'Too many attempts. Try again in 10 minutes.' }, 429);
-    await env.STAFF_LOGIN_KV.put(key, String(n + 1), { expirationTtl: 600 });
+    await env.STAFF_LOGIN_KV.put(attemptsKey, String(n + 1), { expirationTtl: 600 });
   }
+  // Clear the failed-attempt counter on a correct PIN so a busy till that
+  // fat-fingers a few logins can't lock out the next legitimate operator.
+  const clearAttempts = () => env.STAFF_LOGIN_KV?.delete(attemptsKey);
 
   // Per-operator mode: the PIN identifies a named operator (Toast/Square style).
   if (await operatorsEnabled(env)) {
     const op = await findOperatorByPin(env, pin);
     if (!op) return j({ error: 'PIN not recognised.' }, 401);
+    await clearAttempts();
     const token = await makeSession(env, op);
     await logAudit(env, { op: op.id, opName: op.name, action: 'login' });
     return new Response(JSON.stringify({
@@ -44,6 +48,7 @@ export const onRequestPost = async ({ request, env }) => {
   // Legacy mode: single shared staff PIN.
   const ok = await checkPin(pin, env);
   if (!ok) return j({ error: 'Wrong PIN.' }, 401);
+  await clearAttempts();
 
   const token = await makeSession(env);
   return new Response(JSON.stringify({ ok: true, ...(wantsToken ? { token } : {}) }), {
