@@ -13,13 +13,16 @@
    4. Hardware facade — window.EPOSNative.{printReceipt,kickDrawer,collectCardPayment}
       route to the native plugin; onSignOut() clears the stored token.
 
-   Storage: the base URL and bearer token live in @capacitor/preferences (a native
-   key store reached over the bridge), NOT localStorage — so injected/3rd-party JS in
-   the WebView can't read the token (matters once the live-update channel lands). The
-   plugin API is async, so we read it in an async bootstrap and every shimmed fetch
-   awaits that bootstrap before it goes out (so the first request already carries the
-   base URL + token). On the web (no Preferences plugin) we fall back to localStorage
-   so a browser smoke-test still works. */
+   FAIL-SAFE (added after on-device debugging on the Sunmi T2s):
+   - bootstrap() reads stored settings over the Capacitor bridge; that read is raced
+     against a timeout so a stalled bridge can NEVER freeze the whole app.
+   - Until the till is provisioned (no BASE), relative `/api/...` calls are REJECTED
+     (not sent to the local app origin, which used to fail-open the login + stall the
+     menu) and the "Set up this till" screen is forced.
+   - Every shimmed request has a timeout, so a dead backend shows a clear error instead
+     of an infinite "Loading menu…".
+   - A small on-screen diagnostic surfaces JS errors / "not running as the app" — the
+     till has no remote console (USB debugging is locked), so this is how we see faults. */
 (function () {
   'use strict';
 
@@ -33,17 +36,35 @@
       : window.Capacitor.platform && window.Capacitor.platform !== 'web'));
   window.EPOS_IS_APP = inApp;
 
+  // ── On-screen diagnostic (no remote console on the locked-down till) ─────────────
+  function diag(msg) {
+    try {
+      var el = document.getElementById('eposDiag');
+      if (!el) {
+        el = document.createElement('div');
+        el.id = 'eposDiag';
+        el.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:2147483647;' +
+          'background:#7a1020;color:#fff;font:12px/1.45 -apple-system,system-ui,monospace;' +
+          'padding:7px 12px;white-space:pre-wrap;max-height:42%;overflow:auto';
+        (document.body || document.documentElement).appendChild(el);
+      }
+      el.textContent = 'LumiPOS diag — ' + msg;
+    } catch (e) {}
+  }
+  try {
+    window.addEventListener('error', function (e) {
+      diag('error: ' + ((e && e.message) || e) + '  @' + ((e && e.filename) || '?') + ':' + ((e && e.lineno) || '?'));
+    });
+  } catch (e) {}
+
   function prefs() {
     return (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Preferences) || null;
   }
 
   // ── Bootstrap: load BASE + TOKEN before any shimmed request goes out ───────────
-  // `ready` resolves once BASE/TOKEN are populated. Every shimmed fetch awaits it.
   async function bootstrap() {
     var P = prefs();
     if (!P) {
-      // No Preferences plugin (plain browser, or plugin not yet synced) — fall back
-      // to localStorage so the staff page is still usable as a browser smoke-test.
       try { BASE = (localStorage.getItem('epos_api_base') || '').replace(/\/+$/, ''); } catch (e) {}
       try { TOKEN = localStorage.getItem('epos_token') || ''; } catch (e) {}
       window.EPOS_API_BASE = BASE;
@@ -51,9 +72,6 @@
     }
     try { var b = await P.get({ key: 'epos_api_base' }); BASE = ((b && b.value) || '').replace(/\/+$/, ''); } catch (e) {}
     try { var t = await P.get({ key: 'epos_token' }); TOKEN = (t && t.value) || ''; } catch (e) {}
-
-    // One-time migration off plain localStorage (the scaffold used to store here):
-    // move any legacy values into Preferences, then wipe the JS-readable copies.
     try {
       var lb = localStorage.getItem('epos_api_base');
       var lt = localStorage.getItem('epos_token');
@@ -62,37 +80,49 @@
       if (lb != null) localStorage.removeItem('epos_api_base');
       if (lt != null) localStorage.removeItem('epos_token');
     } catch (e) {}
-
     window.EPOS_API_BASE = BASE;
   }
 
-  var ready = bootstrap();
+  // `ready` ALWAYS settles: a stalled Preferences bridge read can't freeze the app
+  // (which would block every fetch AND the provisioning screen). 2s is plenty on-device.
+  var ready = Promise.race([
+    bootstrap(),
+    new Promise(function (resolve) { setTimeout(resolve, 2000); })
+  ]);
+
+  // ── Provisioning trigger (idempotent; provision.js no-ops if already shown) ──────
+  function showProvisioning() {
+    if (!inApp) return;
+    var go = function () {
+      if (window.EPOSProvision) window.EPOSProvision.show();
+      else diag('setup screen unavailable (provision.js not loaded)');
+    };
+    if (document.readyState === 'loading') window.addEventListener('DOMContentLoaded', go);
+    else go();
+  }
+
+  // Reject a hung request after `ms` so the staff page shows a clear error instead of
+  // spinning forever (the underlying native request may still finish; that's fine).
+  function withTimeout(p, ms) {
+    return Promise.race([
+      p,
+      new Promise(function (_, reject) {
+        setTimeout(function () { reject(new Error('Request timed out — check the connection.')); }, ms);
+      })
+    ]);
+  }
 
   // ── Fetch shim ─────────────────────────────────────────────────────────────────
-  // Build an explicit RequestInit from a Request object. We must NOT pass the Request
-  // itself as the init arg of fetch()/new Request() (P2-13): strict/older WebViews —
-  // like the T2's — can drop its body or headers. The body is read out separately
-  // (async) for methods that carry one.
   function initFromRequest(req, headers) {
     return {
-      method: req.method,
-      headers: headers,
-      mode: req.mode,
-      credentials: req.credentials,
-      cache: req.cache,
-      redirect: req.redirect,
-      referrer: req.referrer,
-      referrerPolicy: req.referrerPolicy,
-      integrity: req.integrity,
-      keepalive: req.keepalive,
-      signal: req.signal
+      method: req.method, headers: headers, mode: req.mode, credentials: req.credentials,
+      cache: req.cache, redirect: req.redirect, referrer: req.referrer,
+      referrerPolicy: req.referrerPolicy, integrity: req.integrity,
+      keepalive: req.keepalive, signal: req.signal
     };
   }
 
   function captureToken(res) {
-    // Capture the session token from a successful login and persist it. We await the
-    // Preferences write before resolving so a reload right after login keeps the token;
-    // the in-memory TOKEN is set first so the page's very next request already carries it.
     if (!res || !res.ok) return res;
     return res.clone().json().then(function (d) {
       if (d && d.token) {
@@ -108,6 +138,14 @@
     init = init || {};
     var isReq = (typeof input !== 'string') && input && typeof input.url === 'string';
     var url = isReq ? input.url : String(input);
+
+    // FAIL SAFE: not provisioned yet → don't let the staff page's relative `/api/...`
+    // calls hit the local app origin (that fail-opened login + stalled the menu).
+    // Force the setup screen and reject clearly so the page shows "not connected".
+    if (!BASE && url.charAt(0) === '/' && url.charAt(1) !== '/') {
+      showProvisioning();
+      return Promise.reject(new Error('This till isn’t set up yet — finish "Set up this till".'));
+    }
 
     // (a) rewrite relative -> provisioned backend
     if (BASE && url.charAt(0) === '/') url = BASE + url;
@@ -134,23 +172,19 @@
       p = _fetch(url, Object.assign({}, init, { headers: headers }));
     }
 
-    // (3) capture the token from login — await it so the page's next requests
-    // already carry the token (avoids a first-call 401 race).
+    p = withTimeout(p, 12000); // no infinite "Loading menu…" on a dead/slow backend
+
+    // (3) capture the token from login — await it so the page's next requests carry it.
     if (url.indexOf('/api/staff/login') !== -1) return p.then(captureToken);
     return p;
   }
 
-  // Install our wrapper as window.fetch. CapacitorHttp (capacitor.config.json) also
-  // patches window.fetch to proxy requests natively (no CORS). Ordering matters
-  // (P2-14): our wrapper must sit OUTSIDE CapacitorHttp's so the headers we inject are
-  // handed to it. The bridge normally patches first (we then wrap it), but to be robust
-  // if CapacitorHttp patches *after* us — which would bypass our headers — we re-assert
-  // on DOMContentLoaded. installFetchShim() is idempotent: it no-ops if we're already
-  // the outermost wrapper, otherwise it wraps whatever fetch is current. On-device check:
-  // log in and confirm the request carries Authorization + X-Client (a 200, not a 401).
+  // Install our wrapper as window.fetch, OUTSIDE CapacitorHttp's patch (P2-14). The
+  // bridge normally patches first (we wrap it); we re-assert on DOMContentLoaded in
+  // case it patches after us. Idempotent.
   function installFetchShim() {
     if (!inApp || typeof window.fetch !== 'function') return;
-    if (window.__eposFetch && window.fetch === window.__eposFetch) return; // already ours
+    if (window.__eposFetch && window.fetch === window.__eposFetch) return;
     var _fetch = window.fetch.bind(window);
     var wrapper = function (input, init) {
       return ready.then(function () { return doFetch(_fetch, input, init); });
@@ -164,8 +198,7 @@
     window.addEventListener('DOMContentLoaded', installFetchShim);
   }
 
-  // Hardware facade. window.EposHardware (the plugin proxy) is defined by
-  // plugins/epos-hardware.js; here we wrap it with friendly no-op fallbacks.
+  // Hardware facade.
   window.EPOSNative = {
     isApp: inApp,
     printReceipt: function (payload) {
@@ -180,9 +213,6 @@
       if (window.EposHardware && window.EposHardware.available) return window.EposHardware.collectCardPayment(payload || {});
       return Promise.resolve({ ok: false, reason: 'not-in-app' });
     },
-    // Called by the staff page's sign-out (and switch-operator). Drops the stored
-    // token so the app truly signs out — keeps the device's shop provisioning. The
-    // in-memory token is cleared synchronously; the Preferences wipe is best-effort.
     onSignOut: function () {
       TOKEN = '';
       var P = prefs();
@@ -196,10 +226,8 @@
     else fn();
   }
 
-  // Per-shop assets the staff page loads through the HTML parser — e.g.
-  // <img src="/logo.png"> — bypass the fetch shim, so we can't tag/route them there.
-  // Point them at the provisioned backend so one APK shows each device's own shop
-  // logo (the shared app code IS bundled locally; only per-shop assets come from BASE).
+  // Per-shop assets the staff page loads through the HTML parser (e.g. <img src="/logo.png">)
+  // bypass the fetch shim — point them at the provisioned backend.
   function rewriteParserAssets() {
     if (!BASE) return;
     var imgs = document.querySelectorAll('img[src^="/"]');
@@ -212,9 +240,10 @@
   if (inApp) {
     ready.then(function () {
       onReady(rewriteParserAssets);
-      // First run with no shop set → show the provisioning screen (after the async
-      // bootstrap has had its chance to load a previously-saved base URL).
-      if (!BASE) onReady(function () { if (window.EPOSProvision) window.EPOSProvision.show(); });
+      if (!BASE) showProvisioning(); // first run → set up this till
     });
+  } else {
+    // Not detected as the native app — make it visible instead of a silently-broken screen.
+    onReady(function () { diag('not running as the app (Capacitor bridge not detected). Open the LumiPOS app, not a browser tab.'); });
   }
 })();

@@ -91,6 +91,16 @@ where to host the bundle (dedicated Cloudflare Pages project vs R2). Must be bui
   P2-37 (Live countdown minute-resolution).
 
 ## Gotchas
+- **`*.pages.dev` is FIREWALLED on this Cloudflare** — `ricos.pages.dev` etc. return `403 "Host not
+  in allowlist"`. Only the **custom domains** are reachable (Rico's = `https://ricosyork.co.uk`). The
+  app's shop DIRECTORY (`app/web/provision.js`) and any provisioning URL MUST use custom domains.
+- **Sunmi T2 app = bundled universal app** (one APK, provisioned per shop via "Set up this till" / a
+  6-digit Restaurant ID → custom domain; cross-origin via CapacitorHttp + bearer token). A `server.url`
+  pivot was tried + **reverted** (owner wants the universal app). `native.js` now fails safe: bootstrap
+  read is timeout-raced (can't freeze), relative `/api` calls are rejected + setup is forced when not
+  provisioned (no fail-open/stall), requests time out, and an on-screen `diag` banner surfaces errors
+  (the T2 has no remote console — USB debugging is locked by Sunmi). **Still TODO (fleet safety):**
+  transpile the staff inline JS — it uses `?.`/`??` which break on WebViews older than the test T2's.
 - **Push `dev` + `main` only** — pushing a `claude/*` branch makes a 3rd Cloudflare deploy.
 - **`/api/config` is cached ~30s** (+ edge) — hard-refresh after a config change.
 - Operator PINs are tied to `SESSION_SECRET`; clearing `ops:index` reverts to the shared PIN.
