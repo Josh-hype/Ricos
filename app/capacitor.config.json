@@ -3,7 +3,9 @@
   "appName": "LumiPOS",
   "webDir": "www",
   "server": {
-    "androidScheme": "https"
+    "url": "https://ricosyork.co.uk/staff",
+    "androidScheme": "https",
+    "cleartext": false
   },
   "android": {
     "allowMixedContent": false,
@@ -11,7 +13,7 @@
   },
   "plugins": {
     "CapacitorHttp": {
-      "enabled": true
+      "enabled": false
     }
   }
 }
