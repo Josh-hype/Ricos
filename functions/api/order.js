@@ -12,7 +12,7 @@ import { computeTotals } from '../_lib/totals.js';
 import { resolveDelivery } from '../_lib/delivery.js';
 import { isOpenNow, isSlotValid, listSlots } from '../_lib/hours.js';
 import { createPaymentIntent, createCustomer } from '../_lib/stripe.js';
-import { putOrder, newOrderId, recordOptIn, incrSlotCount } from '../_lib/kv.js';
+import { putOrder, newOrderId, recordOptIn, incrSlotCount, getSlotCount } from '../_lib/kv.js';
 import { normalisePhoneE164UK } from '../_lib/sms.js';
 import { readCustomerSession } from '../_lib/customer-auth.js';
 import { getCustomer, putCustomer, upsertAddress, updateContactDetails } from '../_lib/customer.js';
@@ -69,6 +69,17 @@ export const onRequestPost = async ({ request, env }) => {
       return errJson("Sorry, we're not taking orders right now. Please call the shop.", 400);
     }
     schedule = slots[0];
+  }
+
+  // Capacity: enforce maxOrdersPerSlot so a time slot can't be over-booked.
+  // Best-effort — KV has no compare-and-swap, so a rare simultaneous pair could
+  // still slip through, but this closes the everyday over-booking gap that the
+  // (previously unenforced) maxOrdersPerSlot config implied was handled.
+  if (schedule !== 'asap') {
+    const cap = Number(config.ordering?.scheduling?.maxOrdersPerSlot) || 0;
+    if (cap > 0 && (await getSlotCount(schedule, env)) >= cap) {
+      return errJson('Sorry, that time slot is fully booked — please pick another time.', 400);
+    }
   }
 
   // Totals (server-side; client never trusted for prices).
