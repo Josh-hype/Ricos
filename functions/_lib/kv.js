@@ -53,6 +53,10 @@ export function refundedSoFar(order) {
 export function recordRefund(order, { amountP, reason, stripeId }) {
   order.payment = order.payment || {};
   order.payment.refunds = order.payment.refunds || [];
+  // Idempotent: never count the same Stripe refund twice. Guards against a
+  // retried/replayed call — or a re-read-then-record race — landing the same
+  // refund id on the order more than once.
+  if (stripeId && order.payment.refunds.some(r => r.stripeId === stripeId)) return;
   const at = new Date().toISOString();
   order.payment.refunds.push({ amountP, reason: reason || null, stripeId: stripeId || null, at });
   order.payment.refundedTotalP = refundedSoFar(order) + amountP;

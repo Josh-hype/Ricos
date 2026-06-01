@@ -66,37 +66,52 @@ export const onRequestPost = async ({ request, env, params }) => {
     reason = (body.reason || names.join(', ') || 'partial refund').toString().trim().slice(0, 280);
   }
 
+  // Refund the platform service fee only when this refund completes the order
+  // (cumulative reaches the total) and the fee hasn't already been returned —
+  // not the fragile `amount === total`, which mis-fired on a partial that
+  // happened to equal the total and skipped the fee on a full refund made up of
+  // several partials.
+  const willBeFullyRefunded = (prior + amount) >= total;
+  const refundFee = willBeFullyRefunded && !order.payment?.feeRefunded;
+
   try {
     const refund = await createRefund({
       paymentIntentId: p.intentId,
       amountP: amount,
-      refundApplicationFee: prior === 0 && amount === total,
-      idempotencyKey: `refund_${p.intentId}_${prior}`,
+      refundApplicationFee: refundFee,
+      // Include the amount so two different partials issued with the same prior
+      // can't share one idempotency key (which made Stripe replay the first
+      // refund's result and silently under-refund the customer).
+      idempotencyKey: `refund_${p.intentId}_${prior}_${amount}`,
     }, p.connectedAccountId, env);
     const amt = refund.amount ?? amount;
-    recordRefund(order, { amountP: amt, reason: reason || 'full refund', stripeId: refund.id });
+    // Re-read the freshest order doc and apply the refund there, so a concurrent
+    // write isn't clobbered; recordRefund de-dupes by Stripe refund id.
+    const fresh = (await getOrder(id, env)) || order;
+    recordRefund(fresh, { amountP: amt, reason: reason || 'full refund', stripeId: refund.id });
+    if (refundFee) fresh.payment.feeRefunded = true;
     // Attribute the refund to the operator (and approver, on manager override).
-    const last = order.history[order.history.length - 1];
+    const last = fresh.history[fresh.history.length - 1];
     if (last) { last.by = auth.operator?.name || null; if (auth.approver) last.approvedBy = auth.approver.name; }
-    await putOrder(order, env);
+    await putOrder(fresh, env);
     await logAudit(env, {
       op: auth.operator?.id || null, opName: auth.operator?.name || null,
       approverId: auth.approver?.id || null, approverName: auth.approver?.name || null,
       action: 'refund', target: id, details: { amountP: amt, mode, reason },
     });
 
-    if (order.customer?.email) {
+    if (fresh.customer?.email) {
       try {
-        const m = orderRefundEmail(order, getConfig(), amt, reason);
-        await sendEmail({ to: order.customer.email, subject: m.subject, html: m.html, fromName: m.fromName }, env);
+        const m = orderRefundEmail(fresh, getConfig(), amt, reason);
+        await sendEmail({ to: fresh.customer.email, subject: m.subject, html: m.html, fromName: m.fromName }, env);
       } catch (e) { console.warn('refund email failed', e); }
     }
 
     return j({
       ok: true,
       amountP: amt,
-      refundedTotalP: order.payment.refundedTotalP,
-      fullyRefunded: order.payment.refundedTotalP >= total,
+      refundedTotalP: fresh.payment.refundedTotalP,
+      fullyRefunded: fresh.payment.refundedTotalP >= total,
     });
   } catch (e) {
     console.error('refund failed', e);

@@ -111,8 +111,9 @@ export async function createRefund({ paymentIntentId, amountP, refundApplication
   const body = { payment_intent: paymentIntentId };
   if (amountP) body.amount = amountP;                 // partial; omit for full
   if (refundApplicationFee) body.refund_application_fee = true;
-  // Idempotency key must differ per refund so multiple partials on one PI don't
-  // collapse into one; callers pass `refund_<pi>_<priorRefundedTotal>`.
+  // Idempotency key must differ per distinct refund so multiple partials on one
+  // PI don't collapse into one; callers pass `refund_<pi>_<prior>_<amount>` (a
+  // genuine retry of the SAME refund reuses the key, so Stripe de-dupes it).
   const opts = { idempotencyKey: idempotencyKey || `refund_${paymentIntentId}` };
   if (connectedAccountId) opts.stripeAccount = connectedAccountId;
   return call('/refunds', body, env, opts);

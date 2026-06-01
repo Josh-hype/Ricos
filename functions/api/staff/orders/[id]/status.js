@@ -25,15 +25,19 @@ async function refundOnReject(order, env) {
   const prior = refundedSoFar(order);
   const remaining = (order.totals?.totalP || 0) - prior;
   if (remaining <= 0) return { ok: true, amountP: 0 };
+  // This refund completes the order, so return the platform fee unless an
+  // earlier refund already did.
+  const refundFee = !p.feeRefunded;
   try {
     const refund = await createRefund({
       paymentIntentId: p.intentId,
       amountP: remaining,
-      refundApplicationFee: prior === 0,
-      idempotencyKey: `refund_${p.intentId}_${prior}`,
+      refundApplicationFee: refundFee,
+      idempotencyKey: `refund_${p.intentId}_${prior}_${remaining}`,
     }, p.connectedAccountId, env);
     const amt = refund.amount ?? remaining;
     recordRefund(order, { amountP: amt, reason: 'order cancelled', stripeId: refund.id });
+    if (refundFee) order.payment.feeRefunded = true;
     return { ok: true, amountP: amt };
   } catch (e) {
     console.error('auto-refund failed', e);
