@@ -26,6 +26,8 @@
 (function () {
   'use strict';
 
+  var BUILD = 'failsafe-3'; // bump on each app-layer change so the device log confirms freshness
+
   var BASE = '';
   var TOKEN = '';
   window.EPOS_API_BASE = '';
@@ -35,6 +37,7 @@
       ? window.Capacitor.isNativePlatform()
       : window.Capacitor.platform && window.Capacitor.platform !== 'web'));
   window.EPOS_IS_APP = inApp;
+  try { console.log('[native] BUILD ' + BUILD + ' · inApp=' + inApp + ' · Capacitor=' + (typeof window.Capacitor) + ' · Preferences=' + (!!(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Preferences))); } catch (e) {}
 
   // ── On-screen diagnostic (no remote console on the locked-down till) ─────────────
   function diag(msg) {
@@ -143,6 +146,7 @@
     // calls hit the local app origin (that fail-opened login + stalled the menu).
     // Force the setup screen and reject clearly so the page shows "not connected".
     if (!BASE && url.charAt(0) === '/' && url.charAt(1) !== '/') {
+      try { console.log('[native] no BASE → rejecting ' + url + ' + forcing setup'); } catch (e) {}
       showProvisioning();
       return Promise.reject(new Error('This till isn’t set up yet — finish "Set up this till".'));
     }
@@ -239,11 +243,13 @@
 
   if (inApp) {
     ready.then(function () {
+      try { console.log('[native] bootstrap done · BASE=' + (BASE || '(empty)') + ' · EPOSProvision=' + (typeof window.EPOSProvision)); } catch (e) {}
       onReady(rewriteParserAssets);
-      if (!BASE) showProvisioning(); // first run → set up this till
+      if (!BASE) { try { console.log('[native] no BASE on boot → showProvisioning'); } catch (e) {} showProvisioning(); } // first run → set up this till
     });
   } else {
     // Not detected as the native app — make it visible instead of a silently-broken screen.
+    try { console.log('[native] inApp=false → not wrapping fetch / no provisioning'); } catch (e) {}
     onReady(function () { diag('not running as the app (Capacitor bridge not detected). Open the LumiPOS app, not a browser tab.'); });
   }
 })();
