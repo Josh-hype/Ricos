@@ -1,7 +1,12 @@
 /* provision.js — first-run "set up this till" screen. Stores the shop's backend
    origin so this device talks to the right shop (the app-layer SHOP_SLUG). For
    the scaffold we accept the site address directly; a short setup-code → base-URL
-   exchange can replace this later. */
+   exchange can replace this later.
+
+   The base URL is written to @capacitor/preferences (the same native store native.js
+   reads on boot), and the write is AWAITED before we reload — a slow device could
+   otherwise reload before the write commits and bounce straight back to this screen
+   (P2-15). https:// only (the token rides this origin; no plaintext transport). */
 (function () {
   'use strict';
 
@@ -9,6 +14,10 @@
     if (document.getElementById('eposProvision')) return;
     var current = '';
     try { current = localStorage.getItem('epos_api_base') || ''; } catch (e) {}
+
+    function prefs() {
+      return (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Preferences) || null;
+    }
 
     var ov = document.createElement('div');
     ov.id = 'eposProvision';
@@ -32,18 +41,40 @@
       '</div>';
     document.body.appendChild(ov);
 
-    document.getElementById('eposProvSave').addEventListener('click', function () {
+    // Prefill from Preferences (the source of truth) if a base URL was saved before.
+    var P0 = prefs();
+    if (P0) {
+      P0.get({ key: 'epos_api_base' }).then(function (r) {
+        var el = document.getElementById('eposBase');
+        if (el && !el.value && r && r.value) el.value = r.value;
+      }, function () {});
+    }
+
+    var btn = document.getElementById('eposProvSave');
+    btn.addEventListener('click', async function () {
+      var err = document.getElementById('eposProvErr');
       var v = (document.getElementById('eposBase').value || '').trim().replace(/\/+$/, '');
       if (!/^https:\/\/.+/.test(v)) {
-        document.getElementById('eposProvErr').textContent = 'Enter a full https:// address.';
+        err.textContent = 'Enter a full https:// address.';
         return;
       }
-      try { localStorage.setItem('epos_api_base', v); } catch (e) {}
+      btn.disabled = true;
+      err.textContent = '';
       try {
-        if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Preferences) {
-          window.Capacitor.Plugins.Preferences.set({ key: 'epos_api_base', value: v });
+        var P = prefs();
+        if (P) {
+          // Await the write before reloading — a slow device must not reload before
+          // it commits, or native.js boots with no base URL and bounces back here.
+          await P.set({ key: 'epos_api_base', value: v });
+        } else {
+          // Browser smoke-test (no Preferences plugin): localStorage is the fallback.
+          try { localStorage.setItem('epos_api_base', v); } catch (e) {}
         }
-      } catch (e) {}
+      } catch (e) {
+        err.textContent = 'Could not save — please try again.';
+        btn.disabled = false;
+        return;
+      }
       location.reload();
     });
   }

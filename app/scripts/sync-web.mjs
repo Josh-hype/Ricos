@@ -4,14 +4,15 @@
 
    It does NOT modify the repo's templates or public/ — it only reads the built
    staff page and writes into app/www (which is gitignored). */
-import { readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));     // app/scripts
 const appDir = resolve(here, '..');                        // app
 const repoRoot = resolve(appDir, '..');                    // repo root
-const builtStaff = resolve(repoRoot, 'public', 'staff', 'index.html');
+const builtStaffDir = resolve(repoRoot, 'public', 'staff');
+const builtStaff = resolve(builtStaffDir, 'index.html');
 const wwwDir = resolve(appDir, 'www');
 
 if (!existsSync(builtStaff)) {
@@ -51,5 +52,22 @@ if (html.includes('./native.js')) {
 }
 writeFileSync(resolve(wwwDir, 'index.html'), html);
 
-console.log('✓ synced staff UI → app/www/index.html (shim injected)');
+// Bundle the staff page's sibling assets so its absolute `/staff/...` references
+// resolve inside the app. The CSP build (P2-9) externalises every inline <script>
+// into a same-origin `/staff/index.inlineN.js`; the staff HTML loads it by absolute
+// path, and a `<script src>` is parser-loaded (the native.js fetch shim can't rewrite
+// it) — so without this copy the app loads the staff HTML with NO JS (a blank till).
+// We copy the whole staff dir (inline scripts, manifest, …) except index.html, which
+// we transform above. (Per-shop assets like /logo.png are NOT bundled — native.js
+// rewrites those to the provisioned backend so one APK serves every shop correctly.)
+const staffOut = resolve(wwwDir, 'staff');
+mkdirSync(staffOut, { recursive: true });
+let staffAssets = 0;
+for (const f of readdirSync(builtStaffDir)) {
+  if (f === 'index.html') continue;
+  const src = resolve(builtStaffDir, f);
+  if (statSync(src).isFile()) { copyFileSync(src, resolve(staffOut, f)); staffAssets++; }
+}
+
+console.log(`✓ synced staff UI → app/www/index.html (shim injected, ${staffAssets} staff asset(s) bundled)`);
 console.log('  next: `cap add android` (first time) or `cap sync android`, then `cap open android`.');

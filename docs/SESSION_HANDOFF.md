@@ -36,24 +36,30 @@ operator PIN breaks. To drop back to the shared single PIN (legacy `STAFF_PIN_HA
 - EPOS verified end-to-end (login, roles, manager approval, refunds, Live lifecycle, Z/Today, counter
   sale). Deploys cleaned up to 2 (main + dev).
 
-## NEXT (the T2 has arrived — do this first)
-**Sunmi T2 native app.** Scaffold is in `app/` (`docs/PHASE2_APP.md`, `app/README.md`). Build/sign the
-APK on a Mac, install on the T2, provision to the prod URL, then:
-1. **Provision + token login** — app sends `X-Client: app`, gets a bearer token, sends it as
-   `Authorization: Bearer` (server `resolveSession` accepts cookie OR bearer). Confirm a real login.
-2. **Hardware** — cash + card counter sale, **printer**, **cash drawer**.
-3. **Apply the deferred app hardening** (details in `docs/AUDIT_FINDINGS.md` → "Native app"):
-   - **token storage**: move bearer token + base URL from `localStorage` → `@capacitor/preferences`
-     (encrypted). `app/web/native.js` reads them synchronously at IIFE — needs an async bootstrap.
-   - **fetch shim** (`native.js`): it passes a `Request` object as the `init` arg of `new Request()`
-     — build an explicit `RequestInit` instead.
-   - `provision.js`: `await` the `Preferences.set` before `location.reload()` (https-only already shipped).
-   - **verify `CapacitorHttp` interception order** vs the fetch shim, so `Authorization`/`X-Client`
-     headers are actually injected (test on device).
-   - **Kotlin drawer TODO** (`app/native/android/EposHardwarePlugin.kt`) references the wrong Sunmi
-     API — use the ESC/POS `sendRAWData` drawer-kick (or the T2 drawer API).
-4. Then **Stripe Terminal Tap-to-Pay (Phase 3):** `connection-token` endpoint + native flow →
-   `counter_card` capture. Decide reader (WisePOS E vs T2 Tap-to-Pay vs QR).
+## NEXT (the T2 has arrived)
+**Sunmi T2 native app.** Scaffold + hardening in `app/` (`docs/PHASE2_APP.md`, `app/README.md`).
+
+**✅ Item 3 — app hardening DONE in code, verified headless (`tmp/native-test`), on-device test pending:**
+- token + base URL → `@capacitor/preferences` (async bootstrap; off `localStorage`, migrates legacy);
+- fetch shim builds an explicit `RequestInit` (no more `Request`-as-init);
+- `provision.js` `await`s the Preferences write before reload;
+- shim **re-asserts over CapacitorHttp** so `Authorization`/`X-Client` always inject (verify on-device);
+- Kotlin drawer uses the ESC/POS `sendRAWData` kick on the Sunmi printer service (printer wired too —
+  needs the `com.sunmi:printerlibrary` Gradle dep);
+- **CSP-regression blocker fixed:** `app/scripts/sync-web.mjs` now bundles the externalised
+  `/staff/index.inlineN.js` into `app/www/staff/` — without it the bundled till had **no JS** (blank).
+  (All changes are under `app/` → zero web-build impact; clean build of both shops confirmed.)
+
+**⏳ Still to do (need the Mac + T2 / a decision — can't be done from the sandbox):**
+1. **Build/sign the APK** on a Mac, install on the T2, provision to the prod URL.
+2. **Provision + token login** — confirm `X-Client: app` → bearer → `Authorization: Bearer` works
+   on-device (server `resolveSession` accepts cookie OR bearer).
+3. **Hardware** — cash + card counter sale, **printer**, **cash drawer** (drawer/printer need the
+   Sunmi Gradle dep added first — `app/native/android/README.md` step 3).
+4. **Stripe Terminal (Phase 3) — scoped in `docs/PHASE3_TERMINAL.md`; reader decision pending.**
+   Verified fact: the **T2 isn't on Stripe's Tap-to-Pay supported list** (likely no NFC) → realistic
+   options are **WisePOS E** (recommended) or **QR/hosted link**. Server work (connection-token +
+   `card_present` PI + capture-on-confirm, which also closes **P2-10**) is reader-agnostic.
 
 ## Remaining backlog (not blocking)
 - **Food Station launch:** fill real Stripe `connectedAccountId` + `business.{legalName,companyNumber,

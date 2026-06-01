@@ -42,7 +42,7 @@ templates/staff/index.html ──(root: npm run build)──▶ public/staff/ind
   - exposes `window.EPOSNative` (printReceipt / kickDrawer / collectCardPayment),
     which call the native plugin in the app and are safe no-ops on the web.
 - **`app/web/provision.js`** — first-run "set up this till" screen (enter the shop
-  site address; stored in localStorage + Capacitor Preferences).
+  site address; stored in Capacitor Preferences, awaited before reload).
 - **`app/web/plugins/epos-hardware.js`** — JS interface to the native Capacitor plugin.
 - **`app/native/android/EposHardwarePlugin.kt`** — the native plugin (printer/drawer/
   Tap-to-Pay), with TODOs for the Sunmi + Stripe Terminal SDKs.
@@ -92,8 +92,17 @@ npx cap open android           # build / run / sign in Android Studio, install t
 - [x] native plugin source (printer / drawer / Tap-to-Pay) with TODOs
 - [x] runbook + this architecture doc
 - [x] cross-origin auth — bearer token + CapacitorHttp (web stays cookie-based)
-- [ ] wire Sunmi printer/drawer SDK into the plugin
-- [ ] Stripe Terminal Tap-to-Pay + `/api/staff/terminal/connection-token` (Phase 3)
+- [x] **web-sync bundles the CSP-externalised inline scripts** (`/staff/index.inlineN.js`)
+      into `app/www/staff/` — without this the bundled app loaded the staff HTML with no JS
+- [x] **app hardening:** token + base URL → `@capacitor/preferences` (async bootstrap, off
+      localStorage); fetch shim builds an explicit `RequestInit`; provisioning awaits the
+      write before reload; the shim re-asserts over CapacitorHttp so headers always inject
+      (verified headless — `tmp/native-test`; still smoke-test on-device)
+- [x] **printer + drawer wired** to the Sunmi inner-printer service (drawer via ESC/POS
+      `sendRAWData` kick) — needs the `com.sunmi:printerlibrary` Gradle dep + on-device test
+- [x] **Stripe Terminal scoped** → `docs/PHASE3_TERMINAL.md` (reader decision pending)
+- [ ] Stripe Terminal capture: `/api/staff/terminal/connection-token` + `card_present` PI +
+      capture-on-confirm (closes P2-10) + native reader flow — *blocked on the reader decision*
 - [ ] live-update channel
 - [ ] wire the Sale flow to call `EPOSNative.printReceipt` / `collectCardPayment`
 - [ ] signed release APK + Sunmi fleet distribution

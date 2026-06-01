@@ -55,8 +55,14 @@ every request is routed to that backend. Re-provision by clearing app storage.
 
 ## What works / what's stubbed
 - ✅ App loads the real staff EPOS (bundled) + provisioning + request routing shim.
-- ✅ Native plugin present: `printReceipt` / `kickDrawer` / `collectCardPayment` —
-  currently resolve `{ ok:false, reason:'…-not-wired' }`.
-- ✅ Token auth — bundled mode talks to the shop backend; the web is unchanged.
-- ⏳ Sunmi printer/drawer SDK, Stripe Terminal Tap-to-Pay, live-update, and wiring
-  the Sale flow to the bridge — see the TODO list in `docs/PHASE2_APP.md`.
+  The web-sync bundles the CSP-externalised `/staff/index.inlineN.js`, so the till
+  actually has its JS (it didn't before — that was a blank-screen blocker).
+- ✅ Token auth — bundled mode talks to the shop backend; the web is unchanged. The
+  bearer token + base URL live in `@capacitor/preferences` (off localStorage), loaded
+  in an async bootstrap that every shimmed request awaits.
+- ✅ `printReceipt` / `kickDrawer` wired to the Sunmi inner-printer service (drawer via
+  the ESC/POS `sendRAWData` pulse). **Needs the `com.sunmi:printerlibrary` Gradle dep
+  (README step 3) and an on-device smoke-test** — can't be verified in the cloud build.
+- ⏳ `collectCardPayment` is still a stub — Stripe Terminal is scoped in
+  `docs/PHASE3_TERMINAL.md` (reader decision pending).
+- ⏳ Live-update channel + wiring the Sale flow to the bridge — see `docs/PHASE2_APP.md`.

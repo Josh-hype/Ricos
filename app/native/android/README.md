@@ -31,18 +31,28 @@ class MainActivity : BridgeActivity() {
 }
 ```
 
-## 3. Add the hardware SDKs (when wiring the TODOs)
-In `android/app/build.gradle` dependencies:
+## 3. Add the hardware SDKs
+
+**Required now** — `EposHardwarePlugin.kt` imports the Sunmi printer SDK
+(`com.sunmi.peripheral.printer.*`) for the printer + drawer, so the project won't
+compile without it. In `android/app/build.gradle` dependencies:
 
 ```gradle
-// Sunmi printer (woyou AIDL service) — confirm the current artifact/version,
-// or vendor the AIDL from Sunmi's developer docs:
-implementation 'com.sunmi:printerlibrary:1.0.18'   // example; verify
+// Sunmi printer/drawer (woyou inner-printer service). Verify the current version;
+// or vendor the AIDL from Sunmi's developer docs if the artifact is unavailable.
+implementation 'com.sunmi:printerlibrary:1.0.18'   // verify
 
-// Stripe Terminal + Tap to Pay on Android (Phase 3):
+// Stripe Terminal + Tap to Pay on Android (Phase 3 — not yet imported by the plugin):
 implementation 'com.stripe:stripeterminal-core:<version>'
 implementation 'com.stripe:stripeterminal-taptopay:<version>'
 ```
+
+The plugin binds the service in `load()` and degrades to `{ ok:false }` on a
+non-Sunmi device (e.g. the emulator), so it's safe to run anywhere — but the
+printer/drawer only do something on the T2. The drawer uses the ESC/POS pulse via
+`sendRAWData()` (portable across firmware); confirm your drawer is on the printer's
+RJ11 port. Smoke-test `printReceipt` / `kickDrawer` on-device — they can't be
+verified in the cloud build.
 
 Tap to Pay also needs: NFC + appropriate permissions, Google Play services,
 location permission, and Stripe device eligibility — confirm the **exact T2

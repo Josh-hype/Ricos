@@ -54,8 +54,15 @@ P2-33/P2-36 (EPOS touch target + pay-modal default-hidden).
   clean when tackled.
 - **P2-11** operator-PIN PBKDF2 — conflicts with the single-KV-read reverse-index login (PBKDF2's
   per-user salt isn't deterministic). The current keyed HMAC already resists offline cracking — leaving.
-- **Native app** (token → encrypted Preferences, fetch-shim `Request` init, CapacitorHttp ordering) —
-  needs on-device testing; deferred to the Sunmi T2 app pass (https-only already shipped).
+- **Native app** — **code DONE (Sunmi T2 pass), on-device smoke-test pending.** P2-12 (token +
+  base URL → `@capacitor/preferences`, async bootstrap, off localStorage), P2-13 (fetch shim builds
+  an explicit `RequestInit` instead of passing a `Request` as init), P2-14 (shim re-asserts over
+  CapacitorHttp so `Authorization`/`X-Client` always inject — verified headless), P2-15 (provisioning
+  awaits the Preferences write before reload; https-only already shipped), and P3-49 (drawer uses the
+  ESC/POS `sendRAWData` kick on the Sunmi printer service, not the wrong `openDrawer()`). Also fixed a
+  CSP-regression blocker: `app/scripts/sync-web.mjs` now bundles the externalised
+  `/staff/index.inlineN.js` into the app, or the bundled till loaded with no JS. Verify the headers,
+  printer, and drawer on the T2.
 - **EPOS UI polish:** P2-34 (stale till menu) + P2-35 (ticket "· cash" label) — DONE (`b844157`).
   **P2-37 dropped (won't-fix, owner confirmed):** the countdown is whole-minutes and already updates
   each minute; not worth touching the Live board's deliberate card-stability logic for a sub-minute
@@ -326,6 +333,9 @@ though the customer got 100% back; a partial that happens to equal `total` wrong
   Better than P0-4 because keyed by `SESSION_SECRET`, but prefer PBKDF2/scrypt + salt. *(Auth A2)*
 
 ## Native app (`app/`)
+> **✅ P2-12 / P2-13 / P2-14 / P2-15 all DONE** in the Sunmi T2 app pass (+ P3-49 drawer, + the
+> sync-web inline-script bundling blocker). On-device smoke-test still pending. Details in the
+> Progress block above.
 - **P2-12 · `app/web/native.js:19`** — bearer token + base URL stored in plain `localStorage`
   (JS-readable in the WebView; risk if the planned live-update channel is unsigned). Fix: use
   `@capacitor/preferences` (encrypted) — `provision.js` already does for the base URL. *(Customer F-24)*
@@ -485,7 +495,7 @@ Grouped; each is `file:line — one-liner (source)`. Expand on request.
 - P3-46 · `reset-password.html:124` — on missing token, shows a disabled form rather than collapsing it. *(Customer F-22)*
 - P3-47 · `landing-default.html:11` — hardcodes the Google Fonts link instead of `{{fontLink}}` (ignores per-shop font). *(Customer F-21)*
 - P3-48 · `app/scripts/sync-web.mjs:45` — idempotence check string-matches `./native.js` (fragile). *(Customer F-29)*
-- P3-49 · `app/native/android/EposHardwarePlugin.kt:42` — drawer TODO references a likely-wrong Sunmi API (`openDrawer()` vs ESC/POS `sendRAWData`). *(Customer F-30)*
+- P3-49 · **DONE** — `app/native/android/EposHardwarePlugin.kt` now binds the Sunmi inner-printer service and kicks the drawer via the ESC/POS `sendRAWData` pulse (not the wrong `openDrawer()`); printer wired too. Needs the `com.sunmi:printerlibrary` Gradle dep + on-device test. *(Customer F-30)*
 
 **Staff UI**
 - P3-50 · `staff/index.html:884,911` — `:has()` selector for selected-choice highlight may not work on older Sunmi WebView (<105); add a JS class fallback. *(Staff F-018)*
