@@ -2567,7 +2567,7 @@ function updateAccountButton() {
 }
 
 document.getElementById('accountBtn').addEventListener('click', () => {
-  accountTab = state.user ? 'signin' : 'signin';
+  accountTab = 'signin';
   renderAccountModal();
   openModal('accountOverlay');
 });

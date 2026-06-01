@@ -34,7 +34,7 @@
 
     document.getElementById('eposProvSave').addEventListener('click', function () {
       var v = (document.getElementById('eposBase').value || '').trim().replace(/\/+$/, '');
-      if (!/^https?:\/\/.+/.test(v)) {
+      if (!/^https:\/\/.+/.test(v)) {
         document.getElementById('eposProvErr').textContent = 'Enter a full https:// address.';
         return;
       }
