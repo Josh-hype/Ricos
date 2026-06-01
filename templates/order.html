@@ -1570,7 +1570,7 @@ function validatePostcode(raw, mode) {
 }
 
 /* ---------- State ---------- */
-const STORAGE_KEY = 'ricos.v1';
+const STORAGE_KEY = '{{shopSlug}}.v1';
 const state = loadState();
 
 function loadState() {
@@ -2941,7 +2941,7 @@ function startCheckout() {
     alert('Your cart is empty.');
     return;
   }
-  if (!state.postcode) {
+  if (state.mode === 'deliver' && !state.postcode) {
     alert('Please enter your postcode at the top of the page first.');
     document.getElementById('postcode').focus();
     return;
@@ -2974,9 +2974,13 @@ function startCheckout() {
     };
     // simpler: once they pick guest the close handler in renderAccountTab calls startCheckout
     // for sign-in: re-invoke startCheckout after a brief delay
-    const watchSignin = setInterval(() => {
+    // Re-entrancy guard: clear any previous poller so a double-tap on Checkout
+    // can't leave two intervals racing to both call runCheckout().
+    if (startCheckout.poll) clearInterval(startCheckout.poll);
+    startCheckout.poll = setInterval(() => {
       if (state.user || !accountOverlay.classList.contains('open')) {
-        clearInterval(watchSignin);
+        clearInterval(startCheckout.poll);
+        startCheckout.poll = null;
         if (state.user) { runCheckout(); }
       }
     }, 200);

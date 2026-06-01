@@ -191,6 +191,10 @@ const promoSection = (promo && promo.enabled)
 const tokens = {
   shopName:                config.business.tradingName || '',
   shopShortName:           config.business.shortName || config.business.tradingName || '',
+  // Shop slug (folder name). Used to namespace per-shop client state such as
+  // the localStorage cart key, so two shops never share a basket in the same
+  // browser. For ricos this resolves to "ricos" (key unchanged).
+  shopSlug:                slug,
   shopCity:                a.city || '',
   shopAddressLine1:        a.line1 || '',
   shopPostcode:            a.postcode || '',

@@ -899,16 +899,6 @@ button{cursor:pointer;border:0;background:none}
 
 .meal-choices{display:flex;flex-direction:column;gap:10px}
 .meal-choice{display:flex;flex-direction:column;gap:7px;font-size:12.5px;font-weight:700;color:var(--ink-2)}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{
-  display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border:1.5px solid var(--line);
-  border-radius:999px;background:var(--panel);font-size:15px;font-weight:600;color:var(--ink);cursor:pointer;
-  transition:var(--motion-fast) var(--ease-out);position:relative;
-}
-.chip:hover{border-color:var(--blue);background:var(--blue-tint-2)}
-.chip:active{transform:scale(.97)}
-.chip input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
-.chip:has(input:checked){border-color:var(--blue);background:var(--blue);color:#fff}
 
 .item-add{
   height:54px;border-radius:14px;
@@ -1167,7 +1157,7 @@ button{cursor:pointer;border:0;background:none}
       <button data-min="45">45</button>
       <button data-min="60">60</button>
     </div>
-    <div style="text-align:center;margin:-6px 0 14px;color:var(--grey);font-size:0.9rem">
+    <div style="text-align:center;margin:-6px 0 14px;color:var(--muted);font-size:0.9rem">
       mins from now
     </div>
     <div class="row">
@@ -1587,6 +1577,15 @@ $('#logoutBtn').addEventListener('click', () => {
   if (idleHandle) { clearTimeout(idleHandle); idleHandle = null; }
   if (signoutHandle) { clearTimeout(signoutHandle); signoutHandle = null; }
   state.authed = false;
+  // Clear per-operator identity + live-order tracking so the NEXT operator to
+  // sign in starts clean — stale seenIds would otherwise suppress their
+  // new-order alarm, and stale perms/operator would leak across sessions.
+  state.seenIds = new Set();
+  state.orders = [];
+  state.operator = null;
+  state.operatorsEnabled = false;
+  state.perms = new Set();
+  state.lastLiveSig = '';
   stopAlarm();
   $('#alarmOvl').classList.remove('open');
   state.alarmId = null;
@@ -1902,7 +1901,7 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
 
   const lines = lineItemsHtml(o);
 
-  const addr = o.address ? `<div style="font-size:0.85rem;color:var(--grey);margin-top:4px">${escapeHtml(o.address.line1)}${o.address.line2 ? ', ' + escapeHtml(o.address.line2) : ''}, ${escapeHtml(o.address.postcode)}${o.address.notes ? `<br><em>${escapeHtml(o.address.notes)}</em>` : ''}</div>` : '';
+  const addr = o.address ? `<div style="font-size:0.85rem;color:var(--muted);margin-top:4px">${escapeHtml(o.address.line1)}${o.address.line2 ? ', ' + escapeHtml(o.address.line2) : ''}, ${escapeHtml(o.address.postcode)}${o.address.notes ? `<br><em>${escapeHtml(o.address.notes)}</em>` : ''}</div>` : '';
 
   const totals = `
     <div class="totals">
@@ -2096,7 +2095,7 @@ function renderAlarm(o, qlen) {
     : (o.paymentMethod === 'cash_collection' ? 'CASH on collection' : 'CASH on delivery');
   const sched = o.schedule && o.schedule !== 'asap' ? ` · for ${formatTime(o.schedule)}` : ' · ASAP';
   const addr = o.address
-    ? `<div style="font-size:0.88rem;color:var(--grey);margin-top:4px">${escapeHtml(o.address.line1)}${o.address.line2 ? ', ' + escapeHtml(o.address.line2) : ''}, ${escapeHtml(o.address.postcode)}${o.address.notes ? `<br><em>${escapeHtml(o.address.notes)}</em>` : ''}</div>`
+    ? `<div style="font-size:0.88rem;color:var(--muted);margin-top:4px">${escapeHtml(o.address.line1)}${o.address.line2 ? ', ' + escapeHtml(o.address.line2) : ''}, ${escapeHtml(o.address.postcode)}${o.address.notes ? `<br><em>${escapeHtml(o.address.notes)}</em>` : ''}</div>`
     : '';
 
   $('#alarmBody').innerHTML = `
@@ -2289,7 +2288,7 @@ function renderRefund(o) {
       <button class="rmode ${c.mode === 'partial' ? 'active' : ''}" data-mode="partial">By item</button>
     </div>
     ${c.mode === 'partial' ? discNote : ''}
-    <div class="refund-items" ${c.mode === 'partial' ? '' : 'hidden'}>${items || '<div class="muted" style="color:var(--grey)">No itemised lines on this order.</div>'}</div>`;
+    <div class="refund-items" ${c.mode === 'partial' ? '' : 'hidden'}>${items || '<div class="muted" style="color:var(--muted)">No itemised lines on this order.</div>'}</div>`;
   $$('#refundBody .rmode').forEach(b => b.addEventListener('click', () => { c.mode = b.dataset.mode; renderRefund(o); }));
   $$('#refundBody .refund-item input').forEach(cb => cb.addEventListener('change', () => {
     const i = Number(cb.dataset.i);
@@ -2882,7 +2881,7 @@ function itemDetailHTML(v, canonical) {
          <label class="meal-toggle">
            <input type="checkbox" />
            <span>${escapeHtml(v.meal.label || 'Make it a meal')}</span>
-           <span class="meal-add">+£${(Number(v.meal.addPrice) || 0).toFixed(2)}</span>
+           <span class="meal-add">+£${((canonical?.mealAddP || 0) / 100).toFixed(2)}</span>
          </label>
          ${v.meal.choose
             ? `<div class="meal-choices" id="mealChoices" style="display:none">
@@ -3055,9 +3054,9 @@ function setTender(tender) {
 // One-tap UK quick-cash: Exact (full width) + the next sensible notes above the total.
 function renderQuickCash() {
   const totalP = cartTotalP();
-  const denoms = new Set();
-  [Math.ceil(totalP / 500) * 500, Math.ceil(totalP / 1000) * 1000, 2000, 5000]
-    .forEach(p => { if (p > totalP) denoms.add(p); });
+  // Real UK notes only (no phantom £15/£25): offer each note strictly above
+  // the total; "Exact" already covers paying with a note equal to the total.
+  const denoms = new Set([500, 1000, 2000, 5000].filter(n => n > totalP));
   const opts = [`<button type="button" class="qcash exact" data-p="${totalP}">Exact · £${(totalP / 100).toFixed(2)}</button>`]
     .concat([...denoms].sort((a, b) => a - b).slice(0, 3).map(p => `<button type="button" class="qcash" data-p="${p}">£${(p / 100).toFixed(0)}</button>`));
   $('#payQuickCash').innerHTML = opts.join('');
