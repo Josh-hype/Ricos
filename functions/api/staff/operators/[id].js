@@ -18,7 +18,7 @@ export const onRequestPost = async ({ request, env, params }) => {
   try {
     const op = await updateOperator(env, String(params.id), {
       name: body.name, role: body.role, pin: body.pin, colour: body.colour, active: body.active,
-    });
+    }, ctx.operator?.role);
     await logAudit(env, {
       op: ctx.operator?.id || null, opName: ctx.operator?.name || null,
       action: 'operator.update', target: op.id,
@@ -36,7 +36,7 @@ export const onRequestDelete = async ({ request, env, params }) => {
   if (denied) return denied;
 
   try {
-    const op = await deactivateOperator(env, String(params.id));
+    const op = await deactivateOperator(env, String(params.id), ctx.operator?.role);
     await logAudit(env, {
       op: ctx.operator?.id || null, opName: ctx.operator?.name || null,
       action: 'operator.deactivate', target: op.id, details: { name: op.name },

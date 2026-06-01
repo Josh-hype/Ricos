@@ -16,6 +16,7 @@ const INDEX_KEY = 'ops:index';
 const opKey = (id) => `op:${id}`;
 const pinKey = (hash) => `oppin:${hash}`;
 const VALID_ROLES = new Set(['owner', 'manager', 'staff']);
+const ROLE_RANK = { owner: 3, manager: 2, staff: 1 };
 const COLOURS = ['#0070F0', '#0E9F6E', '#B7791F', '#E0464B', '#7C5CFC', '#0EA5E9', '#DB2777', '#0F766E'];
 
 const enc = new TextEncoder();
@@ -77,11 +78,16 @@ export async function findOperatorByPin(env, pin) {
   return op && op.active !== false ? op : null;
 }
 
-export async function createOperator(env, { name, role, pin, colour }) {
+export async function createOperator(env, { name, role, pin, colour }, actorRole = null) {
   if (!kv(env)) throw new Error('Staff storage is not configured.');
   name = String(name || '').trim().slice(0, 40);
   role = VALID_ROLES.has(role) ? role : 'staff';
   if (name.length < 2) throw new Error('Enter a name.');
+  // Can't create an operator more senior than yourself (a manager can't mint an
+  // owner). actorRole is null only during first-operator bootstrap.
+  if (actorRole && (ROLE_RANK[role] || 0) > (ROLE_RANK[actorRole] || 0)) {
+    throw new Error("You can't create an operator with a higher role than your own.");
+  }
   if (!/^\d{4,8}$/.test(String(pin || ''))) throw new Error('PIN must be 4–8 digits.');
 
   const h = await pinHash(pin, env);
@@ -100,9 +106,23 @@ export async function createOperator(env, { name, role, pin, colour }) {
   return publicOp(op);
 }
 
-export async function updateOperator(env, id, patch) {
+export async function updateOperator(env, id, patch, actorRole = null) {
   const op = await getOperator(env, id);
   if (!op) throw new Error('Operator not found.');
+
+  // Can't grant a role above your own.
+  if (patch.role != null && VALID_ROLES.has(patch.role) && actorRole &&
+      (ROLE_RANK[patch.role] || 0) > (ROLE_RANK[actorRole] || 0)) {
+    throw new Error("You can't set a role higher than your own.");
+  }
+  // Can't remove or demote the last active owner — it would lock the business
+  // out of operator management entirely.
+  const removingOwner = op.role === 'owner' && op.active !== false &&
+    (patch.active === false || (patch.role != null && VALID_ROLES.has(patch.role) && patch.role !== 'owner'));
+  if (removingOwner) {
+    const activeOwners = (await readIndex(env)).filter(o => o.role === 'owner' && o.active !== false);
+    if (activeOwners.length <= 1) throw new Error("You can't remove or demote the last active owner.");
+  }
 
   if (patch.name != null) {
     const n = String(patch.name).trim().slice(0, 40);
@@ -134,6 +154,6 @@ export async function updateOperator(env, id, patch) {
   return publicOp(op);
 }
 
-export async function deactivateOperator(env, id) {
-  return updateOperator(env, id, { active: false });
+export async function deactivateOperator(env, id, actorRole = null) {
+  return updateOperator(env, id, { active: false }, actorRole);
 }

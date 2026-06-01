@@ -35,7 +35,7 @@ export const onRequestPost = async ({ request, env }) => {
   try {
     const op = await createOperator(env, {
       name: body.name, role: body.role, pin: body.pin, colour: body.colour,
-    });
+    }, ctx.operator?.role);
     await logAudit(env, {
       op: ctx.operator?.id || null, opName: ctx.operator?.name || 'bootstrap',
       action: 'operator.create', target: op.id, details: { name: op.name, role: op.role },

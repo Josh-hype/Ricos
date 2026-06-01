@@ -20,7 +20,9 @@
    the Stripe Terminal SDK lands for the Sunmi T2 reader, that'll grow a
    'counter_card' branch. */
 
-import { requireStaff, resolveSession } from '../../_lib/auth.js';
+import { resolveSession } from '../../_lib/auth.js';
+import { requirePermission } from '../../_lib/permissions.js';
+import { logAudit } from '../../_lib/audit.js';
 import { getConfig } from '../../_lib/config.js';
 import { computeTotals } from '../../_lib/totals.js';
 import { resolveDelivery } from '../../_lib/delivery.js';
@@ -29,7 +31,10 @@ import { putOrder, newOrderId } from '../../_lib/kv.js';
 const MODES = new Set(['walkin', 'collection', 'delivery']);
 
 export const onRequestPost = async ({ request, env }) => {
-  const denied = await requireStaff(request, env);
+  // A counter sale books real revenue — gate it on the `sell` permission (a
+  // no-op in legacy mode) and audit it, like refunds/voids.
+  const ctx = {};
+  const denied = await requirePermission(request, env, 'sell', ctx);
   if (denied) return denied;
   const sess = await resolveSession(request, env);
 
@@ -115,6 +120,11 @@ export const onRequestPost = async ({ request, env }) => {
   };
 
   await putOrder(order, env);
+  await logAudit(env, {
+    op: ctx.operator?.id || null, opName: ctx.operator?.name || sess?.name || null,
+    action: 'counter_sale', target: id,
+    details: { mode, tender, totalP: totals.totalP },
+  });
   return Response.json({ order });
 };
 
