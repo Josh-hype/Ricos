@@ -4,6 +4,7 @@
    CUSTOMERS_KV and stores who the session belongs to inside the cookie. */
 
 import { normalisePhoneE164UK } from './sms.js';
+import { getCustomer } from './customer.js';
 
 const SESSION_COOKIE = 'cu';
 const SESSION_TTL_DAYS = 30;
@@ -99,9 +100,13 @@ function timingSafeEqualBytes(a, b) {
   return r === 0;
 }
 
-export async function makeCustomerSession(contact, env) {
+export async function makeCustomerSession(customer, env) {
   const exp = Date.now() + SESSION_TTL_DAYS * 86400 * 1000;
-  const payload = b64url(enc.encode(JSON.stringify({ c: contact, exp })));
+  // Bind the session to the current password-hash fingerprint so a password
+  // reset invalidates every other outstanding session for the account.
+  const payload = b64url(enc.encode(JSON.stringify({
+    c: customer.contact, fp: (customer.hash || '').slice(0, 16), exp,
+  })));
   const sig = await sign(payload, env.SESSION_SECRET);
   return `${payload}.${sig}`;
 }
@@ -114,8 +119,13 @@ export async function readCustomerSession(cookieHeader, env) {
   if (!payload || !sig) return null;
   if (!(await verify(payload, sig, env.SESSION_SECRET))) return null;
   try {
-    const { c, exp } = JSON.parse(dec.decode(b64urlDecode(payload)));
+    const { c, fp, exp } = JSON.parse(dec.decode(b64urlDecode(payload)));
     if (Date.now() > exp) return null;
+    // Reject if the password changed since the session was issued (fp no longer
+    // matches) or the token predates fp (legacy) — a reset logs out all other
+    // devices. Costs one KV read per authenticated request.
+    const customer = await getCustomer(c, env);
+    if (!customer || !fp || (customer.hash || '').slice(0, 16) !== fp) return null;
     return { contact: c };
   } catch { return null; }
 }

@@ -36,7 +36,7 @@ export const onRequestPost = async ({ request, env }) => {
   customer.hash = pw.hash;
   await putCustomer(customer, env);
 
-  const sessionToken = await makeCustomerSession(customer.contact, env);
+  const sessionToken = await makeCustomerSession(customer, env);
   return new Response(JSON.stringify({ user: publicProfile(customer) }), {
     status: 200,
     headers: {

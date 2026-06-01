@@ -37,7 +37,7 @@ export const onRequestPost = async ({ request, env }) => {
   }
   if (!credsOk) return errJson('Incorrect email/phone or password.', 401);
 
-  const token = await makeCustomerSession(customer.contact, env);
+  const token = await makeCustomerSession(customer, env);
   return new Response(JSON.stringify({ user: publicProfile(customer) }), {
     status: 200,
     headers: {

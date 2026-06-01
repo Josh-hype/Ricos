@@ -57,7 +57,7 @@ export const onRequestPost = async ({ request, env }) => {
     }
   }
 
-  const token = await makeCustomerSession(customer.contact, env);
+  const token = await makeCustomerSession(customer, env);
   return new Response(JSON.stringify({ user: publicProfile(customer) }), {
     status: 200,
     headers: {
