@@ -151,6 +151,26 @@ for (const [src, dest] of copies) {
 
 const config = JSON.parse(fs.readFileSync(path.join(activeDir, 'config.json'), 'utf8'));
 
+// Loud pre-deploy warnings for un-filled scaffold values. These don't fail the
+// build (a shop can put its info pages live before payments are wired up), but
+// they must be impossible to miss in the deploy log.
+{
+  const warns = [];
+  const acct = config.stripe?.connectedAccountId || '';
+  if (!acct || /REPLACE|TODO/i.test(acct)) {
+    warns.push(`stripe.connectedAccountId is a placeholder ("${acct}") — CARD PAYMENTS WILL FAIL.`);
+  }
+  const biz = config.business || {};
+  for (const [k, v] of Object.entries({ legalName: biz.legalName, companyNumber: biz.companyNumber, email: biz.email, domain: biz.domain })) {
+    if (typeof v === 'string' && /TODO|REPLACE/i.test(v)) warns.push(`business.${k} is still a placeholder ("${v}").`);
+  }
+  if (warns.length) {
+    console.warn(`\n⚠️  build-shop: "${slug}" has unfilled config:`);
+    for (const w of warns) console.warn(`     - ${w}`);
+    console.warn('');
+  }
+}
+
 // Optional per-shop CSS appended to the order page's <style> block. Lets a
 // shop layer on bespoke styling (e.g. Food Station's sticker buttons) without
 // forking the shared template. Absent for most shops -> empty -> no change.

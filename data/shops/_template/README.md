@@ -13,7 +13,8 @@ Then edit:
 - `menu.json` — canonical menu with prices in pence (server-side source
   of truth)
 - `menu-visual.json` — customer-facing menu (names, descriptions, photos)
-- Add `logo.png` — the shop's logo (PNG, ideally square, transparent)
+- Add `logo.png` — the shop's logo (PNG, ideally square, transparent).
+  **Required — the build fails until this file exists.**
 - Optionally add `index.html` — bespoke landing page. Omit to use the
   generic default from `templates/landing-default.html`.
 
