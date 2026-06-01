@@ -1122,7 +1122,7 @@ button{cursor:pointer;border:0;background:none}
         <div class="ticket-head">
           <div>
             <div class="t-title">Current order <span class="t-count" id="saleCount">0</span></div>
-            <div class="t-sub" id="saleModeSub">Walk in · cash</div>
+            <div class="t-sub" id="saleModeSub">Walk in</div>
           </div>
           <button class="t-clear" id="saleChangeMode" type="button" title="Cancel sale and start over">Change</button>
         </div>
@@ -2419,10 +2419,16 @@ const sale = {
 // renders for items where visual.spicy === true, so shops that don't flag
 // spicy items never see this list.
 const SPICE_OPTIONS = ['Plain', 'Smoky BBQ', 'Mango & Lime', 'Lemon & Herb', 'Mild', 'Hot', 'Extra Hot', 'Extreme'];
+// Re-fetch the till menu when it's older than this, so a mid-shift price /
+// availability change is picked up without restarting the app.
+const SALE_MENU_TTL_MS = 10 * 60 * 1000;
 
 async function initSaleView() {
-  // Lazy: only load the menu the first time Sale is opened.
-  if (!sale.ready && !sale.loading) await loadSaleData();
+  // Lazy-load the menu the first time Sale is opened, and refresh it if it has
+  // gone stale — a price / availability change mid-shift shouldn't keep the
+  // till showing the old menu. (The server still recomputes the actual charge.)
+  const stale = sale.ready && (Date.now() - (sale.loadedAt || 0) > SALE_MENU_TTL_MS);
+  if ((!sale.ready || stale) && !sale.loading) await loadSaleData();
   // Every tap of the Sale tab is a fresh sale: bin the in-progress cart and
   // customer details, return to the mode picker. The "Change" button inside
   // the menu stage offers the same reset with a confirm; this is the
@@ -2521,14 +2527,14 @@ function lookupDeliveryFeeP(postcode) {
 }
 
 function modeSubLine() {
-  if (sale.mode === 'walkin') return 'Walk in · cash';
+  if (sale.mode === 'walkin') return 'Walk in';
   const who = sale.customer?.name || '';
-  if (sale.mode === 'collection') return `Collection — ${who} · cash`;
+  if (sale.mode === 'collection') return `Collection — ${who}`;
   if (sale.mode === 'delivery') {
     const pc = sale.customer?.address?.postcode || '';
-    return `Delivery to ${pc} — ${who} · cash`;
+    return `Delivery to ${pc} — ${who}`;
   }
-  return 'Counter sale · cash';
+  return 'Counter sale';
 }
 
 async function loadSaleData() {
@@ -2563,6 +2569,7 @@ async function loadSaleData() {
       }
     }
     sale.ready = true;
+    sale.loadedAt = Date.now();
   } catch (e) {
     console.error('Sale: menu load failed', e);
     $('#saleProducts').innerHTML = '<div class="sale-empty">Couldn\'t load the menu. Check your connection and tap Sale again.</div>';
