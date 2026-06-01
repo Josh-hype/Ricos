@@ -203,6 +203,13 @@
     background: var(--yellow);
     color: var(--ink);
   }
+  /* Same pill, used inside the cart so people see/switch the mode by their order. */
+  .cart-mode-toggle {
+    display: flex;
+    width: 100%;
+    margin: 0 0 12px;
+  }
+  .cart-mode-toggle button { flex: 1; text-align: center; }
   .pc-form {
     display: inline-flex;
     align-items: stretch;
@@ -1436,6 +1443,10 @@
       <div class="cart-header">
         Your order <span class="count-pill" id="cartHeaderCount">0</span>
       </div>
+      <div class="mode-toggle cart-mode-toggle" role="tablist" aria-label="Collection or delivery">
+        <button class="cart-mode-btn" data-mode="collect" role="tab" aria-selected="false">Collection</button>
+        <button class="cart-mode-btn" data-mode="deliver" role="tab" aria-selected="true">Delivery</button>
+      </div>
       <div class="cart-body" id="cartBody"></div>
       <div class="cart-summary" id="cartSummary" style="display: none;">
         <div class="cart-row"><span>Subtotal</span><span id="sumSub">£0.00</span></div>
@@ -1475,6 +1486,10 @@
     <div class="modal-head">
       <h3 id="cartTitle">Your order</h3>
       <button class="modal-close" data-close-modal aria-label="Close">✕</button>
+    </div>
+    <div class="mode-toggle cart-mode-toggle" role="tablist" aria-label="Collection or delivery">
+      <button class="cart-mode-btn" data-mode="collect" role="tab" aria-selected="false">Collection</button>
+      <button class="cart-mode-btn" data-mode="deliver" role="tab" aria-selected="true">Delivery</button>
     </div>
     <div class="modal-body" id="cartModalBody"></div>
     <div class="modal-footer" id="cartModalFooter" style="display: none;">
@@ -2147,11 +2162,16 @@ function renderCart() {
   // the online discount vs the configured minimum) so the customer sees how
   // much more they need before checkout, rather than getting rejected at
   // the end. Checkout is disabled while under the minimum.
-  const minP = Number(window.SHOP_CONFIG?.fulfillment?.delivery?.minimumOrderPence) || 0;
+  const dCfg = window.SHOP_CONFIG?.fulfillment?.delivery || {};
+  const minP = Number(dCfg.minimumOrderPence) || 0;
+  const inclFees = !!dCfg.minimumIncludesFees;
+  const shownMinP = minP + (inclFees ? Math.round((deliveryFeeGBP() + serviceFeeGBP()) * 100) : 0);
   const netP = Math.round((t.sub - t.discount) * 100);
   const underMin = state.mode === 'deliver' && minP > 0 && state.cart.length > 0 && netP < minP;
   const hintText = underMin
-    ? `Add ${fmt((minP - netP) / 100)} more for delivery (${fmt(minP / 100)} minimum)`
+    ? (inclFees
+        ? `Add ${fmt((minP - netP) / 100)} more — ${fmt(shownMinP / 100)} minimum for delivery (incl. delivery & service)`
+        : `Add ${fmt((minP - netP) / 100)} more for delivery (${fmt(minP / 100)} minimum)`)
     : '';
   for (const id of ['minHint', 'mMinHint']) {
     const el = document.getElementById(id);
@@ -2196,6 +2216,12 @@ function applyMode(mode) {
   document.getElementById('modeDeliver').classList.toggle('active', mode === 'deliver');
   document.getElementById('modeCollect').setAttribute('aria-selected', String(mode === 'collect'));
   document.getElementById('modeDeliver').setAttribute('aria-selected', String(mode === 'deliver'));
+  // Keep the in-cart toggle(s) in sync with the top one.
+  document.querySelectorAll('.cart-mode-btn').forEach(b => {
+    const on = b.dataset.mode === mode;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-selected', String(on));
+  });
   document.getElementById('serviceMode').textContent = mode === 'collect' ? 'Collection' : 'Delivery in {{shopCity}}';
 
   // Radius shops: delivery distance can't be re-checked locally, so clear a
@@ -2239,6 +2265,7 @@ function applyMode(mode) {
 }
 document.getElementById('modeCollect').addEventListener('click', () => applyMode('collect'));
 document.getElementById('modeDeliver').addEventListener('click', () => applyMode('deliver'));
+document.querySelectorAll('.cart-mode-btn').forEach(b => b.addEventListener('click', () => applyMode(b.dataset.mode)));
 
 function refreshPCMessage() {
   const msg = document.getElementById('pcMessage');
@@ -2951,12 +2978,15 @@ function startCheckout() {
   }
   // Delivery minimum backstop (the checkout button is also disabled while
   // under the minimum; this covers the sign-in/guest resume path).
-  const minP = Number(window.SHOP_CONFIG?.fulfillment?.delivery?.minimumOrderPence) || 0;
+  const dCfg = window.SHOP_CONFIG?.fulfillment?.delivery || {};
+  const minP = Number(dCfg.minimumOrderPence) || 0;
   if (state.mode === 'deliver' && minP > 0) {
     const ct = cartTotals();
     const netP = Math.round((ct.sub - ct.discount) * 100);
     if (netP < minP) {
-      alert(`Minimum delivery order is ${fmt(minP / 100)}. Add ${fmt((minP - netP) / 100)} more, or switch to collection.`);
+      const inclFees = !!dCfg.minimumIncludesFees;
+      const shownMinP = minP + (inclFees ? Math.round((deliveryFeeGBP() + serviceFeeGBP()) * 100) : 0);
+      alert(`Minimum delivery order is ${fmt(shownMinP / 100)}${inclFees ? ' (incl. delivery & service)' : ''}. Add ${fmt((minP - netP) / 100)} more, or switch to collection.`);
       return;
     }
   }

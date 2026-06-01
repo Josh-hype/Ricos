@@ -118,9 +118,12 @@ export function computeTotals(input, config, opts = {}) {
   // Minimum order check (applied to subtotal less discount).
   const netSubtotalP = subtotalP - discountP;
   if (fulfillment === 'delivery' && netSubtotalP < config.fulfillment.delivery.minimumOrderPence) {
+    const minP = config.fulfillment.delivery.minimumOrderPence;
+    const inclFees = !!config.fulfillment.delivery.minimumIncludesFees;
+    const shownP = inclFees ? (minP + deliveryFeeP + serviceFeeP) : minP;
     return {
       ok: false,
-      reason: `Minimum delivery order is £${(config.fulfillment.delivery.minimumOrderPence / 100).toFixed(2)}.`,
+      reason: `Minimum delivery order is £${(shownP / 100).toFixed(2)}${inclFees ? ' (incl. delivery & service)' : ''}.`,
     };
   }
 
