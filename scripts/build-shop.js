@@ -47,6 +47,10 @@ if (slug.startsWith('_')) {
   console.error(`build-shop: shop slug "${slug}" starts with underscore. Underscore-prefixed folders (e.g. _template) are scaffolding, not deployable shops. Choose a real slug.`);
   process.exit(1);
 }
+if (!/^[a-z0-9-]+$/.test(slug)) {
+  console.error(`build-shop: invalid shop slug "${slug}". Use lowercase letters, digits and dashes only (e.g. pizza-bob) — no slashes or dots.`);
+  process.exit(1);
+}
 if (!fs.existsSync(shopDir)) {
   console.error(`build-shop: no shop folder at data/shops/${slug}. Set SHOP_SLUG correctly or create the folder (copy data/shops/_template/ as a starting point).`);
   process.exit(1);
@@ -132,7 +136,12 @@ for (const [src, dest] of copies) {
     const outAssets = path.join(repoRoot, 'public', 'assets');
     fs.mkdirSync(outAssets, { recursive: true });
     for (const f of fs.readdirSync(shopAssets)) {
-      fs.copyFileSync(path.join(shopAssets, f), path.join(outAssets, f));
+      const srcFile = path.join(shopAssets, f);
+      if (!fs.statSync(srcFile).isFile()) {
+        console.warn(`build-shop: skipping non-file asset ${slug}/assets/${f} (sub-directories aren't copied).`);
+        continue;
+      }
+      fs.copyFileSync(srcFile, path.join(outAssets, f));
       console.log(`build-shop: ${slug}/assets/${f} -> public/assets/${f}`);
     }
   }
@@ -216,6 +225,9 @@ const tokens = {
   themeAccentDeep:         config.theme?.accentDeep  || '#d99a00',
   themeBackground:         config.theme?.background  || '#fff5d8',
   themeSurface:            config.theme?.surface     || '#fffaeb',
+  // PWA chrome colour for the staff manifest theme_color. Defaults to Rico's
+  // dark so its manifest is unchanged; other shops can set theme.chrome.
+  themeChrome:             config.theme?.chrome      || '#181210',
   // Typography - the Google Fonts stylesheet URL plus the four font-family
   // stacks used as CSS custom properties on the order page. Defaults are
   // Rico's original faces, so any shop that omits a theme.fonts block (and
@@ -234,6 +246,8 @@ const tokens = {
   controllerIdentity,
   contactLine,
   promoSection,
+  // SEO meta sentence — only advertises the discount for shops that run it.
+  promoTagline:            (promo && promo.enabled) ? ` ${promo.percent}% off all online orders.` : '',
 };
 
 // Source HTML / manifest files with {{tokens}}. The build reads each from
@@ -253,19 +267,27 @@ const templatedFiles = [
 
 const tokenPattern = /\{\{(\w+)\}\}/g;
 
-function substitute(src, label) {
+// Escape a value for safe interpolation INSIDE a JSON string literal — the
+// template supplies the surrounding quotes, so strip JSON.stringify's pair.
+function jsonStringEscape(s) {
+  return JSON.stringify(String(s)).slice(1, -1);
+}
+
+function substitute(src, label, { json = false } = {}) {
   const unknown = new Set();
   let replaced = 0;
   const out = src.replace(tokenPattern, (whole, name) => {
     if (Object.prototype.hasOwnProperty.call(tokens, name)) {
       replaced++;
-      return tokens[name];
+      const val = tokens[name];
+      return json ? jsonStringEscape(val) : val;
     }
     unknown.add(name);
     return whole;
   });
   if (unknown.size) {
-    console.warn(`build-shop: ${label} has unknown token(s): ${[...unknown].join(', ')}`);
+    console.error(`build-shop: ${label} has unknown token(s): ${[...unknown].join(', ')}. Add them to the tokens map or fix the template — refusing to ship a page containing raw {{tokens}}.`);
+    process.exit(1);
   }
   return { out, replaced };
 }
@@ -274,11 +296,11 @@ for (const [tplRel, outRel] of templatedFiles) {
   const tplFile = path.join(repoRoot, 'templates', tplRel);
   const outFile = path.join(repoRoot, outRel);
   if (!fs.existsSync(tplFile)) {
-    console.warn(`build-shop: template missing, skipping: templates/${tplRel}`);
-    continue;
+    console.error(`build-shop: required template missing: templates/${tplRel}. Refusing to deploy an incomplete site.`);
+    process.exit(1);
   }
   const src = fs.readFileSync(tplFile, 'utf8');
-  const { out, replaced } = substitute(src, `templates/${tplRel}`);
+  const { out, replaced } = substitute(src, `templates/${tplRel}`, { json: outRel.endsWith('.json') });
   fs.mkdirSync(path.dirname(outFile), { recursive: true });
   fs.writeFileSync(outFile, out);
   console.log(`build-shop: templates/${tplRel} -> ${outRel} (${replaced} token(s))`);

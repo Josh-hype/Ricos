@@ -31,6 +31,10 @@ const __filename = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(__filename), '..');
 
 const slug = (process.argv[2] || 'ricos').trim();
+if (!/^[a-z0-9-]+$/.test(slug)) {
+  console.error(`Invalid slug "${slug}". Use lowercase letters, digits and dashes only.`);
+  process.exit(1);
+}
 const cfgPath = path.join(repoRoot, 'data', 'shops', slug, 'config.json');
 if (!fs.existsSync(cfgPath)) {
   console.error(`No config at data/shops/${slug}/config.json`);

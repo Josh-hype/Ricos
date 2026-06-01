@@ -81,9 +81,10 @@
     "lastOrderBeforeCloseMinutes": 30
   },
 
+  "_comment_promo": "Optional automatic online discount. Disabled by default — set enabled:true ONLY if this shop actually runs the offer. When on it shows in the cart, the SEO meta description and the terms page.",
   "promo": {
     "autoOnlineDiscount": {
-      "enabled": true,
+      "enabled": false,
       "label": "10% off online orders",
       "percent": 10
     }

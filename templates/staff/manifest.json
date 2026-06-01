@@ -5,8 +5,8 @@
   "start_url": "/staff/",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#fff5d8",
-  "theme_color": "#181210",
+  "background_color": "{{themeBackground}}",
+  "theme_color": "{{themeChrome}}",
   "scope": "/staff/",
   "icons": [
     {
