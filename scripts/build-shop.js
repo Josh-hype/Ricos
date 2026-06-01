@@ -312,6 +312,24 @@ function substitute(src, label, { json = false } = {}) {
   return { out, replaced };
 }
 
+// Move each inline <script> into a same-origin .js file (token substitution has
+// already run, so the extracted JS is final) and replace it with <script src>.
+// This lets the CSP use script-src 'self' instead of 'unsafe-inline'. Only plain
+// <script> blocks are touched; <script src="…"> (Stripe) is left alone. Writes
+// the .js files alongside their page in public/ and returns the rewritten HTML.
+function externalizeInlineScripts(html, outRel) {
+  const base = outRel.replace(/^public\//, '').replace(/\.html$/, '');
+  let n = 0;
+  return html.replace(/<script>([\s\S]*?)<\/script>/g, (_m, body) => {
+    const rel = `${base}.inline${n}.js`;
+    const file = path.join(repoRoot, 'public', rel);
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, body);
+    n++;
+    return `<script src="/${rel}"></script>`;
+  });
+}
+
 for (const [tplRel, outRel] of templatedFiles) {
   const tplFile = path.join(repoRoot, 'templates', tplRel);
   const outFile = path.join(repoRoot, outRel);
@@ -320,7 +338,8 @@ for (const [tplRel, outRel] of templatedFiles) {
     process.exit(1);
   }
   const src = fs.readFileSync(tplFile, 'utf8');
-  const { out, replaced } = substitute(src, `templates/${tplRel}`, { json: outRel.endsWith('.json') });
+  let { out, replaced } = substitute(src, `templates/${tplRel}`, { json: outRel.endsWith('.json') });
+  if (outRel.endsWith('.html')) out = externalizeInlineScripts(out, outRel);
   fs.mkdirSync(path.dirname(outFile), { recursive: true });
   fs.writeFileSync(outFile, out);
   console.log(`build-shop: templates/${tplRel} -> ${outRel} (${replaced} token(s))`);
@@ -346,7 +365,7 @@ for (const [tplRel, outRel] of templatedFiles) {
       : src;
     const { out, replaced } = substitute(srcWithBar, label);
     const outFile = path.join(repoRoot, 'public', 'index.html');
-    fs.writeFileSync(outFile, out);
+    fs.writeFileSync(outFile, externalizeInlineScripts(out, 'public/index.html'));
     console.log(`build-shop: ${label} -> public/index.html (${replaced} token(s))`);
   } else {
     console.warn(`build-shop: no landing page found (shop or default); public/index.html left as-is`);
