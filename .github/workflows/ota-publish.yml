@@ -1,0 +1,68 @@
+name: Publish OTA bundle (Capgo)
+
+# Auto-publish the till's web layer to Capgo whenever the staff UI or the app's
+# web shims change on main. The Sunmi app (autoUpdate) picks the new bundle up on
+# its next background→foreground — no rebuild, no cable.
+#
+# The bundle is shop-agnostic (templates/staff has no build-time tokens; the app
+# fetches /api/config + /api/menu from its provisioned backend at runtime), so one
+# bundle serves every shop. SHOP_SLUG just lets the build script run.
+#
+# Requires repo secret CAPGO_TOKEN (a Capgo "all"/"write" API key). Until it's set,
+# the publish step skips cleanly (green) instead of failing.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'templates/staff/**'
+      - 'app/web/**'
+      - 'app/scripts/sync-web.mjs'
+      - 'scripts/build-shop.js'
+      - '.github/workflows/ota-publish.yml'
+  workflow_dispatch: {}   # lets you publish current main on demand from the Actions tab
+
+concurrency:
+  group: ota-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Builds templates/staff -> public/staff (pure Node, no install needed).
+      - name: Build the staff UI
+        run: SHOP_SLUG=ricos npm run build
+
+      # Assembles public/staff + app/web shims -> app/www (the OTA bundle).
+      - name: Bundle the app web layer
+        working-directory: app
+        run: npm run sync-web
+
+      # Version 1.1.<run> is always > the manual 1.0.x series and increases every
+      # run, so the till always sees it as newer (and it's a minor bump, allowed by
+      # the channel's "disable auto update: major" rule).
+      - name: Publish to Capgo
+        working-directory: app
+        env:
+          CAPGO_TOKEN: ${{ secrets.CAPGO_TOKEN }}
+          BUNDLE_VERSION: 1.1.${{ github.run_number }}
+        run: |
+          if [ -z "$CAPGO_TOKEN" ]; then
+            echo "::warning::CAPGO_TOKEN secret not set — skipping OTA publish."
+            echo "Add it in repo Settings ▸ Secrets and variables ▸ Actions ▸ New repository secret (name: CAPGO_TOKEN)."
+            exit 0
+          fi
+          echo "Publishing bundle $BUNDLE_VERSION to channel 'production'…"
+          npx --yes @capgo/cli@latest bundle upload \
+            --channel production \
+            --bundle "$BUNDLE_VERSION" \
+            --apikey "$CAPGO_TOKEN"
+          echo "### ✅ Published OTA bundle \`$BUNDLE_VERSION\` to **production**" >> "$GITHUB_STEP_SUMMARY"
+          echo "The till will apply it on its next background→foreground." >> "$GITHUB_STEP_SUMMARY"
