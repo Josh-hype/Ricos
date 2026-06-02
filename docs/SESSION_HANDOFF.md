@@ -1,10 +1,55 @@
 # Session handoff — read me first to resume
 
+## ⚡ LIVE STATE — Sunmi T2s app (resume here; 2026-06-02)
+**LumiPOS native app is RUNNING on a real Sunmi T2s and taking orders.** It's the bundled
+universal app: WebView loads the bundled staff UI; `app/web/native.js` rewrites relative
+`/api/...` to the provisioned shop (cross-origin via CapacitorHttp + bearer token); login
+returns a token (`X-Client: app`). Provisioned to **`https://ricosyork.co.uk`** via the
+"Set up this till" → **"Use a site address instead"** path (the 6-digit Restaurant ID path
+needs `TILL_SETUP_PASSWORD` set in Cloudflare; DIRECTORY in `provision.js`: ricos `190059`).
+Confirmed working: provisioning, PIN login (operator SONGUL/owner), menu loads, **web orders
+feed into Live**.
+
+**Critical T2s-WebView facts (it's an old Chromium-ish engine):**
+- **`inset:0` shorthand is IGNORED** → it collapsed the setup overlay AND every `.ovl` modal
+  (item options, pay, new-order popup) → invisible. FIXED by explicit `top/left/right/bottom`
+  everywhere (`app/web/provision.js` + `templates/staff/index.html`). **Never use `inset:`.**
+- **flex `gap` is unreliable** → use margins (did this for the wrapped category tabs).
+- Web Audio stays suspended until a sound plays inside a user gesture → `audio.unlock()` now
+  plays a silent blip on first tap (chime fix; verify via LOG `[audio] chime · ctx.state`).
+- **`*.pages.dev` is firewalled** (403) — only custom domains work (see Gotchas).
+
+**Debugging aids IN THE BUILD (temporary — remove when stable):** `app/web/debug-console.js`
+(floating **LOG** button → on-screen console; injected first by `sync-web.mjs`) and a `BUILD`
+tag in `native.js` (currently **`failsafe-6`**) so the device LOG proves APK freshness.
+`native.js` also fails safe: bootstrap is timeout-raced, relative `/api` is rejected + setup
+forced when unprovisioned, requests time out.
+
+**OTA (so we STOP rebuilding for UI changes — owner chose this + Capgo cloud):**
+`@capgo/capacitor-updater@lts-v6` (MUST be lts-v6 — newer needs compileSdk 35; Cap 6 = 34) +
+`autoUpdate` + `notifyAppReady()` in native.js (auto-rollback). Publish a UI change to all
+tills with **`npm run ota:publish`** (Capgo free cloud). **Owner one-time:** free capgo.app
+account → `npx @capgo/cli@latest login <key>` → `app add`.
+
+**Build gotchas (Android Studio on the Mac):** a fresh `npx cap add android` resets the
+Gradle JDK → must be **JDK 17 (`jbr-17`)**, NOT the Embedded JDK 21 (incompatible with the
+project's Gradle 8.2.1). Don't run the AGP Upgrade Assistant.
+
+**IMMEDIATE NEXT:** finish the in-progress rebuild (set Gradle JDK to 17 → Build APK → install,
+uninstall old first) → owner does the Capgo account steps → test OTA (publish a tiny change,
+watch it land with no rebuild). **Then:** remove the debug LOG + BUILD tag; printer/drawer
+(needs `com.sunmi:printerlibrary` Gradle dep + the plugin from `app/native/android/`); Stripe
+Terminal = **WisePOS E** (purchased, scoped in `docs/PHASE3_TERMINAL.md`); fleet-safety
+transpile of the staff JS's `?.`/`??` (breaks WebViews older than this T2s).
+
+---
+
 **Branch model:** `main` = production (both sites build from it), `dev` = preview. We push to
 **`dev` + `main` only** (2 Cloudflare deployments). The old `claude/*` working branches are NOT
 pushed anymore — two stray `claude/*` branches still exist on the remote and can be deleted from
 GitHub (this environment's git can't delete remote branches). `main == dev` as of this handoff;
 everything below is shipped, tested, and live-buildable.
+
 
 **Shops:** Rico's (`ricos`, on `ricosyork.co.uk`) is set up and tested. **Food Station**
 (`food-station`) is **not launched** — its `config.json` still has a placeholder Stripe
