@@ -32,6 +32,7 @@ if (!existsSync(androidDir)) {
 const COMPILE_SDK = '35';
 const AGP = '8.6.0';
 const GRADLE = '8.7';
+const MIN_SDK = 23; // Capgo pulls in play-services-tasks, which requires minSdk >= 23
 const esc = (v) => v.replace(/\./g, '\\.');
 
 let ok = true;
@@ -73,8 +74,28 @@ patch('gradle/wrapper/gradle-wrapper.properties',
   `Gradle wrapper -> ${GRADLE}`,
   new RegExp(`gradle-${esc(GRADLE)}-(?:all|bin)\\.zip`));
 
+// 4) minSdk >= 23 — the Capgo updater drags in com.google.android.gms:play-services-tasks,
+//    which declares minSdk 23, so the manifest merge fails against Capacitor's default 22.
+//    Only raises (never lowers, in case a future template ships a higher minSdk).
+{
+  const p = resolve(androidDir, 'variables.gradle');
+  const m = readFileSync(p, 'utf8').match(/(minSdkVersion\s*=\s*)(\d+)/);
+  if (!m) {
+    console.error('✗ patch-android: minSdkVersion not found in variables.gradle.');
+    ok = false;
+  } else {
+    const cur = Number(m[2]);
+    const next = Math.max(cur, MIN_SDK);
+    if (next !== cur) {
+      const s = readFileSync(p, 'utf8').replace(/(minSdkVersion\s*=\s*)\d+/, (_m, p1) => p1 + next);
+      writeFileSync(p, s);
+    }
+    console.log(`✓ patch-android: minSdkVersion ${cur === next ? `${cur} (already >= ${MIN_SDK})` : `${cur} -> ${next}`} (variables.gradle)`);
+  }
+}
+
 if (!ok) {
   console.error('✗ patch-android: FAILED — stopping so a broken APK never ships.');
   process.exit(1);
 }
-console.log('patch-android: done (compileSdk ' + COMPILE_SDK + ', AGP ' + AGP + ', Gradle ' + GRADLE + ').');
+console.log('patch-android: done (compileSdk ' + COMPILE_SDK + ', AGP ' + AGP + ', Gradle ' + GRADLE + ', minSdk ' + MIN_SDK + ').');
