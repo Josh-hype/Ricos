@@ -2598,7 +2598,10 @@ async function loadSaleData() {
     sale.menu = Array.isArray(menu) ? menu : [];
     sale.visual = Array.isArray(visual) ? visual : [];
     sale.config = cfg;
-    sale.serviceFeeP = cfg && Number.isFinite(cfg.serviceFeePence) ? cfg.serviceFeePence : 0;
+    // Counter sales don't charge the platform service fee (card-terminal processing
+    // is absorbed instead) — keep it off the till total. Web orders still pay it,
+    // and the server recomputes authoritatively (suppressServiceFee).
+    sale.serviceFeeP = 0;
     // Canonical: priceP, modifiers, mealAddP, mealChoose — the till sends ids
     // referencing these and the server recomputes the actual charge from them.
     sale.byId.clear();

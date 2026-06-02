@@ -112,8 +112,11 @@ export function computeTotals(input, config, opts = {}) {
     }
   }
 
-  // Per-order platform/service fee (kept by the platform operator).
-  const serviceFeeP = config.serviceFeePence || 0;
+  // Per-order platform/service fee (kept by the platform operator). Counter sales
+  // (the till) opt out via opts.suppressServiceFee — in-person sales don't carry
+  // the service charge (card-terminal processing is absorbed instead). Web orders
+  // still pay it.
+  const serviceFeeP = opts.suppressServiceFee ? 0 : (config.serviceFeePence || 0);
 
   // Minimum order check (applied to subtotal less discount).
   const netSubtotalP = subtotalP - discountP;

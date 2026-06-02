@@ -87,7 +87,7 @@ export const onRequestPost = async ({ request, env }) => {
   const totals = computeTotals(
     { items, fulfillment, deliveryAddress: address ? { postcode: address.postcode } : undefined },
     config,
-    { suppressPromo: true, deliveryFeeP: deliveryFeeP ?? undefined },
+    { suppressPromo: true, suppressServiceFee: true, deliveryFeeP: deliveryFeeP ?? undefined },
   );
   if (!totals.ok) return err(totals.reason, 400);
 
