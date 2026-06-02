@@ -1369,7 +1369,7 @@ const $$ = sel => Array.from(document.querySelectorAll(sel));
 
 /* ============================== Beep generator (no asset needed) */
 const audio = (() => {
-  let ctx = null;
+  let ctx = null, primed = false;
   const ensure = () => {
     if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
     // Browsers suspend the context (autoplay policy, or when the tab was
@@ -1392,18 +1392,28 @@ const audio = (() => {
   }
   return {
     chime() {
+      try { console.log('[audio] chime · ctx.state=' + ensure().state); } catch (e) { try { console.log('[audio] chime err ' + (e && e.message)); } catch (e2) {} }
       tone(880, 180, 0);
       tone(1320, 220, 0.18);
       tone(880, 180, 0.42);
     },
-    unlock() { try { ensure(); } catch {} },
+    // Resume the context AND play one near-silent blip inside the user gesture — some
+    // WebViews (the Sunmi T2s) only fully unlock audio once a sound is played in a
+    // gesture, not merely on ctx.resume(). After that, timer-driven chimes ring.
+    unlock() {
+      try {
+        const c = ensure();
+        if (!primed) { primed = true; tone(1, 1, 0, 0.00001); }
+        return c.state;
+      } catch (e) { return 'err'; }
+    },
   };
 })();
 
 // Any tap/click/key on the device resumes a suspended AudioContext, so the
 // new-order chime reliably rings even if the page was opened without a gesture
 // (e.g. an existing session) or the tab had been backgrounded.
-['pointerdown', 'keydown'].forEach(ev =>
+['pointerdown', 'touchstart', 'click', 'keydown'].forEach(ev =>
   document.addEventListener(ev, () => audio.unlock(), { capture: true }));
 
 // Close any open card ⋮ menu when clicking elsewhere.
