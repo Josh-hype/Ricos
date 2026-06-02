@@ -80,7 +80,7 @@ button{cursor:pointer;border:0;background:none}
   display:flex;flex-direction:column;align-items:center;padding:18px 0 14px;
   position:relative;z-index:5;overflow:hidden;
 }
-.rail::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 60% at 0% 0%,rgba(0,112,240,.22),transparent 60%);pointer-events:none}
+.rail::after{content:"";position:absolute;top:0;right:0;bottom:0;left:0;background:radial-gradient(120% 60% at 0% 0%,rgba(0,112,240,.22),transparent 60%);pointer-events:none}
 .rail .brand{
   width:48px;height:48px;border-radius:14px;
   background:linear-gradient(150deg,#2D9BFF,#0070F0 55%,#0050B4);
@@ -412,7 +412,7 @@ button{cursor:pointer;border:0;background:none}
 
 /* Modal overlay */
 .ovl{
-  position:fixed;inset:0;background:rgba(11,26,46,.5);backdrop-filter:blur(4px);
+  position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(11,26,46,.5);backdrop-filter:blur(4px);
   display:none;place-items:center;z-index:50;padding:24px;
 }
 .ovl.open{display:grid;animation:fadeIn .2s ease}
@@ -631,7 +631,7 @@ button{cursor:pointer;border:0;background:none}
 .tile .swatch{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:21px;background:var(--blue-tint-2);flex:none}
 .tile .pname{font-size:15px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
 .tile .pprice{font-size:15px;color:var(--ink);font-weight:700;margin-top:4px;font-family:var(--mono);font-variant-numeric:tabular-nums}
-.tile.added::after{content:"";position:absolute;inset:0;border:2px solid var(--blue);border-radius:var(--r);animation:flashAdd .55s ease;pointer-events:none}
+.tile.added::after{content:"";position:absolute;top:0;right:0;bottom:0;left:0;border:2px solid var(--blue);border-radius:var(--r);animation:flashAdd .55s ease;pointer-events:none}
 @keyframes flashAdd{0%{opacity:1}100%{opacity:0}}
 
 .sale-empty{
@@ -768,7 +768,7 @@ button{cursor:pointer;border:0;background:none}
 .pay-done:disabled{background:#C7D4E3;box-shadow:none;cursor:not-allowed;transform:none}
 
 .pay-done-card{
-  position:absolute;inset:0;background:#fff;display:none;flex-direction:column;align-items:center;
+  position:absolute;top:0;right:0;bottom:0;left:0;background:#fff;display:none;flex-direction:column;align-items:center;
   justify-content:center;gap:14px;z-index:2;border-radius:24px;text-align:center;padding:24px;
 }
 .pay-done-card.show{display:flex;animation:fadeIn .25s ease}
