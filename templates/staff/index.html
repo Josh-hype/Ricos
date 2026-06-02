@@ -32,6 +32,14 @@
   --ease-out:cubic-bezier(.0,.0,.2,1); --motion-fast:110ms;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+/* Touch till: kill the tap-flash + focus box the Sunmi WebView draws on any
+   control when pressed (it renders as a red/orange box). Text inputs keep their
+   own focus rings, defined per-field below. */
+*{-webkit-tap-highlight-color:transparent}
+button:focus,button:focus-visible,
+[role=button]:focus,[role=button]:focus-visible,
+[role=tab]:focus,[role=tab]:focus-visible,
+a:focus,a:focus-visible{outline:none}
 html,body{height:100%}
 html{-webkit-text-size-adjust:100%}
 body{
