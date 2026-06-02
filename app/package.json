@@ -8,14 +8,19 @@
     "test": "node scripts/native-test.cjs",
     "assets": "capacitor-assets generate --android || echo 'asset generation skipped (icons unchanged)'",
     "sync-web": "node scripts/sync-web.mjs",
-    "prepare:android": "npm run sync-web && cap add android && npm run assets",
-    "sync": "npm run sync-web && cap sync android && npm run assets",
-    "open:android": "cap open android"
+    "patch-android": "node scripts/patch-android-sdk.mjs",
+    "prepare:android": "npm run sync-web && cap add android && npm run patch-android && npm run assets",
+    "sync": "npm run sync-web && cap sync android && npm run patch-android && npm run assets",
+    "open:android": "cap open android",
+    "ota:login": "npx @capgo/cli@latest login",
+    "ota:setup": "npx @capgo/cli@latest app add",
+    "ota:publish": "npm run sync-web && npx @capgo/cli@latest bundle upload --channel production"
   },
   "dependencies": {
     "@capacitor/android": "^6.1.0",
     "@capacitor/core": "^6.1.0",
-    "@capacitor/preferences": "^6.0.0"
+    "@capacitor/preferences": "^6.0.0",
+    "@capgo/capacitor-updater": "lts-v6"
   },
   "devDependencies": {
     "@capacitor/cli": "^6.1.0"
