@@ -1522,15 +1522,23 @@ function setView(view) {
     state.lastLiveSig = liveSignature(state.orders);
   }
 }
-$$('.tab').forEach(t => t.addEventListener('click', () => {
+$$('.tab').forEach(t => t.addEventListener('click', async () => {
   const v = t.dataset.view;
   const financial = (v === 'summary' || v === 'zreport');
-  // Per-operator mode: the role decides access (these tabs are hidden for
-  // anyone without reports.view), so no manager-PIN prompt is needed. Legacy
-  // mode keeps the manager-PIN gate.
-  if (financial && !state.operatorsEnabled && !state.managerUnlocked) {
-    openManagerModal(v);
-    return;
+  // Today / Z report are PIN-protected: unlock once per session with a manager or
+  // owner PIN, then they stay open until logout. Protects the reports while the till
+  // is left signed in — the signed-in operator is re-challenged too.
+  if (financial && !state.managerUnlocked) {
+    if (state.operatorsEnabled) {
+      // `force` prompts even when the current operator already holds reports.view;
+      // authorize only accepts a PIN whose role has it (manager or owner).
+      const ok = await requirePerm('reports.view', null, true);
+      if (!ok) return;
+      state.managerUnlocked = true;
+    } else {
+      openManagerModal(v); // legacy (no operators): the single manager-PIN gate
+      return;
+    }
   }
   setView(v);
 }));
@@ -2789,7 +2797,8 @@ function addToCart(id, opts = {}) {
   const ex = sale.cart.find(c => c._key === key);
   if (ex) { ex.qty = Math.min(20, ex.qty + 1); }
   else {
-    sale.cart.push({
+    // New lines go to the TOP of the ticket (most recent first).
+    sale.cart.unshift({
       id,
       qty: 1,
       spice: opts.spice || null,
@@ -3424,9 +3433,9 @@ const PERM_LABELS = {
   refund: 'refund', discount: 'apply a discount', void: 'void this order',
   'drawer.open': 'open the drawer', 'reports.view': 'view reports', 'operators.manage': 'manage staff',
 };
-function requirePerm(perm, orderId) {
+function requirePerm(perm, orderId, force) {
   return new Promise((resolve) => {
-    if (can(perm)) { resolve(null); return; }
+    if (!force && can(perm)) { resolve(null); return; }
     state.pendingAuth = { perm, orderId: orderId || null, resolve };
     $('#authzSub').innerHTML = `A manager PIN is needed to <b>${PERM_LABELS[perm] || perm}</b>.`;
     $('#authzPin').value = '';
