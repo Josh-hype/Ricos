@@ -603,12 +603,11 @@ button{cursor:pointer;border:0;background:none}
 .search-input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-tint)}
 .search-ico{position:absolute;left:15px;top:50%;transform:translateY(-50%);width:20px;height:20px;color:var(--muted-2)}
 
-.cats{display:flex;gap:9px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;min-width:0}
-.cats::-webkit-scrollbar{display:none}
+.cats{display:flex;flex-wrap:wrap;margin-bottom:10px;padding-bottom:2px}
 .cat-chip{
   height:40px;padding:0 16px;border-radius:11px;background:var(--panel);border:1px solid var(--line);
   font-size:14px;font-weight:600;color:var(--ink-2);white-space:nowrap;transition:var(--motion-fast) var(--ease-out);
-  display:flex;align-items:center;gap:7px;flex:none;
+  display:flex;align-items:center;gap:7px;flex:none;margin:0 9px 9px 0;
 }
 .cat-chip:hover{border-color:var(--muted-2)}
 .cat-chip:active{transform:scale(.97)}
@@ -624,15 +623,15 @@ button{cursor:pointer;border:0;background:none}
   background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px;
   display:flex;flex-direction:column;justify-content:space-between;min-height:122px;text-align:left;
   box-shadow:var(--sh-sm);transition:.16s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;
-  cursor:pointer;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
 }
 .tile:hover{transform:translateY(-3px);box-shadow:var(--sh);border-color:#CFE0F6}
 .tile:active{transform:translateY(0) scale(.98)}
+.tile:focus,.tile:focus-visible{outline:none}
 .tile .swatch{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:21px;background:var(--blue-tint-2);flex:none}
 .tile .pname{font-size:15px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
 .tile .pprice{font-size:15px;color:var(--ink);font-weight:700;margin-top:4px;font-family:var(--mono);font-variant-numeric:tabular-nums}
-.tile.added::after{content:"";position:absolute;top:0;right:0;bottom:0;left:0;border:2px solid var(--blue);border-radius:var(--r);animation:flashAdd .55s ease;pointer-events:none}
-@keyframes flashAdd{0%{opacity:1}100%{opacity:0}}
+/* (removed the .tile.added flash border — it persisted as a box on the Sunmi WebView) */
 
 .sale-empty{
   grid-column:1/-1;text-align:center;padding:60px 16px;color:var(--muted);font-size:14px;font-weight:500;
