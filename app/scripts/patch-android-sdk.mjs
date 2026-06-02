@@ -1,22 +1,21 @@
 /* patch-android-sdk.mjs — after `cap add android`, raise the generated Android
-   project to compileSdk 35.
+   project so the OTA plugin (@capgo/capacitor-updater) actually builds.
 
-   Why: @capgo/capacitor-updater (our OTA plugin) ships an AAR built against
-   compileSdk 35. Capacitor 6 generates a project on compileSdk 34, so the moment
-   the OTA plugin is present the APK build dies at `checkDebugAarMetadata`
-   ("Dependency requires a higher compileSdk"). Bumping the app to 35 clears that
-   gate — that's the whole conflict.
+   The Capgo AAR is built against compileSdk 35, so the APK build dies at
+   checkDebugAarMetadata unless the app compiles against 35 too. Capacitor 6
+   generates compileSdk 34 on AGP 8.2.1 / Gradle 8.2.1 — and AGP 8.2.1 does NOT
+   support compileSdk 35. So we bump the whole trio to a combination that does:
 
-   Why NOT also bump AGP / the Gradle wrapper: doing so raises the *minimum Android
-   Studio and JDK* the build needs, which is exactly where this project has hit a
-   wall before (Gradle/JDK "incompatible JVM" errors). AGP is happy to *compile*
-   against an SDK newer than it was "tested up to" — it only prints a warning, which
-   we silence with `android.suppressUnsupportedCompileSdk`. So we keep AGP 8.2.1 and
-   the bundled Gradle wrapper untouched and change the one thing that matters.
+     compileSdk             34    -> 35
+     Android Gradle plugin  8.2.1 -> 8.6.0   (first AGP that supports compileSdk 35)
+     Gradle wrapper         8.2.1 -> 8.7      (minimum Gradle for AGP 8.6)
 
-   android/ is generated (gitignored) and recreated by every `cap add android`, so
-   this runs as part of `prepare:android` / `sync`. It is idempotent — safe to run
-   repeatedly. Run from app/. */
+   Bonus: Gradle 8.7 runs on JDK 21, so this also clears the recurring
+   "Gradle 8.2.1 is incompatible with the Gradle JVM version 21" error that a
+   fresh `cap add` causes (it resets the Gradle JDK to the embedded JDK 21).
+
+   android/ is generated (gitignored) and recreated by every `cap add android`,
+   so this runs as part of prepare:android / sync. It is idempotent. Run from app/. */
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -30,67 +29,52 @@ if (!existsSync(androidDir)) {
   process.exit(1);
 }
 
-const TARGET_SDK = 35;
-let changed = 0;
-let warned = 0;
-let compileSdkOk = false; // load-bearing: the build fails at checkDebugAarMetadata without this
+const COMPILE_SDK = '35';
+const AGP = '8.6.0';
+const GRADLE = '8.7';
+const esc = (v) => v.replace(/\./g, '\\.');
 
-// 1) variables.gradle — raise compileSdkVersion to 35 (leave min/target alone:
-//    the app is sideloaded, not on Play, so target 34 is fine and changes nothing
-//    at runtime). Matches `compileSdkVersion = 34` with any spacing.
-const varsPath = resolve(androidDir, 'variables.gradle');
-if (existsSync(varsPath)) {
-  let vars = readFileSync(varsPath, 'utf8');
-  const re = /(compileSdkVersion\s*=\s*)(\d+)/;
-  const m = vars.match(re);
-  if (m) {
-    if (Number(m[2]) < TARGET_SDK) {
-      vars = vars.replace(re, `$1${TARGET_SDK}`);
-      writeFileSync(varsPath, vars);
-      console.log(`✓ patch-android: compileSdkVersion ${m[2]} -> ${TARGET_SDK} (variables.gradle)`);
-      changed++;
-      compileSdkOk = true;
-    } else {
-      console.log(`• patch-android: compileSdkVersion already ${m[2]} (>= ${TARGET_SDK})`);
-      compileSdkOk = true;
-    }
-  } else {
-    console.warn('⚠ patch-android: compileSdkVersion not found in variables.gradle — Capacitor template may have changed.');
-    warned++;
+let ok = true;
+
+// Find `re`, replace it, write back, then verify the result matches `verifyRe`.
+// Idempotent: re-running replaces 35->35 / 8.6.0->8.6.0 / 8.7->8.7 (no-ops).
+function patch(relPath, re, replace, label, verifyRe) {
+  const p = resolve(androidDir, relPath);
+  if (!existsSync(p)) { console.error(`✗ patch-android: ${relPath} not found.`); ok = false; return; }
+  let s = readFileSync(p, 'utf8');
+  if (!re.test(s)) {
+    console.error(`✗ patch-android: pattern for "${label}" not found in ${relPath} — Capacitor template may have changed.`);
+    ok = false; return;
   }
-} else {
-  console.warn('⚠ patch-android: variables.gradle not found.');
-  warned++;
+  s = s.replace(re, replace);
+  writeFileSync(p, s);
+  if (verifyRe && !verifyRe.test(s)) {
+    console.error(`✗ patch-android: "${label}" did not take in ${relPath}.`);
+    ok = false; return;
+  }
+  console.log(`✓ patch-android: ${label} (${relPath})`);
 }
 
-// 2) gradle.properties — let AGP 8.2.1 compile against SDK 35 without the
-//    "tested up to compileSdk 34" warning being escalated. Appended once.
-const propsPath = resolve(androidDir, 'gradle.properties');
-if (existsSync(propsPath)) {
-  let props = readFileSync(propsPath, 'utf8');
-  if (!/suppressUnsupportedCompileSdk/.test(props)) {
-    if (!props.endsWith('\n')) props += '\n';
-    props +=
-      `\n# Allow compileSdk ${TARGET_SDK} on the bundled AGP (required by @capgo/capacitor-updater).\n` +
-      `# AGP is "tested up to 34"; this silences the warning so the build stays clean.\n` +
-      `android.suppressUnsupportedCompileSdk=${TARGET_SDK}\n`;
-    writeFileSync(propsPath, props);
-    console.log(`✓ patch-android: android.suppressUnsupportedCompileSdk=${TARGET_SDK} (gradle.properties)`);
-    changed++;
-  } else {
-    console.log('• patch-android: suppressUnsupportedCompileSdk already set.');
-  }
-} else {
-  console.warn('⚠ patch-android: gradle.properties not found.');
-  warned++;
-}
+// 1) compileSdk 35 — clears the checkDebugAarMetadata gate (Capgo AAR needs 35).
+patch('variables.gradle',
+  /(compileSdkVersion\s*=\s*)\d+/, (_m, p1) => p1 + COMPILE_SDK,
+  `compileSdkVersion -> ${COMPILE_SDK}`,
+  new RegExp(`compileSdkVersion\\s*=\\s*${esc(COMPILE_SDK)}\\b`));
 
-console.log(`patch-android: done (${changed} change(s)${warned ? `, ${warned} warning(s)` : ''}).`);
+// 2) AGP 8.6.0 — first Android Gradle plugin that supports compileSdk 35.
+patch('build.gradle',
+  /(com\.android\.tools\.build:gradle:)[0-9.]+/, (_m, p1) => p1 + AGP,
+  `Android Gradle plugin -> ${AGP}`,
+  new RegExp(`com\\.android\\.tools\\.build:gradle:${esc(AGP)}`));
 
-// The compileSdk bump is load-bearing: without it the APK builds on compileSdk 34
-// and dies at checkDebugAarMetadata (the OTA AAR needs 35). If we couldn't confirm
-// it, fail loudly so the rebuild stops here instead of shipping a broken APK.
-if (!compileSdkOk) {
-  console.error('✗ patch-android: could NOT set compileSdk to 35 — aborting so the build fails fast.');
+// 3) Gradle wrapper 8.7 — minimum Gradle for AGP 8.6; also fixes the JDK-21 clash.
+patch('gradle/wrapper/gradle-wrapper.properties',
+  /(gradle-)[0-9.]+(-(?:all|bin)\.zip)/, (_m, p1, p2) => p1 + GRADLE + p2,
+  `Gradle wrapper -> ${GRADLE}`,
+  new RegExp(`gradle-${esc(GRADLE)}-(?:all|bin)\\.zip`));
+
+if (!ok) {
+  console.error('✗ patch-android: FAILED — stopping so a broken APK never ships.');
   process.exit(1);
 }
+console.log('patch-android: done (compileSdk ' + COMPILE_SDK + ', AGP ' + AGP + ', Gradle ' + GRADLE + ').');
