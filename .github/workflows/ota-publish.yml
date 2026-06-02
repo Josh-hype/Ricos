@@ -59,6 +59,8 @@ jobs:
             echo "Add it in repo Settings ▸ Secrets and variables ▸ Actions ▸ New repository secret (name: CAPGO_TOKEN)."
             exit 0
           fi
+          echo "Installing app deps (the Capgo CLI reads node_modules for its compatibility check)…"
+          npm install --no-audit --no-fund
           echo "Publishing bundle $BUNDLE_VERSION to channel 'production'…"
           npx --yes @capgo/cli@latest bundle upload \
             --channel production \
