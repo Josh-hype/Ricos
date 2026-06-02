@@ -26,7 +26,7 @@
 (function () {
   'use strict';
 
-  var BUILD = 'failsafe-5'; // bump on each app-layer change so the device log confirms freshness
+  var BUILD = 'failsafe-6'; // bump on each app-layer change so the device log confirms freshness
 
   var BASE = '';
   var TOKEN = '';
@@ -244,6 +244,13 @@
   if (inApp) {
     ready.then(function () {
       try { console.log('[native] bootstrap done · BASE=' + (BASE || '(empty)') + ' · EPOSProvision=' + (typeof window.EPOSProvision)); } catch (e) {}
+      // Tell Capgo this OTA bundle booted OK — without this, the updater auto-reverts to
+      // the previous good bundle after a few seconds (the safety net for a bad update).
+      try {
+        var cu = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.CapacitorUpdater;
+        if (cu && cu.notifyAppReady) { cu.notifyAppReady(); console.log('[native] OTA notifyAppReady · updater present'); }
+        else console.log('[native] OTA updater not present (will be after next rebuild)');
+      } catch (e) {}
       onReady(rewriteParserAssets);
       if (!BASE) { try { console.log('[native] no BASE on boot → showProvisioning'); } catch (e) {} showProvisioning(); } // first run → set up this till
     });
