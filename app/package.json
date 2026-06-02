@@ -19,7 +19,7 @@
     "@capacitor/android": "^6.1.0",
     "@capacitor/core": "^6.1.0",
     "@capacitor/preferences": "^6.0.0",
-    "@capgo/capacitor-updater": "^6.0.0"
+    "@capgo/capacitor-updater": "lts-v6"
   },
   "devDependencies": {
     "@capacitor/cli": "^6.1.0"
