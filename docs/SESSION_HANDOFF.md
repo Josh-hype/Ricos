@@ -1,46 +1,61 @@
 # Session handoff — read me first to resume
 
-## ⚡ LIVE STATE — Sunmi T2s app (resume here; 2026-06-02)
-**LumiPOS native app is RUNNING on a real Sunmi T2s and taking orders.** It's the bundled
-universal app: WebView loads the bundled staff UI; `app/web/native.js` rewrites relative
-`/api/...` to the provisioned shop (cross-origin via CapacitorHttp + bearer token); login
-returns a token (`X-Client: app`). Provisioned to **`https://ricosyork.co.uk`** via the
-"Set up this till" → **"Use a site address instead"** path (the 6-digit Restaurant ID path
-needs `TILL_SETUP_PASSWORD` set in Cloudflare; DIRECTORY in `provision.js`: ricos `190059`).
-Confirmed working: provisioning, PIN login (operator SONGUL/owner), menu loads, **web orders
-feed into Live**.
+## ⚡ LIVE STATE — Sunmi T2s app + OTA (resume here; updated 2026-06-02 pm)
+**LumiPOS is RUNNING on a real Sunmi T2s, taking orders, AND fully on OTA.** Bundled universal
+app: WebView loads the bundled staff UI; `app/web/native.js` rewrites relative `/api/...` to the
+provisioned shop (cross-origin via CapacitorHttp + bearer token); login returns a token
+(`X-Client: app`). Provisioned to **`https://ricosyork.co.uk`** via "Set up this till" → **"Use a
+site address instead"** (6-digit ID path needs `TILL_SETUP_PASSWORD` in Cloudflare; DIRECTORY in
+`provision.js`: ricos `190059`). Logged in as operator **SONGUL/owner**.
 
-**Critical T2s-WebView facts (it's an old Chromium-ish engine):**
-- **`inset:0` shorthand is IGNORED** → it collapsed the setup overlay AND every `.ovl` modal
-  (item options, pay, new-order popup) → invisible. FIXED by explicit `top/left/right/bottom`
-  everywhere (`app/web/provision.js` + `templates/staff/index.html`). **Never use `inset:`.**
-- **flex `gap` is unreliable** → use margins (did this for the wrapped category tabs).
-- Web Audio stays suspended until a sound plays inside a user gesture → `audio.unlock()` now
-  plays a silent blip on first tap (chime fix; verify via LOG `[audio] chime · ctx.state`).
-- **`*.pages.dev` is firewalled** (403) — only custom domains work (see Gotchas).
+**🚀 OTA IS LIVE AND PROVEN — push a UI change and the till self-updates, no rebuild:**
+- Capgo cloud: app **`uk.co.ricos.epos`** (LumiPOS), channel **`production`** set as the **default
+  download channel**, **Allow development build ON** (the APK is a debug build), org "Lumin Labs",
+  15-day trial running.
+- **GitHub Action `.github/workflows/ota-publish.yml`** auto-publishes on push to `main` when
+  `templates/staff/**`, `app/web/**`, `app/scripts/sync-web.mjs` or `scripts/build-shop.js` change.
+  Repo secret **`CAPGO_TOKEN`** is set. Version = **`1.1.<github.run_number>`** (currently **~1.1.7**).
+  The publish step runs `npm install` in `app/` first — the Capgo CLI needs `node_modules` for its
+  compatibility check (that was the one CI gotcha).
+- **Workflow now:** edit shared staff code → push `main` → Action builds + uploads → on the till
+  **○ home → reopen ×2** (cycle 1 downloads, cycle 2 applies; `directUpdate:false` so it never
+  hot-swaps mid-order). Server (`functions/**`) changes deploy with the site on the same push
+  (~2-3 min on Cloudflare) — wait for both before testing a change that touches an API.
 
-**Debugging aids IN THE BUILD (temporary — remove when stable):** `app/web/debug-console.js`
-(floating **LOG** button → on-screen console; injected first by `sync-web.mjs`) and a `BUILD`
-tag in `native.js` (currently **`failsafe-6`**) so the device LOG proves APK freshness.
-`native.js` also fails safe: bootstrap is timeout-raced, relative `/api` is rejected + setup
-forced when unprovisioned, requests time out.
+**Native APK is built; only HARDWARE needs one more rebuild.** The OTA plugin builds because
+`app/scripts/patch-android-sdk.mjs` runs after `cap add android` and bumps the project to
+**compileSdk 35, AGP 8.6.0, Gradle 8.7, minSdk 23** (Capgo's AAR needs 35; that trio is the
+supported combo; Gradle 8.7 also runs on JDK 21, so the old "incompatible JVM 21" pain is gone).
+Wired into `prepare:android`/`sync`; idempotent; fails loud. (So the old "lts-v6 because Cap6=34"
+note is obsolete — we went to 35.)
 
-**OTA (so we STOP rebuilding for UI changes — owner chose this + Capgo cloud):**
-`@capgo/capacitor-updater@lts-v6` (MUST be lts-v6 — newer needs compileSdk 35; Cap 6 = 34) +
-`autoUpdate` + `notifyAppReady()` in native.js (auto-rollback). Publish a UI change to all
-tills with **`npm run ota:publish`** (Capgo free cloud). **Owner one-time:** free capgo.app
-account → `npx @capgo/cli@latest login <key>` → `app add`.
+**Shipped via OTA this session (all in `main`, bundle ~1.1.7):** ① focus-box fix, ② cart newest
+line on top, ③ Today/Z report manager-PIN lock (once per session), ④ removed the "All" category,
+⑤ smaller +/- qty controls, ⑥ no auto sign-out (idle just reverts to Sale, stays signed in),
+⑦ per-order staff code (`POST /api/staff/identify` → order `createdBy`), ⑧ counter sales drop the
+£0.50 service charge (web orders keep it, via `computeTotals` opt `suppressServiceFee`).
 
-**Build gotchas (Android Studio on the Mac):** a fresh `npx cap add android` resets the
-Gradle JDK → must be **JDK 17 (`jbr-17`)**, NOT the Embedded JDK 21 (incompatible with the
-project's Gradle 8.2.1). Don't run the AGP Upgrade Assistant.
+**Critical T2s-WebView facts (old Chromium-ish engine — these BREAK the till silently):**
+- **`inset:` shorthand is IGNORED** → use explicit `top/left/right/bottom`. **Never use `inset:`.**
+- **An unknown selector invalidates the WHOLE CSS rule** → `:focus-visible` made the device discard
+  the entire `outline:none` rule (the "yellow focus box" bug). **Use plain `:focus`; avoid
+  `:focus-visible` / `:has()` / `:is()`.** Same failure family as the `inset:` drop.
+- **flex `gap` unreliable** → use margins. Web Audio suspended until a sound plays in a user gesture
+  (`audio.unlock()` blip). **`*.pages.dev` is firewalled (403)** — only custom domains.
 
-**IMMEDIATE NEXT:** finish the in-progress rebuild (set Gradle JDK to 17 → Build APK → install,
-uninstall old first) → owner does the Capgo account steps → test OTA (publish a tiny change,
-watch it land with no rebuild). **Then:** remove the debug LOG + BUILD tag; printer/drawer
-(needs `com.sunmi:printerlibrary` Gradle dep + the plugin from `app/native/android/`); Stripe
-Terminal = **WisePOS E** (purchased, scoped in `docs/PHASE3_TERMINAL.md`); fleet-safety
-transpile of the staff JS's `?.`/`??` (breaks WebViews older than this T2s).
+**Still temporary in the build:** `app/web/debug-console.js` (floating **LOG** button → on-screen
+console) + the `BUILD` tag in `native.js` (now **`failsafe-8`**). Strip both **via OTA** once stable.
+
+**IMMEDIATE NEXT (the ONE remaining native rebuild — batch all hardware into it):** receipt printer
++ cash drawer (`com.sunmi:printerlibrary` Gradle dep + the Kotlin plugin in `app/native/android/`)
+AND Stripe Terminal = **WisePOS E** (purchased; scoped in `docs/PHASE3_TERMINAL.md`; closes
+counter_card capture). Do them together so it's the last APK build. **Then (OTA, no rebuild):**
+strip the debug LOG + BUILD tag; fleet-safety transpile of the staff JS's `?.`/`??`.
+
+**Rebuild recipe (only when native changes):** fresh ZIP → `cd app` → `rm -rf android node_modules
+www` → `npm install` → `npm run prepare:android` (runs the SDK-35 patch) → `npm run open:android`
+→ set Gradle JDK **jbr-17** if prompted, install **SDK Platform 35** if prompted → Build APK →
+install (uninstall old first). **OTA publishing needs NO rebuild and NO npm install** — just push.
 
 ---
 
