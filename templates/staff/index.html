@@ -673,11 +673,11 @@ button{cursor:pointer;border:0;background:none}
 .t-line .l-price{font-size:16px;font-weight:700;font-family:var(--mono);font-variant-numeric:tabular-nums}
 .t-line .l-rm{background:transparent;border:0;color:var(--muted-2);font-size:18px;line-height:1;padding:6px 9px;border-radius:8px}
 .t-line .l-rm:hover{background:var(--red-tint);color:var(--red)}
-.qty-ctrl{display:flex;align-items:center;gap:4px;background:var(--canvas);border-radius:11px;padding:3px;margin-top:8px}
-.qty-ctrl button{width:40px;height:40px;border-radius:9px;display:grid;place-items:center;color:var(--ink-2);font-weight:700;font-size:20px;transition:var(--motion-fast) var(--ease-out);background:transparent;border:0}
+.qty-ctrl{display:flex;align-items:center;gap:2px;background:var(--canvas);border-radius:9px;padding:2px;margin-top:6px}
+.qty-ctrl button{width:28px;height:28px;border-radius:7px;display:grid;place-items:center;color:var(--ink-2);font-weight:700;font-size:16px;transition:var(--motion-fast) var(--ease-out);background:transparent;border:0}
 .qty-ctrl button:hover{background:#fff;color:var(--blue);box-shadow:var(--sh-sm)}
 .qty-ctrl button:active{transform:scale(.92)}
-.qty-ctrl .qv{min-width:32px;text-align:center;font-size:16px;font-weight:700;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.qty-ctrl .qv{min-width:24px;text-align:center;font-size:14px;font-weight:700;font-family:var(--mono);font-variant-numeric:tabular-nums}
 
 .t-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--muted-2);flex:1;padding:30px 20px;text-align:center}
 .t-empty svg{width:46px;height:46px;color:#CBD7E6;stroke-width:1.6}
@@ -1270,6 +1270,22 @@ button{cursor:pointer;border:0;background:none}
   </div>
 </div>
 
+<!-- ============================== Staff code (per-order attribution)
+     Shown when a sale mode is picked: the staff taking the order enter their code
+     so the order is recorded against them, even though the till stays signed in. -->
+<div class="ovl" id="staffCodeOvl" role="dialog" aria-modal="true" aria-labelledby="staffCodeTitle">
+  <div class="modal">
+    <h2 id="staffCodeTitle">Staff code</h2>
+    <p style="color:var(--muted);font-size:13.5px;font-weight:500;margin-bottom:14px;text-align:center">Enter your code to start this order.</p>
+    <input type="number" inputmode="numeric" pattern="[0-9]*" class="pin-input" id="staffCodePin" maxlength="8" placeholder="••••" />
+    <div class="pin-error" id="staffCodeError" aria-live="polite"></div>
+    <div class="row">
+      <button class="cancel" id="staffCodeCancel" type="button">Cancel</button>
+      <button class="confirm" id="staffCodeConfirm" type="button">Start order</button>
+    </div>
+  </div>
+</div>
+
 <!-- ============================== Manage-staff modal (operators CRUD) -->
 <div class="ovl" id="staffOvl" role="dialog" aria-modal="true" aria-labelledby="staffTitle">
   <div class="modal" style="max-width:480px;text-align:left">
@@ -1456,9 +1472,8 @@ const state = {
 };
 
 const IDLE_MS = 90 * 1000;
-const SIGNOUT_MS = 5 * 60 * 1000; // per-operator auto sign-out after inactivity
 let idleHandle = null;
-let signoutHandle = null;
+let signoutHandle = null; // retained for the logout cleanup; never armed (no auto sign-out)
 
 function setSoundLabel() {
   $('#soundToggle').textContent = state.soundOn ? '🔔 On' : '🔕 Off';
@@ -2428,7 +2443,7 @@ const sale = {
   byVisualId: new Map(),// item id -> visual item (name, desc, options, meal, spicy, image)
   config: null,         // /api/config — for delivery fee + serviceFeeP
   serviceFeeP: 0,
-  activeCat: 'all',
+  activeCat: null,      // set to the first category on render (no "All" tab)
   search: '',
   cart: [],             // [{id, qty, spice, meal, modifiers, mealChoices, _key}]
   submitting: false,
@@ -2437,6 +2452,7 @@ const sale = {
   mode: 'walkin',       // 'walkin' | 'collection' | 'delivery'
   customer: null,       // {name, phone, address?:{line1,line2,postcode,notes}} once captured
   deliveryFeeP: 0,      // resolved client-side from config.feeByOutcode for display (server is authoritative)
+  takenBy: null,        // {id,name} of the staff who entered their code at the mode picker
 };
 
 // Spice options match the website (templates/order.html). The picker only
@@ -2460,6 +2476,7 @@ async function initSaleView() {
   sale.cart = [];
   sale.customer = null;
   sale.deliveryFeeP = 0;
+  sale.takenBy = null;
   setSaleStage('mode');
   renderSaleCats();
   renderSaleProducts();
@@ -2476,7 +2493,13 @@ function setSaleStage(stage) {
   if (stage === 'menu') renderSaleTicket();
 }
 
-function pickSaleMode(mode) {
+async function pickSaleMode(mode) {
+  // Each order records who's taking it: staff enter their code at the start. In
+  // legacy mode (no operators) askStaffCode resolves {skip:true} and we don't
+  // prompt. Cancelling leaves them on the mode picker without starting a sale.
+  const who = await askStaffCode();
+  if (!who) return;
+  sale.takenBy = who.skip ? null : { id: who.id, name: who.name };
   sale.mode = mode;
   if (mode === 'walkin') {
     sale.customer = null;
@@ -2619,8 +2642,10 @@ function catColor(catId) {
 function renderSaleCats() {
   // Drive off the visual menu so the order + names + icons match the website.
   const cats = sale.visual.map(c => ({ id: c.id, name: c.name, icon: c.icon || '•' }));
+  // No "All" tab — start on the first real category, and recover the selection if
+  // the chosen category disappeared after a menu change.
+  if (!cats.some(c => c.id === sale.activeCat)) sale.activeCat = cats.length ? cats[0].id : null;
   $('#saleCats').innerHTML =
-    `<button type="button" class="cat-chip ${sale.activeCat === 'all' ? 'active' : ''}" data-cat="all">All</button>` +
     cats.map(c => `<button type="button" class="cat-chip ${sale.activeCat === c.id ? 'active' : ''}" data-cat="${escapeHtml(c.id)}"><span class="cat-dot" style="background:${catColor(c.id)}"></span><span>${escapeHtml(c.icon)}</span>${escapeHtml(c.name)}</button>`).join('');
 }
 
@@ -2638,7 +2663,7 @@ function renderSaleProducts() {
   // the server will actually charge (visual.price is display-only — server
   // never trusts it).
   for (const cat of sale.visual) {
-    if (!q && sale.activeCat !== 'all' && cat.id !== sale.activeCat) continue;
+    if (!q && cat.id !== sale.activeCat) continue;
     const icon = cat.icon || '•';
     for (const it of (cat.items || [])) {
       if (q && !it.name.toLowerCase().includes(q)) continue;
@@ -3184,6 +3209,7 @@ $('#payConfirm').addEventListener('click', async () => {
       mealChoices: Array.isArray(c.mealChoices) ? c.mealChoices : [],
     }));
     const payload = { items, mode: sale.mode, tender: isCash ? 'cash' : 'card' };
+    if (sale.takenBy) payload.takenBy = { id: sale.takenBy.id };
     if (sale.customer) {
       payload.customer = { name: sale.customer.name, phone: sale.customer.phone };
       if (sale.customer.address) payload.address = sale.customer.address;
@@ -3296,20 +3322,8 @@ function resetIdle() {
   if (!state.authed) return;
   if (idleHandle) clearTimeout(idleHandle);
   idleHandle = setTimeout(onIdle, IDLE_MS);
-  // Per-operator mode also auto-signs-out after a longer idle, returning an
-  // unattended till to the PIN screen.
-  if (state.operatorsEnabled) {
-    if (signoutHandle) clearTimeout(signoutHandle);
-    signoutHandle = setTimeout(onSignoutIdle, SIGNOUT_MS);
-  }
-}
-function onSignoutIdle() {
-  if ($$('.ovl.open').length > 0) { // don't sign out mid-task
-    if (signoutHandle) clearTimeout(signoutHandle);
-    signoutHandle = setTimeout(onSignoutIdle, SIGNOUT_MS);
-    return;
-  }
-  $('#logoutBtn').click();
+  // No auto sign-out: an idle till drops back to the Sale page (see onIdle) but
+  // stays signed in, so staff are never bounced to the PIN screen mid-shift.
 }
 function onIdle() {
   // Stay put while staff is mid-task in any modal (accepting an order,
@@ -3471,6 +3485,51 @@ $('#authzConfirm').addEventListener('click', async () => {
     $('#authzError').textContent = 'Network error — try again.';
   } finally {
     $('#authzConfirm').disabled = false;
+  }
+});
+
+/* Staff code — identify who's taking an order (per-order attribution). Verifies
+   the code via /api/staff/identify — not /authorize, which is rate-limited for
+   rare manager overrides, whereas this fires on every order start. Resolves with
+   {id,name}, {skip:true} in legacy mode, or null if cancelled. */
+function askStaffCode() {
+  return new Promise((resolve) => {
+    if (!state.operatorsEnabled) { resolve({ skip: true }); return; }
+    state.pendingStaffCode = resolve;
+    $('#staffCodePin').value = '';
+    $('#staffCodeError').textContent = '';
+    $('#staffCodeConfirm').disabled = false;
+    $('#staffCodeOvl').classList.add('open');
+    setTimeout(() => $('#staffCodePin').focus(), 50);
+  });
+}
+function resolveStaffCode(val) {
+  $('#staffCodeOvl').classList.remove('open');
+  const r = state.pendingStaffCode; state.pendingStaffCode = null;
+  if (r) r(val);
+}
+$('#staffCodeCancel').addEventListener('click', () => resolveStaffCode(null));
+$('#staffCodeOvl').addEventListener('click', (e) => { if (e.target.id === 'staffCodeOvl') resolveStaffCode(null); });
+$('#staffCodePin').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#staffCodeConfirm').click(); });
+$('#staffCodeConfirm').addEventListener('click', async () => {
+  const pin = $('#staffCodePin').value.trim();
+  if (!/^\d{4,8}$/.test(pin)) { $('#staffCodeError').textContent = 'Enter your 4–8 digit code.'; return; }
+  $('#staffCodeConfirm').disabled = true;
+  try {
+    const res = await fetch('/api/staff/identify', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin }),
+    });
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok || !d.operator) {
+      $('#staffCodeError').textContent = d.error || `Error ${res.status}`;
+      $('#staffCodeConfirm').disabled = false;
+      return;
+    }
+    resolveStaffCode({ id: d.operator.id, name: d.operator.name });
+  } catch {
+    $('#staffCodeError').textContent = 'Network error — try again.';
+    $('#staffCodeConfirm').disabled = false;
   }
 });
 

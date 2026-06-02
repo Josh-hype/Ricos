@@ -22,6 +22,7 @@
 
 import { resolveSession } from '../../_lib/auth.js';
 import { requirePermission } from '../../_lib/permissions.js';
+import { getOperator } from '../../_lib/operators.js';
 import { logAudit } from '../../_lib/audit.js';
 import { getConfig } from '../../_lib/config.js';
 import { computeTotals } from '../../_lib/totals.js';
@@ -96,6 +97,18 @@ export const onRequestPost = async ({ request, env }) => {
   const at = new Date().toISOString();
   const readyAt = new Date(Date.now() + prepMin * 60000).toISOString();
 
+  // Per-order staff attribution: the till may be left signed in as one operator,
+  // but the order is credited to whoever entered their code at the mode picker.
+  // Validate the supplied id against the operator store (so a tampered client
+  // can't credit an arbitrary name) and take the canonical name; fall back to the
+  // signed-in session operator when there's no valid takenBy.
+  let takenBy = sess?.op ? { id: sess.op, name: sess.name } : null;
+  const tbId = String(body.takenBy?.id || '');
+  if (tbId) {
+    const tbOp = await getOperator(env, tbId);
+    if (tbOp && tbOp.active !== false) takenBy = { id: tbOp.id, name: tbOp.name };
+  }
+
   const id = newOrderId();
   const order = {
     id,
@@ -111,9 +124,9 @@ export const onRequestPost = async ({ request, env }) => {
     paymentMethod: tender === 'card' ? 'counter_card' : 'counter_cash',
     payment: { state: 'paid', paidAt: at, tender },
     marketing: { email: false, sms: false },
-    createdBy: sess?.op ? { id: sess.op, name: sess.name } : null,
+    createdBy: takenBy,
     history: [
-      { at, event: 'created', source: `counter-${mode}`, by: sess?.name || null },
+      { at, event: 'created', source: `counter-${mode}`, by: takenBy?.name || null },
       { at, event: 'paid', tender },
       { at, event: 'accepted', readyAt },
     ],
@@ -121,9 +134,10 @@ export const onRequestPost = async ({ request, env }) => {
 
   await putOrder(order, env);
   await logAudit(env, {
-    op: ctx.operator?.id || null, opName: ctx.operator?.name || sess?.name || null,
+    op: takenBy?.id || ctx.operator?.id || null,
+    opName: takenBy?.name || ctx.operator?.name || sess?.name || null,
     action: 'counter_sale', target: id,
-    details: { mode, tender, totalP: totals.totalP },
+    details: { mode, tender, totalP: totals.totalP, takenBy: takenBy?.name || null },
   });
   return Response.json({ order });
 };
