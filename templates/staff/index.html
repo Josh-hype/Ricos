@@ -54,7 +54,7 @@ button{cursor:pointer;border:0;background:none}
 [hidden]{display:none !important}
 
 /* ============================== PIN screen */
-.pin-screen{min-height:100vh;display:grid;place-items:center;padding:24px;background:var(--canvas)}
+.pin-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--canvas)}
 .pin-card{
   background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
   padding:36px 32px;width:100%;max-width:380px;text-align:center;box-shadow:var(--sh-lg);
@@ -90,7 +90,7 @@ button{cursor:pointer;border:0;background:none}
 .rail .brand{
   width:48px;height:48px;border-radius:14px;
   background:linear-gradient(150deg,#2D9BFF,#0070F0 55%,#0050B4);
-  display:grid;place-items:center;box-shadow:0 8px 20px rgba(0,112,240,.45);
+  display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(0,112,240,.45);
   margin-bottom:26px;flex:none;padding:6px;
 }
 .rail .brand img{width:100%;height:100%;object-fit:contain;border-radius:8px}
@@ -121,14 +121,14 @@ button{cursor:pointer;border:0;background:none}
 .avatar-btn{
   width:44px;height:44px;border-radius:13px;
   background:linear-gradient(140deg,#3a4d66,#22344b);
-  display:grid;place-items:center;color:#cde0f5;
+  display:flex;align-items:center;justify-content:center;color:#cde0f5;
   border:1.5px solid rgba(255,255,255,.12);transition:.15s;
 }
 .avatar-btn:hover{background:rgba(224,70,75,.2);color:#fff;border-color:rgba(224,70,75,.4)}
 .avatar-btn svg{width:18px;height:18px;stroke-width:2}
 /* Operator avatar (rail foot) — same footprint as the logout avatar. */
 .op-avatar{
-  width:44px;height:44px;border-radius:13px;display:grid;place-items:center;
+  width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;
   font-weight:800;font-size:15px;color:#fff;letter-spacing:-.02em;
   background:linear-gradient(140deg,#3a4d66,#22344b);
   border:1.5px solid rgba(255,255,255,.18);box-shadow:0 6px 16px rgba(0,0,0,.28);transition:.15s;
@@ -142,7 +142,7 @@ button{cursor:pointer;border:0;background:none}
   border-radius:11px;background:var(--panel);border:1px solid var(--line);box-shadow:var(--sh-sm);transition:.15s;
 }
 .op-pill:hover{border-color:var(--blue)}
-.op-pill .dot{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:11.5px;background:var(--blue)}
+.op-pill .dot{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:11.5px;background:var(--blue)}
 .op-pill .who{display:flex;flex-direction:column;line-height:1.06;text-align:left}
 .op-pill .who .nm{font-size:13px;font-weight:700}
 .op-pill .who .rl{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
@@ -159,7 +159,7 @@ button{cursor:pointer;border:0;background:none}
 }
 .acct-pop.open{display:block;animation:fadeIn .14s ease}
 .acct-pop .head{display:flex;align-items:center;gap:11px;padding:10px 10px 12px}
-.acct-pop .head .dot{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:16px;background:var(--blue);flex:none}
+.acct-pop .head .dot{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;background:var(--blue);flex:none}
 .acct-pop .head .nm{font-weight:800;font-size:15px;letter-spacing:-.01em;margin-bottom:3px}
 .acct-pop .sep{height:1px;background:var(--line-2);margin:4px 4px}
 .acct-pop button.item{
@@ -173,7 +173,7 @@ button{cursor:pointer;border:0;background:none}
 /* Staff management modal */
 .staff-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;max-height:42vh;overflow:auto}
 .staff-row{display:flex;align-items:center;gap:11px;padding:10px 12px;border:1px solid var(--line);border-radius:13px;background:var(--panel)}
-.staff-row .dot{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px;flex:none}
+.staff-row .dot{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;flex:none}
 .staff-row .nm{flex:1;font-weight:700;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .staff-row .act{display:flex;gap:6px;flex:none}
 .staff-row .act button{font-size:12px;font-weight:700;padding:6px 10px;border-radius:9px;border:1px solid var(--line);color:var(--ink-2);background:var(--panel)}
@@ -197,7 +197,7 @@ button{cursor:pointer;border:0;background:none}
 #cardOvl{z-index:95} /* above the pay modal it opens from */
 .audit-list{display:flex;flex-direction:column;gap:6px;max-height:54vh;overflow:auto;margin-bottom:14px}
 .audit-row{display:flex;gap:11px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
-.audit-row .ico{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:none;font-weight:800;font-size:14px}
+.audit-row .ico{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex:none;font-weight:800;font-size:14px}
 .audit-row .ab{flex:1;min-width:0}
 .audit-row .at{font-size:13.5px;font-weight:700;color:var(--ink)}
 .audit-row .am{font-size:12px;color:var(--muted);font-weight:500;margin-top:1px;word-break:break-word}
@@ -208,25 +208,28 @@ button{cursor:pointer;border:0;background:none}
 .stage{position:relative;overflow:hidden;display:flex;flex-direction:column;min-width:0;flex:1}
 
 /* Topbar */
-.topbar{display:flex;align-items:center;gap:14px;padding:15px 24px 13px;flex:none;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#FFFFFF,#FAFBFD)}
+.topbar{display:flex;align-items:center;padding:15px 24px 13px;flex:none;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#FFFFFF,#FAFBFD)}
+.topbar > * + *{margin-left:12px}  /* spacing via margins — the Sunmi WebView ignores flex gap */
 /* Top-bar icon buttons (back office, account) */
-.icon-btn{width:42px;height:38px;border-radius:11px;display:grid;place-items:center;padding:0;border:1px solid var(--line);background:var(--panel);color:var(--ink-2);box-shadow:var(--sh-sm);cursor:pointer}
+.icon-btn{width:42px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;padding:0;border:1px solid var(--line);background:var(--panel);color:var(--ink-2);box-shadow:var(--sh-sm);cursor:pointer}
 .icon-btn:hover{border-color:var(--blue);color:var(--blue)}
 .icon-btn svg{width:20px;height:20px;stroke-width:1.9}
 .icon-btn.active{background:var(--amber-tint);border-color:var(--amber-bg);color:var(--amber)}
 .topbar .op-avatar{width:42px;height:38px;border-radius:11px;box-shadow:var(--sh-sm)}
 /* One-page board: big mode buttons over ~2/3 width (left), spaced with margins
    (flex `gap` is ignored on the Sunmi's older WebView) + the Live/Completed toggle */
-.modebar{display:flex;padding:16px 24px 4px;flex:none}
-.modebar[hidden],.boardbar[hidden]{display:none}
-.mode-group{display:flex;width:66%;max-width:880px;min-width:0}
-.mode-btn{flex:1;display:flex;align-items:center;justify-content:center;height:74px;padding:0 18px;border:0;border-radius:16px;cursor:pointer;color:#fff;font-size:19px;font-weight:800;letter-spacing:-.01em;background:linear-gradient(135deg,#0A86FF,#0070F0 60%,#0058C4);box-shadow:0 10px 24px rgba(0,112,240,.3);transition:transform var(--motion-fast) var(--ease-out),box-shadow var(--motion-fast)}
-.mode-group .mode-btn + .mode-btn{margin-left:18px}
-.mode-btn:hover{transform:translateY(-2px)}
+.modebar{display:flex;align-items:center;padding:14px 24px 8px;flex:none}
+.modebar[hidden]{display:none}
+.mode-group{display:flex;width:60%;max-width:760px;min-width:0}
+.mode-btn{flex:1;display:flex;align-items:center;justify-content:center;height:54px;padding:0 14px;border:1px solid var(--line);border-left:4px solid var(--muted-2);border-radius:12px;cursor:pointer;color:var(--ink);font-size:16px;font-weight:700;letter-spacing:-.01em;background:var(--panel);box-shadow:var(--sh-sm);transition:transform var(--motion-fast) var(--ease-out),box-shadow var(--motion-fast)}
+.mode-group .mode-btn + .mode-btn{margin-left:14px}
+.mode-btn:hover{transform:translateY(-1px);box-shadow:var(--sh)}
 .mode-btn:active{transform:translateY(0)}
-.mode-btn .mb-ic{width:26px;height:26px;margin-right:12px;flex:none}
-.mode-btn.collection{background:linear-gradient(135deg,#16B27A,#0E9F6E 60%,#0B8A5E);box-shadow:0 10px 24px rgba(14,159,110,.28)}
-.mode-btn.delivery{background:linear-gradient(135deg,#F6B53C,#F4A82E 60%,#E0922A);box-shadow:0 10px 24px rgba(244,168,46,.32)}
+.mode-btn .mb-ic{font-size:20px;line-height:1;margin-right:9px}
+.mode-btn[data-mode="walkin"]{border-left-color:var(--blue)}
+.mode-btn.collection{border-left-color:var(--green)}
+.mode-btn.delivery{border-left-color:var(--amber-bg)}
+.board-toggle{margin-left:auto}
 .boardbar{display:flex;justify-content:flex-end;align-items:center;padding:6px 24px 2px;flex:none}
 .board-toggle{display:inline-flex;background:var(--canvas);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px}
 .board-toggle button{height:38px;padding:0 18px;border:0;background:transparent;border-radius:9px;cursor:pointer;font-size:13.5px;font-weight:700;color:var(--muted)}
@@ -422,7 +425,7 @@ button{cursor:pointer;border:0;background:none}
 .card-menu .dots{
   background:transparent;border:0;color:var(--muted);
   font-size:18px;line-height:1;border-radius:8px;
-  min-width:44px;min-height:44px;display:grid;place-items:center;
+  min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;
 }
 .card-menu .dots:hover{background:var(--canvas);color:var(--ink)}
 .card-menu .menu{
@@ -443,9 +446,9 @@ button{cursor:pointer;border:0;background:none}
 /* Modal overlay */
 .ovl{
   position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(11,26,46,.5);backdrop-filter:blur(4px);
-  display:none;place-items:center;z-index:50;padding:24px;
+  display:none;align-items:center;justify-content:center;z-index:50;padding:24px;
 }
-.ovl.open{display:grid;animation:fadeIn .2s ease}
+.ovl.open{display:flex;animation:fadeIn .2s ease}
 @keyframes fadeIn{from{opacity:0}}
 .modal{
   background:var(--panel);border-radius:22px;padding:24px;
@@ -605,7 +608,7 @@ button{cursor:pointer;border:0;background:none}
 }
 .bo-tile:hover{transform:translateY(-3px);box-shadow:var(--sh);border-color:#CFE0F6}
 .bo-tile:active{transform:translateY(-1px)}
-.bo-tile .ic{width:50px;height:50px;border-radius:14px;display:grid;place-items:center}
+.bo-tile .ic{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center}
 .bo-tile .ic svg{width:25px;height:25px;stroke-width:1.9}
 .bo-tile .ic.blue{background:var(--blue-tint);color:var(--blue)}
 .bo-tile .ic.orange{background:var(--amber-tint);color:var(--amber-bg)}
@@ -685,7 +688,7 @@ button{cursor:pointer;border:0;background:none}
 .tile:hover{transform:translateY(-3px);box-shadow:var(--sh);border-color:#CFE0F6}
 .tile:active{transform:translateY(0) scale(.98)}
 .tile:focus,.tile:focus-visible{outline:none}
-.tile .swatch{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:21px;background:var(--blue-tint-2);flex:none}
+.tile .swatch{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:21px;background:var(--blue-tint-2);flex:none}
 .tile .pname{font-size:15px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
 .tile .pprice{font-size:15px;color:var(--ink);font-weight:700;margin-top:4px;font-family:var(--mono);font-variant-numeric:tabular-nums}
 /* (removed the .tile.added flash border — it persisted as a box on the Sunmi WebView) */
@@ -716,7 +719,7 @@ button{cursor:pointer;border:0;background:none}
 }
 @keyframes lineIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
 .t-line:hover{background:var(--blue-tint-2)}
-.t-line .l-em{font-size:19px;width:40px;height:40px;border-radius:11px;display:grid;place-items:center;flex:none;background:var(--blue-tint-2)}
+.t-line .l-em{font-size:19px;width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex:none;background:var(--blue-tint-2)}
 .t-line .l-mid{flex:1;min-width:0}
 .t-line .l-name{font-size:16px;font-weight:700;letter-spacing:-.01em;line-height:1.25}
 .t-line .l-right{display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;flex:none;gap:6px}
@@ -724,7 +727,7 @@ button{cursor:pointer;border:0;background:none}
 .t-line .l-rm{background:transparent;border:0;color:var(--muted-2);font-size:18px;line-height:1;padding:6px 9px;border-radius:8px}
 .t-line .l-rm:hover{background:var(--red-tint);color:var(--red)}
 .qty-ctrl{display:flex;align-items:center;gap:2px;background:var(--canvas);border-radius:9px;padding:2px;margin-top:6px}
-.qty-ctrl button{width:28px;height:28px;border-radius:7px;display:grid;place-items:center;color:var(--ink-2);font-weight:700;font-size:16px;transition:var(--motion-fast) var(--ease-out);background:transparent;border:0}
+.qty-ctrl button{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--ink-2);font-weight:700;font-size:16px;transition:var(--motion-fast) var(--ease-out);background:transparent;border:0}
 .qty-ctrl button:hover{background:#fff;color:var(--blue);box-shadow:var(--sh-sm)}
 .qty-ctrl button:active{transform:scale(.92)}
 .qty-ctrl .qv{min-width:24px;text-align:center;font-size:14px;font-weight:700;font-family:var(--mono);font-variant-numeric:tabular-nums}
@@ -784,7 +787,7 @@ button{cursor:pointer;border:0;background:none}
 .pay-right .p-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .pay-right h2{font-size:16px;font-weight:800;letter-spacing:-.02em;margin:0}
 .p-close{
-  width:34px;height:34px;border-radius:10px;background:var(--canvas);display:grid;place-items:center;
+  width:34px;height:34px;border-radius:10px;background:var(--canvas);display:flex;align-items:center;justify-content:center;
   color:var(--ink-2);transition:.15s;border:0;
 }
 .p-close:hover{background:var(--red-tint);color:var(--red)}
@@ -808,7 +811,7 @@ button{cursor:pointer;border:0;background:none}
 .pad-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;flex:1;min-height:0}
 .pad-key{
   border-radius:13px;background:var(--panel);border:1px solid var(--line);
-  font-size:20px;font-weight:700;display:grid;place-items:center;
+  font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;
   transition:.12s;min-height:46px;box-shadow:var(--sh-sm);
 }
 .pad-key:hover{background:var(--blue-tint-2);border-color:var(--blue)}
@@ -819,7 +822,7 @@ button{cursor:pointer;border:0;background:none}
 .pinpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
 .pinpad-key{
   height:48px;border-radius:12px;border:1.5px solid var(--line);background:#fff;
-  font-size:20px;font-weight:700;color:var(--ink);display:grid;place-items:center;
+  font-size:20px;font-weight:700;color:var(--ink);display:flex;align-items:center;justify-content:center;
   cursor:pointer;-webkit-tap-highlight-color:transparent;
   transition:transform var(--motion-fast) var(--ease-out),background var(--motion-fast) var(--ease-out);
 }
@@ -840,7 +843,7 @@ button{cursor:pointer;border:0;background:none}
   justify-content:center;gap:14px;z-index:2;border-radius:24px;text-align:center;padding:24px;
 }
 .pay-done-card.show{display:flex;animation:fadeIn .25s ease}
-.pay-tick{width:80px;height:80px;border-radius:50%;background:var(--green-tint);display:grid;place-items:center}
+.pay-tick{width:80px;height:80px;border-radius:50%;background:var(--green-tint);display:flex;align-items:center;justify-content:center}
 .pay-tick svg{width:42px;height:42px;color:var(--green);stroke-width:2.4}
 .pay-done-card h2{font-size:21px;font-weight:800;letter-spacing:-.02em;margin:0}
 .pay-done-card p{font-size:13.5px;color:var(--muted);font-weight:500;margin:0}
@@ -923,7 +926,7 @@ button{cursor:pointer;border:0;background:none}
 .item-close{
   position:absolute;top:14px;right:14px;
   width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.85);
-  display:grid;place-items:center;color:var(--ink-2);transition:.15s;
+  display:flex;align-items:center;justify-content:center;color:var(--ink-2);transition:.15s;
   border:0;z-index:3;backdrop-filter:blur(6px);
 }
 .item-close:hover{background:var(--red-tint);color:var(--red)}
@@ -1077,21 +1080,10 @@ button{cursor:pointer;border:0;background:none}
 
     <div class="modebar" id="modeBar">
       <div class="mode-group">
-        <button class="mode-btn" data-mode="walkin">
-          <svg class="mb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          Walk in
-        </button>
-        <button class="mode-btn collection" data-mode="collection">
-          <svg class="mb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-          Collection
-        </button>
-        <button class="mode-btn delivery" data-mode="delivery">
-          <svg class="mb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
-          Delivery
-        </button>
+        <button class="mode-btn" data-mode="walkin"><span class="mb-ic" aria-hidden="true">🚶</span> Walk in</button>
+        <button class="mode-btn collection" data-mode="collection"><span class="mb-ic" aria-hidden="true">🛍️</span> Collection</button>
+        <button class="mode-btn delivery" data-mode="delivery"><span class="mb-ic" aria-hidden="true">🛵</span> Delivery</button>
       </div>
-    </div>
-    <div class="boardbar" id="boardBar">
       <div class="board-toggle" role="tablist">
         <button data-board="live" class="active" role="tab">Live <span class="bt-count" id="liveCount">0</span></button>
         <button data-board="completed" role="tab">Completed</button>
@@ -1684,8 +1676,7 @@ function setView(view, mode) {
   const isSale = (view === 'sale');
   const isBoard = (view === 'live');
   const usesRange = (view === 'zreport');
-  $('#modeBar').hidden = !isBoard;          // big mode buttons: board only
-  $('#boardBar').hidden = !isBoard;         // Live/Completed toggle: board only
+  $('#modeBar').hidden = !isBoard;          // mode buttons + Live/Completed toggle: board only
   $('#dateBar').hidden = !usesRange;
   // Sale lives in its own panel; swap visibility so it and the grid never both
   // fight for the stage's flex space.
@@ -1735,9 +1726,9 @@ $$('#modeBar .mode-btn').forEach(b => b.addEventListener('click', async () => {
 }));
 
 // Board Live / Completed toggle.
-$$('#modeBar .board-toggle button').forEach(b => b.addEventListener('click', () => {
+$$('.board-toggle button').forEach(b => b.addEventListener('click', () => {
   state.boardTab = b.dataset.board;
-  $$('#modeBar .board-toggle button').forEach(x => x.classList.toggle('active', x === b));
+  $$('.board-toggle button').forEach(x => x.classList.toggle('active', x === b));
   if (state.view === 'live') renderBoard(); else setView('live');
 }));
 
