@@ -181,13 +181,19 @@ export async function uploadTerminalSplash(blob, filename, connectedAccountId, e
   if (!res.ok) { const e = new Error(json?.error?.message || `Stripe files ${res.status}`); e.stripe = json?.error; throw e; }
   return json; // { id: 'file_...' }
 }
-export async function createTerminalConfiguration({ splashscreenFileId, isAccountDefault }, connectedAccountId, env) {
+export async function createTerminalConfiguration({ splashscreenFileId }, connectedAccountId, env) {
   const opts = {};
   if (connectedAccountId) opts.stripeAccount = connectedAccountId;
   const body = {};
   if (splashscreenFileId) body.bbpos_wisepos_e = { splashscreen: splashscreenFileId };
-  if (isAccountDefault) body.is_account_default = true;
   return call('/terminal/configurations', body, env, opts);
+}
+// Apply a configuration to a location (readers there adopt it). Used to push the splash
+// logo without `is_account_default`, which older account API versions reject.
+export async function updateTerminalLocation(locationId, fields, connectedAccountId, env) {
+  const opts = {};
+  if (connectedAccountId) opts.stripeAccount = connectedAccountId;
+  return call(`/terminal/locations/${encodeURIComponent(locationId)}`, fields, env, opts);
 }
 
 // Capture an authorised (requires_capture) PaymentIntent — full amount.
