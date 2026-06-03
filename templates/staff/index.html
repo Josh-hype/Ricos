@@ -3319,35 +3319,42 @@ $('#payPad').addEventListener('click', (e) => {
   syncPayAmount();
 });
 
-// Build a plain-text receipt for the built-in printer from the server's order
-// (authoritative prices). Lives in the web layer, so it ships via OTA and can be
-// tweaked with no APK rebuild. ~32 cols suits the T2's 58mm paper.
+// Customer receipt for the built-in printer — professional layout from the server's
+// order (authoritative prices) + the shop's details from /api/config. Web-layer, so
+// it ships via OTA and is tweakable with no APK rebuild. 32 cols suits the T2's 58mm
+// paper (say the word to widen for 80mm).
 function buildReceiptText(o, ctx) {
   const W = 32;
   const t = o.totals || {};
-  const money = (p) => '£' + ((p || 0) / 100).toFixed(2);
-  const rule = '-'.repeat(W);
-  const center = (s) => {
-    s = String(s);
-    return s.length >= W ? s : ' '.repeat(Math.floor((W - s.length) / 2)) + s;
-  };
-  const row = (l, r) => {
-    l = String(l); r = String(r);
-    const gap = W - l.length - r.length;
-    return gap > 0 ? l + ' '.repeat(gap) + r : l + ' ' + r;
-  };
-  const shop = (sale.config && sale.config.business && sale.config.business.name) || 'RECEIPT';
-  const modeLabel = o.fulfillment === 'delivery' ? 'Delivery'
-    : (o.source === 'counter-collection' ? 'Collection' : 'Walk-in');
+  const biz = (sale.config && sale.config.business) || {};
+  const addr = biz.address || {};
+  const money = (p) => ((p || 0) / 100).toFixed(2);
+  const heavy = '='.repeat(W), light = '-'.repeat(W);
+  const center = (s) => { s = String(s); return s.length >= W ? s.slice(0, W) : ' '.repeat(Math.floor((W - s.length) / 2)) + s; };
+  const row = (l, r) => { l = String(l); r = String(r); const g = W - l.length - r.length; return g > 0 ? l + ' '.repeat(g) + r : l + ' ' + r; };
+  const mode = o.fulfillment === 'delivery' ? 'DELIVERY' : (o.source === 'counter-walkin' ? 'WALK IN' : 'COLLECTION');
+  const who = (o.customer && o.customer.name && o.customer.name !== 'Walk-in') ? o.customer.name : '';
+  const tender = (ctx && ctx.tender === 'card') ? 'CARD' : 'CASH';
   let when = '';
   try { when = new Date(o.createdAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) {}
 
-  const out = [center(shop.toUpperCase()), center(modeLabel), '', 'Order #' + o.id];
-  if (when) out.push(when);
-  if (o.customer && o.customer.name && o.customer.name !== 'Walk-in') out.push(o.customer.name);
-  out.push(rule);
+  const out = [];
+  if (biz.tradingName) out.push(center(biz.tradingName));
+  if (biz.phone) out.push(center(biz.phone));
+  if (addr.line1) out.push(center(addr.line1));
+  if (addr.city || addr.postcode) out.push(center([addr.city, addr.postcode].filter(Boolean).join(' · ')));
+  out.push(heavy);
+  out.push(row('Ref ' + o.id, when));
+  out.push(light);
+  out.push(mode + (who ? ' · ' + who : '') + ' · ASAP');
+  if (o.fulfillment === 'delivery' && o.address) {
+    if (o.address.line1) out.push(o.address.line1);
+    if (o.address.postcode) out.push(o.address.postcode);
+  }
+  out.push(light);
+  out.push(row('ITEM', 'GBP'));
   for (const li of (t.lines || [])) {
-    out.push(row(li.qty + 'x ' + li.name, money(li.lineTotalP)));
+    out.push(row((li.qty || 1) + 'x ' + li.name, money(li.lineTotalP)));
     const extras = []
       .concat(li.spice ? [li.spice] : [])
       .concat(li.meal ? ['Meal'] : [])
@@ -3355,43 +3362,49 @@ function buildReceiptText(o, ctx) {
       .concat(Array.isArray(li.mealChoices) ? li.mealChoices : []);
     for (const ex of extras) {
       const s = (typeof ex === 'string') ? ex : (ex && (ex.label || ex.name)) || '';
-      if (s) out.push('  + ' + s);
+      if (s) out.push('   ' + s);
     }
   }
-  out.push(rule);
+  out.push(light);
   if (t.deliveryFeeP) { out.push(row('Subtotal', money(t.subtotalP))); out.push(row('Delivery', money(t.deliveryFeeP))); }
   out.push(row('TOTAL', money(t.totalP)));
-  out.push(rule);
-  const tenderLabel = ctx.tender === 'card' ? 'Card' : 'Cash';
-  out.push(row('Paid (' + tenderLabel + ')', money(ctx.tenderedP > 0 ? ctx.tenderedP : t.totalP)));
-  if (ctx.changeP > 0) out.push(row('Change', money(ctx.changeP)));
-  if (o.createdBy && o.createdBy.name) out.push('Served by: ' + o.createdBy.name);
-  out.push(rule);
-  out.push(center('Thank you!'));
+  out.push(light);
+  out.push(center('PAID BY ' + tender));
+  if (tender === 'CASH' && ctx && ctx.tenderedP > 0) {
+    out.push(row('Cash', money(ctx.tenderedP)));
+    if (ctx.changeP > 0) out.push(row('Change', money(ctx.changeP)));
+  }
+  out.push(light);
+  if (o.createdBy && o.createdBy.name) out.push(center('Served by ' + o.createdBy.name));
+  out.push(center('Thank you — see you soon!'));
+  out.push(heavy);
+  out.push(center('ORDER  ' + o.id));
+  out.push('');
   return out.join('\n');
 }
 
-// Kitchen ticket: what to make. No prices — order ref, type, who it's for, and the
-// items with their options. Printed on counter-sale completion and on order accept.
+// Kitchen ticket: what to make. No prices — big order type/ref/customer, then the
+// items in CAPS for quick reading. Printed on counter-sale completion and on accept.
 function buildKitchenTicket(o) {
   const W = 32;
   const t = o.totals || {};
-  const center = (s) => { s = String(s); return s.length >= W ? s : ' '.repeat(Math.floor((W - s.length) / 2)) + s; };
-  const rule = '-'.repeat(W);
-  const mode = o.fulfillment === 'delivery' ? 'DELIVERY' : (o.source === 'counter-walkin' ? 'WALK-IN' : 'COLLECTION');
+  const center = (s) => { s = String(s); return s.length >= W ? s.slice(0, W) : ' '.repeat(Math.floor((W - s.length) / 2)) + s; };
+  const heavy = '='.repeat(W), light = '-'.repeat(W);
+  const mode = o.fulfillment === 'delivery' ? 'DELIVERY' : (o.source === 'counter-walkin' ? 'WALK IN' : 'COLLECTION');
   let when = '';
   try { when = new Date(o.createdAt).toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit' }); } catch (e) {}
-  const out = ['', center('*** KITCHEN ***'), center('#' + o.id + (when ? '   ' + when : '')), center(mode)];
+  const out = [heavy, center('KITCHEN'), heavy, center(mode + (when ? '   ' + when : '')), center('Order ' + o.id)];
   if (o.customer && o.customer.name && o.customer.name !== 'Walk-in') out.push(center(o.customer.name));
+  if (o.customer && o.customer.phone) out.push(center(o.customer.phone));
   if (o.fulfillment === 'delivery' && o.address) {
-    out.push(rule);
+    out.push(light);
     if (o.address.line1) out.push(o.address.line1);
     if (o.address.line2) out.push(o.address.line2);
     if (o.address.postcode) out.push(o.address.postcode);
   }
-  out.push(rule);
+  out.push(light);
   for (const li of (t.lines || [])) {
-    out.push((li.qty || 1) + 'x ' + li.name);
+    out.push((li.qty || 1) + ' x ' + String(li.name || '').toUpperCase());
     const extras = []
       .concat(li.spice ? [li.spice] : [])
       .concat(li.meal ? ['Meal'] : [])
@@ -3399,10 +3412,13 @@ function buildKitchenTicket(o) {
       .concat(Array.isArray(li.mealChoices) ? li.mealChoices : []);
     for (const ex of extras) {
       const s = (typeof ex === 'string') ? ex : (ex && (ex.label || ex.name)) || '';
-      if (s) out.push('   - ' + s);
+      if (s) out.push('     - ' + s);
     }
+    out.push('');
   }
-  out.push(rule);
+  out.push(light);
+  out.push(center('Order ' + o.id));
+  out.push('');
   return out.join('\n');
 }
 
