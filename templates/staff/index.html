@@ -4378,7 +4378,7 @@ $('#readerOvl').addEventListener('click', (e) => { if (e.target.id === 'readerOv
 // — or a clean white canvas if none is chosen — at a sensible size. Drawn from blob URLs
 // so the canvas isn't tainted (works web + app).
 function composeReaderSplash(logoBlob, bgFile) {
-  const W = 480, H = 800;
+  const W = 720, H = 1280; // WisePOS E screen — render at native res for a crisp fit
   const loadImg = (src) => new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('img')); im.src = src; });
   return new Promise((resolve) => {
     (async () => {
@@ -4397,10 +4397,10 @@ function composeReaderSplash(logoBlob, bgFile) {
         } else { ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W, H); }
         const lu = URL.createObjectURL(logoBlob); urls.push(lu);
         const logo = await loadImg(lu);
-        const ls = Math.min((W * 0.71) / logo.width, (H * 0.46) / logo.height); // contain ~0.71 width (15% bigger)
+        const ls = Math.min((W * 0.8) / logo.width, (H * 0.52) / logo.height); // ~⅘ width — bigger
         const lw = logo.width * ls, lh = logo.height * ls;
         ctx.drawImage(logo, (W - lw) / 2, (H - lh) / 2, lw, lh);
-        resolve(c.toDataURL('image/png').split(',')[1]);
+        resolve(c.toDataURL('image/jpeg', 0.92).split(',')[1]); // JPEG keeps the photo bg small
       } catch (e) { resolve(null); }
       finally { urls.forEach((u) => { try { URL.revokeObjectURL(u); } catch (e) {} }); }
     })();
@@ -4423,7 +4423,8 @@ $('#readerBrand').addEventListener('click', async () => {
     if (lr.ok) {
       const blob = await lr.blob();
       logo = await composeReaderSplash(blob, bgFile);   // logo over background (or white)
-      if (!logo) {                                       // canvas unavailable — send raw logo
+      if (logo) { ctype = 'image/jpeg'; }                // the composite is a JPEG
+      else {                                             // canvas unavailable — send raw logo
         ctype = blob.type || 'image/png';
         logo = await new Promise((res) => { const fr = new FileReader(); fr.onerror = () => res(null); fr.onload = () => res(String(fr.result).split(',')[1]); fr.readAsDataURL(blob); });
       }
