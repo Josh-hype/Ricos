@@ -72,6 +72,7 @@ export async function createPaymentIntent({
   paymentMethodId,
   requireCvcRecollection,
   cardPresent,
+  captureMethod,
 }, env) {
   const body = {
     amount: amountP,
@@ -85,10 +86,11 @@ export async function createPaymentIntent({
   if (customerId) body.customer = customerId;
   if (setupFutureUsage) body.setup_future_usage = setupFutureUsage;
   if (cardPresent) {
-    // In-person card via Terminal (e.g. WisePOS E): collected on a physical
-    // reader, authorised now and captured after we verify the amount server-side.
+    // In-person card via Terminal (e.g. WisePOS E). Cart sales authorise now and capture
+    // after /counter-order re-verifies the amount (manual). A manual "quick charge"
+    // (staff types the amount) has nothing to re-verify, so it captures immediately.
     body.payment_method_types = ['card_present'];
-    body.capture_method = 'manual';
+    body.capture_method = captureMethod || 'manual';
   } else if (paymentMethodId) {
     // Pay with a saved card. The customer is present on the checkout page,
     // so we attach the saved PaymentMethod but DON'T confirm server-side —

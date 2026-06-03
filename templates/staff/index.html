@@ -220,7 +220,7 @@ button{cursor:pointer;border:0;background:none}
    (flex `gap` is ignored on the Sunmi's older WebView) + the Live/Completed toggle */
 .modebar{display:flex;align-items:center;padding:14px 24px 8px;flex:none}
 .modebar[hidden]{display:none}
-.mode-group{display:flex;width:60%;max-width:760px;min-width:0}
+.mode-group{display:flex;width:72%;max-width:960px;min-width:0}
 .mode-btn{flex:1;display:flex;align-items:center;justify-content:center;height:54px;padding:0 14px;border:1px solid var(--line);border-left:4px solid var(--muted-2);border-radius:12px;cursor:pointer;color:var(--ink);font-size:16px;font-weight:700;letter-spacing:-.01em;background:var(--panel);box-shadow:var(--sh-sm);transition:transform var(--motion-fast) var(--ease-out),box-shadow var(--motion-fast)}
 .mode-group .mode-btn + .mode-btn{margin-left:14px}
 .mode-btn:hover{transform:translateY(-1px);box-shadow:var(--sh)}
@@ -229,12 +229,24 @@ button{cursor:pointer;border:0;background:none}
 .mode-btn[data-mode="walkin"]{border-left-color:var(--blue)}
 .mode-btn.collection{border-left-color:var(--green)}
 .mode-btn.delivery{border-left-color:var(--amber-bg)}
+.mode-btn.pay{background:var(--blue-tint);border-left-color:var(--blue);color:var(--accent-strong)}
 .board-toggle{margin-left:auto}
 .boardbar{display:flex;justify-content:flex-end;align-items:center;padding:6px 24px 2px;flex:none}
 .board-toggle{display:inline-flex;background:var(--canvas);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px}
 .board-toggle button{height:38px;padding:0 18px;border:0;background:transparent;border-radius:9px;cursor:pointer;font-size:13.5px;font-weight:700;color:var(--muted)}
 .board-toggle button.active{background:var(--panel);color:var(--ink);box-shadow:var(--sh-sm)}
 .board-toggle .bt-count{font-family:var(--mono);font-size:12px;margin-left:5px;color:var(--blue)}
+/* Quick card charge modal (the Pay button) */
+.qp-amount{font-family:var(--mono);font-size:40px;font-weight:500;text-align:center;color:var(--ink);margin:6px 0 12px;letter-spacing:-.02em}
+.qp-quick{display:flex;margin-bottom:12px}
+.qp-quick button{flex:1;height:42px;border:1px solid var(--line);background:var(--canvas);border-radius:10px;font-weight:700;font-size:14px;color:var(--ink-2);cursor:pointer}
+.qp-quick button + button{margin-left:8px}
+.qp-quick button:active{background:var(--blue-tint-2)}
+.qp-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.qp-key{height:52px;border:1px solid var(--line);background:var(--panel);border-radius:11px;font-size:20px;font-weight:700;color:var(--ink);cursor:pointer}
+.qp-key:active{background:var(--blue-tint-2)}
+.qp-key.fn{background:var(--canvas);color:var(--ink-2)}
+.qp-status{text-align:center;font-size:17px;font-weight:700;color:var(--ink);padding:20px 8px 10px;line-height:1.4}
 .loc{display:flex;flex-direction:column;gap:2px;min-width:0}
 .loc .eyebrow{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;line-height:1}
 .loc .name{font-size:20px;font-weight:800;letter-spacing:-.025em;line-height:1.12}
@@ -1083,6 +1095,7 @@ button{cursor:pointer;border:0;background:none}
         <button class="mode-btn" data-mode="walkin"><span class="mb-ic" aria-hidden="true">🚶</span> Walk in</button>
         <button class="mode-btn collection" data-mode="collection"><span class="mb-ic" aria-hidden="true">🛍️</span> Collection</button>
         <button class="mode-btn delivery" data-mode="delivery"><span class="mb-ic" aria-hidden="true">🛵</span> Delivery</button>
+        <button class="mode-btn pay" id="payQuickBtn"><span class="mb-ic" aria-hidden="true">💳</span> Pay</button>
       </div>
       <div class="board-toggle" role="tablist">
         <button data-board="live" class="active" role="tab">Live <span class="bt-count" id="liveCount">0</span></button>
@@ -1378,6 +1391,35 @@ button{cursor:pointer;border:0;background:none}
 </div>
 
 <!-- ============================== Activity-log modal (audit trail) -->
+<div class="ovl" id="quickPayOvl" role="dialog" aria-modal="true" aria-labelledby="qpTitle">
+  <div class="modal">
+    <h2 id="qpTitle">Take a card payment</h2>
+    <div id="qpEntry">
+      <div class="qp-amount" id="qpAmount">£0.00</div>
+      <div class="qp-quick" id="qpQuick">
+        <button type="button" data-amt="100">£1</button>
+        <button type="button" data-amt="200">£2</button>
+        <button type="button" data-amt="500">£5</button>
+        <button type="button" data-amt="1000">£10</button>
+        <button type="button" data-amt="2000">£20</button>
+      </div>
+      <div class="qp-pad" id="qpPad"></div>
+      <div class="row">
+        <button class="cancel" id="qpCancel" type="button">Cancel</button>
+        <button class="confirm" id="qpCharge" type="button" disabled>Charge</button>
+      </div>
+    </div>
+    <div id="qpCollect" hidden>
+      <div class="qp-status" id="qpStatus">Present card on the reader…</div>
+      <div class="pin-error" id="qpErr" aria-live="polite"></div>
+      <div class="row">
+        <button class="cancel" id="qpStop" type="button">Cancel</button>
+        <button class="confirm" id="qpDone" type="button" hidden>Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="ovl" id="readerOvl" role="dialog" aria-modal="true" aria-labelledby="readerTitle">
   <div class="modal">
     <h2 id="readerTitle">Register card reader</h2>
@@ -1731,12 +1773,101 @@ async function loadCompleted() {
 // Board mode buttons → start a counter sale in that mode. Confirm the staff code over
 // the BOARD first: a cancel then leaves you on orders (not a half-open sale), and the
 // sale view opens straight onto the menu/form with nothing stale behind the prompt.
-$$('#modeBar .mode-btn').forEach(b => b.addEventListener('click', async () => {
+$$('#modeBar .mode-btn[data-mode]').forEach(b => b.addEventListener('click', async () => {
   const who = await askStaffCode();
   if (!who) return;
   sale.pendingTakenBy = who;
   setView('sale', b.dataset.mode);
 }));
+
+// Quick card charge — the "Pay" button: type an amount and charge it on the reader (no
+// cart). The amount is auto-captured server-side; the till just polls the reader status.
+let qpAmountP = 0, qpPoll = null, quickCard = null;
+(function buildQpPad() {
+  const pad = $('#qpPad'); if (!pad) return;
+  const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'C', '0', '⌫'];
+  pad.innerHTML = keys.map(k => `<button type="button" class="qp-key${(k === 'C' || k === '⌫') ? ' fn' : ''}" data-k="${k}">${k}</button>`).join('');
+})();
+function renderQpAmount() {
+  $('#qpAmount').textContent = '£' + (qpAmountP / 100).toFixed(2);
+  const ok = qpAmountP >= 30;
+  const btn = $('#qpCharge'); btn.disabled = !ok;
+  btn.textContent = ok ? ('Charge £' + (qpAmountP / 100).toFixed(2)) : 'Charge';
+}
+function openQuickPay() {
+  qpAmountP = 0; quickCard = null;
+  if (qpPoll) { clearTimeout(qpPoll); qpPoll = null; }
+  $('#qpEntry').hidden = false; $('#qpCollect').hidden = true;
+  $('#qpErr').textContent = ''; $('#qpStatus').textContent = 'Present card on the reader…';
+  $('#qpDone').hidden = true; $('#qpStop').hidden = false; $('#qpStop').textContent = 'Cancel';
+  renderQpAmount();
+  $('#quickPayOvl').classList.add('open');
+}
+function qpCancelReader() {
+  const c = quickCard; quickCard = null;
+  if (qpPoll) { clearTimeout(qpPoll); qpPoll = null; }
+  if (c && c.readerId) { try { fetch('/api/staff/terminal/cancel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ readerId: c.readerId }) }); } catch (e) {} }
+}
+function closeQuickPay() { qpCancelReader(); $('#quickPayOvl').classList.remove('open'); }
+function qpBackToEntry() { qpCancelReader(); $('#qpStop').textContent = 'Cancel'; $('#qpCollect').hidden = true; $('#qpEntry').hidden = false; }
+function qpFail(msg) {
+  qpCancelReader();
+  $('#qpStatus').textContent = 'Payment not taken';
+  $('#qpErr').textContent = msg;
+  $('#qpStop').textContent = 'Back'; $('#qpStop').hidden = false; $('#qpDone').hidden = true;
+}
+async function runQuickCharge() {
+  const amountP = qpAmountP;
+  if (amountP < 30) return;
+  $('#qpEntry').hidden = true; $('#qpCollect').hidden = false;
+  $('#qpErr').textContent = ''; $('#qpDone').hidden = true; $('#qpStop').hidden = false; $('#qpStop').textContent = 'Cancel';
+  $('#qpStatus').textContent = 'Starting…';
+  let started;
+  try {
+    const res = await fetch('/api/staff/terminal/quick-charge', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amountP }) });
+    started = await res.json().catch(() => ({}));
+    if (res.status === 401) { $('#logoutBtn').click(); closeQuickPay(); return; }
+    if (!res.ok || !started.paymentIntentId) { qpFail(started.error || `Couldn't start the payment (${res.status}).`); return; }
+  } catch (e) { qpFail('Network error — try again.'); return; }
+  quickCard = { readerId: (started.reader && started.reader.id) || '', paymentIntentId: started.paymentIntentId };
+  $('#qpStatus').textContent = 'Present card on the reader · £' + (amountP / 100).toFixed(2);
+  const deadline = Date.now() + 75000;
+  const tick = async () => {
+    if (!quickCard) return;
+    if (Date.now() > deadline) { qpFail('Timed out waiting for the card.'); return; }
+    let st;
+    try {
+      const r = await fetch('/api/staff/terminal/status', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ readerId: quickCard.readerId }) });
+      st = await r.json().catch(() => ({}));
+    } catch (e) { qpPoll = setTimeout(tick, 1800); return; }
+    if (!quickCard) return;
+    if (st.status === 'succeeded') {
+      quickCard = null;
+      $('#qpStatus').textContent = '✓ Took £' + (amountP / 100).toFixed(2);
+      $('#qpErr').textContent = '';
+      $('#qpStop').hidden = true; $('#qpDone').hidden = false;
+      return;
+    }
+    if (st.status === 'failed') { qpFail(st.failure || 'Card declined or cancelled.'); return; }
+    qpPoll = setTimeout(tick, 1800);
+  };
+  qpPoll = setTimeout(tick, 1500);
+}
+$('#payQuickBtn').addEventListener('click', openQuickPay);
+$('#qpQuick').addEventListener('click', (e) => { const b = e.target.closest('button[data-amt]'); if (!b) return; qpAmountP = Number(b.dataset.amt); renderQpAmount(); });
+$('#qpPad').addEventListener('click', (e) => {
+  const b = e.target.closest('.qp-key'); if (!b) return;
+  const k = b.dataset.k;
+  if (k === 'C') qpAmountP = 0;
+  else if (k === '⌫') qpAmountP = Math.floor(qpAmountP / 10);
+  else qpAmountP = Math.min(qpAmountP * 10 + Number(k), 100000);
+  renderQpAmount();
+});
+$('#qpCharge').addEventListener('click', runQuickCharge);
+$('#qpCancel').addEventListener('click', closeQuickPay);
+$('#qpDone').addEventListener('click', closeQuickPay);
+$('#qpStop').addEventListener('click', qpBackToEntry);
+$('#quickPayOvl').addEventListener('click', (e) => { if (e.target.id === 'quickPayOvl') closeQuickPay(); });
 
 // Board Live / Completed toggle.
 $$('.board-toggle button').forEach(b => b.addEventListener('click', () => {
