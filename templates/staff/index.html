@@ -1378,6 +1378,19 @@ button{cursor:pointer;border:0;background:none}
 </div>
 
 <!-- ============================== Activity-log modal (audit trail) -->
+<div class="ovl" id="readerOvl" role="dialog" aria-modal="true" aria-labelledby="readerTitle">
+  <div class="modal">
+    <h2 id="readerTitle">Register card reader</h2>
+    <p style="color:var(--muted);font-size:13.5px;font-weight:500;margin:6px 0 14px;line-height:1.5">On the reader, open <b>Settings</b> until it shows three words, then type them below.</p>
+    <input type="text" id="readerCode" inputmode="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="cherry-fine-chairman" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;padding:14px 15px;font-size:17px;font-weight:600;color:var(--ink);background:var(--canvas);text-align:center" />
+    <div class="pin-error" id="readerMsg" aria-live="polite"></div>
+    <div class="row">
+      <button class="cancel" id="readerCancel" type="button">Cancel</button>
+      <button class="confirm" id="readerConfirm" type="button">Register reader</button>
+    </div>
+  </div>
+</div>
+
 <div class="ovl" id="auditOvl" role="dialog" aria-modal="true" aria-labelledby="auditTitle">
   <div class="modal" style="max-width:540px;text-align:left">
     <h2 id="auditTitle">Activity log</h2>
@@ -2026,6 +2039,7 @@ function renderBackOffice() {
     z: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 5h6M9 5a2 2 0 10-4 0M9 5H5a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2h-4M9 5a2 2 0 104 0M8 12h8M8 16h5"/></svg>',
     staff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>',
     audit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>',
+    reader: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="5" y="2" width="14" height="20" rx="2.5"/><path d="M5 7h14"/><path d="M9 17.5h6"/></svg>',
   };
   const canStaff = !state.operatorsEnabled || can('operators.manage');
   const tiles = [
@@ -2034,6 +2048,7 @@ function renderBackOffice() {
   ];
   if (canStaff) tiles.push({ k: 'staff', ic: 'green', svg: ICON.staff, tl: 'Staff', ds: 'Operators &amp; their PIN codes' });
   tiles.push({ k: 'audit', ic: 'ink', svg: ICON.audit, tl: 'Activity Log', ds: 'Refunds, voids, sign-ins &amp; overrides' });
+  tiles.push({ k: 'reader', ic: 'blue', svg: ICON.reader, tl: 'Card Reader', ds: 'Register the WisePOS card terminal' });
   $('#grid').innerHTML = '<div class="bo-wrap"><div class="bo-grid">' +
     tiles.map(t => `<button class="bo-tile" data-bo="${t.k}"><div class="ic ${t.ic}">${t.svg}</div><div class="tl">${t.tl}</div><div class="ds">${t.ds}</div></button>`).join('') +
     '</div></div>';
@@ -2043,6 +2058,7 @@ function renderBackOffice() {
     else if (k === 'zreport') setView('zreport');
     else if (k === 'staff') openStaffModal();
     else if (k === 'audit') openAuditModal();
+    else if (k === 'reader') openReaderModal();
   }));
 }
 function renderReport(s, orders) {
@@ -4186,6 +4202,36 @@ $('#sfSave').addEventListener('click', async () => {
 /* Activity log (audit trail viewer) */
 function openAuditModal() { $('#auditOvl').classList.add('open'); loadAudit(); }
 function closeAuditModal() { $('#auditOvl').classList.remove('open'); }
+
+// Register a Stripe Terminal reader from the 3-word code on its screen.
+function openReaderModal() {
+  $('#readerCode').value = '';
+  const msg = $('#readerMsg'); msg.textContent = ''; msg.style.color = '';
+  const btn = $('#readerConfirm'); btn.disabled = false; btn.textContent = 'Register reader'; btn.onclick = registerReader;
+  $('#readerOvl').classList.add('open');
+  setTimeout(() => $('#readerCode').focus(), 60);
+}
+function closeReaderModal() { $('#readerOvl').classList.remove('open'); }
+async function registerReader() {
+  const code = $('#readerCode').value.trim().toLowerCase().replace(/\s+/g, '-');
+  const msg = $('#readerMsg');
+  if (!/^[a-z]+-[a-z]+-[a-z]+$/.test(code)) { msg.style.color = 'var(--red)'; msg.textContent = 'Enter the three words, e.g. cherry-fine-chairman.'; return; }
+  const btn = $('#readerConfirm'); btn.disabled = true; btn.textContent = 'Registering…';
+  msg.style.color = 'var(--muted)'; msg.textContent = 'Talking to Stripe…';
+  try {
+    const res = await fetch('/api/staff/terminal/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code }) });
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) { msg.style.color = 'var(--red)'; msg.textContent = d.error || 'Could not register the reader.'; btn.disabled = false; btn.textContent = 'Register reader'; return; }
+    msg.style.color = 'var(--green)';
+    msg.textContent = '✓ ' + ((d.reader && d.reader.label) || 'Reader') + ' registered' + ((d.reader && d.reader.status) ? ' · ' + d.reader.status : '') + '. Card payments are ready.';
+    btn.textContent = 'Done'; btn.disabled = false; btn.onclick = closeReaderModal;
+  } catch (e) {
+    msg.style.color = 'var(--red)'; msg.textContent = 'Network error — check the connection and try again.';
+    btn.disabled = false; btn.textContent = 'Register reader';
+  }
+}
+$('#readerCancel').addEventListener('click', closeReaderModal);
+$('#readerOvl').addEventListener('click', (e) => { if (e.target.id === 'readerOvl') closeReaderModal(); });
 $('#auditClose').addEventListener('click', closeAuditModal);
 $('#auditOvl').addEventListener('click', (e) => { if (e.target.id === 'auditOvl') closeAuditModal(); });
 

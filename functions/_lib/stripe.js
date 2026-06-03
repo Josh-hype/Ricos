@@ -143,6 +143,28 @@ export async function cancelReaderAction(readerId, connectedAccountId, env) {
   return call(`/terminal/readers/${encodeURIComponent(readerId)}/cancel_action`, {}, env, opts);
 }
 
+/* Terminal provisioning (one-time reader setup). A reader must belong to a Terminal
+   Location on the connected account; we reuse one if it exists, else create it. */
+export async function listTerminalLocations(connectedAccountId, env) {
+  const opts = { method: 'GET' };
+  if (connectedAccountId) opts.stripeAccount = connectedAccountId;
+  return call('/terminal/locations?limit=100', null, env, opts);
+}
+export async function createTerminalLocation(displayName, address, connectedAccountId, env) {
+  const opts = {};
+  if (connectedAccountId) opts.stripeAccount = connectedAccountId;
+  return call('/terminal/locations', { display_name: displayName, address }, env, opts);
+}
+// Register a physical reader from the 3-word code shown on its screen.
+export async function registerTerminalReader({ registrationCode, label, location }, connectedAccountId, env) {
+  const opts = {};
+  if (connectedAccountId) opts.stripeAccount = connectedAccountId;
+  const body = { registration_code: registrationCode };
+  if (label) body.label = label;
+  if (location) body.location = location;
+  return call('/terminal/readers', body, env, opts);
+}
+
 // Capture an authorised (requires_capture) PaymentIntent — full amount.
 export async function capturePaymentIntent(paymentIntentId, connectedAccountId, env) {
   const opts = {};
