@@ -215,17 +215,18 @@ button{cursor:pointer;border:0;background:none}
 .icon-btn svg{width:20px;height:20px;stroke-width:1.9}
 .icon-btn.active{background:var(--amber-tint);border-color:var(--amber-bg);color:var(--amber)}
 .topbar .op-avatar{width:42px;height:38px;border-radius:11px;box-shadow:var(--sh-sm)}
-/* One-page board: mode buttons across the top + Live/Completed toggle */
-.modebar{display:flex;align-items:center;gap:12px;padding:14px 24px 2px;flex:none;flex-wrap:wrap}
-.modebar[hidden]{display:none}
-.mode-btn{display:flex;align-items:center;gap:9px;height:54px;padding:0 22px;border:0;border-radius:14px;cursor:pointer;color:#fff;font-size:15.5px;font-weight:800;letter-spacing:-.01em;background:linear-gradient(135deg,#0A86FF,#0070F0 60%,#0058C4);box-shadow:0 8px 20px rgba(0,112,240,.28);transition:transform var(--motion-fast) var(--ease-out),box-shadow var(--motion-fast)}
+/* One-page board: big mode buttons across the full width + Live/Completed toggle */
+.modebar{display:flex;align-items:stretch;gap:14px;padding:16px 24px 4px;flex:none}
+.modebar[hidden],.boardbar[hidden]{display:none}
+.mode-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:11px;height:74px;padding:0 18px;border:0;border-radius:16px;cursor:pointer;color:#fff;font-size:19px;font-weight:800;letter-spacing:-.01em;background:linear-gradient(135deg,#0A86FF,#0070F0 60%,#0058C4);box-shadow:0 10px 24px rgba(0,112,240,.3);transition:transform var(--motion-fast) var(--ease-out),box-shadow var(--motion-fast)}
 .mode-btn:hover{transform:translateY(-2px)}
 .mode-btn:active{transform:translateY(0)}
-.mode-btn .mb-ic{font-size:19px;line-height:1}
-.mode-btn.collection{background:linear-gradient(135deg,#16B27A,#0E9F6E 60%,#0B8A5E);box-shadow:0 8px 20px rgba(14,159,110,.26)}
-.mode-btn.delivery{background:linear-gradient(135deg,#F6B53C,#F4A82E 60%,#E0922A);box-shadow:0 8px 20px rgba(244,168,46,.3)}
-.board-toggle{margin-left:auto;display:inline-flex;background:var(--canvas);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px}
-.board-toggle button{height:38px;padding:0 16px;border:0;background:transparent;border-radius:9px;cursor:pointer;font-size:13.5px;font-weight:700;color:var(--muted)}
+.mode-btn .mb-ic{font-size:26px;line-height:1}
+.mode-btn.collection{background:linear-gradient(135deg,#16B27A,#0E9F6E 60%,#0B8A5E);box-shadow:0 10px 24px rgba(14,159,110,.28)}
+.mode-btn.delivery{background:linear-gradient(135deg,#F6B53C,#F4A82E 60%,#E0922A);box-shadow:0 10px 24px rgba(244,168,46,.32)}
+.boardbar{display:flex;justify-content:flex-end;align-items:center;padding:6px 24px 2px;flex:none}
+.board-toggle{display:inline-flex;background:var(--canvas);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px}
+.board-toggle button{height:38px;padding:0 18px;border:0;background:transparent;border-radius:9px;cursor:pointer;font-size:13.5px;font-weight:700;color:var(--muted)}
 .board-toggle button.active{background:var(--panel);color:var(--ink);box-shadow:var(--sh-sm)}
 .board-toggle .bt-count{font-family:var(--mono);font-size:12px;margin-left:5px;color:var(--blue)}
 .loc{display:flex;flex-direction:column;gap:2px;min-width:0}
@@ -1047,6 +1048,9 @@ button{cursor:pointer;border:0;background:none}
 <div id="dash" hidden>
   <section class="stage">
     <div class="topbar">
+      <button id="homeBtn" class="icon-btn" title="Home — orders" aria-label="Home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 10.5L12 3l9 7.5M5 9.5V20a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V9.5"/></svg>
+      </button>
       <div class="loc">
         <div class="eyebrow">{{shopShortName}}</div>
         <div class="name" id="viewTitle">Orders</div>
@@ -1072,6 +1076,8 @@ button{cursor:pointer;border:0;background:none}
       <button class="mode-btn" data-mode="walkin"><span class="mb-ic" aria-hidden="true">🚶</span> Walk in</button>
       <button class="mode-btn collection" data-mode="collection"><span class="mb-ic" aria-hidden="true">🛍️</span> Collection</button>
       <button class="mode-btn delivery" data-mode="delivery"><span class="mb-ic" aria-hidden="true">🛵</span> Delivery</button>
+    </div>
+    <div class="boardbar" id="boardBar">
       <div class="board-toggle" role="tablist">
         <button data-board="live" class="active" role="tab">Live <span class="bt-count" id="liveCount">0</span></button>
         <button data-board="completed" role="tab">Completed</button>
@@ -1664,7 +1670,8 @@ function setView(view, mode) {
   const isSale = (view === 'sale');
   const isBoard = (view === 'live');
   const usesRange = (view === 'zreport');
-  $('#modeBar').hidden = !isBoard;          // mode buttons + Live/Completed toggle: board only
+  $('#modeBar').hidden = !isBoard;          // big mode buttons: board only
+  $('#boardBar').hidden = !isBoard;         // Live/Completed toggle: board only
   $('#dateBar').hidden = !usesRange;
   // Sale lives in its own panel; swap visibility so it and the grid never both
   // fight for the stage's flex space.
@@ -1703,8 +1710,15 @@ async function loadCompleted() {
     grid.innerHTML = '<div class="empty">Couldn\'t load completed orders. Tap ↻ to retry.</div>';
   }
 }
-// Board mode buttons → start a counter sale in that mode (skips the in-panel picker).
-$$('#modeBar .mode-btn').forEach(b => b.addEventListener('click', () => setView('sale', b.dataset.mode)));
+// Board mode buttons → start a counter sale in that mode. Confirm the staff code over
+// the BOARD first: a cancel then leaves you on orders (not a half-open sale), and the
+// sale view opens straight onto the menu/form with nothing stale behind the prompt.
+$$('#modeBar .mode-btn').forEach(b => b.addEventListener('click', async () => {
+  const who = await askStaffCode();
+  if (!who) return;
+  sale.pendingTakenBy = who;
+  setView('sale', b.dataset.mode);
+}));
 
 // Board Live / Completed toggle.
 $$('#modeBar .board-toggle button').forEach(b => b.addEventListener('click', () => {
@@ -1727,6 +1741,14 @@ $('#boIcon').addEventListener('click', async () => {
     }
   }
   setView('backoffice');
+});
+
+// Home — universal escape back to the orders board (from back office, a report or a sale).
+$('#homeBtn').addEventListener('click', () => {
+  if (state.view === 'sale' && sale.cart && sale.cart.length &&
+      !confirm('Leave this sale? The items added will be cleared.')) return;
+  if (state.view === 'sale') { clearCart(); sale.customer = null; sale.deliveryFeeP = 0; }
+  setView('live');
 });
 $('#refreshBtn').addEventListener('click', () => {
   $('#refreshBtn').classList.add('spin');
@@ -2709,7 +2731,8 @@ async function pickSaleMode(mode) {
   // Each order records who's taking it: staff enter their code at the start. In
   // legacy mode (no operators) askStaffCode resolves {skip:true} and we don't
   // prompt. Cancelling leaves them on the mode picker without starting a sale.
-  const who = await askStaffCode();
+  let who = sale.pendingTakenBy; sale.pendingTakenBy = null;
+  if (!who) who = await askStaffCode();
   if (!who) return false;
   sale.takenBy = who.skip ? null : { id: who.id, name: who.name };
   sale.mode = mode;
