@@ -3431,7 +3431,7 @@ function buildKitchenTicket(o) {
 // The Sunmi T2 head is 80mm ≈ 576 dots. Char width ≈ fontSize/2, so a line holds
 // ≈ 1152/fontSize chars. We pad rows + draw rules to that width so every line fills the
 // FULL paper at whatever font size it uses (no empty right margin). Tune SZ to taste.
-const SZ = { xs: 22, sm: 24, body: 30, big: 34, total: 38, name: 44 };
+const SZ = { sm: 24, body: 30, name: 52 };
 function colsFor(size) { return Math.max(8, Math.floor(1152 / (size || 24))); }
 function padRow(left, right, size) {
   const cols = colsFor(size);
@@ -3442,7 +3442,7 @@ function padRow(left, right, size) {
   return left + ' '.repeat(gap) + right;
 }
 function rowOp(left, right, size, bold) { const s = size || SZ.body; return { t: 'text', s: padRow(left, right, s), size: s, bold: !!bold }; }
-function ruleOp(size) { const s = size || SZ.body; return { t: 'text', s: '-'.repeat(colsFor(s)), size: s }; }
+function ruleOp(size) { const s = size || SZ.body; return { t: 'text', s: '-'.repeat(colsFor(s)), size: s, bold: true }; }
 function lineExtras(li) {
   return [].concat(li.spice ? [li.spice] : [])
     .concat(li.meal ? ['Meal'] : [])
@@ -3465,40 +3465,41 @@ function buildReceiptDoc(o, ctx) {
   const paid = (ctx && ctx.tender) ? ('PAID BY ' + (ctx.tender === 'card' ? 'CARD' : 'CASH')) : '';
 
   const ops = [];
-  const base = window.EPOS_API_BASE || '';
-  if (base) ops.push({ t: 'image', url: base + '/logo.png' });
+  // No logo — a big bold wordmark reads better on thermal than the dithered badge.
+  ops.push({ t: 'feed', n: 1 });
   if (biz.tradingName) ops.push({ t: 'text', s: biz.tradingName, align: 'center', size: SZ.name, bold: true });
-  if (biz.phone) ops.push({ t: 'text', s: biz.phone, align: 'center', size: SZ.sm });
-  if (addr.line1) ops.push({ t: 'text', s: addr.line1, align: 'center', size: SZ.sm });
+  ops.push({ t: 'feed', n: 1 }); // breathing room under the name
+  if (biz.phone) ops.push({ t: 'text', s: biz.phone, align: 'center', size: SZ.sm, bold: true });
+  if (addr.line1) ops.push({ t: 'text', s: addr.line1, align: 'center', size: SZ.sm, bold: true });
   const cp = [addr.city, addr.postcode].filter(Boolean).join(' · ');
-  if (cp) ops.push({ t: 'text', s: cp, align: 'center', size: SZ.sm });
+  if (cp) ops.push({ t: 'text', s: cp, align: 'center', size: SZ.sm, bold: true });
 
   ops.push(ruleOp());
-  ops.push(rowOp('Ref ' + o.id, when, SZ.body, false));
-  ops.push({ t: 'text', s: mode + (who ? ' · ' + who : '') + ' · ASAP', size: SZ.big, bold: true });
+  ops.push(rowOp('Ref ' + o.id, when, SZ.body, true));
+  ops.push({ t: 'text', s: mode + (who ? ' · ' + who : '') + ' · ASAP', size: SZ.body, bold: true });
   if (o.fulfillment === 'delivery' && o.address) {
-    if (o.address.line1) ops.push({ t: 'text', s: o.address.line1, size: SZ.sm });
-    if (o.address.postcode) ops.push({ t: 'text', s: o.address.postcode, size: SZ.sm });
+    if (o.address.line1) ops.push({ t: 'text', s: o.address.line1, size: SZ.sm, bold: true });
+    if (o.address.postcode) ops.push({ t: 'text', s: o.address.postcode, size: SZ.sm, bold: true });
   }
   ops.push(ruleOp());
   for (const li of (t.lines || [])) {
     ops.push(rowOp((li.qty || 1) + 'x ' + li.name, money(li.lineTotalP), SZ.body, true));
-    for (const ex of lineExtras(li)) ops.push({ t: 'text', s: '   ' + ex, size: SZ.xs });
+    for (const ex of lineExtras(li)) ops.push({ t: 'text', s: '   ' + ex, size: SZ.sm, bold: true });
   }
   ops.push(ruleOp());
-  if (t.deliveryFeeP) { ops.push(rowOp('Subtotal', money(t.subtotalP), SZ.body, false)); ops.push(rowOp('Delivery', money(t.deliveryFeeP), SZ.body, false)); }
-  ops.push(rowOp('TOTAL', '£' + money(t.totalP), SZ.total, true));
+  if (t.deliveryFeeP) { ops.push(rowOp('Subtotal', money(t.subtotalP), SZ.body, true)); ops.push(rowOp('Delivery', money(t.deliveryFeeP), SZ.body, true)); }
+  ops.push(rowOp('TOTAL', '£' + money(t.totalP), SZ.body, true));
   ops.push(ruleOp());
-  if (paid) ops.push({ t: 'text', s: paid, align: 'center', size: SZ.big, bold: true });
+  if (paid) ops.push({ t: 'text', s: paid, align: 'center', size: SZ.body, bold: true });
   if (ctx && ctx.tender === 'cash' && ctx.tenderedP > 0) {
-    ops.push(rowOp('Cash', money(ctx.tenderedP), SZ.body, false));
-    if (ctx.changeP > 0) ops.push(rowOp('Change', money(ctx.changeP), SZ.body, false));
+    ops.push(rowOp('Cash', money(ctx.tenderedP), SZ.body, true));
+    if (ctx.changeP > 0) ops.push(rowOp('Change', money(ctx.changeP), SZ.body, true));
   }
   ops.push(ruleOp());
-  if (o.createdBy && o.createdBy.name) ops.push({ t: 'text', s: 'Served by ' + o.createdBy.name, align: 'center', size: SZ.sm });
-  ops.push({ t: 'text', s: 'Thank you — see you soon!', align: 'center', size: SZ.sm });
+  if (o.createdBy && o.createdBy.name) ops.push({ t: 'text', s: 'Served by ' + o.createdBy.name, align: 'center', size: SZ.sm, bold: true });
+  ops.push({ t: 'text', s: 'Thank you — see you soon!', align: 'center', size: SZ.sm, bold: true });
   ops.push({ t: 'feed', n: 1 });
-  ops.push({ t: 'text', s: 'ORDER ' + o.id, align: 'center', size: SZ.big, bold: true });
+  ops.push({ t: 'text', s: 'ORDER ' + o.id, align: 'center', size: SZ.body, bold: true });
   ops.push({ t: 'feed', n: 3 });
   ops.push({ t: 'cut' });
   return ops;
