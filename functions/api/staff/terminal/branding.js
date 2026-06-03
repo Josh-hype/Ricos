@@ -1,22 +1,18 @@
-/* POST /api/staff/terminal/branding — show the shop's logo on the card reader's idle
-   screen (instead of Stripe's).
+/* POST /api/staff/terminal/branding — put the shop's logo on the card reader's idle
+   screen. The browser reads its own /logo.png and posts the bytes (base64) so the
+   Function never self-fetches; falls back to the Pages ASSETS binding for the native app.
 
-   The logo bytes come from the CLIENT (the browser reads its own /logo.png and posts it
-   as base64) so the Function never fetches anything itself — a Pages Function reading its
-   own site can stall and 502. If the client couldn't send one (e.g. the native app), we
-   fall back to the Pages ASSETS binding, fully wrapped in a timeout. Either way we upload
-   the image to Stripe and point an account-default Terminal Configuration's splash at it.
-
-   GET this endpoint (no auth) to see which version is deployed. */
+   GET ?step=logo|upload|full&key=rdiag — DIAGNOSTIC probe (temporary). Runs the named
+   step server-side and returns JSON, so the exact failing step is identifiable by
+   opening a URL. ?step=full also sets the branding if every step works. Remove once the
+   POST flow is confirmed. GET with no step returns the deployed version. */
 
 import { requirePermission } from '../../../_lib/permissions.js';
 import { getConfig } from '../../../_lib/config.js';
 import { uploadTerminalSplash, createTerminalConfiguration } from '../../../_lib/stripe.js';
 
-const VERSION = 'v4-clientlogo';
-
-export const onRequestGet = async () =>
-  new Response(JSON.stringify({ ok: true, version: VERSION }), { headers: { 'Content-Type': 'application/json' } });
+const VERSION = 'v5-probe';
+const PROBE_KEY = 'rdiag';
 
 function withTimeout(promise, ms, label) {
   return Promise.race([
@@ -24,12 +20,47 @@ function withTimeout(promise, ms, label) {
     new Promise((_, reject) => setTimeout(() => reject(new Error((label || 'request') + ' timed out')), ms)),
   ]);
 }
+function json(o, status) {
+  return new Response(JSON.stringify(o), { status: status || 200, headers: { 'Content-Type': 'application/json' } });
+}
 function b64ToBlob(b64, type) {
   const bin = atob(b64);
   const bytes = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
   return new Blob([bytes], { type: type || 'image/png' });
 }
+async function readLogoServerSide(request, env) {
+  const logoUrl = new URL('/logo.png', request.url).toString();
+  const r = (env.ASSETS && env.ASSETS.fetch) ? await env.ASSETS.fetch(new Request(logoUrl)) : await fetch(logoUrl);
+  if (!r.ok) throw new Error('logo status ' + r.status);
+  return { buf: await r.arrayBuffer(), type: r.headers.get('content-type') || 'image/png' };
+}
+
+export const onRequestGet = async ({ request, env }) => {
+  const url = new URL(request.url);
+  const step = url.searchParams.get('step');
+  if (!step) return json({ ok: true, version: VERSION });
+  if (url.searchParams.get('key') !== PROBE_KEY) return json({ ok: false, error: 'add &key=' + PROBE_KEY }, 403);
+  try {
+    const acct = getConfig().stripe?.connectedAccountId;
+    if (!acct || acct === 'TBD') return json({ ok: false, step, error: 'no connected account configured' });
+
+    const got = await withTimeout(readLogoServerSide(request, env), 12000, 'logo read');
+    const blob = new Blob([got.buf], { type: got.type });
+    if (step === 'logo') {
+      return json({ ok: true, step: 'logo', size: got.buf.byteLength, type: got.type, hasAssets: !!(env.ASSETS && env.ASSETS.fetch) });
+    }
+
+    const file = await withTimeout(uploadTerminalSplash(blob, 'reader-splash.png', acct, env), 20000, 'Stripe upload');
+    if (step === 'upload') return json({ ok: true, step: 'upload', fileId: file.id });
+
+    const cfg = await withTimeout(
+      createTerminalConfiguration({ splashscreenFileId: file.id, isAccountDefault: true }, acct, env), 15000, 'Stripe config');
+    return json({ ok: true, step: 'full', fileId: file.id, configurationId: cfg.id, note: 'branding set ✓' });
+  } catch (e) {
+    return json({ ok: false, step, error: e && e.message ? e.message : 'unknown' });
+  }
+};
 
 export const onRequestPost = async ({ request, env }) => {
   try {
@@ -39,50 +70,36 @@ export const onRequestPost = async ({ request, env }) => {
     let body = {};
     try { body = await request.json(); } catch { /* tolerate empty body */ }
 
-    const config = getConfig();
-    const acct = config.stripe?.connectedAccountId;
-    if (!acct || acct === 'TBD') return err('Card payments are not configured for this shop.', 400);
+    const acct = getConfig().stripe?.connectedAccountId;
+    if (!acct || acct === 'TBD') return json({ error: 'Card payments are not configured for this shop.' }, 400);
 
-    // Logo bytes: prefer the client-sent image; otherwise read it server-side (timed out).
     let blob;
     if (body.logo) {
       try { blob = b64ToBlob(String(body.logo), body.contentType); }
-      catch (e) { return err('Bad logo data: ' + (e.message || 'decode failed'), 400); }
+      catch (e) { return json({ error: 'Bad logo data: ' + (e.message || 'decode failed') }, 400); }
     } else {
       try {
-        const logoUrl = new URL('/logo.png', request.url).toString();
-        const read = async () => {
-          const r = (env.ASSETS && env.ASSETS.fetch) ? await env.ASSETS.fetch(new Request(logoUrl)) : await fetch(logoUrl);
-          if (!r.ok) throw new Error('status ' + r.status);
-          return { buf: await r.arrayBuffer(), type: r.headers.get('content-type') || 'image/png' };
-        };
-        const got = await withTimeout(read(), 12000, 'logo read');
+        const got = await withTimeout(readLogoServerSide(request, env), 12000, 'logo read');
         blob = new Blob([got.buf], { type: got.type });
       } catch (e) {
-        return err('Could not load the shop logo: ' + (e.message || 'failed'), 502);
+        return json({ error: 'Could not load the shop logo: ' + (e.message || 'failed') }, 502);
       }
     }
 
     let file;
     try { file = await withTimeout(uploadTerminalSplash(blob, 'reader-splash.png', acct, env), 20000, 'Stripe upload'); }
-    catch (e) { return err('Stripe rejected the logo image: ' + (e.message || 'upload failed'), 400); }
+    catch (e) { return json({ error: 'Stripe rejected the logo image: ' + (e.message || 'upload failed') }, 400); }
 
     let configuration;
     try {
       configuration = await withTimeout(
-        createTerminalConfiguration({ splashscreenFileId: file.id, isAccountDefault: true }, acct, env),
-        15000, 'Stripe config',
-      );
+        createTerminalConfiguration({ splashscreenFileId: file.id, isAccountDefault: true }, acct, env), 15000, 'Stripe config');
     } catch (e) {
-      return err('Could not apply the reader branding: ' + (e.message || 'Stripe error'), 502);
+      return json({ error: 'Could not apply the reader branding: ' + (e.message || 'Stripe error') }, 502);
     }
 
-    return Response.json({ ok: true, version: VERSION, fileId: file.id, configurationId: configuration.id });
+    return json({ ok: true, version: VERSION, fileId: file.id, configurationId: configuration.id });
   } catch (e) {
-    return err('Branding failed: ' + (e && e.message ? e.message : 'unknown error'), 500);
+    return json({ error: 'Branding failed: ' + (e && e.message ? e.message : 'unknown error') }, 500);
   }
 };
-
-function err(error, status) {
-  return new Response(JSON.stringify({ error }), { status, headers: { 'Content-Type': 'application/json' } });
-}
