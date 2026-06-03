@@ -1,12 +1,10 @@
 /* POST /api/staff/terminal/branding — put the shop's logo on the card reader's idle
    screen. The browser reads its own /logo.png and posts the bytes (base64) so the
-   Function never self-fetches; falls back to the Pages ASSETS binding for the native app.
-   The image is uploaded to Stripe, wrapped in a Terminal Configuration, and that config is
-   assigned to the shop's Terminal location (readers there adopt it). We avoid
-   `is_account_default`, which older account API versions reject.
-
-   GET ?step=logo|upload|full&key=rdiag — temporary diagnostic probe (run a step, get JSON;
-   ?step=full sets the branding). GET with no step returns the deployed version. */
+   Function never self-fetches (which can stall + 502); falls back to the Pages ASSETS
+   binding for the native app. The image is uploaded to Stripe, wrapped in a Terminal
+   Configuration, and that config is assigned to the shop's Terminal location (readers
+   there adopt it on reboot). We avoid `is_account_default`, which older account API
+   versions reject. GET returns the deployed version. */
 
 import { requirePermission } from '../../../_lib/permissions.js';
 import { getConfig } from '../../../_lib/config.js';
@@ -15,8 +13,10 @@ import {
   listTerminalLocations, createTerminalLocation, updateTerminalLocation,
 } from '../../../_lib/stripe.js';
 
-const VERSION = 'v6-location';
-const PROBE_KEY = 'rdiag';
+const VERSION = 'v7';
+
+export const onRequestGet = async () =>
+  new Response(JSON.stringify({ ok: true, version: VERSION }), { headers: { 'Content-Type': 'application/json' } });
 
 function withTimeout(promise, ms, label) {
   return Promise.race([
@@ -52,7 +52,6 @@ async function ensureLocation(acct, env) {
   }
   return location;
 }
-// Upload the splash, wrap it in a config, and assign that config to the location.
 async function applyLogo(blob, acct, env) {
   const file = await withTimeout(uploadTerminalSplash(blob, 'reader-splash.png', acct, env), 20000, 'Stripe upload');
   const cfg = await withTimeout(createTerminalConfiguration({ splashscreenFileId: file.id }, acct, env), 15000, 'Stripe config');
@@ -60,31 +59,6 @@ async function applyLogo(blob, acct, env) {
   await withTimeout(updateTerminalLocation(location.id, { configuration_overrides: cfg.id }, acct, env), 12000, 'apply to location');
   return { fileId: file.id, configurationId: cfg.id, locationId: location.id };
 }
-
-export const onRequestGet = async ({ request, env }) => {
-  const url = new URL(request.url);
-  const step = url.searchParams.get('step');
-  if (!step) return json({ ok: true, version: VERSION });
-  if (url.searchParams.get('key') !== PROBE_KEY) return json({ ok: false, error: 'add &key=' + PROBE_KEY }, 403);
-  try {
-    const acct = getConfig().stripe?.connectedAccountId;
-    if (!acct || acct === 'TBD') return json({ ok: false, step, error: 'no connected account configured' });
-
-    const got = await withTimeout(readLogoServerSide(request, env), 12000, 'logo read');
-    const blob = new Blob([got.buf], { type: got.type });
-    if (step === 'logo') return json({ ok: true, step: 'logo', size: got.buf.byteLength, type: got.type });
-
-    const file = await withTimeout(uploadTerminalSplash(blob, 'reader-splash.png', acct, env), 20000, 'Stripe upload');
-    if (step === 'upload') return json({ ok: true, step: 'upload', fileId: file.id });
-
-    const cfg = await withTimeout(createTerminalConfiguration({ splashscreenFileId: file.id }, acct, env), 15000, 'Stripe config');
-    const location = await ensureLocation(acct, env);
-    await withTimeout(updateTerminalLocation(location.id, { configuration_overrides: cfg.id }, acct, env), 12000, 'apply to location');
-    return json({ ok: true, step: 'full', fileId: file.id, configurationId: cfg.id, locationId: location.id, note: 'branding set ✓' });
-  } catch (e) {
-    return json({ ok: false, step, error: e && e.message ? e.message : 'unknown' });
-  }
-};
 
 export const onRequestPost = async ({ request, env }) => {
   try {
