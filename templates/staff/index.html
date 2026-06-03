@@ -4358,7 +4358,7 @@ async function registerReader() {
   try {
     const res = await fetch('/api/staff/terminal/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code }) });
     const d = await res.json().catch(() => ({}));
-    if (!res.ok) { msg.style.color = 'var(--red)'; msg.textContent = d.error || 'Could not register the reader.'; btn.disabled = false; btn.textContent = 'Register reader'; return; }
+    if (!res.ok) { msg.style.color = 'var(--red)'; msg.textContent = (d && d.error) || ('Could not register the reader — HTTP ' + res.status + (res.status === 404 ? ' (still deploying — wait a minute)' : '') + '.'); btn.disabled = false; btn.textContent = 'Register reader'; return; }
     msg.style.color = 'var(--green)';
     msg.textContent = '✓ ' + ((d.reader && d.reader.label) || 'Reader') + ' registered' + ((d.reader && d.reader.status) ? ' · ' + d.reader.status : '') + '. Card payments are ready.';
     btn.textContent = 'Done'; btn.disabled = false; btn.onclick = closeReaderModal;
@@ -4376,7 +4376,7 @@ $('#readerBrand').addEventListener('click', async () => {
   try {
     const res = await fetch('/api/staff/terminal/branding', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
     const d = await res.json().catch(() => ({}));
-    if (!res.ok) { msg.style.color = 'var(--red)'; msg.textContent = d.error || 'Could not set the logo.'; btn.disabled = false; btn.textContent = orig; return; }
+    if (!res.ok) { msg.style.color = 'var(--red)'; msg.textContent = (d && d.error) || ('Could not set the logo — HTTP ' + res.status + (res.status === 404 ? ' (still deploying — wait a minute)' : '') + '.'); btn.disabled = false; btn.textContent = orig; return; }
     msg.style.color = 'var(--green)'; msg.textContent = '✓ Logo set. Reboot the reader (or wait a few minutes) to see it on the idle screen.';
     btn.disabled = false; btn.textContent = orig;
   } catch (e) { msg.style.color = 'var(--red)'; msg.textContent = 'Network error — try again.'; btn.disabled = false; btn.textContent = orig; }
