@@ -40,8 +40,8 @@ export const onRequestPost = async ({ request, env }) => {
 
   // One PaymentIntent per attempt; mint the order id now so the PI metadata, the
   // reader action, and the eventual order all line up. The customer pays the plain
-  // menu total; the platform's card fee (default 1.4% + 20p) is taken as the
-  // Connect application_fee out of the shop's settlement — not added to the bill.
+  // menu total; the platform's margin (default 10p flat) is taken as the Connect
+  // application_fee — the shop's account pays Stripe's processing fee separately.
   const orderId = newOrderId();
   let pi;
   try {
