@@ -799,6 +799,8 @@ button{cursor:pointer;border:0;background:none}
 .pay-done-card .pdc-actions button{height:46px;padding:0 22px;border-radius:12px;font-size:13.5px;font-weight:700;border:0}
 .pdc-new{background:var(--blue);color:#fff}
 .pdc-new:hover{background:var(--blue-600)}
+.pdc-receipt{background:var(--canvas);color:var(--ink-2);border:1.5px solid var(--line)}
+.pdc-receipt:hover{background:#fff;color:var(--blue);border-color:var(--blue)}
 
 /* Sale stages: the mode picker and the details form take the full pane,
    so they're grid items that span both columns. Catalog + ticket use the
@@ -1405,6 +1407,7 @@ button{cursor:pointer;border:0;background:none}
       <h2>Payment complete</h2>
       <p id="payDoneSub">£0.00 · Order #—</p>
       <div class="pdc-actions">
+        <button class="pdc-receipt" id="payReceipt" type="button">🧾 Receipt</button>
         <button class="pdc-new" id="payNewSale" type="button">New sale</button>
       </div>
     </div>
@@ -1459,14 +1462,14 @@ const audio = (() => {
     const notes = [{ f: 783.99, at: 0.00 }, { f: 1046.50, at: 0.20 }]; // G5 → C6
     const voice = (f, tau) => {
       if (tau < 0) return 0;
-      const env = (1 - Math.exp(-tau / 0.004)) * Math.exp(-tau / 0.42); // quick attack, bell decay
-      return env * (Math.sin(2 * Math.PI * f * tau) + 0.3 * Math.sin(2 * Math.PI * 2 * f * tau));
+      const env = (1 - Math.exp(-tau / 0.006)) * Math.exp(-tau / 0.5); // soft attack, gentle bell decay
+      return env * (Math.sin(2 * Math.PI * f * tau) + 0.18 * Math.sin(2 * Math.PI * 2 * f * tau));
     };
     for (let i = 0; i < n; i++) {
       const t = i / sr;
       let a = 0;
       for (const nt of notes) a += voice(nt.f, t - nt.at);
-      a *= 0.4; // headroom for the overlapping notes + octave
+      a *= 0.26; // quieter + softer (less sharp)
       dv.setInt16(44 + i * 2, Math.max(-1, Math.min(1, a)) * 32767, true);
     }
     return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
@@ -2361,7 +2364,14 @@ async function acceptOrder(id, prepMinutes) {
     const j = await res.json().catch(() => ({}));
     throw new Error(j.error || `Error ${res.status}`);
   }
-  return res.json();
+  const data = await res.json().catch(() => ({}));
+  // Accepted → print the kitchen ticket. Prefer the full order from state (it carries
+  // the line items); fall back to the accept response.
+  try {
+    const ord = (state.orders || []).find((o) => o.id === id) || data.order || data;
+    if (ord && ord.totals) printTo('kitchen', ord);
+  } catch (e) {}
+  return data;
 }
 
 function openAccept(id) {
@@ -3361,6 +3371,55 @@ function buildReceiptText(o, ctx) {
   return out.join('\n');
 }
 
+// Kitchen ticket: what to make. No prices — order ref, type, who it's for, and the
+// items with their options. Printed on counter-sale completion and on order accept.
+function buildKitchenTicket(o) {
+  const W = 32;
+  const t = o.totals || {};
+  const center = (s) => { s = String(s); return s.length >= W ? s : ' '.repeat(Math.floor((W - s.length) / 2)) + s; };
+  const rule = '-'.repeat(W);
+  const mode = o.fulfillment === 'delivery' ? 'DELIVERY' : (o.source === 'counter-walkin' ? 'WALK-IN' : 'COLLECTION');
+  let when = '';
+  try { when = new Date(o.createdAt).toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit' }); } catch (e) {}
+  const out = ['', center('*** KITCHEN ***'), center('#' + o.id + (when ? '   ' + when : '')), center(mode)];
+  if (o.customer && o.customer.name && o.customer.name !== 'Walk-in') out.push(center(o.customer.name));
+  if (o.fulfillment === 'delivery' && o.address) {
+    out.push(rule);
+    if (o.address.line1) out.push(o.address.line1);
+    if (o.address.line2) out.push(o.address.line2);
+    if (o.address.postcode) out.push(o.address.postcode);
+  }
+  out.push(rule);
+  for (const li of (t.lines || [])) {
+    out.push((li.qty || 1) + 'x ' + li.name);
+    const extras = []
+      .concat(li.spice ? [li.spice] : [])
+      .concat(li.meal ? ['Meal'] : [])
+      .concat(Array.isArray(li.modifiers) ? li.modifiers : [])
+      .concat(Array.isArray(li.mealChoices) ? li.mealChoices : []);
+    for (const ex of extras) {
+      const s = (typeof ex === 'string') ? ex : (ex && (ex.label || ex.name)) || '';
+      if (s) out.push('   - ' + s);
+    }
+  }
+  out.push(rule);
+  return out.join('\n');
+}
+
+// Single print path (kitchen ticket or customer receipt) with result logging, so the
+// device LOG shows ok / printer-not-connected / printer-error for every print.
+function printTo(kind, o, sale) {
+  if (!(window.EPOSNative && window.EPOSNative.printReceipt)) { try { console.log('[print] no EPOSNative.printReceipt'); } catch (e) {} return; }
+  const text = kind === 'kitchen'
+    ? buildKitchenTicket(o)
+    : buildReceiptText(o, { tender: (sale && sale.tender) || 'cash', tenderedP: (sale && sale.tenderedP) || 0, changeP: (sale && sale.changeP) || 0 });
+  try {
+    Promise.resolve(window.EPOSNative.printReceipt({ text }))
+      .then((r) => { try { console.log('[print] ' + kind + ' ' + JSON.stringify(r)); } catch (e) {} })
+      .catch((e) => { try { console.log('[print] ' + kind + ' error ' + (e && e.message)); } catch (e2) {} });
+  } catch (e) { try { console.log('[print] ' + kind + ' threw ' + (e && e.message)); } catch (e2) {} }
+}
+
 // Collect the cart + sale context into the counter-order payload (shared by the
 // cash and card paths). `extra` carries the tender + any card capture refs.
 function buildSalePayload(extra) {
@@ -3403,13 +3462,10 @@ async function finalizeOrder(extra, ctx) {
   }
   $('#payDone').classList.add('show');
   if (ctx.isCash) { try { if (window.EPOSNative && window.EPOSNative.kickDrawer) window.EPOSNative.kickDrawer(); } catch (e) {} }
-  try {
-    if (window.EPOSNative && window.EPOSNative.printReceipt) {
-      Promise.resolve(window.EPOSNative.printReceipt({ text: buildReceiptText(o, { tender: ctx.isCash ? 'cash' : 'card', tenderedP: ctx.tenderedP, changeP }) }))
-        .then((r) => { try { console.log('[print] ' + JSON.stringify(r)); } catch (e) {} })
-        .catch((e) => { try { console.log('[print] error ' + (e && e.message)); } catch (e2) {} });
-    } else { try { console.log('[print] no EPOSNative.printReceipt'); } catch (e) {} }
-  } catch (e) { try { console.log('[print] threw ' + (e && e.message)); } catch (e2) {} }
+  // Counter sale → auto-print the KITCHEN ticket. Remember this sale so the
+  // "Receipt" button on the success card can print a customer receipt on request.
+  state.lastSale = { o, tender: ctx.isCash ? 'cash' : 'card', tenderedP: ctx.tenderedP, changeP };
+  printTo('kitchen', o, state.lastSale);
   state.seenIds.add(o.id);
   poll();
   return true;
@@ -3518,6 +3574,11 @@ $('#payNewSale').addEventListener('click', () => {
   sale.deliveryFeeP = 0;
   setSaleStage('mode');
   closePayModal();
+});
+// Optional customer receipt — only if they ask. Prints the full receipt for the
+// sale we just completed (kitchen ticket already printed automatically).
+$('#payReceipt').addEventListener('click', () => {
+  if (state.lastSale) printTo('receipt', state.lastSale.o, state.lastSale);
 });
 
 /* ============================== Manager PIN (Today + Z report)
