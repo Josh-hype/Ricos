@@ -49,3 +49,17 @@ export async function priceCounterSale({ items, mode, address: rawAddress }, con
 
   return { ok: true, mode: m, fulfillment, totals, address };
 }
+
+/* Platform card fee for an in-person (counter card) sale, taken as the Stripe
+   Connect application_fee on the connected account — i.e. the customer pays the
+   plain menu total, and this comes out of the shop's settlement to the platform.
+   Default 1.4% + 20p (per-shop override via config.payments.cardFeeBps / .cardFeeFixedP).
+   The platform's NET depends on who bears Stripe's processing fee (a Connect
+   setting): if the platform does, 1.4%+20p collected − Stripe's 1.4%+10p ≈ 10p. */
+export function cardFeeP(totalP, config) {
+  const bps = Number(config?.payments?.cardFeeBps);
+  const fixed = Number(config?.payments?.cardFeeFixedP);
+  const rateBps = Number.isFinite(bps) ? bps : 140;     // 1.4%
+  const fixedP = Number.isFinite(fixed) ? fixed : 20;   // 20p
+  return Math.round((totalP * rateBps) / 10000) + fixedP;
+}

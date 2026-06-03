@@ -9,7 +9,7 @@
 
 import { requirePermission } from '../../../_lib/permissions.js';
 import { getConfig } from '../../../_lib/config.js';
-import { priceCounterSale } from '../../../_lib/counter-totals.js';
+import { priceCounterSale, cardFeeP } from '../../../_lib/counter-totals.js';
 import { createPaymentIntent, listTerminalReaders, processPaymentIntentOnReader } from '../../../_lib/stripe.js';
 import { newOrderId } from '../../../_lib/kv.js';
 
@@ -39,8 +39,9 @@ export const onRequestPost = async ({ request, env }) => {
   const reader = online[0];
 
   // One PaymentIntent per attempt; mint the order id now so the PI metadata, the
-  // reader action, and the eventual order all line up. Counter sales carry no
-  // service fee, so applicationFeeP is 0 — the venue keeps the full amount.
+  // reader action, and the eventual order all line up. The customer pays the plain
+  // menu total; the platform's card fee (default 1.4% + 20p) is taken as the
+  // Connect application_fee out of the shop's settlement — not added to the bill.
   const orderId = newOrderId();
   let pi;
   try {
@@ -49,7 +50,7 @@ export const onRequestPost = async ({ request, env }) => {
       currency: 'gbp',
       orderId,
       connectedAccountId: acct,
-      applicationFeeP: priced.totals.serviceFeeP || 0,
+      applicationFeeP: cardFeeP(priced.totals.totalP, config),
       cardPresent: true,
     }, env);
   } catch (e) {
