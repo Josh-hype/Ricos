@@ -26,7 +26,7 @@
 (function () {
   'use strict';
 
-  var BUILD = 'failsafe-8'; // bump on each app-layer change so the device log confirms freshness
+  var BUILD = 'failsafe-9'; // bump on each app-layer change so the device log confirms freshness
 
   var BASE = '';
   var TOKEN = '';
@@ -202,23 +202,28 @@
     window.addEventListener('DOMContentLoaded', installFetchShim);
   }
 
-  // Hardware facade.
+  // Hardware facade. Resolve the native plugin DIRECTLY each call (not via the shim's
+  // cached `available`): an older/eager shim could pin available=false forever and make
+  // the printer look "not-in-app" even though the plugin is wired. This can't.
+  function eposPlugin() {
+    return (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.EposHardware) || null;
+  }
   window.EPOSNative = {
     isApp: inApp,
     printDoc: function (payload) {
-      if (window.EposHardware && window.EposHardware.available) return window.EposHardware.printDoc(payload || {});
+      var p = eposPlugin(); if (p) return p.printDoc(payload || {});
       return Promise.resolve({ ok: false, reason: 'not-in-app' });
     },
     printReceipt: function (payload) {
-      if (window.EposHardware && window.EposHardware.available) return window.EposHardware.printReceipt(payload || {});
+      var p = eposPlugin(); if (p) return p.printReceipt(payload || {});
       return Promise.resolve({ ok: false, reason: 'not-in-app' });
     },
     kickDrawer: function () {
-      if (window.EposHardware && window.EposHardware.available) return window.EposHardware.kickDrawer();
+      var p = eposPlugin(); if (p) return p.kickDrawer();
       return Promise.resolve({ ok: false, reason: 'not-in-app' });
     },
     collectCardPayment: function (payload) {
-      if (window.EposHardware && window.EposHardware.available) return window.EposHardware.collectCardPayment(payload || {});
+      var p = eposPlugin(); if (p) return p.collectCardPayment(payload || {});
       return Promise.resolve({ ok: false, reason: 'not-in-app' });
     },
     onSignOut: function () {
