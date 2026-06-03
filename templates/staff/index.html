@@ -3525,10 +3525,16 @@ function buildKitchenDoc(o) {
 function printTo(kind, o, pctx) {
   const ctx = { tender: (pctx && pctx.tender) || 'cash', tenderedP: (pctx && pctx.tenderedP) || 0, changeP: (pctx && pctx.changeP) || 0 };
   if (window.EPOSNative && window.EPOSNative.printDoc) {
-    const ops = kind === 'kitchen' ? buildKitchenDoc(o) : buildReceiptDoc(o, ctx);
-    Promise.resolve(window.EPOSNative.printDoc({ ops }))
-      .then((r) => { try { console.log('[print] ' + kind + (r && r.ok ? ' ok' : ' ' + JSON.stringify(r))); } catch (e) {} })
-      .catch(() => printToText(kind, o, ctx)); // old APK without printDoc → plain text
+    try {
+      const ops = kind === 'kitchen' ? buildKitchenDoc(o) : buildReceiptDoc(o, ctx);
+      Promise.resolve(window.EPOSNative.printDoc({ ops }))
+        .then((r) => {
+          try { console.log('[print] ' + kind + (r && r.ok ? ' ok' : ' ' + JSON.stringify(r))); } catch (e) {}
+          // not-in-app = native has no printDoc (APK older than the printDoc build) → text.
+          if (!(r && r.ok) && r && r.reason === 'not-in-app') printToText(kind, o, ctx);
+        })
+        .catch(() => printToText(kind, o, ctx));
+    } catch (e) { printToText(kind, o, ctx); }
   } else {
     printToText(kind, o, ctx);
   }

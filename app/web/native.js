@@ -210,20 +210,22 @@
   }
   window.EPOSNative = {
     isApp: inApp,
+    // Guard each method: an OLD native plugin (built before printDoc) won't expose it,
+    // so we return not-in-app rather than throw — printTo then falls back to text.
     printDoc: function (payload) {
-      var p = eposPlugin(); if (p) return p.printDoc(payload || {});
+      var p = eposPlugin(); if (p && p.printDoc) return p.printDoc(payload || {});
       return Promise.resolve({ ok: false, reason: 'not-in-app' });
     },
     printReceipt: function (payload) {
-      var p = eposPlugin(); if (p) return p.printReceipt(payload || {});
+      var p = eposPlugin(); if (p && p.printReceipt) return p.printReceipt(payload || {});
       return Promise.resolve({ ok: false, reason: 'not-in-app' });
     },
     kickDrawer: function () {
-      var p = eposPlugin(); if (p) return p.kickDrawer();
+      var p = eposPlugin(); if (p && p.kickDrawer) return p.kickDrawer();
       return Promise.resolve({ ok: false, reason: 'not-in-app' });
     },
     collectCardPayment: function (payload) {
-      var p = eposPlugin(); if (p) return p.collectCardPayment(payload || {});
+      var p = eposPlugin(); if (p && p.collectCardPayment) return p.collectCardPayment(payload || {});
       return Promise.resolve({ ok: false, reason: 'not-in-app' });
     },
     onSignOut: function () {
