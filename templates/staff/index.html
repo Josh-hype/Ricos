@@ -224,7 +224,7 @@ button{cursor:pointer;border:0;background:none}
 .mode-group .mode-btn + .mode-btn{margin-left:18px}
 .mode-btn:hover{transform:translateY(-2px)}
 .mode-btn:active{transform:translateY(0)}
-.mode-btn .mb-ic{font-size:26px;line-height:1;margin-right:10px}
+.mode-btn .mb-ic{width:26px;height:26px;margin-right:12px;flex:none}
 .mode-btn.collection{background:linear-gradient(135deg,#16B27A,#0E9F6E 60%,#0B8A5E);box-shadow:0 10px 24px rgba(14,159,110,.28)}
 .mode-btn.delivery{background:linear-gradient(135deg,#F6B53C,#F4A82E 60%,#E0922A);box-shadow:0 10px 24px rgba(244,168,46,.32)}
 .boardbar{display:flex;justify-content:flex-end;align-items:center;padding:6px 24px 2px;flex:none}
@@ -1077,9 +1077,18 @@ button{cursor:pointer;border:0;background:none}
 
     <div class="modebar" id="modeBar">
       <div class="mode-group">
-        <button class="mode-btn" data-mode="walkin"><span class="mb-ic" aria-hidden="true">🚶</span> Walk in</button>
-        <button class="mode-btn collection" data-mode="collection"><span class="mb-ic" aria-hidden="true">🛍️</span> Collection</button>
-        <button class="mode-btn delivery" data-mode="delivery"><span class="mb-ic" aria-hidden="true">🛵</span> Delivery</button>
+        <button class="mode-btn" data-mode="walkin">
+          <svg class="mb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Walk in
+        </button>
+        <button class="mode-btn collection" data-mode="collection">
+          <svg class="mb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          Collection
+        </button>
+        <button class="mode-btn delivery" data-mode="delivery">
+          <svg class="mb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+          Delivery
+        </button>
       </div>
     </div>
     <div class="boardbar" id="boardBar">
