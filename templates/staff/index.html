@@ -1432,6 +1432,9 @@ button{cursor:pointer;border:0;background:none}
     </div>
     <div style="border-top:1px solid var(--line);margin-top:16px;padding-top:14px">
       <p style="color:var(--muted);font-size:13px;font-weight:500;margin:0 0 10px;line-height:1.5">Show <b>your logo</b> on the reader's idle screen instead of Stripe's.</p>
+      <input type="file" id="readerBgFile" accept="image/*" style="display:none" />
+      <button class="btn-print" id="readerBgPick" type="button" style="width:100%;height:40px;border-radius:10px;font-weight:600;font-size:13px;margin-bottom:6px">Choose a background image (optional)</button>
+      <div id="readerBgName" style="font-size:12px;color:var(--muted);margin:0 0 10px;text-align:center"></div>
       <button class="btn-print" id="readerBrand" type="button" style="width:100%;height:46px;border-radius:11px;font-weight:700">Use our logo on the reader</button>
       <div class="pin-error" id="readerBrandMsg" aria-live="polite"></div>
     </div>
@@ -4344,6 +4347,8 @@ function openReaderModal() {
   $('#readerCode').value = '';
   const msg = $('#readerMsg'); msg.textContent = ''; msg.style.color = '';
   $('#readerBrandMsg').textContent = '';
+  if ($('#readerBgFile')) $('#readerBgFile').value = '';
+  if ($('#readerBgName')) $('#readerBgName').textContent = '';
   const btn = $('#readerConfirm'); btn.disabled = false; btn.textContent = 'Register reader'; btn.onclick = registerReader;
   $('#readerOvl').classList.add('open');
   setTimeout(() => $('#readerCode').focus(), 60);
@@ -4369,42 +4374,55 @@ async function registerReader() {
 }
 $('#readerCancel').addEventListener('click', closeReaderModal);
 $('#readerOvl').addEventListener('click', (e) => { if (e.target.id === 'readerOvl') closeReaderModal(); });
-// Build the reader splash: the logo centred on a portrait WHITE canvas (clean, like the
-// stock idle screen), at a sensible size instead of scaled to fill. Drawn from a blob URL
-// so the canvas isn't tainted (works even when the logo is served cross-origin in the app).
-function frameReaderSplash(blob) {
+// Build the reader splash: the logo centred over a chosen background image (cover-filled)
+// — or a clean white canvas if none is chosen — at a sensible size. Drawn from blob URLs
+// so the canvas isn't tainted (works web + app).
+function composeReaderSplash(logoBlob, bgFile) {
+  const W = 480, H = 800;
+  const loadImg = (src) => new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('img')); im.src = src; });
   return new Promise((resolve) => {
-    let url;
-    try { url = URL.createObjectURL(blob); } catch (e) { resolve(null); return; }
-    const img = new Image();
-    img.onload = () => {
+    (async () => {
+      const urls = [];
       try {
-        const W = 480, H = 800;
         const c = document.createElement('canvas'); c.width = W; c.height = H;
         const ctx = c.getContext('2d');
-        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W, H);
-        const s = Math.min((W * 0.62) / img.width, (H * 0.4) / img.height); // contain ~⅗ width
-        const w = img.width * s, h = img.height * s;
-        ctx.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
+        if (bgFile) {
+          try {
+            const u = URL.createObjectURL(bgFile); urls.push(u);
+            const bg = await loadImg(u);
+            const s = Math.max(W / bg.width, H / bg.height); // cover
+            const w = bg.width * s, h = bg.height * s;
+            ctx.drawImage(bg, (W - w) / 2, (H - h) / 2, w, h);
+          } catch (e) { ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W, H); }
+        } else { ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W, H); }
+        const lu = URL.createObjectURL(logoBlob); urls.push(lu);
+        const logo = await loadImg(lu);
+        const ls = Math.min((W * 0.62) / logo.width, (H * 0.4) / logo.height); // contain ~⅗ width
+        const lw = logo.width * ls, lh = logo.height * ls;
+        ctx.drawImage(logo, (W - lw) / 2, (H - lh) / 2, lw, lh);
         resolve(c.toDataURL('image/png').split(',')[1]);
       } catch (e) { resolve(null); }
-      finally { try { URL.revokeObjectURL(url); } catch (e) {} }
-    };
-    img.onerror = () => { try { URL.revokeObjectURL(url); } catch (e) {} resolve(null); };
-    img.src = url;
+      finally { urls.forEach((u) => { try { URL.revokeObjectURL(u); } catch (e) {} }); }
+    })();
   });
 }
+if ($('#readerBgPick')) $('#readerBgPick').addEventListener('click', () => $('#readerBgFile').click());
+if ($('#readerBgFile')) $('#readerBgFile').addEventListener('change', () => {
+  const f = $('#readerBgFile').files && $('#readerBgFile').files[0];
+  $('#readerBgName').textContent = f ? ('Background: ' + f.name) : '';
+});
 $('#readerBrand').addEventListener('click', async () => {
   const msg = $('#readerBrandMsg'); const btn = $('#readerBrand'); const orig = btn.textContent;
   btn.disabled = true; btn.textContent = 'Uploading…';
   msg.style.color = 'var(--muted)'; msg.textContent = 'Preparing your logo…';
+  const bgFile = ($('#readerBgFile') && $('#readerBgFile').files && $('#readerBgFile').files[0]) || null;
   let logo = null, ctype = 'image/png';
   try {
     const lr = await fetch('/logo.png', { cache: 'no-store' });
     if (lr.ok) {
       const blob = await lr.blob();
-      logo = await frameReaderSplash(blob);          // centred + sized
-      if (!logo) {                                    // canvas unavailable — send raw
+      logo = await composeReaderSplash(blob, bgFile);   // logo over background (or white)
+      if (!logo) {                                       // canvas unavailable — send raw logo
         ctype = blob.type || 'image/png';
         logo = await new Promise((res) => { const fr = new FileReader(); fr.onerror = () => res(null); fr.onload = () => res(String(fr.result).split(',')[1]); fr.readAsDataURL(blob); });
       }
