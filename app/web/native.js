@@ -26,7 +26,7 @@
 (function () {
   'use strict';
 
-  var BUILD = 'failsafe-28'; // bump on each app-layer change so the device log confirms freshness
+  var BUILD = 'failsafe-29'; // bump on each app-layer change so the device log confirms freshness
 
   var BASE = '';
   var TOKEN = '';
@@ -270,4 +270,66 @@
     try { console.log('[native] inApp=false → not wrapping fetch / no provisioning'); } catch (e) {}
     onReady(function () { diag('not running as the app (Capacitor bridge not detected). Open the LumiPOS app, not a browser tab.'); });
   }
+})();
+
+/* ── Flex-gap polyfill ────────────────────────────────────────────────────────────
+   The Sunmi T2's WebView supports CSS Grid `gap` but NOT flex `gap` (added in Chrome
+   84), so the staff page's many flex rows/columns render with no spacing. Feature-test
+   once; where flex gap is missing, mirror each flex container's gap as margins on its
+   children, and re-apply as content renders. No-op on modern browsers — so the CSS keeps
+   using real `gap` there, and there's no double spacing anywhere. */
+(function () {
+  'use strict';
+  function gapWorks() {
+    try {
+      var d = document.createElement('div');
+      d.style.cssText = 'display:flex;gap:10px;position:absolute;left:-9999px;top:-9999px;visibility:hidden';
+      var a = document.createElement('div'), b = document.createElement('div');
+      a.style.cssText = b.style.cssText = 'width:10px;height:1px;flex:none';
+      d.appendChild(a); d.appendChild(b);
+      (document.body || document.documentElement).appendChild(d);
+      var ok = d.scrollWidth >= 25; // 10 + 10 + a 10px gap = 30 if it renders, 20 if not
+      d.parentNode.removeChild(d);
+      return ok;
+    } catch (e) { return true; } // on any error assume supported — never break a good browser
+  }
+  if (gapWorks()) return;
+  try { console.log('[native] flex-gap polyfill active (legacy WebView)'); } catch (e) {}
+
+  function px(v) { var n = parseFloat(v); return n > 0 ? n : 0; }
+  function setM(ch, prop, val) { if (ch.style[prop] !== val) ch.style[prop] = val; }
+  function fixOne(el) {
+    if (!el || el.nodeType !== 1 || !el.style) return;
+    var cs = window.getComputedStyle(el), disp = cs.display;
+    if (disp !== 'flex' && disp !== 'inline-flex') return;
+    var colGap = px(cs.columnGap), rowGap = px(cs.rowGap);
+    if (!colGap && !rowGap) return;
+    var column = (cs.flexDirection || 'row').indexOf('column') === 0;
+    var wrap = (cs.flexWrap || 'nowrap').indexOf('wrap') === 0;
+    var kids = el.children, first = true;
+    for (var k = 0; k < kids.length; k++) {
+      var ch = kids[k];
+      if (ch.nodeType !== 1 || !ch.style) continue;
+      if (wrap) { // wrapping rows: space both ways (a little trailing margin is harmless)
+        if (colGap) setM(ch, 'marginRight', colGap + 'px');
+        if (rowGap) setM(ch, 'marginBottom', rowGap + 'px');
+      } else if (first) { first = false; } // first child gets no leading gap
+      else if (column) { setM(ch, 'marginTop', rowGap + 'px'); }
+      else { setM(ch, 'marginLeft', colGap + 'px'); }
+    }
+  }
+  function run() {
+    var els = document.getElementsByTagName('*');
+    for (var i = 0; i < els.length; i++) { try { fixOne(els[i]); } catch (e) {} }
+  }
+  var t;
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
+  try {
+    new MutationObserver(function (muts) {
+      for (var i = 0; i < muts.length; i++) {
+        if (muts[i].addedNodes && muts[i].addedNodes.length) { clearTimeout(t); t = setTimeout(run, 80); return; }
+      }
+    }).observe(document.documentElement, { childList: true, subtree: true });
+  } catch (e) {}
 })();
