@@ -765,6 +765,18 @@ button{cursor:pointer;border:0;background:none}
 .pad-key:hover{background:var(--blue-tint-2);border-color:var(--blue)}
 .pad-key:active{transform:scale(.96)}
 .pad-key.fn{background:var(--canvas);font-size:13px;color:var(--ink-2);font-weight:700}
+/* On-screen PIN pad — replaces the native keyboard for every .pin-input, so no
+   keyboard pops up (and no key-press ticking) when entering a PIN/code on the till. */
+.pinpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.pinpad-key{
+  height:48px;border-radius:12px;border:1.5px solid var(--line);background:#fff;
+  font-size:20px;font-weight:700;color:var(--ink);display:grid;place-items:center;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:transform var(--motion-fast) var(--ease-out),background var(--motion-fast) var(--ease-out);
+}
+.pinpad-key:active{transform:scale(.95);background:var(--blue-tint-2)}
+.pinpad-key.fn{background:var(--canvas);color:var(--ink-2);font-size:22px}
+.pinpad-key.ok{background:var(--blue);color:#fff;border-color:var(--blue)}
 .pay-card-hint{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--muted);font-size:14px;font-weight:600;padding:18px;line-height:1.5}
 .pay-done{
   height:54px;border-radius:14px;background:linear-gradient(135deg,#0E9F6E,#0B8A5E);color:#fff;
@@ -1505,6 +1517,43 @@ const audio = (() => {
 // (e.g. an existing session) or the tab had been backgrounded.
 ['pointerdown', 'touchstart', 'click', 'keydown'].forEach(ev =>
   document.addEventListener(ev, () => audio.unlock(), { capture: true }));
+
+// On-screen PIN pad: every .pin-input becomes read-only (so the native keyboard —
+// and its key-press ticking — never appears on the till) and is driven by a number
+// pad rendered beneath it. "✓" fires the field's own submit / confirm button.
+function buildPinPad(input) {
+  if (!input || input.dataset.padded) return;
+  input.dataset.padded = '1';
+  input.setAttribute('readonly', '');
+  input.setAttribute('inputmode', 'none');
+  const max = input.maxLength > 0 ? input.maxLength : 8;
+  const pad = document.createElement('div');
+  pad.className = 'pinpad';
+  pad.innerHTML = ['1','2','3','4','5','6','7','8','9','⌫','0','✓']
+    .map(k => {
+      const cls = k === '⌫' ? 'pinpad-key fn' : (k === '✓' ? 'pinpad-key ok' : 'pinpad-key');
+      return `<button type="button" class="${cls}" data-k="${k}">${k}</button>`;
+    }).join('');
+  const errEl = input.parentElement && input.parentElement.querySelector('.pin-error');
+  (errEl || input).insertAdjacentElement('afterend', pad);
+  pad.addEventListener('click', (e) => {
+    const b = e.target.closest('.pinpad-key');
+    if (!b) return;
+    const k = b.dataset.k;
+    if (k === '⌫') {
+      input.value = input.value.slice(0, -1);
+    } else if (k === '✓') {
+      const scope = input.closest('form') || input.closest('.modal');
+      const btn = scope && scope.querySelector('button[type="submit"], button.confirm');
+      if (btn) btn.click();
+      return;
+    } else if (input.value.length < max) {
+      input.value += k;
+    }
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+}
+['pinInput', 'mgrPin', 'authzPin', 'staffCodePin'].forEach(id => buildPinPad(document.getElementById(id)));
 
 // Close any open card ⋮ menu when clicking elsewhere.
 document.addEventListener('click', (e) => {
