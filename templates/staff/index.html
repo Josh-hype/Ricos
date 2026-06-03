@@ -1430,6 +1430,11 @@ button{cursor:pointer;border:0;background:none}
       <button class="cancel" id="readerCancel" type="button">Cancel</button>
       <button class="confirm" id="readerConfirm" type="button">Register reader</button>
     </div>
+    <div style="border-top:1px solid var(--line);margin-top:16px;padding-top:14px">
+      <p style="color:var(--muted);font-size:13px;font-weight:500;margin:0 0 10px;line-height:1.5">Show <b>your logo</b> on the reader's idle screen instead of Stripe's.</p>
+      <button class="btn-print" id="readerBrand" type="button" style="width:100%;height:46px;border-radius:11px;font-weight:700">Use our logo on the reader</button>
+      <div class="pin-error" id="readerBrandMsg" aria-live="polite"></div>
+    </div>
   </div>
 </div>
 
@@ -4338,6 +4343,7 @@ function closeAuditModal() { $('#auditOvl').classList.remove('open'); }
 function openReaderModal() {
   $('#readerCode').value = '';
   const msg = $('#readerMsg'); msg.textContent = ''; msg.style.color = '';
+  $('#readerBrandMsg').textContent = '';
   const btn = $('#readerConfirm'); btn.disabled = false; btn.textContent = 'Register reader'; btn.onclick = registerReader;
   $('#readerOvl').classList.add('open');
   setTimeout(() => $('#readerCode').focus(), 60);
@@ -4363,6 +4369,18 @@ async function registerReader() {
 }
 $('#readerCancel').addEventListener('click', closeReaderModal);
 $('#readerOvl').addEventListener('click', (e) => { if (e.target.id === 'readerOvl') closeReaderModal(); });
+$('#readerBrand').addEventListener('click', async () => {
+  const msg = $('#readerBrandMsg'); const btn = $('#readerBrand'); const orig = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Uploading…';
+  msg.style.color = 'var(--muted)'; msg.textContent = 'Sending your logo to the reader…';
+  try {
+    const res = await fetch('/api/staff/terminal/branding', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) { msg.style.color = 'var(--red)'; msg.textContent = d.error || 'Could not set the logo.'; btn.disabled = false; btn.textContent = orig; return; }
+    msg.style.color = 'var(--green)'; msg.textContent = '✓ Logo set. Reboot the reader (or wait a few minutes) to see it on the idle screen.';
+    btn.disabled = false; btn.textContent = orig;
+  } catch (e) { msg.style.color = 'var(--red)'; msg.textContent = 'Network error — try again.'; btn.disabled = false; btn.textContent = orig; }
+});
 $('#auditClose').addEventListener('click', closeAuditModal);
 $('#auditOvl').addEventListener('click', (e) => { if (e.target.id === 'auditOvl') closeAuditModal(); });
 

@@ -167,6 +167,29 @@ export async function registerTerminalReader({ registrationCode, label, location
   return call('/terminal/readers', body, env, opts);
 }
 
+/* Reader branding — upload an image to Stripe Files (multipart, on the connected
+   account) and point a Terminal Configuration's splash screen at it, set as the
+   account default so the shop's readers show its logo when idle (instead of Stripe). */
+export async function uploadTerminalSplash(blob, filename, connectedAccountId, env) {
+  const fd = new FormData();
+  fd.append('purpose', 'terminal_reader_splashscreen');
+  fd.append('file', blob, filename || 'logo.png');
+  const headers = { 'Authorization': `Bearer ${env.STRIPE_SECRET_KEY}` };
+  if (connectedAccountId) headers['Stripe-Account'] = connectedAccountId; // file lives on the shop's account
+  const res = await fetch('https://files.stripe.com/v1/files', { method: 'POST', headers, body: fd });
+  const json = await res.json();
+  if (!res.ok) { const e = new Error(json?.error?.message || `Stripe files ${res.status}`); e.stripe = json?.error; throw e; }
+  return json; // { id: 'file_...' }
+}
+export async function createTerminalConfiguration({ splashscreenFileId, isAccountDefault }, connectedAccountId, env) {
+  const opts = {};
+  if (connectedAccountId) opts.stripeAccount = connectedAccountId;
+  const body = {};
+  if (splashscreenFileId) body.bbpos_wisepos_e = { splashscreen: splashscreenFileId };
+  if (isAccountDefault) body.is_account_default = true;
+  return call('/terminal/configurations', body, env, opts);
+}
+
 // Capture an authorised (requires_capture) PaymentIntent — full amount.
 export async function capturePaymentIntent(paymentIntentId, connectedAccountId, env) {
   const opts = {};
