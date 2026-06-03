@@ -12,6 +12,12 @@ import { requirePermission } from '../../../_lib/permissions.js';
 import { getConfig } from '../../../_lib/config.js';
 import { uploadTerminalSplash, createTerminalConfiguration } from '../../../_lib/stripe.js';
 
+const VERSION = 'v3-assets'; // bump on each change — GET this endpoint to see what's deployed
+
+// GET /api/staff/terminal/branding → which version is live (no auth, no work, can't hang).
+export const onRequestGet = async () =>
+  new Response(JSON.stringify({ ok: true, version: VERSION }), { headers: { 'Content-Type': 'application/json' } });
+
 function withTimeout(promise, ms, label) {
   return Promise.race([
     promise,
@@ -59,7 +65,7 @@ export const onRequestPost = async ({ request, env }) => {
       return err('Could not apply the reader branding: ' + (e.message || 'Stripe error'), 502);
     }
 
-    return Response.json({ ok: true, fileId: file.id, configurationId: configuration.id });
+    return Response.json({ ok: true, version: VERSION, fileId: file.id, configurationId: configuration.id });
   } catch (e) {
     return err('Branding failed: ' + (e && e.message ? e.message : 'unknown error'), 500);
   }
