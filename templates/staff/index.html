@@ -4415,7 +4415,8 @@ $('#readerBrand').addEventListener('click', async () => {
   const msg = $('#readerBrandMsg'); const btn = $('#readerBrand'); const orig = btn.textContent;
   btn.disabled = true; btn.textContent = 'Uploading…';
   msg.style.color = 'var(--muted)'; msg.textContent = 'Preparing your logo…';
-  const bgFile = ($('#readerBgFile') && $('#readerBgFile').files && $('#readerBgFile').files[0]) || null;
+  let bgFile = ($('#readerBgFile') && $('#readerBgFile').files && $('#readerBgFile').files[0]) || null;
+  if (!bgFile) { try { const br = await fetch('/reader-bg.jpg', { cache: 'no-store' }); if (br.ok) bgFile = await br.blob(); } catch (e) {} } // baked-in default
   let logo = null, ctype = 'image/png';
   try {
     const lr = await fetch('/logo.png', { cache: 'no-store' });

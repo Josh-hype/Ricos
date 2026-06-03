@@ -79,6 +79,18 @@ for (const [src, dest] of copies) {
   console.log(`build-shop: ${slug}/${src} -> ${dest}`);
 }
 
+// Optional card-reader splash background. The staff "Card Reader" screen composites the
+// shop logo over it for the WisePOS E idle screen; omitted shops just use a white canvas.
+for (const bg of ['reader-bg.jpg', 'reader-bg.png']) {
+  const from = path.join(shopDir, bg);
+  if (fs.existsSync(from)) {
+    const ext = bg.slice(bg.lastIndexOf('.'));
+    fs.copyFileSync(from, path.join(repoRoot, 'public', 'reader-bg' + ext));
+    console.log(`build-shop: ${slug}/${bg} -> public/reader-bg${ext}`);
+    break;
+  }
+}
+
 /* menu-visual.json: pull any inline base64 images out into separate, cacheable
    files and rewrite the JSON to reference them by URL. A photo-heavy menu can be
    2-3MB of base64 inline, and the order page must download the whole thing before
