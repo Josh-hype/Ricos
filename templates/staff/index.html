@@ -215,13 +215,16 @@ button{cursor:pointer;border:0;background:none}
 .icon-btn svg{width:20px;height:20px;stroke-width:1.9}
 .icon-btn.active{background:var(--amber-tint);border-color:var(--amber-bg);color:var(--amber)}
 .topbar .op-avatar{width:42px;height:38px;border-radius:11px;box-shadow:var(--sh-sm)}
-/* One-page board: big mode buttons across the full width + Live/Completed toggle */
-.modebar{display:flex;align-items:stretch;gap:14px;padding:16px 24px 4px;flex:none}
+/* One-page board: big mode buttons over ~2/3 width (left), spaced with margins
+   (flex `gap` is ignored on the Sunmi's older WebView) + the Live/Completed toggle */
+.modebar{display:flex;padding:16px 24px 4px;flex:none}
 .modebar[hidden],.boardbar[hidden]{display:none}
-.mode-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:11px;height:74px;padding:0 18px;border:0;border-radius:16px;cursor:pointer;color:#fff;font-size:19px;font-weight:800;letter-spacing:-.01em;background:linear-gradient(135deg,#0A86FF,#0070F0 60%,#0058C4);box-shadow:0 10px 24px rgba(0,112,240,.3);transition:transform var(--motion-fast) var(--ease-out),box-shadow var(--motion-fast)}
+.mode-group{display:flex;width:66%;max-width:880px;min-width:0}
+.mode-btn{flex:1;display:flex;align-items:center;justify-content:center;height:74px;padding:0 18px;border:0;border-radius:16px;cursor:pointer;color:#fff;font-size:19px;font-weight:800;letter-spacing:-.01em;background:linear-gradient(135deg,#0A86FF,#0070F0 60%,#0058C4);box-shadow:0 10px 24px rgba(0,112,240,.3);transition:transform var(--motion-fast) var(--ease-out),box-shadow var(--motion-fast)}
+.mode-group .mode-btn + .mode-btn{margin-left:18px}
 .mode-btn:hover{transform:translateY(-2px)}
 .mode-btn:active{transform:translateY(0)}
-.mode-btn .mb-ic{font-size:26px;line-height:1}
+.mode-btn .mb-ic{font-size:26px;line-height:1;margin-right:10px}
 .mode-btn.collection{background:linear-gradient(135deg,#16B27A,#0E9F6E 60%,#0B8A5E);box-shadow:0 10px 24px rgba(14,159,110,.28)}
 .mode-btn.delivery{background:linear-gradient(135deg,#F6B53C,#F4A82E 60%,#E0922A);box-shadow:0 10px 24px rgba(244,168,46,.32)}
 .boardbar{display:flex;justify-content:flex-end;align-items:center;padding:6px 24px 2px;flex:none}
@@ -1073,9 +1076,11 @@ button{cursor:pointer;border:0;background:none}
     </div>
 
     <div class="modebar" id="modeBar">
-      <button class="mode-btn" data-mode="walkin"><span class="mb-ic" aria-hidden="true">🚶</span> Walk in</button>
-      <button class="mode-btn collection" data-mode="collection"><span class="mb-ic" aria-hidden="true">🛍️</span> Collection</button>
-      <button class="mode-btn delivery" data-mode="delivery"><span class="mb-ic" aria-hidden="true">🛵</span> Delivery</button>
+      <div class="mode-group">
+        <button class="mode-btn" data-mode="walkin"><span class="mb-ic" aria-hidden="true">🚶</span> Walk in</button>
+        <button class="mode-btn collection" data-mode="collection"><span class="mb-ic" aria-hidden="true">🛍️</span> Collection</button>
+        <button class="mode-btn delivery" data-mode="delivery"><span class="mb-ic" aria-hidden="true">🛵</span> Delivery</button>
+      </div>
     </div>
     <div class="boardbar" id="boardBar">
       <div class="board-toggle" role="tablist">
