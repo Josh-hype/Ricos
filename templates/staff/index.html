@@ -4369,9 +4369,9 @@ async function registerReader() {
 }
 $('#readerCancel').addEventListener('click', closeReaderModal);
 $('#readerOvl').addEventListener('click', (e) => { if (e.target.id === 'readerOvl') closeReaderModal(); });
-// Build the reader splash: the logo centred on a portrait black canvas, so it shows at a
-// sensible size instead of being scaled to fill the screen. Drawn from a blob URL so the
-// canvas isn't tainted (works even when the logo is served cross-origin in the app).
+// Build the reader splash: the logo centred on a portrait WHITE canvas (clean, like the
+// stock idle screen), at a sensible size instead of scaled to fill. Drawn from a blob URL
+// so the canvas isn't tainted (works even when the logo is served cross-origin in the app).
 function frameReaderSplash(blob) {
   return new Promise((resolve) => {
     let url;
@@ -4382,7 +4382,7 @@ function frameReaderSplash(blob) {
         const W = 480, H = 800;
         const c = document.createElement('canvas'); c.width = W; c.height = H;
         const ctx = c.getContext('2d');
-        ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W, H);
         const s = Math.min((W * 0.62) / img.width, (H * 0.4) / img.height); // contain ~⅗ width
         const w = img.width * s, h = img.height * s;
         ctx.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
