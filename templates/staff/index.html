@@ -3405,9 +3405,11 @@ async function finalizeOrder(extra, ctx) {
   if (ctx.isCash) { try { if (window.EPOSNative && window.EPOSNative.kickDrawer) window.EPOSNative.kickDrawer(); } catch (e) {} }
   try {
     if (window.EPOSNative && window.EPOSNative.printReceipt) {
-      window.EPOSNative.printReceipt({ text: buildReceiptText(o, { tender: ctx.isCash ? 'cash' : 'card', tenderedP: ctx.tenderedP, changeP }) });
-    }
-  } catch (e) {}
+      Promise.resolve(window.EPOSNative.printReceipt({ text: buildReceiptText(o, { tender: ctx.isCash ? 'cash' : 'card', tenderedP: ctx.tenderedP, changeP }) }))
+        .then((r) => { try { console.log('[print] ' + JSON.stringify(r)); } catch (e) {} })
+        .catch((e) => { try { console.log('[print] error ' + (e && e.message)); } catch (e2) {} });
+    } else { try { console.log('[print] no EPOSNative.printReceipt'); } catch (e) {} }
+  } catch (e) { try { console.log('[print] threw ' + (e && e.message)); } catch (e2) {} }
   state.seenIds.add(o.id);
   poll();
   return true;
