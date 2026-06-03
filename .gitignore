@@ -17,6 +17,7 @@ dist/
 data/_active/
 public/assets/
 public/logo.png
+public/reader-bg.*
 public/menu-visual.json
 public/index.html
 public/order.html
