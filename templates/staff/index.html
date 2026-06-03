@@ -195,6 +195,7 @@ button{cursor:pointer;border:0;background:none}
 
 /* Activity log (audit) */
 #authzOvl{z-index:90}
+#cardOvl{z-index:95} /* above the pay modal it opens from */
 .audit-list{display:flex;flex-direction:column;gap:6px;max-height:54vh;overflow:auto;margin-bottom:14px}
 .audit-row{display:flex;gap:11px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
 .audit-row .ico{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:none;font-weight:800;font-size:14px}
@@ -1286,6 +1287,21 @@ button{cursor:pointer;border:0;background:none}
   </div>
 </div>
 
+<!-- ============================== Card payment (Stripe Terminal reader)
+     Shown while the counter reader collects a card. The backend drives the reader
+     and we poll /api/staff/terminal/status; on success the order is captured. -->
+<div class="ovl" id="cardOvl" role="dialog" aria-modal="true" aria-labelledby="cardTitle">
+  <div class="modal">
+    <h2 id="cardTitle">Card payment</h2>
+    <p id="cardStatus" style="color:var(--muted);font-size:14px;font-weight:600;margin-bottom:8px;text-align:center">Starting…</p>
+    <div class="pin-error" id="cardError" aria-live="polite"></div>
+    <div class="row">
+      <button class="cancel" id="cardCancel" type="button">Cancel</button>
+      <button class="confirm" id="cardRetry" type="button" hidden>Try again</button>
+    </div>
+  </div>
+</div>
+
 <!-- ============================== Manage-staff modal (operators CRUD) -->
 <div class="ovl" id="staffOvl" role="dialog" aria-modal="true" aria-labelledby="staffTitle">
   <div class="modal" style="max-width:480px;text-align:left">
@@ -1366,7 +1382,7 @@ button{cursor:pointer;border:0;background:none}
       <div class="change-note" id="payChange" hidden></div>
       <div class="quick-cash" id="payQuickCash" hidden></div>
       <div class="pad-grid" id="payPad" hidden></div>
-      <div class="pay-card-hint" id="payCardHint" hidden>Take the payment on your card machine, then tap below to record it.</div>
+      <div class="pay-card-hint" id="payCardHint" hidden>The card reader will prompt the customer to tap, insert or swipe.</div>
       <button class="pay-done" id="payConfirm" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg>
         <span>Take cash payment</span>
@@ -2453,6 +2469,7 @@ const sale = {
   customer: null,       // {name, phone, address?:{line1,line2,postcode,notes}} once captured
   deliveryFeeP: 0,      // resolved client-side from config.feeByOutcode for display (server is authoritative)
   takenBy: null,        // {id,name} of the staff who entered their code at the mode picker
+  card: null,           // {readerId,paymentIntentId,orderId} while a card-reader charge is live
 };
 
 // Spice options match the website (templates/order.html). The picker only
@@ -3081,6 +3098,7 @@ $('#saleCharge').addEventListener('click', () => {
 function openPayModal() {
   sale.pay.tenderedP = 0;
   sale.pay.tender = 'cash';
+  sale.card = null;
   const totalP = cartTotalP();
   const subP = cartSubP();
   $('#payTotal').textContent = `£${(totalP / 100).toFixed(2)}`;
@@ -3190,67 +3208,205 @@ $('#payPad').addEventListener('click', (e) => {
   syncPayAmount();
 });
 
+// Build a plain-text receipt for the built-in printer from the server's order
+// (authoritative prices). Lives in the web layer, so it ships via OTA and can be
+// tweaked with no APK rebuild. ~32 cols suits the T2's 58mm paper.
+function buildReceiptText(o, ctx) {
+  const W = 32;
+  const t = o.totals || {};
+  const money = (p) => '£' + ((p || 0) / 100).toFixed(2);
+  const rule = '-'.repeat(W);
+  const center = (s) => {
+    s = String(s);
+    return s.length >= W ? s : ' '.repeat(Math.floor((W - s.length) / 2)) + s;
+  };
+  const row = (l, r) => {
+    l = String(l); r = String(r);
+    const gap = W - l.length - r.length;
+    return gap > 0 ? l + ' '.repeat(gap) + r : l + ' ' + r;
+  };
+  const shop = (sale.config && sale.config.business && sale.config.business.name) || 'RECEIPT';
+  const modeLabel = o.fulfillment === 'delivery' ? 'Delivery'
+    : (o.source === 'counter-collection' ? 'Collection' : 'Walk-in');
+  let when = '';
+  try { when = new Date(o.createdAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) {}
+
+  const out = [center(shop.toUpperCase()), center(modeLabel), '', 'Order #' + o.id];
+  if (when) out.push(when);
+  if (o.customer && o.customer.name && o.customer.name !== 'Walk-in') out.push(o.customer.name);
+  out.push(rule);
+  for (const li of (t.lines || [])) {
+    out.push(row(li.qty + 'x ' + li.name, money(li.lineTotalP)));
+    const extras = []
+      .concat(li.spice ? [li.spice] : [])
+      .concat(li.meal ? ['Meal'] : [])
+      .concat(Array.isArray(li.modifiers) ? li.modifiers : [])
+      .concat(Array.isArray(li.mealChoices) ? li.mealChoices : []);
+    for (const ex of extras) {
+      const s = (typeof ex === 'string') ? ex : (ex && (ex.label || ex.name)) || '';
+      if (s) out.push('  + ' + s);
+    }
+  }
+  out.push(rule);
+  if (t.deliveryFeeP) { out.push(row('Subtotal', money(t.subtotalP))); out.push(row('Delivery', money(t.deliveryFeeP))); }
+  out.push(row('TOTAL', money(t.totalP)));
+  out.push(rule);
+  const tenderLabel = ctx.tender === 'card' ? 'Card' : 'Cash';
+  out.push(row('Paid (' + tenderLabel + ')', money(ctx.tenderedP > 0 ? ctx.tenderedP : t.totalP)));
+  if (ctx.changeP > 0) out.push(row('Change', money(ctx.changeP)));
+  if (o.createdBy && o.createdBy.name) out.push('Served by: ' + o.createdBy.name);
+  out.push(rule);
+  out.push(center('Thank you!'));
+  return out.join('\n');
+}
+
+// Collect the cart + sale context into the counter-order payload (shared by the
+// cash and card paths). `extra` carries the tender + any card capture refs.
+function buildSalePayload(extra) {
+  const items = sale.cart.map(c => ({
+    id: c.id, qty: c.qty, spice: c.spice || null, meal: !!c.meal,
+    modifiers: Array.isArray(c.modifiers) ? c.modifiers : [],
+    mealChoices: Array.isArray(c.mealChoices) ? c.mealChoices : [],
+  }));
+  const payload = Object.assign({ items, mode: sale.mode }, extra || {});
+  if (sale.takenBy) payload.takenBy = { id: sale.takenBy.id };
+  if (sale.customer) {
+    payload.customer = { name: sale.customer.name, phone: sale.customer.phone };
+    if (sale.customer.address) payload.address = sale.customer.address;
+  }
+  return payload;
+}
+
+// POST the finished sale, show the success card, print the receipt, kick the drawer
+// (cash). `ctx`: { isCash, tenderedP }. Returns true on success.
+async function finalizeOrder(extra, ctx) {
+  const totalP = cartTotalP();
+  let data;
+  try {
+    const res = await fetch('/api/staff/counter-order', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(buildSalePayload(extra)),
+    });
+    data = await res.json().catch(() => ({}));
+    if (res.status === 401) { $('#logoutBtn').click(); return false; }
+    if (!res.ok || !data.order) { alert(data.error || `Couldn't complete the sale (${res.status}).`); return false; }
+  } catch (e) { alert('Network error — try again.'); return false; }
+  const o = data.order;
+  const changeP = ctx.isCash && ctx.tenderedP > 0 ? Math.max(0, ctx.tenderedP - totalP) : 0;
+  if (changeP > 0) {
+    $('#payDone h2').textContent = 'Give change';
+    $('#payDoneSub').textContent = `£${(changeP / 100).toFixed(2)} change · Order #${o.id}`;
+  } else {
+    $('#payDone h2').textContent = 'Payment complete';
+    $('#payDoneSub').textContent = `£${(o.totals.totalP / 100).toFixed(2)} · ${ctx.isCash ? 'Cash' : 'Card'} · Order #${o.id}`;
+  }
+  $('#payDone').classList.add('show');
+  if (ctx.isCash) { try { if (window.EPOSNative && window.EPOSNative.kickDrawer) window.EPOSNative.kickDrawer(); } catch (e) {} }
+  try {
+    if (window.EPOSNative && window.EPOSNative.printReceipt) {
+      window.EPOSNative.printReceipt({ text: buildReceiptText(o, { tender: ctx.isCash ? 'cash' : 'card', tenderedP: ctx.tenderedP, changeP }) });
+    }
+  } catch (e) {}
+  state.seenIds.add(o.id);
+  poll();
+  return true;
+}
+
+// Card payment via the counter reader (server-driven Stripe Terminal): start the
+// charge, show the "present card" overlay, poll the reader, then finalise — which
+// re-verifies the amount and captures server-side.
+let cardPoll = null;
+async function runCardPayment() {
+  if (sale.card) return; // a card flow is already running
+  const totalP = cartTotalP();
+  showCardOverlay('Starting…', true);
+  let started;
+  try {
+    const res = await fetch('/api/staff/terminal/charge', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(buildSalePayload({})),
+    });
+    started = await res.json().catch(() => ({}));
+    if (res.status === 401) { $('#logoutBtn').click(); hideCardOverlay(); return; }
+    if (!res.ok || !started.paymentIntentId) { showCardError(started.error || `Couldn't start the card payment (${res.status}).`); return; }
+  } catch (e) { showCardError('Network error — try again.'); return; }
+
+  sale.card = { readerId: (started.reader && started.reader.id) || '', paymentIntentId: started.paymentIntentId, orderId: started.orderId };
+  showCardOverlay(`Present card on the reader · £${(totalP / 100).toFixed(2)}`, true);
+
+  const deadline = Date.now() + 75000; // ~75s to tap before we offer cancel
+  const tick = async () => {
+    if (!sale.card) return; // cancelled
+    if (Date.now() > deadline) { showCardError('Timed out waiting for the card.'); return; }
+    let st;
+    try {
+      const r = await fetch('/api/staff/terminal/status', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ readerId: sale.card.readerId }),
+      });
+      st = await r.json().catch(() => ({}));
+    } catch (e) { cardPoll = setTimeout(tick, 1800); return; }
+    if (!sale.card) return;
+    if (st.status === 'succeeded') {
+      $('#cardStatus').textContent = 'Approved — completing…';
+      const refs = { tender: 'card', paymentIntentId: sale.card.paymentIntentId, orderId: sale.card.orderId };
+      sale.card = null;
+      const ok = await finalizeOrder(refs, { isCash: false, tenderedP: 0 });
+      hideCardOverlay();
+      if (!ok) updatePayConfirm();
+      return;
+    }
+    if (st.status === 'failed') { showCardError(st.failure || 'Card declined or cancelled.'); return; }
+    cardPoll = setTimeout(tick, 1800); // in_progress / idle → keep polling
+  };
+  cardPoll = setTimeout(tick, 1500);
+}
+function showCardOverlay(msg, cancelable) {
+  $('#cardStatus').textContent = msg;
+  $('#cardError').textContent = '';
+  $('#cardCancel').textContent = cancelable ? 'Cancel' : 'Close';
+  $('#cardRetry').hidden = true;
+  $('#cardOvl').classList.add('open');
+}
+function showCardError(msg) {
+  if (cardPoll) { clearTimeout(cardPoll); cardPoll = null; }
+  $('#cardStatus').textContent = 'Payment not taken';
+  $('#cardError').textContent = msg;
+  $('#cardRetry').hidden = false;
+  $('#cardCancel').textContent = 'Close';
+}
+function hideCardOverlay() { $('#cardOvl').classList.remove('open'); }
+async function cancelCardPayment() {
+  if (cardPoll) { clearTimeout(cardPoll); cardPoll = null; }
+  const c = sale.card; sale.card = null;
+  hideCardOverlay();
+  updatePayConfirm();
+  if (c && c.readerId) {
+    try {
+      await fetch('/api/staff/terminal/cancel', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ readerId: c.readerId, paymentIntentId: c.paymentIntentId }),
+      });
+    } catch (e) {}
+  }
+}
+$('#cardCancel').addEventListener('click', cancelCardPayment);
+$('#cardRetry').addEventListener('click', () => { hideCardOverlay(); runCardPayment(); });
+
 $('#payConfirm').addEventListener('click', async () => {
   if (sale.submitting || !sale.cart.length) return;
   const isCash = sale.pay.tender !== 'card';
   const totalP = cartTotalP();
-  if (isCash && sale.pay.tenderedP > 0 && sale.pay.tenderedP < totalP) return; // short (button is disabled)
-  // Wrong-magnitude guard (e.g. £200 typed for a £20 order).
+  if (isCash && sale.pay.tenderedP > 0 && sale.pay.tenderedP < totalP) return; // short (button disabled)
   if (isCash && sale.pay.tenderedP - totalP > 10000) {
     if (!confirm(`Received £${(sale.pay.tenderedP / 100).toFixed(2)} — change £${((sale.pay.tenderedP - totalP) / 100).toFixed(2)}. Correct?`)) return;
   }
+  if (!isCash) { runCardPayment(); return; } // card runs in its own reader overlay
   sale.submitting = true;
   $('#payConfirm').disabled = true;
   $('#payConfirm').querySelector('span').textContent = 'Sending…';
-  try {
-    const items = sale.cart.map(c => ({
-      id: c.id,
-      qty: c.qty,
-      spice: c.spice || null,
-      meal: !!c.meal,
-      modifiers: Array.isArray(c.modifiers) ? c.modifiers : [],
-      mealChoices: Array.isArray(c.mealChoices) ? c.mealChoices : [],
-    }));
-    const payload = { items, mode: sale.mode, tender: isCash ? 'cash' : 'card' };
-    if (sale.takenBy) payload.takenBy = { id: sale.takenBy.id };
-    if (sale.customer) {
-      payload.customer = { name: sale.customer.name, phone: sale.customer.phone };
-      if (sale.customer.address) payload.address = sale.customer.address;
-    }
-    const res = await fetch('/api/staff/counter-order', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (res.status === 401) { $('#logoutBtn').click(); return; }
-    if (!res.ok || !data.order) {
-      alert(data.error || `Couldn't take the payment (${res.status}). Try again.`);
-      updatePayConfirm();
-      return;
-    }
-    const o = data.order;
-    // Lead the success card with the change to hand back (cash), else the tender.
-    const changeP = isCash && sale.pay.tenderedP > 0 ? Math.max(0, sale.pay.tenderedP - totalP) : 0;
-    if (changeP > 0) {
-      $('#payDone h2').textContent = 'Give change';
-      $('#payDoneSub').textContent = `£${(changeP / 100).toFixed(2)} change · Order #${o.id}`;
-    } else {
-      $('#payDone h2').textContent = 'Payment complete';
-      $('#payDoneSub').textContent = `£${(o.totals.totalP / 100).toFixed(2)} · ${isCash ? 'Cash' : 'Card'} · Order #${o.id}`;
-    }
-    $('#payDone').classList.add('show');
-    if (isCash) { try { if (window.EPOSNative && window.EPOSNative.kickDrawer) window.EPOSNative.kickDrawer(); } catch (e) {} }
-    // Order is already accepted/paid server-side — let the live poll find it
-    // so the kitchen sees it on Live alongside any web orders.
-    state.seenIds.add(o.id);
-    poll();
-  } catch (e) {
-    alert('Network error — try again.');
-    updatePayConfirm();
-  } finally {
-    sale.submitting = false;
-  }
+  try { await finalizeOrder({ tender: 'cash' }, { isCash: true, tenderedP: sale.pay.tenderedP }); }
+  finally { sale.submitting = false; updatePayConfirm(); }
 });
 
 $('#payNewSale').addEventListener('click', () => {

@@ -71,6 +71,7 @@ export async function createPaymentIntent({
   setupFutureUsage,
   paymentMethodId,
   requireCvcRecollection,
+  cardPresent,
 }, env) {
   const body = {
     amount: amountP,
@@ -83,7 +84,12 @@ export async function createPaymentIntent({
   }
   if (customerId) body.customer = customerId;
   if (setupFutureUsage) body.setup_future_usage = setupFutureUsage;
-  if (paymentMethodId) {
+  if (cardPresent) {
+    // In-person card via Terminal (e.g. WisePOS E): collected on a physical
+    // reader, authorised now and captured after we verify the amount server-side.
+    body.payment_method_types = ['card_present'];
+    body.capture_method = 'manual';
+  } else if (paymentMethodId) {
     // Pay with a saved card. The customer is present on the checkout page,
     // so we attach the saved PaymentMethod but DON'T confirm server-side —
     // the client confirms via stripe.confirmCardPayment, which can surface a
@@ -101,6 +107,54 @@ export async function createPaymentIntent({
   const opts = { idempotencyKey: `pi_${orderId}` };
   if (connectedAccountId) opts.stripeAccount = connectedAccountId;
   return call('/payment_intents', body, env, opts);
+}
+
+/* Stripe Terminal — server-driven readers (e.g. BBPOS WisePOS E). All calls run on
+   the shop's connected account (direct charges), like the rest of the payment flow.
+   The till never touches the Terminal SDK: the backend tells the reader to collect,
+   polls its action, then captures the authorised PaymentIntent. */
+
+// List readers on the connected account (used to find the online counter reader).
+export async function listTerminalReaders(connectedAccountId, env) {
+  const opts = { method: 'GET' };
+  if (connectedAccountId) opts.stripeAccount = connectedAccountId;
+  return call('/terminal/readers?limit=100', null, env, opts);
+}
+
+// Retrieve one reader — its `action` reports the in-progress collection
+// (status: in_progress | succeeded | failed) which the till polls.
+export async function retrieveTerminalReader(readerId, connectedAccountId, env) {
+  const opts = { method: 'GET' };
+  if (connectedAccountId) opts.stripeAccount = connectedAccountId;
+  return call(`/terminal/readers/${encodeURIComponent(readerId)}`, null, env, opts);
+}
+
+// Tell the reader to collect + authorise a card_present PaymentIntent.
+export async function processPaymentIntentOnReader(readerId, paymentIntentId, connectedAccountId, env) {
+  const opts = {};
+  if (connectedAccountId) opts.stripeAccount = connectedAccountId;
+  return call(`/terminal/readers/${encodeURIComponent(readerId)}/process_payment_intent`, { payment_intent: paymentIntentId }, env, opts);
+}
+
+// Abort whatever the reader is currently doing (the till's Cancel button).
+export async function cancelReaderAction(readerId, connectedAccountId, env) {
+  const opts = {};
+  if (connectedAccountId) opts.stripeAccount = connectedAccountId;
+  return call(`/terminal/readers/${encodeURIComponent(readerId)}/cancel_action`, {}, env, opts);
+}
+
+// Capture an authorised (requires_capture) PaymentIntent — full amount.
+export async function capturePaymentIntent(paymentIntentId, connectedAccountId, env) {
+  const opts = {};
+  if (connectedAccountId) opts.stripeAccount = connectedAccountId;
+  return call(`/payment_intents/${encodeURIComponent(paymentIntentId)}/capture`, {}, env, opts);
+}
+
+// Cancel a PaymentIntent (e.g. the customer walked away before tapping).
+export async function cancelPaymentIntent(paymentIntentId, connectedAccountId, env) {
+  const opts = {};
+  if (connectedAccountId) opts.stripeAccount = connectedAccountId;
+  return call(`/payment_intents/${encodeURIComponent(paymentIntentId)}/cancel`, {}, env, opts);
 }
 
 /* Refund a PaymentIntent in full on the connected account. For Connect direct

@@ -1,39 +1,29 @@
 /* POST /api/staff/counter-order — record an in-person till sale (PIN-gated).
-   The till is the EPOS Sale view: staff tap items, take payment at the
-   counter, and submit here. The client sends item ids + qty + modifiers
-   plus a sale mode (walkin / collection / delivery) and any customer
-   details — NEVER prices, so the till can't be tampered with into
-   selling at the wrong price; we recompute totals from the canonical
-   menu.
+   The till sends item ids + qty + modifiers + a sale mode (walkin / collection /
+   delivery) and any customer details — NEVER prices; we recompute totals from the
+   canonical menu (shared with the card-charge endpoint via priceCounterSale).
 
-   Modes:
-     walkin     — anonymous counter sale, fulfillment 'collection'
-     collection — named pickup, fulfillment 'collection' (customer phone
-                  so the kitchen can call when ready)
-     delivery   — sent out, fulfillment 'delivery' (address validated via
-                  resolveDelivery, delivery fee applied)
+   Cash: persisted immediately, status='accepted' + payment.state='paid', so it
+   lands on Live and counts in Today / Z report (paymentMethod 'counter_cash').
 
-   The order is persisted with status='accepted' and payment.state='paid'
-   so it lands on Live (already accepted — staff just took the payment,
-   no second-stage accept dialog needed) and counts in Today / Z report
-   alongside web orders. paymentMethod is 'counter_cash' for now; when
-   the Stripe Terminal SDK lands for the Sunmi T2 reader, that'll grow a
-   'counter_card' branch. */
+   Card (counter_card): the amount was authorised on a Terminal reader by
+   /api/staff/terminal/charge. This endpoint REQUIRES the resulting paymentIntentId
+   + orderId, re-verifies status/amount/currency/order-binding, then CAPTURES — an
+   order is marked paid only on a real capture (closes P2-10). It fails closed: no
+   paymentIntent ⇒ error, never a paid-but-uncaptured order. */
 
 import { resolveSession } from '../../_lib/auth.js';
 import { requirePermission } from '../../_lib/permissions.js';
 import { getOperator } from '../../_lib/operators.js';
 import { logAudit } from '../../_lib/audit.js';
 import { getConfig } from '../../_lib/config.js';
-import { computeTotals } from '../../_lib/totals.js';
-import { resolveDelivery } from '../../_lib/delivery.js';
+import { priceCounterSale } from '../../_lib/counter-totals.js';
+import { retrievePaymentIntent, capturePaymentIntent } from '../../_lib/stripe.js';
 import { putOrder, newOrderId } from '../../_lib/kv.js';
 
-const MODES = new Set(['walkin', 'collection', 'delivery']);
-
 export const onRequestPost = async ({ request, env }) => {
-  // A counter sale books real revenue — gate it on the `sell` permission (a
-  // no-op in legacy mode) and audit it, like refunds/voids.
+  // A counter sale books real revenue — gate it on `sell` (a no-op in legacy mode)
+  // and audit it, like refunds/voids.
   const ctx = {};
   const denied = await requirePermission(request, env, 'sell', ctx);
   if (denied) return denied;
@@ -43,65 +33,59 @@ export const onRequestPost = async ({ request, env }) => {
   try { body = await request.json(); }
   catch { return err('Invalid JSON', 400); }
 
-  const items = Array.isArray(body.items) ? body.items : [];
-  if (items.length === 0) return err('Add at least one item before charging.', 400);
-
-  const mode = MODES.has(body.mode) ? body.mode : 'walkin';
-  const fulfillment = mode === 'delivery' ? 'delivery' : 'collection';
-  // Tender: cash by default; 'card' records a sale paid by card on the shop's
-  // existing machine (Stripe Terminal capture drops in here later).
   const tender = body.tender === 'card' ? 'card' : 'cash';
   const config = getConfig();
 
-  // Customer. Walk-ins get a placeholder; collection / delivery need a name
-  // and phone so the kitchen can chase if there's a problem.
+  // Price the sale (server-authoritative; identical maths to /terminal/charge).
+  const priced = await priceCounterSale({ items: body.items, mode: body.mode, address: body.address }, config);
+  if (!priced.ok) return err(priced.error, 400);
+  const { mode, fulfillment, totals, address } = priced;
+
+  // Customer. Walk-ins get a placeholder; collection / delivery need a name + phone.
   const rawName = String(body.customer?.name || '').trim().slice(0, 60);
   const rawPhone = String(body.customer?.phone || '').trim().slice(0, 30);
   const name = rawName || (mode === 'walkin' ? 'Walk-in' : '');
   if (mode !== 'walkin' && name.length < 2) return err('Customer name is required.', 400);
   if (mode !== 'walkin' && rawPhone.length < 6) return err('Customer phone is required.', 400);
 
-  // Delivery: validate address + resolve fee via the same path the website uses.
-  let address = null;
-  let deliveryFeeP = null;
-  if (mode === 'delivery') {
-    if (!config.fulfillment.delivery.enabled) {
-      return err('Delivery is not configured for this shop.', 400);
-    }
-    const dq = await resolveDelivery(body.address?.postcode, config);
-    if (!dq.ok) return err(dq.reason, 400);
-    deliveryFeeP = dq.feePence;
-    const line1 = String(body.address?.line1 || '').trim().slice(0, 120);
-    if (line1.length < 2) return err('Please enter a delivery address.', 400);
-    address = {
-      line1,
-      line2: String(body.address?.line2 || '').trim().slice(0, 120),
-      city: config.business.address.city,
-      postcode: dq.postcode,
-      notes: String(body.address?.notes || '').trim().slice(0, 280),
-    };
+  // Card: verify the Terminal authorisation, then capture. The order id is the one
+  // the PI metadata points at (minted by /terminal/charge) so the link is consistent.
+  let id = newOrderId();
+  let paymentExtra = {};
+  if (tender === 'card') {
+    const piId = String(body.paymentIntentId || '');
+    const chargeOrderId = String(body.orderId || '');
+    if (!piId || !chargeOrderId) return err('Card payment not started — start it on the reader first.', 400);
+    const acct = config.stripe?.connectedAccountId;
+    if (!acct || acct === 'TBD') return err('Card payments are not configured for this shop.', 400);
+
+    let pi;
+    try { pi = await retrievePaymentIntent(piId, acct, env); }
+    catch (e) { return err('Could not verify the card payment.', 502); }
+
+    // Mirror the web PI-match guard: capture only an authorisation that matches THIS
+    // sale, to the penny, in the right currency, for the right order.
+    if (pi.status !== 'requires_capture') return err(`Card not authorised yet (${pi.status}).`, 409);
+    if (pi.amount !== totals.totalP) return err('Card amount mismatch — not captured.', 409);
+    if (String(pi.currency || '').toLowerCase() !== 'gbp') return err('Card currency mismatch — not captured.', 409);
+    if (pi.metadata?.orderId !== chargeOrderId) return err('Card/order mismatch — not captured.', 409);
+
+    try { await capturePaymentIntent(piId, acct, env); }
+    catch (e) { return err('Card capture failed — the customer was not charged.', 502); }
+
+    id = chargeOrderId;
+    paymentExtra = { intentId: piId, connectedAccountId: acct };
   }
 
-  // Counter sales pay menu price face-to-face — the 10% online discount
-  // doesn't apply. Server still owns the maths.
-  const totals = computeTotals(
-    { items, fulfillment, deliveryAddress: address ? { postcode: address.postcode } : undefined },
-    config,
-    { suppressPromo: true, suppressServiceFee: true, deliveryFeeP: deliveryFeeP ?? undefined },
-  );
-  if (!totals.ok) return err(totals.reason, 400);
-
-  // Default ready time uses the shop's ASAP prep, same as the website does
-  // when staff don't pick a slot. Staff can still bump it later from Live.
+  // Default ready time uses the shop's ASAP prep, same as the website.
   const prepMin = Math.max(5, Math.min(180, Number(config.ordering?.asapMinPrepMinutes) || 20));
   const at = new Date().toISOString();
   const readyAt = new Date(Date.now() + prepMin * 60000).toISOString();
 
   // Per-order staff attribution: the till may be left signed in as one operator,
   // but the order is credited to whoever entered their code at the mode picker.
-  // Validate the supplied id against the operator store (so a tampered client
-  // can't credit an arbitrary name) and take the canonical name; fall back to the
-  // signed-in session operator when there's no valid takenBy.
+  // Validate the supplied id against the operator store (canonical name); fall back
+  // to the signed-in session operator.
   let takenBy = sess?.op ? { id: sess.op, name: sess.name } : null;
   const tbId = String(body.takenBy?.id || '');
   if (tbId) {
@@ -109,7 +93,6 @@ export const onRequestPost = async ({ request, env }) => {
     if (tbOp && tbOp.active !== false) takenBy = { id: tbOp.id, name: tbOp.name };
   }
 
-  const id = newOrderId();
   const order = {
     id,
     createdAt: at,
@@ -122,7 +105,7 @@ export const onRequestPost = async ({ request, env }) => {
     address,
     totals,
     paymentMethod: tender === 'card' ? 'counter_card' : 'counter_cash',
-    payment: { state: 'paid', paidAt: at, tender },
+    payment: { state: 'paid', paidAt: at, tender, ...paymentExtra },
     marketing: { email: false, sms: false },
     createdBy: takenBy,
     history: [
