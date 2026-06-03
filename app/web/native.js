@@ -26,7 +26,7 @@
 (function () {
   'use strict';
 
-  var BUILD = 'failsafe-9'; // bump on each app-layer change so the device log confirms freshness
+  var BUILD = 'failsafe-10'; // bump on each app-layer change so the device log confirms freshness
 
   var BASE = '';
   var TOKEN = '';

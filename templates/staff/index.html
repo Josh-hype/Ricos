@@ -3425,10 +3425,24 @@ function buildKitchenTicket(o) {
 // Single print path (kitchen ticket or customer receipt) with result logging, so the
 // device LOG shows ok / printer-not-connected / printer-error for every print.
 // ---- Rich print "documents" for printDoc — the native renders these with real font
-// sizes, bold and the logo bitmap. All layout lives here, so the receipt design is
-// OTA-tweakable (incl. the font sizes below) with no rebuild.
-const PSZ = { sm: 20, md: 24, lg: 30, xl: 40 }; // printer font sizes in px — tune freely
-
+// sizes, bold and the logo bitmap. ALL layout lives here, so sizes/width/bold are tunable
+// with no native change.
+//
+// The Sunmi T2 head is 80mm ≈ 576 dots. Char width ≈ fontSize/2, so a line holds
+// ≈ 1152/fontSize chars. We pad rows + draw rules to that width so every line fills the
+// FULL paper at whatever font size it uses (no empty right margin). Tune SZ to taste.
+const SZ = { xs: 22, sm: 24, body: 30, big: 34, total: 38, name: 44 };
+function colsFor(size) { return Math.max(8, Math.floor(1152 / (size || 24))); }
+function padRow(left, right, size) {
+  const cols = colsFor(size);
+  left = String(left == null ? '' : left);
+  right = String(right == null ? '' : right);
+  if (left.length + right.length + 1 > cols) left = left.slice(0, Math.max(0, cols - right.length - 1));
+  const gap = Math.max(1, cols - left.length - right.length);
+  return left + ' '.repeat(gap) + right;
+}
+function rowOp(left, right, size, bold) { const s = size || SZ.body; return { t: 'text', s: padRow(left, right, s), size: s, bold: !!bold }; }
+function ruleOp(size) { const s = size || SZ.body; return { t: 'text', s: '-'.repeat(colsFor(s)), size: s }; }
 function lineExtras(li) {
   return [].concat(li.spice ? [li.spice] : [])
     .concat(li.meal ? ['Meal'] : [])
@@ -3437,96 +3451,68 @@ function lineExtras(li) {
     .map((ex) => (typeof ex === 'string') ? ex : (ex && (ex.label || ex.name)) || '')
     .filter(Boolean);
 }
-function receiptHeaderOps() {
-  const biz = (sale.config && sale.config.business) || {};
-  const addr = biz.address || {};
-  const ops = [];
-  const base = window.EPOS_API_BASE || '';
-  if (base) ops.push({ t: 'image', url: base + '/logo.png' }); // native downloads + prints it
-  if (biz.tradingName) ops.push({ t: 'text', s: biz.tradingName, align: 'center', size: PSZ.xl, bold: true });
-  if (biz.phone) ops.push({ t: 'text', s: biz.phone, align: 'center', size: PSZ.sm });
-  if (addr.line1) ops.push({ t: 'text', s: addr.line1, align: 'center', size: PSZ.sm });
-  const cp = [addr.city, addr.postcode].filter(Boolean).join(' · ');
-  if (cp) ops.push({ t: 'text', s: cp, align: 'center', size: PSZ.sm });
-  return ops;
-}
 function buildReceiptDoc(o, ctx) {
   const t = o.totals || {};
+  const biz = (sale.config && sale.config.business) || {};
+  const addr = biz.address || {};
   const money = (p) => ((p || 0) / 100).toFixed(2);
   const mode = o.fulfillment === 'delivery' ? 'DELIVERY' : (o.source === 'counter-walkin' ? 'WALK IN' : 'COLLECTION');
   const who = (o.customer && o.customer.name && o.customer.name !== 'Walk-in') ? o.customer.name : '';
-  const tender = (ctx && ctx.tender === 'card') ? 'CARD' : 'CASH';
   let when = '';
   try { when = new Date(o.createdAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) {}
-  const ops = receiptHeaderOps();
-  ops.push({ t: 'rule' });
-  ops.push({ t: 'row', l: 'Ref ' + o.id, r: when });
-  ops.push({ t: 'text', s: mode + (who ? ' · ' + who : '') + ' · ASAP', bold: true });
+  // Payment line only when we actually know it (counter sales pass ctx.tender; an online
+  // kitchen copy passes none, so we don't claim a tender we don't have).
+  const paid = (ctx && ctx.tender) ? ('PAID BY ' + (ctx.tender === 'card' ? 'CARD' : 'CASH')) : '';
+
+  const ops = [];
+  const base = window.EPOS_API_BASE || '';
+  if (base) ops.push({ t: 'image', url: base + '/logo.png' });
+  if (biz.tradingName) ops.push({ t: 'text', s: biz.tradingName, align: 'center', size: SZ.name, bold: true });
+  if (biz.phone) ops.push({ t: 'text', s: biz.phone, align: 'center', size: SZ.sm });
+  if (addr.line1) ops.push({ t: 'text', s: addr.line1, align: 'center', size: SZ.sm });
+  const cp = [addr.city, addr.postcode].filter(Boolean).join(' · ');
+  if (cp) ops.push({ t: 'text', s: cp, align: 'center', size: SZ.sm });
+
+  ops.push(ruleOp());
+  ops.push(rowOp('Ref ' + o.id, when, SZ.body, false));
+  ops.push({ t: 'text', s: mode + (who ? ' · ' + who : '') + ' · ASAP', size: SZ.big, bold: true });
   if (o.fulfillment === 'delivery' && o.address) {
-    if (o.address.line1) ops.push({ t: 'text', s: o.address.line1, size: PSZ.sm });
-    if (o.address.postcode) ops.push({ t: 'text', s: o.address.postcode, size: PSZ.sm });
+    if (o.address.line1) ops.push({ t: 'text', s: o.address.line1, size: SZ.sm });
+    if (o.address.postcode) ops.push({ t: 'text', s: o.address.postcode, size: SZ.sm });
   }
-  ops.push({ t: 'rule' });
+  ops.push(ruleOp());
   for (const li of (t.lines || [])) {
-    ops.push({ t: 'row', l: (li.qty || 1) + 'x ' + li.name, r: money(li.lineTotalP) });
-    for (const ex of lineExtras(li)) ops.push({ t: 'text', s: '  ' + ex, size: PSZ.sm });
+    ops.push(rowOp((li.qty || 1) + 'x ' + li.name, money(li.lineTotalP), SZ.body, true));
+    for (const ex of lineExtras(li)) ops.push({ t: 'text', s: '   ' + ex, size: SZ.xs });
   }
-  ops.push({ t: 'rule' });
-  if (t.deliveryFeeP) { ops.push({ t: 'row', l: 'Subtotal', r: money(t.subtotalP) }); ops.push({ t: 'row', l: 'Delivery', r: money(t.deliveryFeeP) }); }
-  ops.push({ t: 'row', l: 'TOTAL', r: money(t.totalP), bold: true });
-  ops.push({ t: 'rule' });
-  ops.push({ t: 'text', s: 'PAID BY ' + tender, align: 'center', size: PSZ.lg, bold: true });
-  if (tender === 'CASH' && ctx && ctx.tenderedP > 0) {
-    ops.push({ t: 'row', l: 'Cash', r: money(ctx.tenderedP) });
-    if (ctx.changeP > 0) ops.push({ t: 'row', l: 'Change', r: money(ctx.changeP) });
+  ops.push(ruleOp());
+  if (t.deliveryFeeP) { ops.push(rowOp('Subtotal', money(t.subtotalP), SZ.body, false)); ops.push(rowOp('Delivery', money(t.deliveryFeeP), SZ.body, false)); }
+  ops.push(rowOp('TOTAL', '£' + money(t.totalP), SZ.total, true));
+  ops.push(ruleOp());
+  if (paid) ops.push({ t: 'text', s: paid, align: 'center', size: SZ.big, bold: true });
+  if (ctx && ctx.tender === 'cash' && ctx.tenderedP > 0) {
+    ops.push(rowOp('Cash', money(ctx.tenderedP), SZ.body, false));
+    if (ctx.changeP > 0) ops.push(rowOp('Change', money(ctx.changeP), SZ.body, false));
   }
-  ops.push({ t: 'rule' });
-  if (o.createdBy && o.createdBy.name) ops.push({ t: 'text', s: 'Served by ' + o.createdBy.name, align: 'center', size: PSZ.sm });
-  ops.push({ t: 'text', s: 'Thank you — see you soon!', align: 'center', size: PSZ.sm });
+  ops.push(ruleOp());
+  if (o.createdBy && o.createdBy.name) ops.push({ t: 'text', s: 'Served by ' + o.createdBy.name, align: 'center', size: SZ.sm });
+  ops.push({ t: 'text', s: 'Thank you — see you soon!', align: 'center', size: SZ.sm });
   ops.push({ t: 'feed', n: 1 });
-  ops.push({ t: 'text', s: 'ORDER ' + o.id, align: 'center', size: PSZ.lg, bold: true });
+  ops.push({ t: 'text', s: 'ORDER ' + o.id, align: 'center', size: SZ.big, bold: true });
   ops.push({ t: 'feed', n: 3 });
   ops.push({ t: 'cut' });
   return ops;
 }
-function buildKitchenDoc(o) {
-  const t = o.totals || {};
-  const mode = o.fulfillment === 'delivery' ? 'DELIVERY' : (o.source === 'counter-walkin' ? 'WALK IN' : 'COLLECTION');
-  let when = '';
-  try { when = new Date(o.createdAt).toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit' }); } catch (e) {}
-  const ops = [
-    { t: 'text', s: 'KITCHEN', align: 'center', size: PSZ.xl, bold: true },
-    { t: 'text', s: mode + (when ? '   ' + when : ''), align: 'center', size: PSZ.lg, bold: true },
-    { t: 'text', s: 'Order ' + o.id, align: 'center', size: PSZ.sm },
-  ];
-  if (o.customer && o.customer.name && o.customer.name !== 'Walk-in') ops.push({ t: 'text', s: o.customer.name, align: 'center', bold: true });
-  if (o.customer && o.customer.phone) ops.push({ t: 'text', s: o.customer.phone, align: 'center', size: PSZ.sm });
-  if (o.fulfillment === 'delivery' && o.address) {
-    ops.push({ t: 'rule' });
-    if (o.address.line1) ops.push({ t: 'text', s: o.address.line1, size: PSZ.sm });
-    if (o.address.line2) ops.push({ t: 'text', s: o.address.line2, size: PSZ.sm });
-    if (o.address.postcode) ops.push({ t: 'text', s: o.address.postcode, size: PSZ.sm });
-  }
-  ops.push({ t: 'rule' });
-  for (const li of (t.lines || [])) {
-    ops.push({ t: 'text', s: (li.qty || 1) + ' x ' + String(li.name || '').toUpperCase(), size: PSZ.lg, bold: true });
-    for (const ex of lineExtras(li)) ops.push({ t: 'text', s: '   - ' + ex, size: PSZ.md });
-    ops.push({ t: 'feed', n: 1 });
-  }
-  ops.push({ t: 'rule' });
-  ops.push({ t: 'text', s: 'Order ' + o.id, align: 'center', size: PSZ.sm });
-  ops.push({ t: 'feed', n: 3 });
-  ops.push({ t: 'cut' });
-  return ops;
-}
+// Kitchen now prints the same receipt layout (per request) — one design to maintain.
+function buildKitchenDoc(o, ctx) { return buildReceiptDoc(o, ctx); }
 
 // Print a kitchen ticket or customer receipt. Prefer the rich printDoc (native font
 // sizes + logo); fall back to the plain-text builders on older APKs without printDoc.
 function printTo(kind, o, pctx) {
-  const ctx = { tender: (pctx && pctx.tender) || 'cash', tenderedP: (pctx && pctx.tenderedP) || 0, changeP: (pctx && pctx.changeP) || 0 };
+  const ctx = { tender: (pctx && pctx.tender) || null, tenderedP: (pctx && pctx.tenderedP) || 0, changeP: (pctx && pctx.changeP) || 0 };
   if (window.EPOSNative && window.EPOSNative.printDoc) {
     try {
-      const ops = kind === 'kitchen' ? buildKitchenDoc(o) : buildReceiptDoc(o, ctx);
+      const ops = buildReceiptDoc(o, ctx); // kitchen + customer copies share the receipt layout
       Promise.resolve(window.EPOSNative.printDoc({ ops }))
         .then((r) => {
           try { console.log('[print] ' + kind + (r && r.ok ? ' ok' : ' ' + JSON.stringify(r))); } catch (e) {}
@@ -3541,7 +3527,7 @@ function printTo(kind, o, pctx) {
 }
 function printToText(kind, o, ctx) {
   if (!(window.EPOSNative && window.EPOSNative.printReceipt)) { try { console.log('[print] no printer'); } catch (e) {} return; }
-  const text = kind === 'kitchen' ? buildKitchenTicket(o) : buildReceiptText(o, ctx);
+  const text = buildReceiptText(o, ctx); // kitchen + customer copies share the receipt layout
   Promise.resolve(window.EPOSNative.printReceipt({ text }))
     .then((r) => { try { console.log('[print] ' + kind + ' (text) ' + JSON.stringify(r)); } catch (e) {} })
     .catch((e) => { try { console.log('[print] ' + kind + ' text err ' + (e && e.message)); } catch (e2) {} });
