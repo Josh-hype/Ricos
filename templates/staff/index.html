@@ -4369,19 +4369,45 @@ async function registerReader() {
 }
 $('#readerCancel').addEventListener('click', closeReaderModal);
 $('#readerOvl').addEventListener('click', (e) => { if (e.target.id === 'readerOvl') closeReaderModal(); });
+// Build the reader splash: the logo centred on a portrait black canvas, so it shows at a
+// sensible size instead of being scaled to fill the screen. Drawn from a blob URL so the
+// canvas isn't tainted (works even when the logo is served cross-origin in the app).
+function frameReaderSplash(blob) {
+  return new Promise((resolve) => {
+    let url;
+    try { url = URL.createObjectURL(blob); } catch (e) { resolve(null); return; }
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const W = 480, H = 800;
+        const c = document.createElement('canvas'); c.width = W; c.height = H;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+        const s = Math.min((W * 0.62) / img.width, (H * 0.4) / img.height); // contain ~⅗ width
+        const w = img.width * s, h = img.height * s;
+        ctx.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
+        resolve(c.toDataURL('image/png').split(',')[1]);
+      } catch (e) { resolve(null); }
+      finally { try { URL.revokeObjectURL(url); } catch (e) {} }
+    };
+    img.onerror = () => { try { URL.revokeObjectURL(url); } catch (e) {} resolve(null); };
+    img.src = url;
+  });
+}
 $('#readerBrand').addEventListener('click', async () => {
   const msg = $('#readerBrandMsg'); const btn = $('#readerBrand'); const orig = btn.textContent;
   btn.disabled = true; btn.textContent = 'Uploading…';
-  msg.style.color = 'var(--muted)'; msg.textContent = 'Reading your logo…';
-  // Read the logo here (the browser loads /logo.png fine) and send the bytes, so the
-  // server never has to fetch its own site. Falls back to a server-side read if we can't.
-  let logo = null, ctype = null;
+  msg.style.color = 'var(--muted)'; msg.textContent = 'Preparing your logo…';
+  let logo = null, ctype = 'image/png';
   try {
     const lr = await fetch('/logo.png', { cache: 'no-store' });
     if (lr.ok) {
       const blob = await lr.blob();
-      ctype = blob.type || 'image/png';
-      logo = await new Promise((res, rej) => { const fr = new FileReader(); fr.onerror = () => rej(new Error('read')); fr.onload = () => res(String(fr.result).split(',')[1]); fr.readAsDataURL(blob); });
+      logo = await frameReaderSplash(blob);          // centred + sized
+      if (!logo) {                                    // canvas unavailable — send raw
+        ctype = blob.type || 'image/png';
+        logo = await new Promise((res) => { const fr = new FileReader(); fr.onerror = () => res(null); fr.onload = () => res(String(fr.result).split(',')[1]); fr.readAsDataURL(blob); });
+      }
     }
   } catch (e) { /* fall back to the server-side read */ }
   msg.textContent = 'Sending to the reader…';
@@ -4389,7 +4415,7 @@ $('#readerBrand').addEventListener('click', async () => {
     const res = await fetch('/api/staff/terminal/branding', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ logo, contentType: ctype }) });
     const d = await res.json().catch(() => ({}));
     if (!res.ok) { msg.style.color = 'var(--red)'; msg.textContent = (d && d.error) || ('Could not set the logo — HTTP ' + res.status + '.'); btn.disabled = false; btn.textContent = orig; return; }
-    msg.style.color = 'var(--green)'; msg.textContent = '✓ Logo set' + (d.version ? ' (' + d.version + ')' : '') + '. Reboot the reader (or wait a few minutes) to see it on the idle screen.';
+    msg.style.color = 'var(--green)'; msg.textContent = '✓ Logo set. Reboot the reader to see it on the idle screen.';
     btn.disabled = false; btn.textContent = orig;
   } catch (e) { msg.style.color = 'var(--red)'; msg.textContent = 'Network error — try again.'; btn.disabled = false; btn.textContent = orig; }
 });
