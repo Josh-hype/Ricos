@@ -205,6 +205,10 @@
   // Hardware facade.
   window.EPOSNative = {
     isApp: inApp,
+    printDoc: function (payload) {
+      if (window.EposHardware && window.EposHardware.available) return window.EposHardware.printDoc(payload || {});
+      return Promise.resolve({ ok: false, reason: 'not-in-app' });
+    },
     printReceipt: function (payload) {
       if (window.EposHardware && window.EposHardware.available) return window.EposHardware.printReceipt(payload || {});
       return Promise.resolve({ ok: false, reason: 'not-in-app' });

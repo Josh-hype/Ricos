@@ -13,7 +13,10 @@
 
   window.EposHardware = {
     get available() { return !!P(); },
-    // payload: { text } — plain-text/ESC-POS receipt body.
+    // payload: { ops:[...] } — rich receipt (text align/size/bold, rows, rule, image,
+    // feed, cut). Primary path; the web builds the ops so design is OTA-tweakable.
+    printDoc: function (payload) { var p = P(); return p ? p.printDoc(payload || {}) : noPlugin(); },
+    // payload: { text } — plain-text/ESC-POS receipt body (fallback for old bundles).
     printReceipt: function (payload) { var p = P(); return p ? p.printReceipt(payload || {}) : noPlugin(); },
     kickDrawer: function () { var p = P(); return p ? p.kickDrawer() : noPlugin(); },
     // payload: { amountP, currency, orderDraft } — Stripe Terminal Tap-to-Pay.
