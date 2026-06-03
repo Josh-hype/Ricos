@@ -78,8 +78,7 @@ button{cursor:pointer;border:0;background:none}
 .pin-btn:disabled{opacity:.5;box-shadow:none;transform:none;cursor:not-allowed}
 
 /* ============================== App shell (rail + stage) */
-#dash{display:grid;grid-template-columns:88px 1fr;height:100vh;min-height:100vh;overflow:hidden}
-@media(min-width:1200px){#dash{grid-template-columns:96px 1fr}}
+#dash{display:flex;flex-direction:column;height:100vh;min-height:100vh;overflow:hidden}
 
 /* Rail */
 .rail{
@@ -206,10 +205,29 @@ button{cursor:pointer;border:0;background:none}
 .audit-empty{color:var(--muted);font-size:13.5px;text-align:center;padding:18px;border:1px dashed var(--line);border-radius:13px}
 
 /* Stage */
-.stage{position:relative;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.stage{position:relative;overflow:hidden;display:flex;flex-direction:column;min-width:0;flex:1}
 
 /* Topbar */
 .topbar{display:flex;align-items:center;gap:14px;padding:15px 24px 13px;flex:none;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#FFFFFF,#FAFBFD)}
+/* Top-bar icon buttons (back office, account) */
+.icon-btn{width:42px;height:38px;border-radius:11px;display:grid;place-items:center;padding:0;border:1px solid var(--line);background:var(--panel);color:var(--ink-2);box-shadow:var(--sh-sm);cursor:pointer}
+.icon-btn:hover{border-color:var(--blue);color:var(--blue)}
+.icon-btn svg{width:20px;height:20px;stroke-width:1.9}
+.icon-btn.active{background:var(--amber-tint);border-color:var(--amber-bg);color:var(--amber)}
+.topbar .op-avatar{width:42px;height:38px;border-radius:11px;box-shadow:var(--sh-sm)}
+/* One-page board: mode buttons across the top + Live/Completed toggle */
+.modebar{display:flex;align-items:center;gap:12px;padding:14px 24px 2px;flex:none;flex-wrap:wrap}
+.modebar[hidden]{display:none}
+.mode-btn{display:flex;align-items:center;gap:9px;height:54px;padding:0 22px;border:0;border-radius:14px;cursor:pointer;color:#fff;font-size:15.5px;font-weight:800;letter-spacing:-.01em;background:linear-gradient(135deg,#0A86FF,#0070F0 60%,#0058C4);box-shadow:0 8px 20px rgba(0,112,240,.28);transition:transform var(--motion-fast) var(--ease-out),box-shadow var(--motion-fast)}
+.mode-btn:hover{transform:translateY(-2px)}
+.mode-btn:active{transform:translateY(0)}
+.mode-btn .mb-ic{font-size:19px;line-height:1}
+.mode-btn.collection{background:linear-gradient(135deg,#16B27A,#0E9F6E 60%,#0B8A5E);box-shadow:0 8px 20px rgba(14,159,110,.26)}
+.mode-btn.delivery{background:linear-gradient(135deg,#F6B53C,#F4A82E 60%,#E0922A);box-shadow:0 8px 20px rgba(244,168,46,.3)}
+.board-toggle{margin-left:auto;display:inline-flex;background:var(--canvas);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px}
+.board-toggle button{height:38px;padding:0 16px;border:0;background:transparent;border-radius:9px;cursor:pointer;font-size:13.5px;font-weight:700;color:var(--muted)}
+.board-toggle button.active{background:var(--panel);color:var(--ink);box-shadow:var(--sh-sm)}
+.board-toggle .bt-count{font-family:var(--mono);font-size:12px;margin-left:5px;color:var(--blue)}
 .loc{display:flex;flex-direction:column;gap:2px;min-width:0}
 .loc .eyebrow{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;line-height:1}
 .loc .name{font-size:20px;font-weight:800;letter-spacing:-.025em;line-height:1.12}
@@ -1027,38 +1045,11 @@ button{cursor:pointer;border:0;background:none}
 
 <!-- ============================== Dashboard -->
 <div id="dash" hidden>
-  <aside class="rail">
-    <div class="brand" title="{{shopShortName}}">
-      <img src="/logo.png" alt="{{shopShortName}}" />
-    </div>
-    <nav class="tabs" role="tablist">
-      <button class="tab" data-view="sale" role="tab" title="Counter sale">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.7a2 2 0 002-1.6L23 6H6"/></svg>
-        <span>Sale</span>
-      </button>
-      <button class="tab active" data-view="live" role="tab" title="Live">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M3 9h18M7 21h10"/></svg>
-        <span>Live <span class="tab-count" id="liveCount">0</span></span>
-      </button>
-      <button class="tab" data-view="backoffice" role="tab" title="Back office">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.6"/></svg>
-        <span>Back office</span>
-      </button>
-    </nav>
-    <div class="rail-foot">
-      <div class="rail-divider"></div>
-      <button id="opAvatar" class="op-avatar" title="Account" aria-haspopup="true">≡</button>
-      <button id="logoutBtn" class="avatar-btn" title="Sign out" hidden>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
-      </button>
-    </div>
-  </aside>
-
   <section class="stage">
     <div class="topbar">
       <div class="loc">
         <div class="eyebrow">{{shopShortName}}</div>
-        <div class="name" id="viewTitle">Live orders</div>
+        <div class="name" id="viewTitle">Orders</div>
       </div>
       <div class="top-spacer"></div>
       <button class="op-pill" id="opPill" title="Account" hidden>
@@ -1068,6 +1059,23 @@ button{cursor:pointer;border:0;background:none}
       <div class="chip live"><span class="pulse" id="pulse" title="Live — refreshes automatically"></span> Live</div>
       <button id="refreshBtn" title="Refresh now" aria-label="Refresh">↻</button>
       <button id="soundToggle" title="Toggle sound">🔔 On</button>
+      <button id="boIcon" class="icon-btn" title="Back office" aria-label="Back office">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.6"/></svg>
+      </button>
+      <button id="opAvatar" class="op-avatar" title="Account" aria-haspopup="true">≡</button>
+      <button id="logoutBtn" class="avatar-btn" title="Sign out" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      </button>
+    </div>
+
+    <div class="modebar" id="modeBar">
+      <button class="mode-btn" data-mode="walkin"><span class="mb-ic" aria-hidden="true">🚶</span> Walk in</button>
+      <button class="mode-btn collection" data-mode="collection"><span class="mb-ic" aria-hidden="true">🛍️</span> Collection</button>
+      <button class="mode-btn delivery" data-mode="delivery"><span class="mb-ic" aria-hidden="true">🛵</span> Delivery</button>
+      <div class="board-toggle" role="tablist">
+        <button data-board="live" class="active" role="tab">Live <span class="bt-count" id="liveCount">0</span></button>
+        <button data-board="completed" role="tab">Completed</button>
+      </div>
     </div>
 
     <div class="datebar" id="dateBar" hidden>
@@ -1592,7 +1600,8 @@ const state = {
   alarmHandle: null,   // setInterval for the repeating new-order chime
   alarmId: null,       // order id currently shown in the alarm popup
   alarmMin: 25,        // prep minutes selected in the alarm popup
-  view: 'live',        // live | summary | zreport | sale
+  view: 'live',        // live (board) | summary | zreport | sale | backoffice
+  boardTab: 'live',    // board sub-tab: 'live' | 'completed'
   summaryOrders: [],   // cache of today's orders shown under the Today view
   lastSummarySig: '',  // skip re-render when nothing changed (keeps cards still)
   from: '',            // selected London-day range (Z report)
@@ -1650,53 +1659,75 @@ function reloadRangeView() {
 }
 
 /* ============================== View tabs */
-function setView(view) {
+function setView(view, mode) {
   state.view = view;
-  // Today / Z report / the tile grid all live under the "Back office" rail tab,
-  // so keep that tab lit while any of them is on screen.
-  const activeTab = (view === 'summary' || view === 'zreport' || view === 'backoffice') ? 'backoffice' : view;
-  $$('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === activeTab));
-  const VIEW_TITLES = { sale: 'Counter sale', live: 'Live orders', backoffice: 'Back office', summary: "Today's takings", zreport: 'Z report' };
-  const vt = $('#viewTitle'); if (vt) vt.textContent = VIEW_TITLES[view] || '';
-  const usesRange = (view === 'zreport');
   const isSale = (view === 'sale');
-  $('#dateBar').hidden = !usesRange || isSale;
-  // Sale lives in its own panel beside the regular grid; swap visibility so
-  // the two never both fight for the .stage's flex space.
+  const isBoard = (view === 'live');
+  const usesRange = (view === 'zreport');
+  $('#modeBar').hidden = !isBoard;          // mode buttons + Live/Completed toggle: board only
+  $('#dateBar').hidden = !usesRange;
+  // Sale lives in its own panel; swap visibility so it and the grid never both
+  // fight for the stage's flex space.
   $('#saleView').hidden = !isSale;
   $('#grid').hidden = isSale;
-  if (isSale) { initSaleView(); return; }
+  const VIEW_TITLES = { sale: 'New sale', live: 'Orders', backoffice: 'Back office', summary: "Today's takings", zreport: 'Z report' };
+  const vt = $('#viewTitle'); if (vt) vt.textContent = VIEW_TITLES[view] || '';
+  const bo = $('#boIcon'); if (bo) bo.classList.toggle('active', view === 'backoffice' || view === 'summary' || view === 'zreport');
+  if (isSale) { initSaleView(mode); return; }
   if (usesRange) applyRangeToInputs();
   if (view === 'summary') loadSummary(false);
   else if (view === 'zreport') loadReport(false);
   else if (view === 'backoffice') renderBackOffice();
-  else {
-    renderList(state.orders);
-    // Keep the live-render signature in step with what's on screen so the
-    // next poll's no-change skip works correctly.
-    state.lastLiveSig = liveSignature(state.orders);
+  else renderBoard();
+}
+function renderBoard() {
+  if (state.boardTab === 'completed') { loadCompleted(); return; }
+  renderList(state.orders);
+  // Keep the live-render signature in step so the next poll's no-change skip works.
+  state.lastLiveSig = liveSignature(state.orders);
+}
+async function loadCompleted() {
+  const grid = $('#grid');
+  grid.innerHTML = '<div class="empty">Loading completed orders…</div>';
+  try {
+    const ymd = ymdToday();
+    const res = await fetch(`/api/staff/orders?view=done&from=${ymd}&to=${ymd}`, { cache: 'no-store' });
+    if (res.status === 401) { $('#logoutBtn').click(); return; }
+    const d = await res.json();
+    const orders = d.orders || [];
+    if (state.view !== 'live' || state.boardTab !== 'completed') return; // navigated away mid-load
+    if (!orders.length) { grid.innerHTML = '<div class="empty">No completed orders today yet.</div>'; return; }
+    grid.innerHTML = orders.map(o => renderCard(o, false, true)).join('');
+    wireCardButtons();
+  } catch (e) {
+    grid.innerHTML = '<div class="empty">Couldn\'t load completed orders. Tap ↻ to retry.</div>';
   }
 }
-$$('.tab').forEach(t => t.addEventListener('click', async () => {
-  const v = t.dataset.view;
-  const financial = (v === 'backoffice');
-  // Today / Z report are PIN-protected: unlock once per session with a manager or
-  // owner PIN, then they stay open until logout. Protects the reports while the till
-  // is left signed in — the signed-in operator is re-challenged too.
-  if (financial && !state.managerUnlocked) {
+// Board mode buttons → start a counter sale in that mode (skips the in-panel picker).
+$$('#modeBar .mode-btn').forEach(b => b.addEventListener('click', () => setView('sale', b.dataset.mode)));
+
+// Board Live / Completed toggle.
+$$('#modeBar .board-toggle button').forEach(b => b.addEventListener('click', () => {
+  state.boardTab = b.dataset.board;
+  $$('#modeBar .board-toggle button').forEach(x => x.classList.toggle('active', x === b));
+  if (state.view === 'live') renderBoard(); else setView('live');
+}));
+
+// Back office (top-bar icon) — PIN-protected; unlock once per session with a manager or
+// owner PIN, then it stays open until logout (idle revert re-locks it).
+$('#boIcon').addEventListener('click', async () => {
+  if (!state.managerUnlocked) {
     if (state.operatorsEnabled) {
-      // `force` prompts even when the current operator already holds reports.view;
-      // authorize only accepts a PIN whose role has it (manager or owner).
       const ok = await requirePerm('reports.view', null, true);
       if (!ok) return;
       state.managerUnlocked = true;
     } else {
-      openManagerModal(v); // legacy (no operators): the single manager-PIN gate
+      openManagerModal('backoffice'); // legacy (no operators): the single manager-PIN gate
       return;
     }
   }
-  setView(v);
-}));
+  setView('backoffice');
+});
 $('#refreshBtn').addEventListener('click', () => {
   $('#refreshBtn').classList.add('spin');
   setTimeout(() => $('#refreshBtn').classList.remove('spin'), 500);
@@ -1784,6 +1815,7 @@ function enterDashboard() {
   $('#pinScreen').style.display = 'none';
   $('#dash').hidden = false;
   loadMe();
+  setView('live');
   // Prime the audio context with a silent tone so iOS lets us play later.
   if (state.soundOn) {
     try { audio.chime(); } catch {}
@@ -1837,7 +1869,7 @@ function handleOrders(orders) {
   $('#liveCount').textContent = orders.length;
   // Only repaint the Live grid when something visible has actually changed —
   // keeps polling silent in the background instead of re-rendering every 5s.
-  if (state.view === 'live') {
+  if (state.view === 'live' && state.boardTab !== 'completed') {
     const sig = liveSignature(orders);
     if (sig !== state.lastLiveSig || newIds.length) {
       state.lastLiveSig = sig;
@@ -2639,7 +2671,7 @@ const SPICE_OPTIONS = ['Plain', 'Smoky BBQ', 'Mango & Lime', 'Lemon & Herb', 'Mi
 // availability change is picked up without restarting the app.
 const SALE_MENU_TTL_MS = 10 * 60 * 1000;
 
-async function initSaleView() {
+async function initSaleView(mode) {
   // Lazy-load the menu the first time Sale is opened, and refresh it if it has
   // gone stale — a price / availability change mid-shift shouldn't keep the
   // till showing the old menu. (The server still recomputes the actual charge.)
@@ -2653,10 +2685,14 @@ async function initSaleView() {
   sale.customer = null;
   sale.deliveryFeeP = 0;
   sale.takenBy = null;
-  setSaleStage('mode');
   renderSaleCats();
   renderSaleProducts();
   renderSaleTicket();
+  // Mode buttons live on the board now. Show the picker as a safe baseline, then jump
+  // straight into the chosen mode; if the staff-code prompt is cancelled, pickSaleMode
+  // returns false and we bounce back to the orders board rather than stranding a blank screen.
+  setSaleStage('mode');
+  if (mode) { const ok = await pickSaleMode(mode); if (!ok) setView('live'); }
 }
 
 function setSaleStage(stage) {
@@ -2674,14 +2710,14 @@ async function pickSaleMode(mode) {
   // legacy mode (no operators) askStaffCode resolves {skip:true} and we don't
   // prompt. Cancelling leaves them on the mode picker without starting a sale.
   const who = await askStaffCode();
-  if (!who) return;
+  if (!who) return false;
   sale.takenBy = who.skip ? null : { id: who.id, name: who.name };
   sale.mode = mode;
   if (mode === 'walkin') {
     sale.customer = null;
     sale.deliveryFeeP = 0;
     setSaleStage('menu');
-    return;
+    return true;
   }
   // Reset the form when entering it.
   $('#cfError').textContent = '';
@@ -2699,13 +2735,14 @@ async function pickSaleMode(mode) {
   $('#saleFormTitle').textContent = isDelivery ? 'Delivery details' : 'Collection details';
   $('#cfContinue').textContent = 'Continue to menu →';
   setSaleStage('form');
+  return true;
 }
 
 $$('#saleStageMode .mode-card').forEach(b =>
   b.addEventListener('click', () => pickSaleMode(b.dataset.mode))
 );
 
-$('#saleFormBack').addEventListener('click', () => setSaleStage('mode'));
+$('#saleFormBack').addEventListener('click', () => setView('live'));
 
 $('#saleForm').addEventListener('submit', (e) => {
   e.preventDefault();
@@ -3245,7 +3282,7 @@ $('#saleChangeMode').addEventListener('click', () => {
   clearCart();
   sale.customer = null;
   sale.deliveryFeeP = 0;
-  setSaleStage('mode');
+  setView('live');
 });
 
 // Charge -> payment modal
@@ -3734,7 +3771,7 @@ $('#payNewSale').addEventListener('click', () => {
   clearCart();
   sale.customer = null;
   sale.deliveryFeeP = 0;
-  setSaleStage('mode');
+  setView('live');
   closePayModal();
 });
 // Optional customer receipt — only if they ask. Prints the full receipt for the
@@ -3821,9 +3858,8 @@ function onIdle() {
     fetch('/api/staff/manager-logout', { method: 'POST', cache: 'no-store' }).catch(() => {});
     state.managerUnlocked = false;
   }
-  // Force the Sale → mode picker (every Sale click already resets to that
-  // stage, so this matches the manual flow).
-  setView('sale');
+  // After idle, drop back to the orders board — a neutral signed-in home.
+  setView('live');
 }
 ['pointerdown', 'keydown', 'touchstart', 'wheel'].forEach(ev =>
   document.addEventListener(ev, resetIdle, { capture: true, passive: true })
@@ -3895,7 +3931,7 @@ function renderOperator() {
 
 function applyPermissions() {
   const hideReports = state.operatorsEnabled && !can('reports.view');
-  $$('.tab[data-view="backoffice"]').forEach(t => { t.hidden = hideReports; });
+  const bo = $('#boIcon'); if (bo) bo.hidden = hideReports;
   if (hideReports && (state.view === 'backoffice' || state.view === 'summary' || state.view === 'zreport')) setView('live');
 }
 
