@@ -42,6 +42,7 @@ export async function sendEmail({ to, subject, html, text, replyTo, fromName }, 
 
 export function orderAcceptedEmail(order, config) {
   const ref = order.id.toUpperCase();
+  const num = order.orderNumber || ref; // short memorable number the staff call out
   const tradingName = config.business.tradingName;
   const tradingNameHtml = escapeHtml(tradingName);
   const phone = escapeHtml(config.business.phone || '');
@@ -76,7 +77,7 @@ export function orderAcceptedEmail(order, config) {
     : '';
 
   return {
-    subject: `${tradingName} — order ${ref} confirmed, ready in ${minutesAway} min`,
+    subject: `${tradingName} — order ${num} confirmed, ready in ${minutesAway} min`,
     html: `
       <div style="font-family:'Helvetica Neue',Arial,sans-serif;max-width:560px;margin:0 auto;color:#181210;background:${c.surface};padding:24px;border-radius:16px">
         ${logoUrl ? `<div style="text-align:center;margin-bottom:12px">
@@ -92,7 +93,7 @@ export function orderAcceptedEmail(order, config) {
           <div style="font-size:0.95em">Your order will be ${verb} at <strong>${readyTime}</strong>, ${readyDay}.</div>
         </div>
 
-        <p style="margin:0 0 4px"><strong>Reference:</strong> ${ref}</p>
+        <p style="margin:0 0 4px"><strong>Order number:</strong> <span style="font-size:1.15em;font-weight:700">${num}</span> &nbsp;<span style="color:#6b5e58;font-size:0.9em">(ref ${ref})</span></p>
         ${addressBlock}
 
         <table style="width:100%;border-collapse:collapse;margin:14px 0 4px;font-size:0.95em">

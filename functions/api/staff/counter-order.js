@@ -19,7 +19,7 @@ import { logAudit } from '../../_lib/audit.js';
 import { getConfig } from '../../_lib/config.js';
 import { priceCounterSale } from '../../_lib/counter-totals.js';
 import { retrievePaymentIntent, capturePaymentIntent } from '../../_lib/stripe.js';
-import { putOrder, newOrderId } from '../../_lib/kv.js';
+import { putOrder, newOrderId, nextOrderNumber } from '../../_lib/kv.js';
 
 export const onRequestPost = async ({ request, env }) => {
   // A counter sale books real revenue — gate it on `sell` (a no-op in legacy mode)
@@ -96,8 +96,10 @@ export const onRequestPost = async ({ request, env }) => {
     if (tbOp && tbOp.active !== false) takenBy = { id: tbOp.id, name: tbOp.name };
   }
 
+  const orderNumber = await nextOrderNumber(env);
   const order = {
     id,
+    orderNumber,
     createdAt: at,
     status: 'accepted',
     source: `counter-${mode}`,

@@ -10,6 +10,7 @@ export async function putOrder(order, env) {
       status: order.status,
       createdAt: order.createdAt,
       fulfillment: order.fulfillment,
+      num: order.orderNumber || null, // short memorable number (for collision checks)
     },
   });
 }
@@ -208,8 +209,27 @@ export async function putSetting(env, key, value) {
 }
 
 export function newOrderId() {
-  // 7-char base32 (Crockford) — readable on a printed receipt.
+  // 7-char base32 (Crockford) — the order REFERENCE (KV key, Stripe metadata).
   const alphabet = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
   const buf = crypto.getRandomValues(new Uint8Array(7));
   return [...buf].map(b => alphabet[b % alphabet.length]).join('');
+}
+
+// A short, memorable 3-digit order NUMBER (100–999) for the kitchen/counter to
+// call out. Kept unique among currently-ACTIVE orders so two live tickets never
+// share a number; completed orders' numbers are free to reuse. Falls back to a
+// plain random number if the scan fails.
+export async function nextOrderNumber(env) {
+  const used = new Set();
+  try {
+    for (const k of await listAllOrderKeys(env)) {
+      const m = k.metadata || {};
+      if (m.num && m.status && KITCHEN_VISIBLE_STATUSES.has(m.status)) used.add(String(m.num));
+    }
+  } catch (e) { /* fall through to a plain random number */ }
+  for (let i = 0; i < 60; i++) {
+    const n = String(100 + Math.floor(Math.random() * 900));
+    if (!used.has(n)) return n;
+  }
+  return String(100 + Math.floor(Math.random() * 900));
 }

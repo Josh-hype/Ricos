@@ -12,7 +12,7 @@ import { computeTotals } from '../_lib/totals.js';
 import { resolveDelivery } from '../_lib/delivery.js';
 import { isOpenNow, isSlotValid, listSlots } from '../_lib/hours.js';
 import { createPaymentIntent, createCustomer } from '../_lib/stripe.js';
-import { putOrder, newOrderId, recordOptIn, incrSlotCount, getSlotCount } from '../_lib/kv.js';
+import { putOrder, newOrderId, nextOrderNumber, recordOptIn, incrSlotCount, getSlotCount } from '../_lib/kv.js';
 import { normalisePhoneE164UK } from '../_lib/sms.js';
 import { readCustomerSession } from '../_lib/customer-auth.js';
 import { getCustomer, putCustomer, upsertAddress, updateContactDetails } from '../_lib/customer.js';
@@ -237,7 +237,8 @@ export const onRequestPost = async ({ request, env }) => {
     }
   }
 
-  // Persist order.
+  // Assign the short memorable order number (reference stays `id`), then persist.
+  order.orderNumber = await nextOrderNumber(env);
   await putOrder(order, env);
 
   // If a signed-in customer placed this order, save the address + the email
@@ -269,6 +270,7 @@ export const onRequestPost = async ({ request, env }) => {
 
   return Response.json({
     orderId: id,
+    orderNumber: order.orderNumber,
     clientSecret: order.payment.clientSecret || null,
     status: order.status,
     // For card orders the client needs to know what state the PI is in so

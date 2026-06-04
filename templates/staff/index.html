@@ -1748,6 +1748,9 @@ button{cursor:pointer;border:0;background:none}
 
 const $ = sel => document.querySelector(sel);
 const $$ = sel => Array.from(document.querySelectorAll(sel));
+// The short memorable order NUMBER (falls back to the reference id for orders
+// placed before numbers existed). The 7-char id stays the underlying reference.
+const orderNo = o => String((o && o.orderNumber) || (o && o.id) || '');
 
 /* ============================== Beep generator (no asset needed) */
 const audio = (() => {
@@ -2379,7 +2382,7 @@ function renderKds(orders, routing) {
     const who = (o.customer && o.customer.name && o.customer.name !== 'Walk-in') ? `<div class="kc-who">${escapeHtml(o.customer.name)}</div>` : '';
     return `<article class="kds-card${isNew ? ' new' : ''}" data-id="${o.id}">
       <div class="kds-card-head">
-        <span class="kc-ref">#${escapeHtml(o.id)}</span>
+        <span class="kc-ref">#${escapeHtml(orderNo(o))}</span>
         <span class="kc-type${isDelivery ? ' delivery' : ''}">${type}</span>
         <span class="kc-time">${humanAgo(new Date(o.createdAt))}</span>
       </div>
@@ -2957,7 +2960,7 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
       <div class="chead">
         <div class="chead-top">
           <span class="chev">▸</span>
-          <span class="ref">#${escapeHtml(o.id)}</span>
+          <span class="ref">#${escapeHtml(orderNo(o))}</span>
           <span class="head-total">£${(o.totals.totalP/100).toFixed(2)}</span>
         </div>
         <div class="chead-sub">
@@ -2977,7 +2980,7 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
     <article class="${cls.join(' ')}">
       ${menuHtml}
       <div class="card-head">
-        <span class="ref">#${escapeHtml(o.id)}</span>
+        <span class="ref">#${escapeHtml(orderNo(o))}</span>
         ${statusPill}
         ${refundPill}
         ${fulfillmentPill}
@@ -3018,7 +3021,7 @@ function renderRow(o, isNew) {
   } else {
     timeTxt = formatTime(o.createdAt);
   }
-  const meta = `${fulf} · ${stLabel[o.status] || o.status}${timeTxt ? ' · ' + timeTxt : ''}`;
+  const meta = `${fulf} · ${stLabel[o.status] || o.status}${timeTxt ? ' · ' + timeTxt : ''}${o.orderNumber ? ' · Ref ' + o.id : ''}`;
 
   const refundedP = pmt.refundedTotalP || (pmt.refund?.state === 'succeeded' ? pmt.refund.amountP : 0) || 0;
   const fullyRefunded = refundedP >= (o.totals.totalP || 0);
@@ -3052,7 +3055,7 @@ function renderRow(o, isNew) {
   return `
     <article class="${cls.join(' ')}" data-id="${o.id}">
       <div class="r-id">
-        <span class="r-ref">#${escapeHtml(o.id)}</span>
+        <span class="r-ref">#${escapeHtml(orderNo(o))}</span>
         <span class="r-meta">${escapeHtml(meta)}</span>
       </div>
       <span class="r-total">£${(o.totals.totalP / 100).toFixed(2)}</span>
@@ -4177,13 +4180,13 @@ function showPayDone(o, { kind, tender, tenderedP = 0, changeP = 0 }) {
   const totalP = o.totals?.totalP || 0;
   if (kind === 'unpaid') {
     $('#payDone h2').textContent = 'Order saved';
-    $('#payDoneSub').textContent = `£${(totalP / 100).toFixed(2)} · Pay later · Order #${o.id}`;
+    $('#payDoneSub').textContent = `£${(totalP / 100).toFixed(2)} · Pay later · Order #${orderNo(o)}`;
   } else if (changeP > 0) {
     $('#payDone h2').textContent = 'Give change';
-    $('#payDoneSub').textContent = `£${(changeP / 100).toFixed(2)} change · Order #${o.id}`;
+    $('#payDoneSub').textContent = `£${(changeP / 100).toFixed(2)} change · Order #${orderNo(o)}`;
   } else {
     $('#payDone h2').textContent = kind === 'existing' ? 'Payment received' : 'Payment complete';
-    $('#payDoneSub').textContent = `£${(totalP / 100).toFixed(2)} · ${tender === 'card' ? 'Card' : 'Cash'} · Order #${o.id}`;
+    $('#payDoneSub').textContent = `£${(totalP / 100).toFixed(2)} · ${tender === 'card' ? 'Card' : 'Cash'} · Order #${orderNo(o)}`;
   }
   // A customer receipt needs the loaded shop config + cart context, so only the
   // fresh-sale path offers it (the unpaid order already printed a kitchen copy).
@@ -4365,7 +4368,7 @@ function buildReceiptText(o, ctx) {
   if (o.createdBy && o.createdBy.name) out.push(center('Served by ' + o.createdBy.name));
   out.push(center('Thank you — see you soon!'));
   out.push(heavy);
-  out.push(center('ORDER  ' + o.id));
+  out.push(center('ORDER  ' + (o.orderNumber || o.id)));
   out.push('');
   return out.join('\n');
 }
@@ -4380,7 +4383,7 @@ function buildKitchenTicket(o) {
   const mode = o.fulfillment === 'delivery' ? 'DELIVERY' : (o.source === 'counter-walkin' ? 'WALK IN' : 'COLLECTION');
   let when = '';
   try { when = new Date(o.createdAt).toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit' }); } catch (e) {}
-  const out = [heavy, center('KITCHEN'), heavy, center(mode + (when ? '   ' + when : '')), center('Order ' + o.id)];
+  const out = [heavy, center('KITCHEN'), heavy, center(mode + (when ? '   ' + when : '')), center('Order ' + (o.orderNumber || o.id))];
   if (o.customer && o.customer.name && o.customer.name !== 'Walk-in') out.push(center(o.customer.name));
   if (o.customer && o.customer.phone) out.push(center(o.customer.phone));
   if (o.fulfillment === 'delivery' && o.address) {
@@ -4404,7 +4407,7 @@ function buildKitchenTicket(o) {
     out.push('');
   }
   out.push(light);
-  out.push(center('Order ' + o.id));
+  out.push(center('Order ' + (o.orderNumber || o.id)));
   out.push('');
   return out.join('\n');
 }
@@ -4486,7 +4489,7 @@ function buildReceiptDoc(o, ctx) {
   if (o.createdBy && o.createdBy.name) ops.push({ t: 'text', s: 'Served by ' + o.createdBy.name, align: 'center', size: SZ.sm, bold: true });
   ops.push({ t: 'text', s: 'Thank you — see you soon!', align: 'center', size: SZ.sm, bold: true });
   ops.push({ t: 'feed', n: 1 });
-  ops.push({ t: 'text', s: 'ORDER ' + o.id, align: 'center', size: SZ.body, bold: true });
+  ops.push({ t: 'text', s: 'ORDER ' + (o.orderNumber || o.id), align: 'center', size: SZ.body, bold: true });
   ops.push({ t: 'feed', n: 3 });
   ops.push({ t: 'cut' });
   return ops;
