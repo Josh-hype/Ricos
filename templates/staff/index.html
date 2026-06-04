@@ -230,7 +230,15 @@ button{cursor:pointer;border:0;background:none}
 .mode-btn.collection{border-left-color:var(--green)}
 .mode-btn.delivery{border-left-color:var(--amber-bg)}
 .mode-btn.pay{background:var(--blue-tint);border-left-color:var(--blue);color:var(--accent-strong)}
-.board-toggle{margin-left:auto}
+.board-right{margin-left:auto;display:flex;align-items:center}
+.board-right .complete-all{
+  margin-right:10px;height:38px;padding:0 16px;border:0;border-radius:11px;
+  background:var(--green);color:#fff;font-weight:700;font-size:13.5px;cursor:pointer;
+  box-shadow:var(--sh-sm);white-space:nowrap;
+}
+.board-right .complete-all:hover{filter:brightness(1.05)}
+.board-right .complete-all:active{transform:translateY(1px)}
+.board-right .complete-all[hidden]{display:none}
 .boardbar{display:flex;justify-content:flex-end;align-items:center;padding:6px 24px 2px;flex:none}
 .board-toggle{display:inline-flex;background:var(--canvas);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px}
 .board-toggle button{height:38px;padding:0 18px;border:0;background:transparent;border-radius:9px;cursor:pointer;font-size:13.5px;font-weight:700;color:var(--muted)}
@@ -302,8 +310,8 @@ button{cursor:pointer;border:0;background:none}
 
 /* Grid */
 .grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-  gap:14px;padding:4px 24px 24px;flex:1;overflow-y:auto;align-content:start;
+  display:grid;grid-template-columns:1fr;
+  gap:12px;padding:4px 24px 24px;flex:1;overflow-y:auto;align-content:start;
 }
 .grid[hidden]{display:none}
 .grid::-webkit-scrollbar{width:8px}
@@ -343,6 +351,7 @@ button{cursor:pointer;border:0;background:none}
 .card.st-accepted .card-head,
 .card.st-ready .card-head,
 .card.st-out .card-head{padding-right:26px}
+.card.has-menu .card-head{padding-right:30px}
 .ref{font-family:var(--mono);font-size:16px;font-weight:500;letter-spacing:-.02em}
 .when{color:var(--muted);font-size:12px;font-weight:500;margin-left:auto}
 
@@ -454,6 +463,8 @@ button{cursor:pointer;border:0;background:none}
 .card-menu .menu button:hover{background:var(--red-tint)}
 .card-menu .menu .menu-refund{color:var(--ink)}
 .card-menu .menu .menu-refund:hover{background:var(--blue-tint-2);color:var(--blue)}
+.card-menu .menu .menu-complete{color:var(--green)}
+.card-menu .menu .menu-complete:hover{background:var(--green-tint);color:var(--green)}
 
 /* Modal overlay */
 .ovl{
@@ -605,8 +616,8 @@ button{cursor:pointer;border:0;background:none}
 .zg span{color:rgba(255,255,255,.65);font-size:11.5px;font-weight:500}
 .zorders{
   grid-column:1/-1;display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-  gap:14px;align-items:start;
+  grid-template-columns:1fr;
+  gap:12px;align-items:start;
 }
 
 /* Back office (services tiles) */
@@ -1097,9 +1108,12 @@ button{cursor:pointer;border:0;background:none}
         <button class="mode-btn delivery" data-mode="delivery"><span class="mb-ic" aria-hidden="true">🛵</span> Delivery</button>
         <button class="mode-btn pay" id="payQuickBtn"><span class="mb-ic" aria-hidden="true">💳</span> Pay</button>
       </div>
-      <div class="board-toggle" role="tablist">
-        <button data-board="live" class="active" role="tab">Live <span class="bt-count" id="liveCount">0</span></button>
-        <button data-board="completed" role="tab">Completed</button>
+      <div class="board-right">
+        <button class="complete-all" id="completeAllBtn" hidden>✓ Complete all</button>
+        <div class="board-toggle" role="tablist">
+          <button data-board="live" class="active" role="tab">Live <span class="bt-count" id="liveCount">0</span></button>
+          <button data-board="completed" role="tab">Completed</button>
+        </div>
       </div>
     </div>
 
@@ -1756,10 +1770,41 @@ function setView(view, mode) {
   else renderBoard();
 }
 function renderBoard() {
+  updateBoardActions();
   if (state.boardTab === 'completed') { loadCompleted(); return; }
   renderList(state.orders);
   // Keep the live-render signature in step so the next poll's no-change skip works.
   state.lastLiveSig = liveSignature(state.orders);
+}
+
+// The live "live" statuses — orders still on the board, not yet done/cancelled.
+const LIVE_STATUSES = ['pending_accept', 'accepted', 'ready', 'out_for_delivery'];
+
+// Show the "Complete all" button only on the Live tab when there's something to
+// complete. Hidden on the Completed tab and everywhere off the live board.
+function updateBoardActions() {
+  const btn = $('#completeAllBtn');
+  if (!btn) return;
+  const n = (state.orders || []).filter(o => LIVE_STATUSES.includes(o.status)).length;
+  btn.hidden = !(state.view === 'live' && state.boardTab !== 'completed' && n > 0);
+}
+
+// Mark every live order done in one go (with a confirm). Customers are notified
+// just as if each were completed individually.
+async function completeAll() {
+  const live = (state.orders || []).filter(o => LIVE_STATUSES.includes(o.status));
+  if (!live.length) return;
+  if (!confirm(`Complete all ${live.length} live order${live.length > 1 ? 's' : ''}? They'll be marked done and customers notified.`)) return;
+  const btn = $('#completeAllBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Completing…'; }
+  let failed = 0;
+  for (const o of live) {
+    try { await sendStatus(o.id, 'completed', undefined, undefined); }
+    catch (e) { failed++; }
+  }
+  if (btn) { btn.disabled = false; btn.textContent = '✓ Complete all'; }
+  await poll();
+  if (failed) alert(`${failed} order${failed > 1 ? 's' : ''} couldn't be completed. Please try again.`);
 }
 async function loadCompleted() {
   const grid = $('#grid');
@@ -1883,6 +1928,9 @@ $$('.board-toggle button').forEach(b => b.addEventListener('click', () => {
   $$('.board-toggle button').forEach(x => x.classList.toggle('active', x === b));
   if (state.view === 'live') renderBoard(); else setView('live');
 }));
+
+// "Complete all" — clear the live board in one tap.
+$('#completeAllBtn').addEventListener('click', completeAll);
 
 // Back office (top-bar icon) — PIN-protected; unlock once per session with a manager or
 // owner PIN, then it stays open until logout (idle revert re-locks it).
@@ -2046,6 +2094,7 @@ function handleOrders(orders) {
 
   state.orders = orders;
   $('#liveCount').textContent = orders.length;
+  updateBoardActions();
   // Only repaint the Live grid when something visible has actually changed —
   // keeps polling silent in the background instead of re-rendering every 5s.
   if (state.view === 'live' && state.boardTab !== 'completed') {
@@ -2094,6 +2143,10 @@ function wireCardButtons() {
     if (confirm('Cancel this order? The customer is notified and any card payment is refunded automatically.')) {
       updateStatus(b.dataset.id, 'cancelled');
     }
+  }));
+  $$('.card-menu .menu-complete').forEach(b => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    updateStatus(b.dataset.id, 'completed');
   }));
   $$('.card-menu .menu-refund, .card .btn-refund').forEach(b => b.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -2379,8 +2432,10 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
       ${totals}
       <div class="actions">${actions}</div>`;
 
-  // ⋮ menu on in-progress cards: Refund… (full/partial) for paid card orders,
-  // plus Cancel & refund on accepted (cancels + full refund via the reject path).
+  // ⋮ menu on live cards: Refund… (full/partial) for paid card orders, Cancel &
+  // refund on accepted (cancels + full refund via the reject path), and a quick
+  // "Complete order" on every live order (the three-dots shortcut to mark it done).
+  const liveStatuses = ['pending_accept', 'accepted', 'ready', 'out_for_delivery'];
   const menuItems = [];
   if (canRefund && ['accepted', 'ready', 'out_for_delivery'].includes(o.status)) {
     menuItems.push(`<button class="menu-refund" data-id="${o.id}">Refund…</button>`);
@@ -2388,12 +2443,16 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
   if (o.status === 'accepted') {
     menuItems.push(`<button class="menu-cancel" data-id="${o.id}">${o.paymentMethod === 'card' ? 'Cancel &amp; refund' : 'Cancel order'}</button>`);
   }
+  if (liveStatuses.includes(o.status)) {
+    menuItems.push(`<button class="menu-complete" data-id="${o.id}">Complete order</button>`);
+  }
   const menuHtml = menuItems.length
     ? `<div class="card-menu">
          <button class="dots" data-id="${o.id}" aria-label="More actions">⋮</button>
          <div class="menu" hidden>${menuItems.join('')}</div>
        </div>`
     : '';
+  if (!collapsed && menuItems.length) cls.push('has-menu');
 
   // Recent cards start collapsed: just ref + status + total. Tapping the header
   // expands the full order. Live cards always show everything (the kitchen
