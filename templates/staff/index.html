@@ -538,6 +538,71 @@ button{cursor:pointer;border:0;background:none}
   letter-spacing:.14em;word-spacing:.16em;color:var(--ink);white-space:nowrap;
 }
 
+/* "Use this device as a Kitchen Display" link on the PIN screen */
+.pin-kds-link{
+  display:block;width:100%;margin-top:14px;background:transparent;border:0;
+  color:var(--muted);font-size:13px;font-weight:700;padding:8px;
+}
+.pin-kds-link:hover{color:var(--blue)}
+
+/* ============================== Kitchen Display (KDS) — dark, big, touch-first.
+   Display-only: no EPOS, just the accepted-order feed, newest in front. */
+.kds{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;background:#0B1A2E;color:#fff}
+.kds[hidden]{display:none}
+.kds-top{
+  flex:none;display:flex;align-items:center;gap:14px;padding:14px 22px;
+  background:#0A1626;border-bottom:1px solid rgba(255,255,255,.12);
+}
+.kds-brand{display:flex;align-items:center;gap:11px}
+.kds-brand .bm-l{width:26px;height:27px}
+.kds-brand span{font-weight:800;font-size:17px;letter-spacing:.16em;text-transform:uppercase;color:#fff}
+.kds-meta{margin-left:auto;display:flex;align-items:center;gap:16px}
+.kds-count{font-weight:700;font-size:14px;color:#9FB7D4}
+.kds-clock{font-family:var(--mono);font-size:16px;color:#fff;opacity:.85}
+.kds-exit{
+  width:44px;height:44px;border:1px solid rgba(255,255,255,.22);border-radius:10px;
+  background:transparent;color:#fff;font-size:18px;line-height:1;cursor:pointer;
+}
+.kds-exit:hover{background:rgba(255,255,255,.1)}
+.kds-grid{
+  flex:1;min-height:0;overflow-y:auto;padding:18px;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:16px;align-content:start;
+}
+.kds-empty{grid-column:1/-1;text-align:center;color:#6F86A4;font-size:18px;font-weight:600;padding:80px 16px}
+.kds-card{
+  background:#fff;color:var(--ink);border-radius:16px;overflow:hidden;
+  display:flex;flex-direction:column;border:2px solid transparent;box-shadow:0 8px 22px rgba(0,0,0,.28);
+}
+.kds-card.new{animation:kdsflash 1.1s ease-in-out 5}
+@keyframes kdsflash{0%,100%{border-color:transparent}50%{border-color:var(--amber-bg)}}
+.kds-card-head{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  padding:13px 15px;background:#F4F7FB;border-bottom:1px solid var(--line);
+}
+.kds-card-head .kc-ref{font-family:var(--mono);font-size:21px;font-weight:600;letter-spacing:-.02em}
+.kds-card-head .kc-type{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;background:var(--blue-tint);color:var(--accent-strong);padding:4px 9px;border-radius:7px}
+.kds-card-head .kc-type.delivery{background:var(--amber-tint);color:var(--amber)}
+.kds-card-head .kc-time{margin-left:auto;font-size:12.5px;font-weight:700;color:var(--muted)}
+.kds-card .kc-who{padding:8px 15px 0;font-size:13px;font-weight:700;color:var(--ink-2)}
+.kc-items{list-style:none;margin:0;padding:8px 8px 4px;flex:1}
+.kc-item{
+  display:flex;align-items:baseline;gap:9px;padding:11px 9px;border-radius:10px;
+  font-size:16px;line-height:1.3;cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+.kc-item:active{background:var(--canvas)}
+.kc-item .kc-qty{font-family:var(--mono);font-weight:600;color:var(--blue);min-width:30px}
+.kc-item .kc-name{font-weight:700;flex:1}
+.kc-item .kc-ex{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-top:2px}
+.kc-item.struck{color:var(--muted-2)}
+.kc-item.struck .kc-qty{color:var(--muted-2)}
+.kc-item.struck .kc-name{text-decoration:line-through;text-decoration-thickness:2px}
+.kc-ready{
+  margin:6px 12px 14px;height:54px;border:0;border-radius:13px;
+  background:var(--green);color:#fff;font-size:16px;font-weight:800;cursor:pointer;
+}
+.kc-ready:active{filter:brightness(.95)}
+
 /* Modal overlay */
 .ovl{
   position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(11,26,46,.5);backdrop-filter:blur(4px);
@@ -1142,8 +1207,43 @@ button{cursor:pointer;border:0;background:none}
            id="pinInput" maxlength="8" placeholder="••••" autofocus required />
     <div class="pin-error" id="pinError" aria-live="polite"></div>
     <button class="pin-btn" type="submit" id="pinSubmit">Unlock</button>
+    <button class="pin-kds-link" type="button" id="kdsSetupLink">Use this device as a Kitchen Display →</button>
   </form>
 </section>
+
+<!-- ============================== Kitchen Display (KDS mode) — display-only -->
+<section id="kdsScreen" class="kds" hidden aria-label="Kitchen display">
+  <header class="kds-top">
+    <div class="kds-brand">
+      <svg class="bm-l" viewBox="0 0 40 42" aria-hidden="true">
+        <path d="M5 4 H16.5 V31 H38 V40 H5 Z" fill="#C2A15B"/>
+        <rect x="20.5" y="5" width="3.6" height="22" fill="#fff"/>
+      </svg>
+      <span>Kitchen</span>
+    </div>
+    <div class="kds-meta">
+      <span class="kds-count" id="kdsCount">0 active</span>
+      <span class="kds-clock" id="kdsClock">--:--</span>
+      <button class="kds-exit" id="kdsExit" type="button" title="Exit kitchen display" aria-label="Exit">✕</button>
+    </div>
+  </header>
+  <main class="kds-grid" id="kdsGrid">
+    <div class="kds-empty">Waiting for orders…</div>
+  </main>
+</section>
+
+<div class="ovl" id="kdsSetupOvl" role="dialog" aria-modal="true" aria-labelledby="kdsSetupTitle">
+  <div class="modal">
+    <h2 id="kdsSetupTitle">Kitchen Display setup</h2>
+    <p style="color:var(--muted);font-size:13.5px;font-weight:500;margin-bottom:14px;text-align:center">Enter the till setup password to turn this device into a display-only kitchen screen.</p>
+    <input type="password" class="pin-input" id="kdsSetupPw" placeholder="Setup password" autocomplete="off" />
+    <div class="pin-error" id="kdsSetupErr" aria-live="polite"></div>
+    <div class="row">
+      <button class="cancel" id="kdsSetupCancel" type="button">Cancel</button>
+      <button class="confirm" id="kdsSetupConfirm" type="button">Start display</button>
+    </div>
+  </div>
+</div>
 
 <!-- ============================== Dashboard -->
 <div id="dash" hidden>
@@ -1800,6 +1900,7 @@ const state = {
   payReturnTimer: null,    // auto-return-to-board timer after a completed sale
   boardFilter: 'all',      // board chip filter: all | unpaid | instore | online
   completedOrders: [],     // cache of the Completed tab list (so chip filtering doesn't refetch)
+  kdsRouting: false,       // when true: accepted orders go to the KDS, the till skips printing
 };
 
 const IDLE_MS = 90 * 1000;
@@ -2160,6 +2261,7 @@ function enterDashboard() {
   $('#pinScreen').style.display = 'none';
   $('#dash').hidden = false;
   loadMe();
+  loadSettings();
   setView('live');
   // Prime the audio context with a silent tone so iOS lets us play later.
   if (state.soundOn) {
@@ -2169,6 +2271,153 @@ function enterDashboard() {
   state.pollHandle = setInterval(poll, 5000);
   resetIdle();
 }
+
+// Effective print⇄KDS routing for this shop. When on, the till skips the kitchen
+// print on accept (the KDS shows the order instead).
+async function loadSettings() {
+  try {
+    const res = await fetch('/api/staff/settings', { cache: 'no-store' });
+    if (res.ok) { const d = await res.json(); state.kdsRouting = !!d.kdsRouting; }
+  } catch (e) { /* keep default */ }
+}
+
+/* ============================== Kitchen Display (KDS) mode
+   This device can run display-only (no EPOS). It pairs once with the shop setup
+   password (a long-lived KDS token), then polls the accepted-order feed — newest
+   in front. Tap items to strike them as packed; "Mark ready" bumps the order. */
+const KDS_ROLE = (() => { try { return localStorage.getItem('epos_role') === 'kds'; } catch (e) { return false; } })();
+let kdsToken = (() => { try { return localStorage.getItem('kds_token') || ''; } catch (e) { return ''; } })();
+let kdsPollHandle = null, kdsClockHandle = null;
+const kdsSeen = new Set();
+
+function kdsHeaders() { return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + kdsToken }; }
+function kdsTick() {
+  const el = $('#kdsClock');
+  if (el) el.textContent = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+}
+function bootKds() {
+  // Clear any leftover staff token so the native shim doesn't attach it over our
+  // KDS Bearer (a KDS device carries no operator session).
+  try { if (window.EPOSNative && window.EPOSNative.onSignOut) window.EPOSNative.onSignOut(); } catch (e) {}
+  $('#pinScreen').style.display = 'none';
+  $('#dash').hidden = true;
+  $('#kdsScreen').hidden = false;
+  kdsTick();
+  if (kdsClockHandle) clearInterval(kdsClockHandle);
+  kdsClockHandle = setInterval(kdsTick, 20000);
+  kdsPoll();
+  if (kdsPollHandle) clearInterval(kdsPollHandle);
+  kdsPollHandle = setInterval(kdsPoll, 5000);
+}
+async function kdsPoll() {
+  let data;
+  try {
+    const res = await fetch('/api/staff/kds/orders', { headers: kdsHeaders(), cache: 'no-store' });
+    if (res.status === 401) { kdsExitToSetup('Display session expired — please set up again.'); return; }
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    data = await res.json();
+  } catch (e) { return; } // keep the last view on a network blip
+  renderKds(data.orders || []);
+}
+function kdsItemsHtml(o) {
+  const struck = new Set(o.kdsStruck || []);
+  return (o.totals && o.totals.lines ? o.totals.lines : []).map((li, idx) => {
+    const extras = []
+      .concat(li.spice ? [li.spice] : [])
+      .concat(li.meal ? ['Meal'] : [])
+      .concat(Array.isArray(li.modifiers) ? li.modifiers : [])
+      .concat(Array.isArray(li.mealChoices) ? li.mealChoices : []);
+    const exTxt = extras.map(e => escapeHtml(typeof e === 'string' ? e : (e && (e.label || e.name)) || '')).filter(Boolean).join(', ');
+    return `<li class="kc-item${struck.has(idx) ? ' struck' : ''}" data-id="${o.id}" data-idx="${idx}">
+        <span class="kc-qty">${li.qty || 1}×</span>
+        <span class="kc-name">${escapeHtml(li.name)}${exTxt ? `<span class="kc-ex">${exTxt}</span>` : ''}</span>
+      </li>`;
+  }).join('');
+}
+function renderKds(orders) {
+  const grid = $('#kdsGrid');
+  $('#kdsCount').textContent = orders.length + (orders.length === 1 ? ' active' : ' active');
+  if (!orders.length) {
+    grid.innerHTML = '<div class="kds-empty">No orders right now.</div>';
+    kdsSeen.clear();
+    return;
+  }
+  grid.innerHTML = orders.map(o => {
+    const isNew = !kdsSeen.has(o.id);
+    const isDelivery = o.fulfillment === 'delivery';
+    const type = isDelivery ? 'Delivery' : (o.source === 'counter-walkin' ? 'Walk-in' : 'Collection');
+    const who = (o.customer && o.customer.name && o.customer.name !== 'Walk-in') ? `<div class="kc-who">${escapeHtml(o.customer.name)}</div>` : '';
+    return `<article class="kds-card${isNew ? ' new' : ''}" data-id="${o.id}">
+      <div class="kds-card-head">
+        <span class="kc-ref">#${escapeHtml(o.id)}</span>
+        <span class="kc-type${isDelivery ? ' delivery' : ''}">${type}</span>
+        <span class="kc-time">${humanAgo(new Date(o.createdAt))}</span>
+      </div>
+      ${who}
+      <ul class="kc-items">${kdsItemsHtml(o)}</ul>
+      <button class="kc-ready" data-id="${o.id}">✓ Mark ready</button>
+    </article>`;
+  }).join('');
+  const present = new Set(orders.map(o => o.id));
+  for (const o of orders) kdsSeen.add(o.id);
+  for (const id of [...kdsSeen]) if (!present.has(id)) kdsSeen.delete(id);
+  wireKds();
+}
+function wireKds() {
+  // Tap an item → strike/unstrike (optimistic; persisted on the order).
+  $$('#kdsGrid .kc-item').forEach(li => li.addEventListener('click', () => {
+    const id = li.dataset.id, idx = Number(li.dataset.idx);
+    const struck = !li.classList.contains('struck');
+    li.classList.toggle('struck', struck);
+    fetch('/api/staff/kds/items', { method: 'POST', headers: kdsHeaders(), body: JSON.stringify({ id, index: idx, struck }) }).catch(() => {});
+  }));
+  // Tap "Mark ready" → bump the order off the screen.
+  $$('#kdsGrid .kc-ready').forEach(b => b.addEventListener('click', async () => {
+    const id = b.dataset.id;
+    b.disabled = true; b.textContent = 'Ready ✓';
+    const card = b.closest('.kds-card'); if (card) card.style.opacity = '.4';
+    try { await fetch('/api/staff/kds/ready', { method: 'POST', headers: kdsHeaders(), body: JSON.stringify({ id }) }); } catch (e) {}
+    kdsSeen.delete(id);
+    kdsPoll();
+  }));
+}
+function openKdsSetup() { $('#kdsSetupErr').textContent = ''; $('#kdsSetupPw').value = ''; $('#kdsSetupOvl').classList.add('open'); setTimeout(() => $('#kdsSetupPw').focus(), 50); }
+function closeKdsSetup() { $('#kdsSetupOvl').classList.remove('open'); }
+async function kdsSetup(password) {
+  const res = await fetch('/api/staff/kds/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password }) });
+  const d = await res.json().catch(() => ({}));
+  if (!res.ok || !d.token) throw new Error(d.error || `Error ${res.status}`);
+  kdsToken = d.token;
+  try { localStorage.setItem('kds_token', kdsToken); localStorage.setItem('epos_role', 'kds'); } catch (e) {}
+}
+function kdsExitToSetup(msg) {
+  try { localStorage.removeItem('kds_token'); localStorage.removeItem('epos_role'); } catch (e) {}
+  kdsToken = '';
+  if (kdsPollHandle) clearInterval(kdsPollHandle);
+  if (kdsClockHandle) clearInterval(kdsClockHandle);
+  $('#kdsScreen').hidden = true;
+  $('#dash').hidden = true;
+  $('#pinScreen').style.display = 'grid';
+  if (msg) $('#pinError').textContent = msg;
+}
+$('#kdsSetupLink').addEventListener('click', openKdsSetup);
+$('#kdsSetupCancel').addEventListener('click', closeKdsSetup);
+$('#kdsSetupOvl').addEventListener('click', (e) => { if (e.target.id === 'kdsSetupOvl') closeKdsSetup(); });
+$('#kdsSetupConfirm').addEventListener('click', async () => {
+  const pw = $('#kdsSetupPw').value.trim();
+  if (!pw) return;
+  $('#kdsSetupConfirm').disabled = true; $('#kdsSetupErr').textContent = '';
+  try { await kdsSetup(pw); closeKdsSetup(); bootKds(); }
+  catch (e) { $('#kdsSetupErr').textContent = e.message || 'Setup failed.'; }
+  finally { $('#kdsSetupConfirm').disabled = false; }
+});
+$('#kdsExit').addEventListener('click', () => {
+  if (!confirm('Exit kitchen display and return to the till sign-in?')) return;
+  try { localStorage.removeItem('kds_token'); localStorage.removeItem('epos_role'); } catch (e) {}
+  location.reload();
+});
+// Pair already? Boot straight into the display.
+if (KDS_ROLE && kdsToken) bootKds();
 
 /* ============================== Poll + render */
 async function poll() {
@@ -2403,6 +2652,7 @@ function renderBackOffice() {
     staff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>',
     audit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>',
     reader: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="5" y="2" width="14" height="20" rx="2.5"/><path d="M5 7h14"/><path d="M9 17.5h6"/></svg>',
+    routing: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>',
   };
   const canStaff = !state.operatorsEnabled || can('operators.manage');
   const tiles = [
@@ -2412,6 +2662,7 @@ function renderBackOffice() {
   if (canStaff) tiles.push({ k: 'staff', ic: 'green', svg: ICON.staff, tl: 'Staff', ds: 'Operators &amp; their PIN codes' });
   tiles.push({ k: 'audit', ic: 'ink', svg: ICON.audit, tl: 'Activity Log', ds: 'Refunds, voids, sign-ins &amp; overrides' });
   tiles.push({ k: 'reader', ic: 'blue', svg: ICON.reader, tl: 'Card Reader', ds: 'Register the WisePOS card terminal' });
+  tiles.push({ k: 'routing', ic: 'green', svg: ICON.routing, tl: 'Order routing', ds: state.kdsRouting ? 'Accepted orders go to the <b>Kitchen Display</b> — tap to switch to printing' : 'Tickets <b>print</b> on accept — tap to switch to the Kitchen Display' });
   $('#grid').innerHTML = '<div class="bo-wrap"><div class="bo-grid">' +
     tiles.map(t => `<button class="bo-tile" data-bo="${t.k}"><div class="ic ${t.ic}">${t.svg}</div><div class="tl">${t.tl}</div><div class="ds">${t.ds}</div></button>`).join('') +
     '</div></div>';
@@ -2422,7 +2673,28 @@ function renderBackOffice() {
     else if (k === 'staff') openStaffModal();
     else if (k === 'audit') openAuditModal();
     else if (k === 'reader') openReaderModal();
+    else if (k === 'routing') toggleRouting();
   }));
+}
+
+// Flip print ⇄ KDS routing for the whole shop (Back Office tile).
+async function toggleRouting() {
+  const next = !state.kdsRouting;
+  const label = next
+    ? 'send accepted orders to the Kitchen Display and STOP printing tickets'
+    : 'PRINT tickets on accept and stop sending to the Kitchen Display';
+  if (!confirm('Switch order routing to:\n\n' + label + '?')) return;
+  try {
+    const res = await fetch('/api/staff/settings', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ kdsRouting: next }),
+    });
+    if (res.status === 401) { $('#logoutBtn').click(); return; }
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) { alert(d.error || 'Could not change order routing.'); return; }
+    state.kdsRouting = !!d.kdsRouting;
+    renderBackOffice(); // refresh the tile label
+  } catch (e) { alert('Network error — try again.'); }
 }
 function renderReport(s, orders) {
   const gbp = p => `£${((p || 0) / 100).toFixed(2)}`;
@@ -2936,11 +3208,12 @@ async function acceptOrder(id, prepMinutes) {
     throw new Error(j.error || `Error ${res.status}`);
   }
   const data = await res.json().catch(() => ({}));
-  // Accepted → print the kitchen ticket. Prefer the full order from state (it carries
+  // Accepted → print the kitchen ticket, UNLESS this shop routes to a KDS (then the
+  // kitchen display shows it instead). Prefer the full order from state (it carries
   // the line items); fall back to the accept response.
   try {
     const ord = (state.orders || []).find((o) => o.id === id) || data.order || data;
-    if (ord && ord.totals) printTo('kitchen', ord);
+    if (ord && ord.totals && !state.kdsRouting) printTo('kitchen', ord);
   } catch (e) {}
   return data;
 }
@@ -4240,10 +4513,11 @@ async function finalizeOrder(extra, ctx) {
   const changeP = (!isUnpaid && ctx.isCash && ctx.tenderedP > 0) ? Math.max(0, ctx.tenderedP - totalP) : 0;
   showPayDone(o, { kind: isUnpaid ? 'unpaid' : 'new', tender, tenderedP: ctx.tenderedP, changeP });
   if (!isUnpaid && ctx.isCash) { try { if (window.EPOSNative && window.EPOSNative.kickDrawer) window.EPOSNative.kickDrawer(); } catch (e) {} }
-  // Counter sale → auto-print the KITCHEN ticket. Remember a PAID sale so the
-  // "Receipt" button can print a customer receipt on request (unpaid saves don't).
+  // Counter sale → auto-print the KITCHEN ticket (unless this shop routes to a KDS;
+  // the counter order is 'accepted', so it shows on the display instead). Remember a
+  // PAID sale so "Receipt" can print a customer receipt on request (unpaid saves don't).
   state.lastSale = isUnpaid ? null : { o, tender, tenderedP: ctx.tenderedP, changeP };
-  printTo('kitchen', o, isUnpaid ? null : state.lastSale);
+  if (!state.kdsRouting) printTo('kitchen', o, isUnpaid ? null : state.lastSale);
   state.seenIds.add(o.id);
   poll();
   return true;

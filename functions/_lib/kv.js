@@ -180,6 +180,17 @@ export async function recordOptIn({ kind, value, source }, env) {
   }));
 }
 
+// Small shop-level settings (e.g. print⇄KDS routing), stored in ORDERS_KV under
+// a `setting:` prefix so we don't need a new KV binding per shop.
+export async function getSetting(env, key) {
+  if (!env.ORDERS_KV) return null;
+  return env.ORDERS_KV.get('setting:' + key);
+}
+export async function putSetting(env, key, value) {
+  if (!env.ORDERS_KV) return;
+  await env.ORDERS_KV.put('setting:' + key, String(value));
+}
+
 export function newOrderId() {
   // 7-char base32 (Crockford) — readable on a printed receipt.
   const alphabet = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';

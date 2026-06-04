@@ -130,11 +130,43 @@ export async function readSession(cookieHeader, env) {
 // token (the native app, which can't rely on a cross-origin cookie). It's the
 // same signed token in both cases, so the app path is no weaker than the web.
 export async function resolveSession(request, env) {
+  // Scoped tokens (kds / manager) are NOT staff sessions — reject them here so a
+  // KDS device token can never act as a logged-in operator.
   const fromCookie = await readSession(request.headers.get('Cookie'), env);
-  if (fromCookie) return fromCookie;
+  if (fromCookie && !fromCookie.scope) return fromCookie;
   const auth = request.headers.get('Authorization') || '';
   const m = auth.match(/^Bearer\s+(.+)$/i);
-  return m ? verifySessionToken(m[1].trim(), env) : null;
+  if (!m) return null;
+  const d = await verifySessionToken(m[1].trim(), env);
+  return (d && !d.scope) ? d : null;
+}
+
+/* KDS device session — a long-lived, no-PIN token for an always-on kitchen
+   display. Minted by /api/staff/kds/auth after the shop's setup password, and
+   replayed as Authorization: Bearer on the KDS-only endpoints. Scope 'kds' means
+   it can read the kitchen queue + bump/strike orders, and nothing else. */
+const KDS_TTL_DAYS = 60;
+export async function makeKdsSession(env) {
+  const exp = Date.now() + KDS_TTL_DAYS * 24 * 3600 * 1000;
+  const payload = b64url(enc.encode(JSON.stringify({ exp, scope: 'kds' })));
+  const sig = await sign(payload, env.SESSION_SECRET);
+  return `${payload}.${sig}`;
+}
+async function resolveKds(request, env) {
+  const auth = request.headers.get('Authorization') || '';
+  const m = auth.match(/^Bearer\s+(.+)$/i);
+  if (!m) return null;
+  const d = await verifySessionToken(m[1].trim(), env);
+  return (d && d.scope === 'kds') ? d : null;
+}
+export async function requireKds(request, env) {
+  const k = await resolveKds(request, env);
+  if (!k) {
+    return new Response(JSON.stringify({ error: 'unauthorized' }), {
+      status: 401, headers: { 'Content-Type': 'application/json' },
+    });
+  }
+  return null;
 }
 
 export function sessionCookieHeader(token) {
