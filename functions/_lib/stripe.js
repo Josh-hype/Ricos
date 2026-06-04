@@ -73,6 +73,7 @@ export async function createPaymentIntent({
   requireCvcRecollection,
   cardPresent,
   captureMethod,
+  idempotencyKey,
 }, env) {
   const body = {
     amount: amountP,
@@ -106,7 +107,7 @@ export async function createPaymentIntent({
   } else {
     body.automatic_payment_methods = { enabled: true };
   }
-  const opts = { idempotencyKey: `pi_${orderId}` };
+  const opts = { idempotencyKey: idempotencyKey || `pi_${orderId}` };
   if (connectedAccountId) opts.stripeAccount = connectedAccountId;
   return call('/payment_intents', body, env, opts);
 }

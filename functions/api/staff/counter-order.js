@@ -33,7 +33,10 @@ export const onRequestPost = async ({ request, env }) => {
   try { body = await request.json(); }
   catch { return err('Invalid JSON', 400); }
 
-  const tender = body.tender === 'card' ? 'card' : 'cash';
+  // cash (default) · card (Terminal) · unpaid (save now, collect payment later
+  // from the order's "Pay now" action — lands on Live but counts as £0 takings).
+  const tender = body.tender === 'card' ? 'card'
+    : (body.tender === 'unpaid' ? 'unpaid' : 'cash');
   const config = getConfig();
 
   // Price the sale (server-authoritative; identical maths to /terminal/charge).
@@ -104,13 +107,16 @@ export const onRequestPost = async ({ request, env }) => {
     customer: { name, email: '', phone: rawPhone },
     address,
     totals,
-    paymentMethod: tender === 'card' ? 'counter_card' : 'counter_cash',
-    payment: { state: 'paid', paidAt: at, tender, ...paymentExtra },
+    paymentMethod: tender === 'card' ? 'counter_card'
+      : (tender === 'unpaid' ? 'unpaid' : 'counter_cash'),
+    payment: tender === 'unpaid'
+      ? { state: 'unpaid' }
+      : { state: 'paid', paidAt: at, tender, ...paymentExtra },
     marketing: { email: false, sms: false },
     createdBy: takenBy,
     history: [
       { at, event: 'created', source: `counter-${mode}`, by: takenBy?.name || null },
-      { at, event: 'paid', tender },
+      ...(tender === 'unpaid' ? [] : [{ at, event: 'paid', tender }]),
       { at, event: 'accepted', readyAt },
     ],
   };

@@ -363,6 +363,7 @@ button{cursor:pointer;border:0;background:none}
 .pill.collection{background:var(--green-tint);color:var(--green)}
 .pill.delivery{background:var(--blue-tint);color:var(--blue)}
 .pill.cash{background:var(--amber-tint);color:var(--amber)}
+.pill.unpaid{background:var(--red-tint);color:var(--red)}
 .pill.paid-card{background:var(--blue-tint);color:var(--accent-strong)}
 .pill.scheduled{background:#F0E8DA;color:#6B5410}
 .pill.s-new{background:var(--amber-tint);color:var(--amber)}
@@ -465,6 +466,8 @@ button{cursor:pointer;border:0;background:none}
 .card-menu .menu .menu-refund:hover{background:var(--blue-tint-2);color:var(--blue)}
 .card-menu .menu .menu-complete{color:var(--green)}
 .card-menu .menu .menu-complete:hover{background:var(--green-tint);color:var(--green)}
+.card-menu .menu .menu-pay{color:var(--blue);font-weight:700}
+.card-menu .menu .menu-pay:hover{background:var(--blue-tint-2);color:var(--blue)}
 
 /* Modal overlay */
 .ovl{
@@ -1491,6 +1494,10 @@ button{cursor:pointer;border:0;background:none}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
           Card
         </button>
+        <button class="tender" data-tender="later" id="tenderLater" type="button" title="Save the order now and collect payment later">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>
+          Pay later
+        </button>
       </div>
       <div class="pay-summary">
         <div class="p-srow"><span id="paySubLab">Items</span><span class="mono" id="paySub">£0.00</span></div>
@@ -1703,6 +1710,7 @@ const state = {
   pendingAuth: null,       // in-flight manager-approval request { perm, resolve }
   editingOpId: null,       // operator being edited in the staff modal
   switching: false,        // soft re-auth (switch operator) in progress
+  payReturnTimer: null,    // auto-return-to-board timer after a completed sale
 };
 
 const IDLE_MS = 90 * 1000;
@@ -2148,6 +2156,10 @@ function wireCardButtons() {
     e.stopPropagation();
     updateStatus(b.dataset.id, 'completed');
   }));
+  $$('.card-menu .menu-pay').forEach(b => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openPayForOrder(b.dataset.id);
+  }));
   $$('.card-menu .menu-refund, .card .btn-refund').forEach(b => b.addEventListener('click', (e) => {
     e.stopPropagation();
     openRefund(b.dataset.id);
@@ -2366,10 +2378,13 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
   const fulfillmentPill = o.fulfillment === 'delivery'
     ? '<span class="pill delivery">delivery</span>'
     : '<span class="pill collection">collection</span>';
+  const isUnpaid = (pmt.state === 'unpaid') || o.paymentMethod === 'unpaid';
   const isCardPay = o.paymentMethod === 'card' || o.paymentMethod === 'counter_card';
-  const cashPill = isCardPay
-    ? '<span class="pill paid-card">card</span>'
-    : '<span class="pill cash">cash</span>';
+  const cashPill = isUnpaid
+    ? '<span class="pill unpaid">unpaid</span>'
+    : (isCardPay
+      ? '<span class="pill paid-card">card</span>'
+      : '<span class="pill cash">cash</span>');
   const schedPill = o.schedule && o.schedule !== 'asap'
     ? `<span class="pill scheduled">${formatTime(o.schedule)}</span>`
     : '';
@@ -2437,6 +2452,9 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
   // "Complete order" on every live order (the three-dots shortcut to mark it done).
   const liveStatuses = ['pending_accept', 'accepted', 'ready', 'out_for_delivery'];
   const menuItems = [];
+  if (isUnpaid && liveStatuses.includes(o.status)) {
+    menuItems.push(`<button class="menu-pay" data-id="${o.id}">Pay now</button>`);
+  }
   if (canRefund && ['accepted', 'ready', 'out_for_delivery'].includes(o.status)) {
     menuItems.push(`<button class="menu-refund" data-id="${o.id}">Refund…</button>`);
   }
@@ -3530,30 +3548,98 @@ $('#saleChangeMode').addEventListener('click', () => {
 // Charge -> payment modal
 $('#saleCharge').addEventListener('click', () => {
   if (!sale.cart.length) return;
+  sale.payOrder = null;   // a fresh cart sale, not settling an existing order
   openPayModal();
 });
 
+// The amount the pay modal is collecting: an existing order's total when we're
+// settling one (the "Pay now" flow), otherwise the live cart total.
+function payCtxTotalP() { return sale.payOrder ? (sale.payOrder.totals?.totalP || 0) : cartTotalP(); }
+
 function openPayModal() {
+  clearPayAutoReturn();
   sale.pay.tenderedP = 0;
   sale.pay.tender = 'cash';
   sale.card = null;
-  const totalP = cartTotalP();
-  const subP = cartSubP();
+  const existing = sale.payOrder;
+  const t = existing ? (existing.totals || {}) : null;
+  const totalP = existing ? (t.totalP || 0) : cartTotalP();
+  const subP = existing ? (t.subtotalP || 0) : cartSubP();
   $('#payTotal').textContent = `£${(totalP / 100).toFixed(2)}`;
   $('#payGrand').textContent = `£${(totalP / 100).toFixed(2)}`;
   $('#paySub').textContent = `£${(subP / 100).toFixed(2)}`;
+  const feeP = existing ? (t.serviceFeeP || 0) : sale.serviceFeeP;
   const feeRow = $('#payFeeRow');
-  if (sale.serviceFeeP > 0) {
-    feeRow.hidden = false;
-    $('#payFee').textContent = `£${(sale.serviceFeeP / 100).toFixed(2)}`;
-  } else {
-    feeRow.hidden = true;
-  }
-  $('#paySubLab').textContent = `Items (${sale.cart.reduce((a, c) => a + c.qty, 0)})`;
+  if (feeP > 0) { feeRow.hidden = false; $('#payFee').textContent = `£${(feeP / 100).toFixed(2)}`; }
+  else { feeRow.hidden = true; }
+  const itemCount = existing
+    ? (t.lines || []).reduce((a, l) => a + (l.qty || 1), 0)
+    : sale.cart.reduce((a, c) => a + c.qty, 0);
+  $('#paySubLab').textContent = `Items (${itemCount})`;
+  // "Pay later" only makes sense for a brand-new sale — not when settling an
+  // order that was already saved unpaid.
+  const later = $('#tenderLater'); if (later) later.hidden = !!existing;
+  $('#payReceipt').style.display = '';
   renderQuickCash();
   setTender('cash');
   $('#payDone').classList.remove('show');
   $('#payOvl').classList.add('open');
+}
+
+// After a sale completes we show the success card briefly, then drop back to the
+// orders board on our own so the till is never left "stuck" on the pay screen.
+// Receipt cancels the timer (so staff can read/print); New sale leaves at once.
+const PAY_RETURN_MS = 3500;          // normal: brief confirmation, then back to the board
+const PAY_RETURN_MS_CHANGE = 8000;   // longer when there's change to count out
+function clearPayAutoReturn() {
+  if (state.payReturnTimer) { clearTimeout(state.payReturnTimer); state.payReturnTimer = null; }
+}
+function armPayAutoReturn(ms) {
+  clearPayAutoReturn();
+  state.payReturnTimer = setTimeout(goHomeAfterSale, ms || PAY_RETURN_MS);
+}
+function goHomeAfterSale() {
+  clearPayAutoReturn();
+  clearCart();
+  sale.customer = null;
+  sale.deliveryFeeP = 0;
+  sale.payOrder = null;
+  closePayModal();
+  setView('live');
+}
+
+// Fill + show the success card for a completed/saved order, then arm auto-return.
+// kind: 'new' (fresh sale) | 'existing' (settled an unpaid order) | 'unpaid' (saved for later).
+function showPayDone(o, { kind, tender, tenderedP = 0, changeP = 0 }) {
+  const totalP = o.totals?.totalP || 0;
+  if (kind === 'unpaid') {
+    $('#payDone h2').textContent = 'Order saved';
+    $('#payDoneSub').textContent = `£${(totalP / 100).toFixed(2)} · Pay later · Order #${o.id}`;
+  } else if (changeP > 0) {
+    $('#payDone h2').textContent = 'Give change';
+    $('#payDoneSub').textContent = `£${(changeP / 100).toFixed(2)} change · Order #${o.id}`;
+  } else {
+    $('#payDone h2').textContent = kind === 'existing' ? 'Payment received' : 'Payment complete';
+    $('#payDoneSub').textContent = `£${(totalP / 100).toFixed(2)} · ${tender === 'card' ? 'Card' : 'Cash'} · Order #${o.id}`;
+  }
+  // A customer receipt needs the loaded shop config + cart context, so only the
+  // fresh-sale path offers it (the unpaid order already printed a kitchen copy).
+  $('#payReceipt').style.display = (kind === 'new') ? '' : 'none';
+  $('#payNewSale').textContent = (kind === 'new') ? 'New sale' : 'Done';
+  $('#payDone').classList.add('show');
+  armPayAutoReturn(changeP > 0 ? PAY_RETURN_MS_CHANGE : PAY_RETURN_MS);
+}
+
+// "Pay now" from an unpaid order's ⋮ menu — open the pay modal to settle it.
+function openPayForOrder(id) {
+  const o = (state.orders || []).find(x => x.id === id)
+    || (state.summaryOrders || []).find(x => x.id === id);
+  if (!o) { alert('Order not found — refresh and try again.'); return; }
+  if ((o.payment?.state || '') !== 'unpaid' && o.paymentMethod !== 'unpaid') {
+    alert('This order is already paid.'); return;
+  }
+  sale.payOrder = o;
+  openPayModal();
 }
 
 // Cash vs Card (manual): card records the sale as paid-by-card (taken on the
@@ -3562,15 +3648,20 @@ function setTender(tender) {
   sale.pay.tender = tender;
   $$('.tenders .tender').forEach(x => x.classList.toggle('sel', x.dataset.tender === tender));
   const isCash = tender === 'cash';
-  $('#payTitle').textContent = isCash ? 'Cash payment' : 'Card payment';
+  const isLater = tender === 'later';
+  $('#payTitle').textContent = isLater ? 'Save — pay later' : (isCash ? 'Cash payment' : 'Card payment');
   ['#payAmount', '#payChange', '#payQuickCash', '#payPad'].forEach(s => { $(s).hidden = !isCash; });
+  // The hint panel covers both the card and the pay-later cases (no keypad).
   $('#payCardHint').hidden = isCash;
+  $('#payCardHint').textContent = isLater
+    ? 'The order is saved unpaid and sent to the kitchen. Collect payment later from the order’s ⋮ menu.'
+    : 'The card reader will prompt the customer to tap, insert or swipe.';
   if (isCash) syncPayAmount(); else updatePayConfirm();
 }
 
 // One-tap UK quick-cash: Exact (full width) + the next sensible notes above the total.
 function renderQuickCash() {
-  const totalP = cartTotalP();
+  const totalP = payCtxTotalP();
   // Real UK notes only (no phantom £15/£25): offer each note strictly above
   // the total; "Exact" already covers paying with a note equal to the total.
   const denoms = new Set([500, 1000, 2000, 5000].filter(n => n > totalP));
@@ -3580,7 +3671,7 @@ function renderQuickCash() {
 }
 
 function syncPayAmount() {
-  const totalP = cartTotalP();
+  const totalP = payCtxTotalP();
   const t = sale.pay.tenderedP;
   if (t === 0) {
     $('#payAmount').textContent = `£${(totalP / 100).toFixed(2)}`;
@@ -3598,7 +3689,12 @@ function syncPayAmount() {
 function updatePayConfirm() {
   const btn = $('#payConfirm');
   const lbl = btn.querySelector('span');
-  const totalP = cartTotalP();
+  const totalP = payCtxTotalP();
+  if (sale.pay.tender === 'later') {
+    btn.disabled = false;
+    lbl.textContent = 'Save order · pay later';
+    return;
+  }
   if (sale.pay.tender === 'card') {
     btn.disabled = false;
     lbl.textContent = `Take card payment · £${(totalP / 100).toFixed(2)}`;
@@ -3611,6 +3707,7 @@ function updatePayConfirm() {
   else { btn.disabled = false; lbl.textContent = `Take £${(t / 100).toFixed(2)} · Change £${(diff / 100).toFixed(2)}`; }
 }
 function closePayModal() {
+  clearPayAutoReturn();
   $('#payOvl').classList.remove('open');
 }
 $('#payClose').addEventListener('click', closePayModal);
@@ -3893,21 +3990,36 @@ async function finalizeOrder(extra, ctx) {
     if (!res.ok || !data.order) { alert(data.error || `Couldn't complete the sale (${res.status}).`); return false; }
   } catch (e) { alert('Network error — try again.'); return false; }
   const o = data.order;
-  const changeP = ctx.isCash && ctx.tenderedP > 0 ? Math.max(0, ctx.tenderedP - totalP) : 0;
-  if (changeP > 0) {
-    $('#payDone h2').textContent = 'Give change';
-    $('#payDoneSub').textContent = `£${(changeP / 100).toFixed(2)} change · Order #${o.id}`;
-  } else {
-    $('#payDone h2').textContent = 'Payment complete';
-    $('#payDoneSub').textContent = `£${(o.totals.totalP / 100).toFixed(2)} · ${ctx.isCash ? 'Cash' : 'Card'} · Order #${o.id}`;
-  }
-  $('#payDone').classList.add('show');
-  if (ctx.isCash) { try { if (window.EPOSNative && window.EPOSNative.kickDrawer) window.EPOSNative.kickDrawer(); } catch (e) {} }
-  // Counter sale → auto-print the KITCHEN ticket. Remember this sale so the
-  // "Receipt" button on the success card can print a customer receipt on request.
-  state.lastSale = { o, tender: ctx.isCash ? 'cash' : 'card', tenderedP: ctx.tenderedP, changeP };
-  printTo('kitchen', o, state.lastSale);
+  const isUnpaid = extra.tender === 'unpaid';
+  const tender = isUnpaid ? 'unpaid' : (ctx.isCash ? 'cash' : 'card');
+  const changeP = (!isUnpaid && ctx.isCash && ctx.tenderedP > 0) ? Math.max(0, ctx.tenderedP - totalP) : 0;
+  showPayDone(o, { kind: isUnpaid ? 'unpaid' : 'new', tender, tenderedP: ctx.tenderedP, changeP });
+  if (!isUnpaid && ctx.isCash) { try { if (window.EPOSNative && window.EPOSNative.kickDrawer) window.EPOSNative.kickDrawer(); } catch (e) {} }
+  // Counter sale → auto-print the KITCHEN ticket. Remember a PAID sale so the
+  // "Receipt" button can print a customer receipt on request (unpaid saves don't).
+  state.lastSale = isUnpaid ? null : { o, tender, tenderedP: ctx.tenderedP, changeP };
+  printTo('kitchen', o, isUnpaid ? null : state.lastSale);
   state.seenIds.add(o.id);
+  poll();
+  return true;
+}
+
+// Settle an existing unpaid order with cash (the "Pay now" → Cash path).
+async function payExistingCash(tenderedP) {
+  const o = sale.payOrder; if (!o) return false;
+  const totalP = o.totals?.totalP || 0;
+  let data;
+  try {
+    const res = await fetch(`/api/staff/orders/${o.id}/pay`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tender: 'cash', tenderedP: tenderedP || 0 }),
+    });
+    data = await res.json().catch(() => ({}));
+    if (res.status === 401) { $('#logoutBtn').click(); return false; }
+    if (!res.ok || !data.order) { alert(data.error || `Couldn't take the payment (${res.status}).`); return false; }
+  } catch (e) { alert('Network error — try again.'); return false; }
+  const changeP = tenderedP > 0 ? Math.max(0, tenderedP - totalP) : 0;
+  showPayDone(data.order, { kind: 'existing', tender: 'cash', tenderedP, changeP });
   poll();
   return true;
 }
@@ -3918,20 +4030,28 @@ async function finalizeOrder(extra, ctx) {
 let cardPoll = null;
 async function runCardPayment() {
   if (sale.card) return; // a card flow is already running
-  const totalP = cartTotalP();
+  const payingExisting = !!sale.payOrder;
+  const totalP = payCtxTotalP();
   showCardOverlay('Starting…', true);
   let started;
   try {
-    const res = await fetch('/api/staff/terminal/charge', {
+    const url = payingExisting ? `/api/staff/orders/${sale.payOrder.id}/pay` : '/api/staff/terminal/charge';
+    const payload = payingExisting ? { tender: 'card', action: 'start' } : buildSalePayload({});
+    const res = await fetch(url, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(buildSalePayload({})),
+      body: JSON.stringify(payload),
     });
     started = await res.json().catch(() => ({}));
     if (res.status === 401) { $('#logoutBtn').click(); hideCardOverlay(); return; }
     if (!res.ok || !started.paymentIntentId) { showCardError(started.error || `Couldn't start the card payment (${res.status}).`); return; }
   } catch (e) { showCardError('Network error — try again.'); return; }
 
-  sale.card = { readerId: (started.reader && started.reader.id) || '', paymentIntentId: started.paymentIntentId, orderId: started.orderId };
+  sale.card = {
+    readerId: (started.reader && started.reader.id) || '',
+    paymentIntentId: started.paymentIntentId,
+    orderId: payingExisting ? sale.payOrder.id : started.orderId,
+    existing: payingExisting,
+  };
   showCardOverlay(`Present card on the reader · £${(totalP / 100).toFixed(2)}`, true);
 
   const deadline = Date.now() + 75000; // ~75s to tap before we offer cancel
@@ -3949,11 +4069,27 @@ async function runCardPayment() {
     if (!sale.card) return;
     if (st.status === 'succeeded') {
       $('#cardStatus').textContent = 'Approved — completing…';
-      const refs = { tender: 'card', paymentIntentId: sale.card.paymentIntentId, orderId: sale.card.orderId };
-      sale.card = null;
-      const ok = await finalizeOrder(refs, { isCash: false, tenderedP: 0 });
-      hideCardOverlay();
-      if (!ok) updatePayConfirm();
+      const c = sale.card; sale.card = null;
+      if (c.existing) {
+        // Capture against the existing order and mark it paid.
+        let data;
+        try {
+          const res = await fetch(`/api/staff/orders/${c.orderId}/pay`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tender: 'card', action: 'capture', paymentIntentId: c.paymentIntentId }),
+          });
+          data = await res.json().catch(() => ({}));
+        } catch (e) { hideCardOverlay(); alert('Card approved but saving failed — check the order before re-charging.'); return; }
+        hideCardOverlay();
+        if (!data || !data.order) { alert((data && data.error) || 'Card approved but the order did not update.'); updatePayConfirm(); return; }
+        showPayDone(data.order, { kind: 'existing', tender: 'card' });
+        poll();
+      } else {
+        const refs = { tender: 'card', paymentIntentId: c.paymentIntentId, orderId: c.orderId };
+        const ok = await finalizeOrder(refs, { isCash: false, tenderedP: 0 });
+        hideCardOverlay();
+        if (!ok) updatePayConfirm();
+      }
       return;
     }
     if (st.status === 'failed') { showCardError(st.failure || 'Card declined or cancelled.'); return; }
@@ -3994,9 +4130,24 @@ $('#cardCancel').addEventListener('click', cancelCardPayment);
 $('#cardRetry').addEventListener('click', () => { hideCardOverlay(); runCardPayment(); });
 
 $('#payConfirm').addEventListener('click', async () => {
-  if (sale.submitting || !sale.cart.length) return;
-  const isCash = sale.pay.tender !== 'card';
-  const totalP = cartTotalP();
+  if (sale.submitting) return;
+  const payingExisting = !!sale.payOrder;
+  const tender = sale.pay.tender;
+
+  // Pay later: save the cart as an unpaid order, then drop back to the board.
+  if (tender === 'later') {
+    if (!sale.cart.length) return;
+    sale.submitting = true;
+    $('#payConfirm').disabled = true;
+    $('#payConfirm').querySelector('span').textContent = 'Saving…';
+    try { await finalizeOrder({ tender: 'unpaid' }, { isCash: false, tenderedP: 0 }); }
+    finally { sale.submitting = false; updatePayConfirm(); }
+    return;
+  }
+
+  if (!payingExisting && !sale.cart.length) return;
+  const isCash = tender !== 'card';
+  const totalP = payCtxTotalP();
   if (isCash && sale.pay.tenderedP > 0 && sale.pay.tenderedP < totalP) return; // short (button disabled)
   if (isCash && sale.pay.tenderedP - totalP > 10000) {
     if (!confirm(`Received £${(sale.pay.tenderedP / 100).toFixed(2)} — change £${((sale.pay.tenderedP - totalP) / 100).toFixed(2)}. Correct?`)) return;
@@ -4005,20 +4156,17 @@ $('#payConfirm').addEventListener('click', async () => {
   sale.submitting = true;
   $('#payConfirm').disabled = true;
   $('#payConfirm').querySelector('span').textContent = 'Sending…';
-  try { await finalizeOrder({ tender: 'cash' }, { isCash: true, tenderedP: sale.pay.tenderedP }); }
-  finally { sale.submitting = false; updatePayConfirm(); }
+  try {
+    if (payingExisting) await payExistingCash(sale.pay.tenderedP);
+    else await finalizeOrder({ tender: 'cash' }, { isCash: true, tenderedP: sale.pay.tenderedP });
+  } finally { sale.submitting = false; updatePayConfirm(); }
 });
 
-$('#payNewSale').addEventListener('click', () => {
-  clearCart();
-  sale.customer = null;
-  sale.deliveryFeeP = 0;
-  setView('live');
-  closePayModal();
-});
-// Optional customer receipt — only if they ask. Prints the full receipt for the
-// sale we just completed (kitchen ticket already printed automatically).
+$('#payNewSale').addEventListener('click', goHomeAfterSale);
+// Optional customer receipt — only if they ask. Cancels the auto-return so staff
+// can read/print, then prints the full receipt for the sale just completed.
 $('#payReceipt').addEventListener('click', () => {
+  clearPayAutoReturn();
   if (state.lastSale) printTo('receipt', state.lastSale.o, state.lastSale);
 });
 

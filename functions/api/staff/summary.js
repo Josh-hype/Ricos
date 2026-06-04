@@ -25,7 +25,12 @@ export const onRequestGet = async ({ request, env }) => {
   const orders = await listOrdersBetween(env, from, to);
 
   const isCard = (o) => o.paymentMethod === 'card' || o.paymentMethod === 'counter_card';
-  const valid = orders.filter(o => o.status !== 'pending_payment' && o.status !== 'cancelled');
+  const isUnpaid = (o) => (o.payment?.state === 'unpaid') || o.paymentMethod === 'unpaid';
+  // Real orders that aren't cancelled / never-paid-online. `valid` carries the
+  // money (paid only); unpaid "pay later" orders are live but count as £0 takings
+  // until they're collected — so they're kept out of the financial sums.
+  const live = orders.filter(o => o.status !== 'pending_payment' && o.status !== 'cancelled');
+  const valid = live.filter(o => !isUnpaid(o));
   const sum = (arr, f) => arr.reduce((a, o) => a + (f(o) || 0), 0);
   const grossP = sum(valid, o => o.totals?.totalP);
 
@@ -53,7 +58,13 @@ export const onRequestGet = async ({ request, env }) => {
     delivery: valid.filter(o => o.fulfillment === 'delivery').length,
     completed: orders.filter(o => o.status === 'completed').length,
     cancelled: orders.filter(o => o.status === 'cancelled').length,
-    inProgress: valid.filter(o => ['pending_accept', 'accepted', 'ready', 'out_for_delivery'].includes(o.status)).length,
+    inProgress: live.filter(o => ['pending_accept', 'accepted', 'ready', 'out_for_delivery'].includes(o.status)).length,
+    // Orders saved "pay later" and not yet collected — surfaced so the till can
+    // show outstanding money without it polluting takings.
+    unpaid: {
+      count: live.filter(isUnpaid).length,
+      grossP: sum(live.filter(isUnpaid), o => o.totals?.totalP),
+    },
   };
 
   // Full orders (newest-first) so the Z report can show each one in detail.
