@@ -311,7 +311,7 @@ button{cursor:pointer;border:0;background:none}
 /* Grid */
 .grid{
   display:grid;grid-template-columns:1fr;
-  gap:12px;padding:4px 24px 24px;flex:1;overflow-y:auto;align-content:start;
+  gap:12px;padding:4px 24px 60px;flex:1;overflow-y:auto;align-content:start;
 }
 .grid[hidden]{display:none}
 .grid::-webkit-scrollbar{width:8px}
@@ -503,6 +503,18 @@ button{cursor:pointer;border:0;background:none}
 .orow .r-paid.pd{background:var(--green-tint);color:var(--green)}
 .orow .r-paid.np{background:var(--red-tint);color:var(--red)}
 .orow .card-menu{position:relative;top:auto;right:auto;justify-self:center}
+
+/* Lumin Labs brand lockup, bottom-right of the board */
+.brandmark{
+  position:absolute;right:24px;bottom:14px;z-index:4;
+  display:flex;align-items:center;pointer-events:none;opacity:.96;
+}
+.brandmark[hidden]{display:none}
+.brandmark .bm-l{flex:none;width:25px;height:26px;margin-right:11px}
+.brandmark .bm-word{
+  font-family:var(--sans);font-weight:800;font-size:16px;line-height:1;
+  letter-spacing:.14em;word-spacing:.16em;color:var(--ink);white-space:nowrap;
+}
 
 /* Modal overlay */
 .ovl{
@@ -1270,6 +1282,16 @@ button{cursor:pointer;border:0;background:none}
         </div>
       </div>
     </section>
+
+    <!-- Lumin Labs branding — bottom-right of the board (per the layout sketch).
+         Shown only on the orders board; pointer-events:none so it never blocks taps. -->
+    <div class="brandmark" id="brandMark" hidden aria-label="Lumin Labs">
+      <svg class="bm-l" viewBox="0 0 40 42" aria-hidden="true">
+        <path d="M5 4 H16.5 V31 H38 V40 H5 Z" fill="#0B1A2E"/>
+        <rect x="20.5" y="5" width="3.6" height="22" fill="#C2A15B"/>
+      </svg>
+      <span class="bm-word">LUMIN LABS</span>
+    </div>
   </section>
 </div>
 
@@ -1798,6 +1820,7 @@ function setView(view, mode) {
   const isBoard = (view === 'live');
   const usesRange = (view === 'zreport');
   $('#modeBar').hidden = !isBoard;          // mode buttons + Live/Completed toggle: board only
+  const bm = $('#brandMark'); if (bm) bm.hidden = !isBoard;  // Lumin Labs mark: board only
   $('#dateBar').hidden = !usesRange;
   // Sale lives in its own panel; swap visibility so it and the grid never both
   // fight for the stage's flex space.
