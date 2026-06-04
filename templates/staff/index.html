@@ -244,6 +244,21 @@ button{cursor:pointer;border:0;background:none}
 .board-toggle button{height:38px;padding:0 18px;border:0;background:transparent;border-radius:9px;cursor:pointer;font-size:13.5px;font-weight:700;color:var(--muted)}
 .board-toggle button.active{background:var(--panel);color:var(--ink);box-shadow:var(--sh-sm)}
 .board-toggle .bt-count{font-family:var(--mono);font-size:12px;margin-left:5px;color:var(--blue)}
+/* Order filter chips (Valt-style) — filter the visible board list */
+.chips{display:flex;flex-wrap:wrap;align-items:center;padding:2px 24px 8px;flex:none}
+.chips[hidden]{display:none}
+.chips .chip{
+  height:34px;padding:0 14px;border-radius:10px;border:1px solid var(--line);
+  background:var(--panel);color:var(--ink-2);font-size:13px;font-weight:700;
+  display:inline-flex;align-items:center;box-shadow:var(--sh-sm);
+  transition:background var(--motion-fast),color var(--motion-fast),border-color var(--motion-fast);
+}
+.chips .chip + .chip{margin-left:8px}
+.chips .chip:hover{border-color:var(--blue);color:var(--blue)}
+.chips .chip.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chips .chip[data-filter="unpaid"].active{background:var(--red);border-color:var(--red)}
+.chips .chip .chip-n{margin-left:6px;font-family:var(--mono);font-size:11.5px;opacity:.65}
+.chips .chip.active .chip-n{opacity:.9}
 /* Quick card charge modal (the Pay button) */
 .qp-amount{font-family:var(--mono);font-size:40px;font-weight:500;text-align:center;color:var(--ink);margin:6px 0 12px;letter-spacing:-.02em}
 .qp-quick{display:flex;margin-bottom:12px}
@@ -1167,6 +1182,13 @@ button{cursor:pointer;border:0;background:none}
       </div>
     </div>
 
+    <div class="chips" id="boardChips" hidden role="tablist" aria-label="Filter orders">
+      <button class="chip active" data-filter="all" type="button">All <span class="chip-n">0</span></button>
+      <button class="chip" data-filter="unpaid" type="button">Not paid <span class="chip-n">0</span></button>
+      <button class="chip" data-filter="instore" type="button">In-store <span class="chip-n">0</span></button>
+      <button class="chip" data-filter="online" type="button">Online <span class="chip-n">0</span></button>
+    </div>
+
     <div class="datebar" id="dateBar" hidden>
       <button data-preset="today">Today</button>
       <button data-preset="yesterday">Yesterday</button>
@@ -1769,6 +1791,8 @@ const state = {
   editingOpId: null,       // operator being edited in the staff modal
   switching: false,        // soft re-auth (switch operator) in progress
   payReturnTimer: null,    // auto-return-to-board timer after a completed sale
+  boardFilter: 'all',      // board chip filter: all | unpaid | instore | online
+  completedOrders: [],     // cache of the Completed tab list (so chip filtering doesn't refetch)
 };
 
 const IDLE_MS = 90 * 1000;
@@ -1820,6 +1844,7 @@ function setView(view, mode) {
   const isBoard = (view === 'live');
   const usesRange = (view === 'zreport');
   $('#modeBar').hidden = !isBoard;          // mode buttons + Live/Completed toggle: board only
+  const ch = $('#boardChips'); if (ch) ch.hidden = !isBoard; // filter chips: board only
   const bm = $('#brandMark'); if (bm) bm.hidden = !isBoard;  // Lumin Labs mark: board only
   $('#dateBar').hidden = !usesRange;
   // Sale lives in its own panel; swap visibility so it and the grid never both
@@ -1881,14 +1906,23 @@ async function loadCompleted() {
     const res = await fetch(`/api/staff/orders?view=done&from=${ymd}&to=${ymd}`, { cache: 'no-store' });
     if (res.status === 401) { $('#logoutBtn').click(); return; }
     const d = await res.json();
-    const orders = d.orders || [];
     if (state.view !== 'live' || state.boardTab !== 'completed') return; // navigated away mid-load
-    if (!orders.length) { grid.innerHTML = '<div class="empty">No completed orders today yet.</div>'; return; }
-    grid.innerHTML = orders.map(o => renderRow(o, false)).join('');
-    wireCardButtons();
+    state.completedOrders = d.orders || [];
+    renderCompletedList();
   } catch (e) {
     grid.innerHTML = '<div class="empty">Couldn\'t load completed orders. Tap ↻ to retry.</div>';
   }
+}
+// Render the Completed tab from the cached list (so chip filtering doesn't refetch).
+function renderCompletedList() {
+  const grid = $('#grid');
+  const all = state.completedOrders || [];
+  updateChipCounts(all);
+  if (!all.length) { grid.innerHTML = '<div class="empty">No completed orders today yet.</div>'; return; }
+  const shown = applyBoardFilter(all);
+  if (!shown.length) { grid.innerHTML = '<div class="empty">No completed orders match this filter.</div>'; return; }
+  grid.innerHTML = shown.map(o => renderRow(o, false)).join('');
+  wireCardButtons();
 }
 // Board mode buttons → start a counter sale in that mode. Confirm the staff code over
 // the BOARD first: a cancel then leaves you on orders (not a half-open sale), and the
@@ -1998,6 +2032,14 @@ $$('.board-toggle button').forEach(b => b.addEventListener('click', () => {
 
 // "Complete all" — clear the live board in one tap.
 $('#completeAllBtn').addEventListener('click', completeAll);
+
+// Order filter chips — narrow the visible board list (current tab).
+$$('#boardChips .chip').forEach(c => c.addEventListener('click', () => {
+  state.boardFilter = c.dataset.filter;
+  $$('#boardChips .chip').forEach(x => x.classList.toggle('active', x === c));
+  if (state.boardTab === 'completed') renderCompletedList();
+  else renderList(state.orders);
+}));
 
 // Back office (top-bar icon) — PIN-protected; unlock once per session with a manager or
 // owner PIN, then it stays open until logout (idle revert re-locks it).
@@ -2176,13 +2218,45 @@ function handleOrders(orders) {
   syncAlarm();
 }
 
+// Board filter chips (All / Not paid / In-store / Online). Display-only — they
+// narrow the visible rows; counts + the alarm still run off the full list.
+function orderIsInstore(o) { return typeof o.source === 'string' && o.source.indexOf('counter') === 0; }
+function orderMatchesFilter(o) {
+  const f = state.boardFilter;
+  if (f === 'unpaid') return (o.payment && o.payment.state === 'unpaid') || o.paymentMethod === 'unpaid';
+  if (f === 'instore') return orderIsInstore(o);
+  if (f === 'online') return !orderIsInstore(o);
+  return true; // 'all'
+}
+function applyBoardFilter(list) { return (list || []).filter(orderMatchesFilter); }
+function updateChipCounts(list) {
+  const arr = list || [];
+  const counts = {
+    all: arr.length,
+    unpaid: arr.filter(o => (o.payment && o.payment.state === 'unpaid') || o.paymentMethod === 'unpaid').length,
+    instore: arr.filter(orderIsInstore).length,
+    online: arr.filter(o => !orderIsInstore(o)).length,
+  };
+  $$('#boardChips .chip').forEach(c => {
+    const el = c.querySelector('.chip-n');
+    if (el) el.textContent = counts[c.dataset.filter] ?? 0;
+  });
+}
+
 function renderList(list, newIds = []) {
   const grid = $('#grid');
-  if (!list || list.length === 0) {
+  const all = list || [];
+  updateChipCounts(all);
+  if (all.length === 0) {
     grid.innerHTML = '<div class="empty">No active orders. Sit tight — they\'ll appear here as they come in.</div>';
     return;
   }
-  grid.innerHTML = list.map(o => renderRow(o, newIds.includes(o.id))).join('');
+  const shown = applyBoardFilter(all);
+  if (shown.length === 0) {
+    grid.innerHTML = '<div class="empty">No live orders match this filter.</div>';
+    return;
+  }
+  grid.innerHTML = shown.map(o => renderRow(o, newIds.includes(o.id))).join('');
   wireCardButtons();
 }
 
