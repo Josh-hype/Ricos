@@ -218,39 +218,46 @@ button{cursor:pointer;border:0;background:none}
 .topbar .op-avatar{width:42px;height:38px;border-radius:11px;box-shadow:var(--sh-sm)}
 /* One-page board: big mode buttons over ~2/3 width (left), spaced with margins
    (flex `gap` is ignored on the Sunmi's older WebView) + the Live/Completed toggle */
+/* Board chrome — crisp bordered boxes throughout (Valt-style). --bd is the
+   strong, clearly-visible border used on every interactive box on the board. */
+:root{--bd:#C2D0E2; --bd-strong:#A9BCD4}
 .modebar{display:flex;align-items:center;padding:14px 24px 8px;flex:none}
 .modebar[hidden]{display:none}
 .mode-group{display:flex;width:72%;max-width:960px;min-width:0}
-.mode-btn{flex:1;display:flex;align-items:center;justify-content:center;height:54px;padding:0 14px;border:1px solid var(--line);border-left:4px solid var(--muted-2);border-radius:12px;cursor:pointer;color:var(--ink);font-size:16px;font-weight:700;letter-spacing:-.01em;background:var(--panel);box-shadow:var(--sh-sm);transition:transform var(--motion-fast) var(--ease-out),box-shadow var(--motion-fast)}
+.mode-btn{flex:1;display:flex;align-items:center;justify-content:center;height:54px;padding:0 14px;border:1.5px solid var(--bd);border-left:5px solid var(--muted-2);border-radius:12px;cursor:pointer;color:var(--ink);font-size:16px;font-weight:700;letter-spacing:-.01em;background:var(--panel);transition:transform var(--motion-fast) var(--ease-out),box-shadow var(--motion-fast),border-color var(--motion-fast)}
 .mode-group .mode-btn + .mode-btn{margin-left:14px}
-.mode-btn:hover{transform:translateY(-1px);box-shadow:var(--sh)}
+.mode-btn:hover{transform:translateY(-1px);box-shadow:var(--sh);border-color:var(--bd-strong)}
 .mode-btn:active{transform:translateY(0)}
 .mode-btn .mb-ic{font-size:20px;line-height:1;margin-right:9px}
 .mode-btn[data-mode="walkin"]{border-left-color:var(--blue)}
 .mode-btn.collection{border-left-color:var(--green)}
 .mode-btn.delivery{border-left-color:var(--amber-bg)}
 .mode-btn.pay{background:var(--blue-tint);border-left-color:var(--blue);color:var(--accent-strong)}
-.board-right{margin-left:auto;display:flex;align-items:center}
-.board-right .complete-all{
-  margin-right:10px;height:38px;padding:0 16px;border:0;border-radius:11px;
-  background:var(--green);color:#fff;font-weight:700;font-size:13.5px;cursor:pointer;
+
+/* Live / Completed — prominent bordered segmented tab control (filled active) */
+.tabbar{display:flex;align-items:center;padding:8px 24px 10px;flex:none}
+.tabbar[hidden]{display:none}
+.board-toggle{display:inline-flex;border:1.5px solid var(--bd);border-radius:12px;overflow:hidden;background:var(--panel);box-shadow:var(--sh-sm)}
+.board-toggle button{height:44px;padding:0 30px;border:0;border-right:1.5px solid var(--bd);background:var(--panel);cursor:pointer;font-size:14.5px;font-weight:800;letter-spacing:-.01em;color:var(--muted)}
+.board-toggle button:last-child{border-right:0}
+.board-toggle button.active{background:var(--blue);color:#fff}
+.board-toggle .bt-count{font-family:var(--mono);font-size:12.5px;margin-left:7px;opacity:.8}
+.tabbar .complete-all{
+  margin-left:auto;height:44px;padding:0 18px;border:1.5px solid var(--green);border-radius:12px;
+  background:var(--green);color:#fff;font-weight:800;font-size:13.5px;cursor:pointer;
   box-shadow:var(--sh-sm);white-space:nowrap;
 }
-.board-right .complete-all:hover{filter:brightness(1.05)}
-.board-right .complete-all:active{transform:translateY(1px)}
-.board-right .complete-all[hidden]{display:none}
-.boardbar{display:flex;justify-content:flex-end;align-items:center;padding:6px 24px 2px;flex:none}
-.board-toggle{display:inline-flex;background:var(--canvas);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px}
-.board-toggle button{height:38px;padding:0 18px;border:0;background:transparent;border-radius:9px;cursor:pointer;font-size:13.5px;font-weight:700;color:var(--muted)}
-.board-toggle button.active{background:var(--panel);color:var(--ink);box-shadow:var(--sh-sm)}
-.board-toggle .bt-count{font-family:var(--mono);font-size:12px;margin-left:5px;color:var(--blue)}
-/* Order filter chips (Valt-style) — filter the visible board list */
-.chips{display:flex;flex-wrap:wrap;align-items:center;padding:2px 24px 8px;flex:none}
+.tabbar .complete-all:hover{filter:brightness(1.05)}
+.tabbar .complete-all:active{transform:translateY(1px)}
+.tabbar .complete-all[hidden]{display:none}
+
+/* Order filter chips (Valt-style) — bordered boxes that filter the board list */
+.chips{display:flex;flex-wrap:wrap;align-items:center;padding:0 24px 10px;flex:none}
 .chips[hidden]{display:none}
 .chips .chip{
-  height:34px;padding:0 14px;border-radius:10px;border:1px solid var(--line);
+  height:36px;padding:0 15px;border-radius:9px;border:1.5px solid var(--bd);
   background:var(--panel);color:var(--ink-2);font-size:13px;font-weight:700;
-  display:inline-flex;align-items:center;box-shadow:var(--sh-sm);
+  display:inline-flex;align-items:center;
   transition:background var(--motion-fast),color var(--motion-fast),border-color var(--motion-fast);
 }
 .chips .chip + .chip{margin-left:8px}
@@ -494,10 +501,10 @@ button{cursor:pointer;border:0;background:none}
 .orow{
   display:grid;grid-template-columns:minmax(0,1fr) 90px 60px 90px 44px;
   align-items:center;column-gap:12px;
-  background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--muted-2);
-  border-radius:12px;padding:12px 14px;box-shadow:var(--sh-sm);position:relative;transition:box-shadow .16s;
+  background:var(--panel);border:1.5px solid var(--bd);border-left:5px solid var(--muted-2);
+  border-radius:12px;padding:12px 14px;box-shadow:var(--sh-sm);position:relative;transition:box-shadow .16s,border-color .16s;
 }
-.orow:hover{box-shadow:var(--sh)}
+.orow:hover{box-shadow:var(--sh);border-color:var(--bd-strong)}
 .orow.menu-open{z-index:20}
 .orow.new{border-color:var(--amber-bg);background:#FFFCF3;animation:blink 1.2s ease-in-out 4}
 .orow.aging-soon{border-left-color:var(--amber-bg)}
@@ -1173,13 +1180,14 @@ button{cursor:pointer;border:0;background:none}
         <button class="mode-btn delivery" data-mode="delivery"><span class="mb-ic" aria-hidden="true">🛵</span> Delivery</button>
         <button class="mode-btn pay" id="payQuickBtn"><span class="mb-ic" aria-hidden="true">💳</span> Pay</button>
       </div>
-      <div class="board-right">
-        <button class="complete-all" id="completeAllBtn" hidden>✓ Complete all</button>
-        <div class="board-toggle" role="tablist">
-          <button data-board="live" class="active" role="tab">Live <span class="bt-count" id="liveCount">0</span></button>
-          <button data-board="completed" role="tab">Completed</button>
-        </div>
+    </div>
+
+    <div class="tabbar" id="tabBar">
+      <div class="board-toggle" role="tablist">
+        <button data-board="live" class="active" role="tab">Live <span class="bt-count" id="liveCount">0</span></button>
+        <button data-board="completed" role="tab">Completed <span class="bt-count" id="doneCount"></span></button>
       </div>
+      <button class="complete-all" id="completeAllBtn" hidden>✓ Complete all</button>
     </div>
 
     <div class="chips" id="boardChips" hidden role="tablist" aria-label="Filter orders">
@@ -1843,7 +1851,8 @@ function setView(view, mode) {
   const isSale = (view === 'sale');
   const isBoard = (view === 'live');
   const usesRange = (view === 'zreport');
-  $('#modeBar').hidden = !isBoard;          // mode buttons + Live/Completed toggle: board only
+  $('#modeBar').hidden = !isBoard;          // mode buttons: board only
+  const tb = $('#tabBar'); if (tb) tb.hidden = !isBoard;     // Live/Completed tab bar: board only
   const ch = $('#boardChips'); if (ch) ch.hidden = !isBoard; // filter chips: board only
   const bm = $('#brandMark'); if (bm) bm.hidden = !isBoard;  // Lumin Labs mark: board only
   $('#dateBar').hidden = !usesRange;
@@ -1917,6 +1926,7 @@ async function loadCompleted() {
 function renderCompletedList() {
   const grid = $('#grid');
   const all = state.completedOrders || [];
+  const dc = $('#doneCount'); if (dc) dc.textContent = all.length;
   updateChipCounts(all);
   if (!all.length) { grid.innerHTML = '<div class="empty">No completed orders today yet.</div>'; return; }
   const shown = applyBoardFilter(all);
