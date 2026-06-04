@@ -6,10 +6,16 @@ import { requireStaff } from '../../_lib/auth.js';
 import { listActiveOrders, listOrdersBetween, resolveDayRange, DONE_STATUSES } from '../../_lib/kv.js';
 
 export const onRequestGet = async ({ request, env }) => {
-  const denied = await requireStaff(request, env);
-  if (denied) return denied;
   const url = new URL(request.url);
-  if (url.searchParams.get('view') === 'recent') {
+  // The 'recent' diagnostic can also be opened with ?key=<TILL_SETUP_PASSWORD>
+  // (debug only) so it works from a KDS browser that has no staff cookie.
+  const isRecent = url.searchParams.get('view') === 'recent';
+  const keyOk = isRecent && env.TILL_SETUP_PASSWORD && (url.searchParams.get('key') || '') === env.TILL_SETUP_PASSWORD;
+  if (!keyOk) {
+    const denied = await requireStaff(request, env);
+    if (denied) return denied;
+  }
+  if (isRecent) {
     // Diagnostic: today's orders (every status) with just the routing-relevant
     // fields, so we can see where an order is stuck. No customer PII.
     const { from, to } = resolveDayRange(url);
