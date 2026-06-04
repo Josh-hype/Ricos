@@ -85,14 +85,30 @@ const KITCHEN_VISIBLE_STATUSES = new Set([
   'out_for_delivery',   // driver out
 ]);
 
+// List EVERY key under `orders:`, paging through the cursor. KV caps a page at
+// 1000, and a busy shop accumulates far more than that over time, so a single
+// page would silently drop orders whose random id sorts past the page — which
+// is exactly how a new order can fail to reach the board. We page until
+// list_complete. Only key metadata is read here (no per-order value fetch).
+async function listAllOrderKeys(env) {
+  const keys = [];
+  let cursor;
+  do {
+    const res = await env.ORDERS_KV.list({ prefix: 'orders:', limit: 1000, cursor });
+    keys.push(...res.keys);
+    cursor = res.list_complete ? null : res.cursor;
+  } while (cursor);
+  return keys;
+}
+
 // Read straight from the per-order docs on each poll. We deliberately do NOT
 // cache this in a single hot key: KV edge-caches a frequently-read key for up
 // to 60s, which delayed new orders reaching the board. list() reflects fresh
 // writes far quicker, and on the paid plan the list cost is negligible.
-export async function listActiveOrders(env, { limit = 100 } = {}) {
-  const list = await env.ORDERS_KV.list({ prefix: 'orders:', limit });
+export async function listActiveOrders(env) {
+  const keys = await listAllOrderKeys(env);
   const active = [];
-  for (const k of list.keys) {
+  for (const k of keys) {
     const status = k.metadata?.status;
     if (status && KITCHEN_VISIBLE_STATUSES.has(status)) {
       const raw = await env.ORDERS_KV.get(k.name);
@@ -122,10 +138,10 @@ export function londonDay(iso = new Date().toISOString()) {
 // All orders created within an inclusive London-day range (YYYY-MM-DD strings),
 // newest first. Filters on the lightweight key metadata first and only fetches
 // the matching values, so we don't fan out a KV read for every order ever
-// placed. Caps the scan at 1000 keys (plenty for these shops' volumes).
+// placed. Pages through every key so a high lifetime order count can't hide a day.
 export async function listOrdersBetween(env, fromYmd, toYmd) {
-  const list = await env.ORDERS_KV.list({ prefix: 'orders:', limit: 1000 });
-  const inRange = list.keys.filter(k => {
+  const keys = await listAllOrderKeys(env);
+  const inRange = keys.filter(k => {
     const cd = k.metadata?.createdAt;
     if (!cd) return false;
     const d = londonDay(cd);
