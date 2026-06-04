@@ -242,17 +242,17 @@ button{cursor:pointer;border:0;background:none}
 .board-toggle button:last-child{border-right:0}
 .board-toggle button.active{background:var(--blue);color:#fff}
 .board-toggle .bt-count{font-family:var(--mono);font-size:12.5px;margin-left:7px;opacity:.8}
-.tabbar .complete-all{
-  margin-left:auto;height:44px;padding:0 18px;border:1.5px solid var(--green);border-radius:12px;
-  background:var(--green);color:#fff;font-weight:800;font-size:13.5px;cursor:pointer;
+.modebar .complete-all{
+  margin-left:auto;height:54px;padding:0 20px;border:1.5px solid var(--green);border-radius:12px;
+  background:var(--green);color:#fff;font-weight:800;font-size:14px;cursor:pointer;
   box-shadow:var(--sh-sm);white-space:nowrap;
 }
-.tabbar .complete-all:hover{filter:brightness(1.05)}
-.tabbar .complete-all:active{transform:translateY(1px)}
-.tabbar .complete-all[hidden]{display:none}
+.modebar .complete-all:hover{filter:brightness(1.05)}
+.modebar .complete-all:active{transform:translateY(1px)}
+.modebar .complete-all[hidden]{display:none}
 
-/* Order filter chips (Valt-style) — bordered boxes that filter the board list */
-.chips{display:flex;flex-wrap:wrap;align-items:center;padding:0 24px 10px;flex:none}
+/* Order filter chips (Valt-style) — sit to the right of the Live/Completed tabs */
+.chips{display:flex;flex-wrap:wrap;align-items:center;margin-left:auto;flex:none}
 .chips[hidden]{display:none}
 .chips .chip{
   height:36px;padding:0 15px;border-radius:9px;border:1.5px solid var(--bd);
@@ -1180,6 +1180,7 @@ button{cursor:pointer;border:0;background:none}
         <button class="mode-btn delivery" data-mode="delivery"><span class="mb-ic" aria-hidden="true">🛵</span> Delivery</button>
         <button class="mode-btn pay" id="payQuickBtn"><span class="mb-ic" aria-hidden="true">💳</span> Pay</button>
       </div>
+      <button class="complete-all" id="completeAllBtn" hidden>✓ Complete all</button>
     </div>
 
     <div class="tabbar" id="tabBar">
@@ -1187,14 +1188,12 @@ button{cursor:pointer;border:0;background:none}
         <button data-board="live" class="active" role="tab">Live <span class="bt-count" id="liveCount">0</span></button>
         <button data-board="completed" role="tab">Completed <span class="bt-count" id="doneCount"></span></button>
       </div>
-      <button class="complete-all" id="completeAllBtn" hidden>✓ Complete all</button>
-    </div>
-
-    <div class="chips" id="boardChips" hidden role="tablist" aria-label="Filter orders">
-      <button class="chip active" data-filter="all" type="button">All <span class="chip-n">0</span></button>
-      <button class="chip" data-filter="unpaid" type="button">Not paid <span class="chip-n">0</span></button>
-      <button class="chip" data-filter="instore" type="button">In-store <span class="chip-n">0</span></button>
-      <button class="chip" data-filter="online" type="button">Online <span class="chip-n">0</span></button>
+      <div class="chips" id="boardChips" role="tablist" aria-label="Filter orders">
+        <button class="chip active" data-filter="all" type="button">All <span class="chip-n">0</span></button>
+        <button class="chip" data-filter="unpaid" type="button">Not paid <span class="chip-n">0</span></button>
+        <button class="chip" data-filter="instore" type="button">In-store <span class="chip-n">0</span></button>
+        <button class="chip" data-filter="online" type="button">Online <span class="chip-n">0</span></button>
+      </div>
     </div>
 
     <div class="datebar" id="dateBar" hidden>
