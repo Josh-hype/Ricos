@@ -468,6 +468,41 @@ button{cursor:pointer;border:0;background:none}
 .card-menu .menu .menu-complete:hover{background:var(--green-tint);color:var(--green)}
 .card-menu .menu .menu-pay{color:var(--blue);font-weight:700}
 .card-menu .menu .menu-pay:hover{background:var(--blue-tint-2);color:var(--blue)}
+.card-menu .menu .menu-accept,.card-menu .menu .menu-progress{color:var(--blue)}
+.card-menu .menu .menu-accept:hover,.card-menu .menu .menu-progress:hover{background:var(--blue-tint-2);color:var(--blue)}
+.card-menu .menu .menu-print{color:var(--ink)}
+.card-menu .menu .menu-print:hover{background:var(--canvas);color:var(--ink)}
+
+/* Compact order rows (board: Live / Completed). The EPOS only needs an
+   at-a-glance summary — the full order goes to the printer / KDS — so each order
+   is one line: ref + type/status, total, tender, paid-state, and a ⋮ of actions. */
+.orow{
+  display:grid;grid-template-columns:minmax(0,1fr) 90px 60px 90px 44px;
+  align-items:center;column-gap:12px;
+  background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--muted-2);
+  border-radius:12px;padding:12px 14px;box-shadow:var(--sh-sm);position:relative;transition:box-shadow .16s;
+}
+.orow:hover{box-shadow:var(--sh)}
+.orow.menu-open{z-index:20}
+.orow.new{border-color:var(--amber-bg);background:#FFFCF3;animation:blink 1.2s ease-in-out 4}
+.orow.aging-soon{border-left-color:var(--amber-bg)}
+.orow.aging-over{border-left-color:var(--red);background:#FEF5F5}
+.orow.st-pending{border-left-color:var(--amber-bg)}
+.orow.st-accepted{border-left-color:var(--blue)}
+.orow.st-ready{border-left-color:var(--amber-bg)}
+.orow.st-out{border-left-color:var(--blue)}
+.orow.st-completed{border-left-color:var(--green)}
+.orow.st-cancelled{border-left-color:var(--muted-2)}
+.orow.done{background:#FBFCFE}
+.orow .r-id{min-width:0}
+.orow .r-ref{font-family:var(--mono);font-size:16px;font-weight:600;letter-spacing:-.02em;color:var(--ink);display:block}
+.orow .r-meta{display:block;font-size:11.5px;font-weight:500;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.orow .r-total{font-family:var(--mono);font-size:15px;font-weight:600;text-align:right;color:var(--ink)}
+.orow .r-method{font-size:13px;font-weight:600;color:var(--ink-2);text-align:center}
+.orow .r-paid{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;text-align:center;padding:5px 4px;border-radius:7px;white-space:nowrap}
+.orow .r-paid.pd{background:var(--green-tint);color:var(--green)}
+.orow .r-paid.np{background:var(--red-tint);color:var(--red)}
+.orow .card-menu{position:relative;top:auto;right:auto;justify-self:center}
 
 /* Modal overlay */
 .ovl{
@@ -1682,6 +1717,7 @@ function buildPinPad(input) {
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.card-menu')) {
     $$('.card-menu .menu').forEach(m => m.setAttribute('hidden', ''));
+    $$('.orow.menu-open').forEach(r => r.classList.remove('menu-open'));
   }
 });
 
@@ -1825,7 +1861,7 @@ async function loadCompleted() {
     const orders = d.orders || [];
     if (state.view !== 'live' || state.boardTab !== 'completed') return; // navigated away mid-load
     if (!orders.length) { grid.innerHTML = '<div class="empty">No completed orders today yet.</div>'; return; }
-    grid.innerHTML = orders.map(o => renderCard(o, false, true)).join('');
+    grid.innerHTML = orders.map(o => renderRow(o, false)).join('');
     wireCardButtons();
   } catch (e) {
     grid.innerHTML = '<div class="empty">Couldn\'t load completed orders. Tap ↻ to retry.</div>';
@@ -2123,7 +2159,7 @@ function renderList(list, newIds = []) {
     grid.innerHTML = '<div class="empty">No active orders. Sit tight — they\'ll appear here as they come in.</div>';
     return;
   }
-  grid.innerHTML = list.map(o => renderCard(o, newIds.includes(o.id))).join('');
+  grid.innerHTML = list.map(o => renderRow(o, newIds.includes(o.id))).join('');
   wireCardButtons();
 }
 
@@ -2138,13 +2174,18 @@ function wireCardButtons() {
     }
   }));
   $$('.card .btn-print').forEach(b => b.addEventListener('click', () => printOrder(b.dataset.id)));
-  // ⋮ menu on accepted cards: toggle open, and cancel (auto-refunds card orders).
+  // ⋮ menu: toggle open. Raise the owning row above its neighbours (compact rows
+  // are short, so the dropdown overlaps the rows below — z-index sorts the paint).
   $$('.card-menu .dots').forEach(b => b.addEventListener('click', (e) => {
     e.stopPropagation();
     const menu = b.parentElement.querySelector('.menu');
     const open = menu.hasAttribute('hidden');
     $$('.card-menu .menu').forEach(m => m.setAttribute('hidden', ''));
-    if (open) menu.removeAttribute('hidden');
+    $$('.orow.menu-open').forEach(r => r.classList.remove('menu-open'));
+    if (open) {
+      menu.removeAttribute('hidden');
+      const row = b.closest('.orow'); if (row) row.classList.add('menu-open');
+    }
   }));
   $$('.card-menu .menu-cancel').forEach(b => b.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -2159,6 +2200,18 @@ function wireCardButtons() {
   $$('.card-menu .menu-pay').forEach(b => b.addEventListener('click', (e) => {
     e.stopPropagation();
     openPayForOrder(b.dataset.id);
+  }));
+  $$('.card-menu .menu-accept').forEach(b => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openAccept(b.dataset.id);
+  }));
+  $$('.card-menu .menu-progress').forEach(b => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    updateStatus(b.dataset.id, b.dataset.status);
+  }));
+  $$('.card-menu .menu-print').forEach(b => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    printOrderTicket(b.dataset.id);
   }));
   $$('.card-menu .menu-refund, .card .btn-refund').forEach(b => b.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -2510,6 +2563,79 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
         ${ready}
       </div>
       ${detail}
+    </article>`;
+}
+
+// Compact one-line order row for the board (Live / Completed). The EPOS only
+// shows a summary — full order detail goes to the printer / KDS — so it's: ref +
+// type/status, total, tender, paid-state, and a ⋮ holding every order action.
+function renderRow(o, isNew) {
+  const cls = ['orow'];
+  if (isNew) cls.push('new');
+  const am = agingMins(o);
+  if (am !== null) { if (am < 0) cls.push('aging-over'); else if (am <= 5) cls.push('aging-soon'); }
+  const stClass = { pending_accept: 'st-pending', accepted: 'st-accepted', ready: 'st-ready', out_for_delivery: 'st-out', completed: 'st-completed', cancelled: 'st-cancelled' };
+  if (stClass[o.status]) cls.push(stClass[o.status]);
+  if (o.status === 'completed' || o.status === 'cancelled') cls.push('done');
+
+  const pmt = o.payment || {};
+  const isUnpaid = (pmt.state === 'unpaid') || o.paymentMethod === 'unpaid';
+  const isCardPay = o.paymentMethod === 'card' || o.paymentMethod === 'counter_card';
+  const method = isUnpaid ? '—' : (isCardPay ? 'Card' : 'Cash');
+  const paidLbl = isUnpaid ? 'Not paid' : 'Paid';
+  const paidCls = isUnpaid ? 'np' : 'pd';
+
+  const stLabel = { pending_accept: 'new', accepted: 'accepted', ready: 'ready', out_for_delivery: 'out', completed: 'completed', cancelled: 'cancelled' };
+  const fulf = o.fulfillment === 'delivery' ? 'Delivery' : (o.source === 'counter-walkin' ? 'Walk-in' : 'Collection');
+  let timeTxt = '';
+  if (['accepted', 'ready', 'out_for_delivery'].includes(o.status) && am !== null) {
+    timeTxt = am > 0 ? `${am} min` : (am === 0 ? 'now' : `${-am} min over`);
+  } else if (o.status === 'pending_accept') {
+    timeTxt = humanAgo(new Date(o.createdAt));
+  } else {
+    timeTxt = formatTime(o.createdAt);
+  }
+  const meta = `${fulf} · ${stLabel[o.status] || o.status}${timeTxt ? ' · ' + timeTxt : ''}`;
+
+  const refundedP = pmt.refundedTotalP || (pmt.refund?.state === 'succeeded' ? pmt.refund.amountP : 0) || 0;
+  const fullyRefunded = refundedP >= (o.totals.totalP || 0);
+  const canRefund = o.paymentMethod === 'card' && ['paid', 'partly_refunded', 'refunded'].includes(pmt.state) && !fullyRefunded;
+
+  // Every order action lives in the ⋮ now (no inline buttons on the row).
+  const m = [];
+  if (isUnpaid && ['pending_accept', 'accepted', 'ready', 'out_for_delivery'].includes(o.status)) {
+    m.push(`<button class="menu-pay" data-id="${o.id}">Pay now</button>`);
+  }
+  if (o.status === 'pending_accept') m.push(`<button class="menu-accept" data-id="${o.id}">Accept…</button>`);
+  if (o.status === 'accepted') {
+    const ns = o.fulfillment === 'delivery' ? 'out_for_delivery' : 'ready';
+    const nl = o.fulfillment === 'delivery' ? 'Mark out for delivery' : 'Mark ready';
+    m.push(`<button class="menu-progress" data-id="${o.id}" data-status="${ns}">${nl}</button>`);
+  }
+  if (['accepted', 'ready', 'out_for_delivery'].includes(o.status)) {
+    m.push(`<button class="menu-complete" data-id="${o.id}">Complete order</button>`);
+  }
+  m.push(`<button class="menu-print" data-id="${o.id}">Print ticket</button>`);
+  if (canRefund) m.push(`<button class="menu-refund" data-id="${o.id}">Refund…</button>`);
+  if (o.status === 'accepted' || o.status === 'pending_accept') {
+    m.push(`<button class="menu-cancel" data-id="${o.id}">${o.paymentMethod === 'card' ? 'Cancel &amp; refund' : 'Cancel order'}</button>`);
+  }
+
+  const menuHtml = `<div class="card-menu">
+      <button class="dots" data-id="${o.id}" aria-label="Actions">⋮</button>
+      <div class="menu" hidden>${m.join('')}</div>
+    </div>`;
+
+  return `
+    <article class="${cls.join(' ')}" data-id="${o.id}">
+      <div class="r-id">
+        <span class="r-ref">#${escapeHtml(o.id)}</span>
+        <span class="r-meta">${escapeHtml(meta)}</span>
+      </div>
+      <span class="r-total">£${(o.totals.totalP / 100).toFixed(2)}</span>
+      <span class="r-method">${method}</span>
+      <span class="r-paid ${paidCls}">${paidLbl}</span>
+      ${menuHtml}
     </article>`;
 }
 
@@ -2892,6 +3018,19 @@ function printOrder(id) {
   $$('.card').forEach(c => c.style.display = (c === card ? '' : 'none'));
   window.print();
   setTimeout(() => $$('.card').forEach(c => c.style.display = ''), 250);
+}
+
+// "Print ticket" from a board row → thermal-print the order on the till's printer
+// (the full receipt layout). On a plain browser (no native printer) fall back to
+// the browser print of the card if one exists.
+function printOrderTicket(id) {
+  const o = (state.orders || []).find(x => x.id === id)
+    || (state.summaryOrders || []).find(x => x.id === id);
+  if (o && window.EPOSNative && (window.EPOSNative.printDoc || window.EPOSNative.printReceipt)) {
+    printTo('kitchen', o);
+    return;
+  }
+  printOrder(id);
 }
 
 /* ============================== Sale view (counter EPOS)
