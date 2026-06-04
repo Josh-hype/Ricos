@@ -90,7 +90,9 @@
     <div class="tick" aria-hidden="true">✓</div>
     <h1>Order received</h1>
     <p>Thanks — your order is in the kitchen's queue.</p>
-    <div class="ref" id="ref">—</div>
+    <p class="muted" style="margin-bottom:0">Your order number</p>
+    <div class="ref" id="num">—</div>
+    <p class="muted" style="margin-top:0">Reference: <span id="ref">—</span></p>
     <p>We'll email your <strong>order confirmation</strong> with the ready time as soon as the restaurant accepts your order — usually within ~5 minutes.</p>
     <p class="muted">Allergies? Call the restaurant on <a href="tel:{{shopPhoneTel}}" style="color:inherit;font-weight:600">{{shopPhone}}</a> before collecting.</p>
     <div class="links">
@@ -104,10 +106,15 @@
   const ref = (params.get('ref') || '').toUpperCase();
   if (ref) {
     document.getElementById('ref').textContent = ref;
+    document.getElementById('num').textContent = ref; // fallback until the number arrives
     // Promote a just-paid card order into the kitchen queue right away (verified
     // server-side), so staff see it within one poll instead of waiting for the
-    // Stripe webhook. Harmless no-op for cash / already-promoted orders.
-    fetch(`/api/order/${encodeURIComponent(ref)}/confirm`, { method: 'POST' }).catch(() => {});
+    // Stripe webhook. Harmless no-op for cash / already-promoted orders. The
+    // response carries the short memorable order number, which we show big.
+    fetch(`/api/order/${encodeURIComponent(ref)}/confirm`, { method: 'POST' })
+      .then(r => r.json())
+      .then(d => { if (d && d.orderNumber) document.getElementById('num').textContent = '#' + d.orderNumber; })
+      .catch(() => {});
   }
 </script>
 </body>
