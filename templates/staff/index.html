@@ -603,6 +603,18 @@ button{cursor:pointer;border:0;background:none}
 }
 .kc-ready:active{filter:brightness(.95)}
 
+/* Order-routing picker (Back Office) */
+.routing-opts{display:flex;flex-direction:column;gap:10px;margin-bottom:6px}
+.routing-opt{
+  text-align:left;background:var(--panel);border:1.5px solid var(--bd);border-radius:13px;
+  padding:13px 15px;cursor:pointer;transition:border-color .14s,background .14s;
+}
+.routing-opt b{display:block;font-size:15px;font-weight:800;color:var(--ink)}
+.routing-opt span{display:block;font-size:12.5px;font-weight:500;color:var(--muted);margin-top:3px}
+.routing-opt:hover{border-color:var(--blue)}
+.routing-opt.sel{border-color:var(--blue);background:var(--blue-tint)}
+.routing-opt.sel b{color:var(--accent-strong)}
+
 /* Modal overlay */
 .ovl{
   position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(11,26,46,.5);backdrop-filter:blur(4px);
@@ -1242,6 +1254,20 @@ button{cursor:pointer;border:0;background:none}
       <button class="cancel" id="kdsSetupCancel" type="button">Cancel</button>
       <button class="confirm" id="kdsSetupConfirm" type="button">Start display</button>
     </div>
+  </div>
+</div>
+
+<div class="ovl" id="routingOvl" role="dialog" aria-modal="true" aria-labelledby="routingTitle">
+  <div class="modal">
+    <h2 id="routingTitle">Order routing</h2>
+    <p style="color:var(--muted);font-size:13.5px;font-weight:500;margin-bottom:14px;text-align:center">Where new (accepted) orders go for the kitchen.</p>
+    <div class="routing-opts" id="routingOpts">
+      <button class="routing-opt" data-routing="print" type="button"><b>🖨️ Print tickets</b><span>Print on accept. The kitchen display stays idle.</span></button>
+      <button class="routing-opt" data-routing="kds" type="button"><b>🖥️ Kitchen Display</b><span>Show on the KDS. No tickets printed.</span></button>
+      <button class="routing-opt" data-routing="both" type="button"><b>🖨️ + 🖥️ Both</b><span>Print a ticket and show on the KDS.</span></button>
+    </div>
+    <div class="pin-error" id="routingErr" aria-live="polite"></div>
+    <div class="row"><button class="cancel" id="routingClose" type="button">Done</button></div>
   </div>
 </div>
 
@@ -1900,7 +1926,9 @@ const state = {
   payReturnTimer: null,    // auto-return-to-board timer after a completed sale
   boardFilter: 'all',      // board chip filter: all | unpaid | instore | online
   completedOrders: [],     // cache of the Completed tab list (so chip filtering doesn't refetch)
-  kdsRouting: false,       // when true: accepted orders go to the KDS, the till skips printing
+  kdsRouting: false,       // (deprecated) kept for safety; see routing/printOnAccept
+  routing: 'print',        // order routing mode: 'print' | 'kds' | 'both'
+  printOnAccept: true,     // derived: does the till print the kitchen ticket on accept?
 };
 
 const IDLE_MS = 90 * 1000;
@@ -2277,7 +2305,11 @@ function enterDashboard() {
 async function loadSettings() {
   try {
     const res = await fetch('/api/staff/settings', { cache: 'no-store' });
-    if (res.ok) { const d = await res.json(); state.kdsRouting = !!d.kdsRouting; }
+    if (res.ok) {
+      const d = await res.json();
+      state.routing = d.routing || 'print';
+      state.printOnAccept = (d.print !== undefined) ? !!d.print : (state.routing !== 'kds');
+    }
   } catch (e) { /* keep default */ }
 }
 
@@ -2317,7 +2349,7 @@ async function kdsPoll() {
     if (!res.ok) throw new Error('HTTP ' + res.status);
     data = await res.json();
   } catch (e) { return; } // keep the last view on a network blip
-  renderKds(data.orders || []);
+  renderKds(data.orders || [], data.routing);
 }
 function kdsItemsHtml(o) {
   const struck = new Set(o.kdsStruck || []);
@@ -2334,11 +2366,13 @@ function kdsItemsHtml(o) {
       </li>`;
   }).join('');
 }
-function renderKds(orders) {
+function renderKds(orders, routing) {
   const grid = $('#kdsGrid');
-  $('#kdsCount').textContent = orders.length + (orders.length === 1 ? ' active' : ' active');
+  $('#kdsCount').textContent = orders.length + ' active';
   if (!orders.length) {
-    grid.innerHTML = '<div class="kds-empty">No orders right now.</div>';
+    grid.innerHTML = '<div class="kds-empty">' + (routing === 'print'
+      ? 'Order routing is set to <b>Print</b>.<br>Switch to <b>KDS</b> or <b>Both</b> in Back&nbsp;Office to use this display.'
+      : 'No orders right now.') + '</div>';
     kdsSeen.clear();
     return;
   }
@@ -2416,6 +2450,10 @@ $('#kdsExit').addEventListener('click', () => {
   try { localStorage.removeItem('kds_token'); localStorage.removeItem('epos_role'); } catch (e) {}
   location.reload();
 });
+// Order-routing picker (Print / KDS / Both).
+$$('#routingOpts .routing-opt').forEach(b => b.addEventListener('click', () => setRouting(b.dataset.routing)));
+$('#routingClose').addEventListener('click', () => $('#routingOvl').classList.remove('open'));
+$('#routingOvl').addEventListener('click', (e) => { if (e.target.id === 'routingOvl') $('#routingOvl').classList.remove('open'); });
 // Pair already? Boot straight into the display.
 if (KDS_ROLE && kdsToken) bootKds();
 
@@ -2437,6 +2475,8 @@ async function poll() {
     // Refresh the Summary figures periodically (~30s), not on every 5s poll —
     // it does a date-range scan, so we keep it off the live cadence.
     if (state.view === 'summary' && state.pollTick % 6 === 0) loadSummary(true);
+    // Refresh order routing ~every 60s so a change on another till propagates here.
+    if (state.pollTick % 12 === 0) loadSettings();
   } catch (e) {
     console.error('poll failed', e);
     $('#pulse').classList.add('stale');
@@ -2662,7 +2702,7 @@ function renderBackOffice() {
   if (canStaff) tiles.push({ k: 'staff', ic: 'green', svg: ICON.staff, tl: 'Staff', ds: 'Operators &amp; their PIN codes' });
   tiles.push({ k: 'audit', ic: 'ink', svg: ICON.audit, tl: 'Activity Log', ds: 'Refunds, voids, sign-ins &amp; overrides' });
   tiles.push({ k: 'reader', ic: 'blue', svg: ICON.reader, tl: 'Card Reader', ds: 'Register the WisePOS card terminal' });
-  tiles.push({ k: 'routing', ic: 'green', svg: ICON.routing, tl: 'Order routing', ds: state.kdsRouting ? 'Accepted orders go to the <b>Kitchen Display</b> — tap to switch to printing' : 'Tickets <b>print</b> on accept — tap to switch to the Kitchen Display' });
+  tiles.push({ k: 'routing', ic: 'green', svg: ICON.routing, tl: 'Order routing', ds: 'Currently: <b>' + routingLabel(state.routing) + '</b> — tap to change' });
   $('#grid').innerHTML = '<div class="bo-wrap"><div class="bo-grid">' +
     tiles.map(t => `<button class="bo-tile" data-bo="${t.k}"><div class="ic ${t.ic}">${t.svg}</div><div class="tl">${t.tl}</div><div class="ds">${t.ds}</div></button>`).join('') +
     '</div></div>';
@@ -2673,28 +2713,37 @@ function renderBackOffice() {
     else if (k === 'staff') openStaffModal();
     else if (k === 'audit') openAuditModal();
     else if (k === 'reader') openReaderModal();
-    else if (k === 'routing') toggleRouting();
+    else if (k === 'routing') openRouting();
   }));
 }
 
-// Flip print ⇄ KDS routing for the whole shop (Back Office tile).
-async function toggleRouting() {
-  const next = !state.kdsRouting;
-  const label = next
-    ? 'send accepted orders to the Kitchen Display and STOP printing tickets'
-    : 'PRINT tickets on accept and stop sending to the Kitchen Display';
-  if (!confirm('Switch order routing to:\n\n' + label + '?')) return;
+function routingLabel(mode) {
+  return mode === 'kds' ? 'Kitchen Display' : (mode === 'both' ? 'Print + Kitchen Display' : 'Print tickets');
+}
+function renderRoutingOpts() {
+  $$('#routingOpts .routing-opt').forEach(b => b.classList.toggle('sel', b.dataset.routing === state.routing));
+}
+function openRouting() {
+  renderRoutingOpts();
+  $('#routingErr').textContent = '';
+  $('#routingOvl').classList.add('open');
+}
+async function setRouting(mode) {
+  if (mode === state.routing) { $('#routingOvl').classList.remove('open'); return; }
+  $('#routingErr').textContent = '';
   try {
     const res = await fetch('/api/staff/settings', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ kdsRouting: next }),
+      body: JSON.stringify({ routing: mode }),
     });
     if (res.status === 401) { $('#logoutBtn').click(); return; }
     const d = await res.json().catch(() => ({}));
-    if (!res.ok) { alert(d.error || 'Could not change order routing.'); return; }
-    state.kdsRouting = !!d.kdsRouting;
-    renderBackOffice(); // refresh the tile label
-  } catch (e) { alert('Network error — try again.'); }
+    if (!res.ok) { $('#routingErr').textContent = d.error || 'Could not change routing.'; return; }
+    state.routing = d.routing || mode;
+    state.printOnAccept = !!d.print;
+    renderRoutingOpts();
+    renderBackOffice(); // refresh the tile label behind the modal
+  } catch (e) { $('#routingErr').textContent = 'Network error — try again.'; }
 }
 function renderReport(s, orders) {
   const gbp = p => `£${((p || 0) / 100).toFixed(2)}`;
@@ -3213,7 +3262,7 @@ async function acceptOrder(id, prepMinutes) {
   // the line items); fall back to the accept response.
   try {
     const ord = (state.orders || []).find((o) => o.id === id) || data.order || data;
-    if (ord && ord.totals && !state.kdsRouting) printTo('kitchen', ord);
+    if (ord && ord.totals && state.printOnAccept) printTo('kitchen', ord);
   } catch (e) {}
   return data;
 }
@@ -4517,7 +4566,7 @@ async function finalizeOrder(extra, ctx) {
   // the counter order is 'accepted', so it shows on the display instead). Remember a
   // PAID sale so "Receipt" can print a customer receipt on request (unpaid saves don't).
   state.lastSale = isUnpaid ? null : { o, tender, tenderedP: ctx.tenderedP, changeP };
-  if (!state.kdsRouting) printTo('kitchen', o, isUnpaid ? null : state.lastSale);
+  if (state.printOnAccept) printTo('kitchen', o, isUnpaid ? null : state.lastSale);
   state.seenIds.add(o.id);
   poll();
   return true;
