@@ -563,14 +563,15 @@ button{cursor:pointer;border:0;background:none}
 }
 .kds-exit:hover{background:rgba(255,255,255,.1)}
 .kds-grid{
-  flex:1;min-height:0;overflow-y:auto;padding:18px;
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-  gap:16px;align-content:start;align-items:start;
+  flex:1;min-height:0;overflow-y:auto;padding:18px 18px 2px;
+  column-width:280px;column-gap:16px;
 }
-.kds-empty{grid-column:1/-1;text-align:center;color:#6F86A4;font-size:18px;font-weight:600;padding:80px 16px}
+.kds-empty{column-span:all;text-align:center;color:#6F86A4;font-size:18px;font-weight:600;padding:80px 16px}
 .kds-card{
   background:#fff;color:var(--ink);border-radius:16px;overflow:hidden;
   display:flex;flex-direction:column;border:2px solid transparent;box-shadow:0 8px 22px rgba(0,0,0,.28);
+  /* Uniform spacing in the column flow — and never split a card across columns. */
+  margin-bottom:16px;break-inside:avoid;-webkit-column-break-inside:avoid;
 }
 .kds-card.new{animation:kdsflash 1.1s ease-in-out 5}
 @keyframes kdsflash{0%,100%{border-color:transparent}50%{border-color:var(--amber-bg)}}
@@ -1276,16 +1277,17 @@ button{cursor:pointer;border:0;background:none}
       <button id="homeBtn" class="icon-btn" title="Home — orders" aria-label="Home">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 10.5L12 3l9 7.5M5 9.5V20a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V9.5"/></svg>
       </button>
+      <div class="loc">
+        <div class="eyebrow">{{shopShortName}}</div>
+        <div class="name" id="viewTitle">Orders</div>
+      </div>
+      <div class="top-spacer"></div>
       <div class="brandmark" id="brandMark" aria-label="Lumin Labs">
         <svg class="bm-l" viewBox="0 0 40 42" aria-hidden="true">
           <path d="M5 4 H16.5 V31 H38 V40 H5 Z" fill="#0B1A2E"/>
           <rect x="20.5" y="5" width="3.6" height="22" fill="#C2A15B"/>
         </svg>
         <span class="bm-word">LUMIN LABS</span>
-      </div>
-      <div class="loc">
-        <div class="eyebrow">{{shopShortName}}</div>
-        <div class="name" id="viewTitle">Orders</div>
       </div>
       <div class="top-spacer"></div>
       <button class="op-pill" id="opPill" title="Account" hidden>
