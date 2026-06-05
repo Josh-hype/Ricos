@@ -4927,37 +4927,471 @@
       {
         "id": "kb-med-doner",
         "name": "Medium Doner Kebab",
-        "priceP": 780
+        "priceP": 780,
+        "modifiers": [
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "kb-lrg-doner",
         "name": "Large Doner Kebab",
-        "priceP": 900
+        "priceP": 900,
+        "modifiers": [
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "kb-chicken",
         "name": "Chicken Kebab",
-        "priceP": 990
+        "priceP": 990,
+        "modifiers": [
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "kb-combo",
         "name": "Combo Kebab",
-        "priceP": 990
+        "priceP": 990,
+        "modifiers": [
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "kb-lamb-shish",
         "name": "Lamb Shish",
-        "priceP": 1200
+        "priceP": 1200,
+        "modifiers": [
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "kb-mixed-grill",
         "name": "Mixed Grill",
-        "priceP": 1800
+        "priceP": 1800,
+        "modifiers": [
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "kb-doner-meat",
         "name": "Portion of Doner Meat",
-        "priceP": 500
+        "priceP": 500,
+        "modifiers": [
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       }
     ]
   },
@@ -4968,42 +5402,538 @@
       {
         "id": "wr-cheese-chips",
         "name": "Cheese & Chips Wrap",
-        "priceP": 600
+        "priceP": 600,
+        "modifiers": [
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "wr-doner-chips",
         "name": "Doner Meat & Chips Wrap",
-        "priceP": 800
+        "priceP": 800,
+        "modifiers": [
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "wr-chicken",
         "name": "Chicken Wrap",
-        "priceP": 750
+        "priceP": 750,
+        "modifiers": [
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "wr-lamb-shish",
         "name": "Lamb Shish Wrap",
-        "priceP": 800
+        "priceP": 800,
+        "modifiers": [
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "wr-combo",
         "name": "Combo Wrap",
-        "priceP": 850
+        "priceP": 850,
+        "modifiers": [
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "wr-mixed",
         "name": "Mixed Wrap",
-        "priceP": 900
+        "priceP": 900,
+        "modifiers": [
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "wr-foodstation",
         "name": "Food Station Wrap",
-        "priceP": 980
+        "priceP": 980,
+        "modifiers": [
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "wr-chicken-tender",
         "name": "Chicken Tender Wrap",
-        "priceP": 850
+        "priceP": 850,
+        "modifiers": [
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       }
     ]
   },
