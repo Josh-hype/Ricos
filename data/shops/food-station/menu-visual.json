@@ -9277,7 +9277,364 @@
         "id": "md-3",
         "name": "Meal Deal 3",
         "price": 16.5,
-        "desc": "Any 13\" pizza, chips and a bottle of drink."
+        "desc": "Any 13\" pizza, chips and a bottle of drink.",
+        "options": [
+          {
+            "id": "md-pizza",
+            "label": "13\" Pizza",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "md3-marg",
+                "label": "Margherita",
+                "price": 0
+              },
+              {
+                "id": "md3-bbq-marg",
+                "label": "BBQ Margherita",
+                "price": 0
+              },
+              {
+                "id": "md3-4cheese",
+                "label": "4 Cheese",
+                "price": 0
+              },
+              {
+                "id": "md3-london",
+                "label": "London",
+                "price": 0
+              },
+              {
+                "id": "md3-halloumi",
+                "label": "Halloumi",
+                "price": 0
+              },
+              {
+                "id": "md3-veg-supreme",
+                "label": "Veg Supreme",
+                "price": 0
+              },
+              {
+                "id": "md3-hot-veg",
+                "label": "Hot Veg",
+                "price": 0
+              },
+              {
+                "id": "md3-alfunghi",
+                "label": "Alfunghi",
+                "price": 0
+              },
+              {
+                "id": "md3-prosciutto",
+                "label": "Prosciutto",
+                "price": 0
+              },
+              {
+                "id": "md3-farmhouse",
+                "label": "Farmhouse",
+                "price": 0
+              },
+              {
+                "id": "md3-hawaiian",
+                "label": "Hawaiian",
+                "price": 0
+              },
+              {
+                "id": "md3-chicken-sweetcorn",
+                "label": "Chicken Sweetcorn",
+                "price": 0
+              },
+              {
+                "id": "md3-bbq-chicken",
+                "label": "BBQ Chicken",
+                "price": 0
+              },
+              {
+                "id": "md3-chicken-supreme",
+                "label": "Chicken Supreme",
+                "price": 0
+              },
+              {
+                "id": "md3-kiev",
+                "label": "Kiev",
+                "price": 0
+              },
+              {
+                "id": "md3-pepperoni",
+                "label": "Pepperoni",
+                "price": 0
+              },
+              {
+                "id": "md3-double-bite",
+                "label": "Double Bite",
+                "price": 0
+              },
+              {
+                "id": "md3-hot-shot",
+                "label": "Hot Shot",
+                "price": 0
+              },
+              {
+                "id": "md3-doner",
+                "label": "Doner",
+                "price": 0
+              },
+              {
+                "id": "md3-mexicano",
+                "label": "Mexicano",
+                "price": 0
+              },
+              {
+                "id": "md3-meat-supreme",
+                "label": "Meat Supreme",
+                "price": 0
+              },
+              {
+                "id": "md3-tuna-sweetcorn",
+                "label": "Tuna Sweetcorn",
+                "price": 0
+              },
+              {
+                "id": "md3-tuna-mushroom",
+                "label": "Tuna Mushrooms",
+                "price": 0
+              },
+              {
+                "id": "md3-seafood",
+                "label": "Seafood",
+                "price": 0
+              },
+              {
+                "id": "md3-bbq-meaty",
+                "label": "BBQ Meaty Mighty",
+                "price": 0
+              },
+              {
+                "id": "md3-bbq-pokker",
+                "label": "BBQ Pokker",
+                "price": 0
+              },
+              {
+                "id": "md3-hotdog-pizza",
+                "label": "Hotdog",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "crust",
+            "label": "Choose crust",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "thin-base",
+                "label": "Thin Base",
+                "price": 0
+              },
+              {
+                "id": "deep-pan",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 3.5
+              }
+            ]
+          },
+          {
+            "id": "extra-toppings",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-mozzarella-cheese",
+                "label": "Mozzarella cheese",
+                "price": 2.5
+              },
+              {
+                "id": "xt-cheddar",
+                "label": "Cheddar",
+                "price": 2.5
+              },
+              {
+                "id": "xt-feta-cheese",
+                "label": "Feta cheese",
+                "price": 2.5
+              },
+              {
+                "id": "xt-halloumi-cheese",
+                "label": "Halloumi cheese",
+                "price": 2.5
+              },
+              {
+                "id": "xt-red-onions",
+                "label": "Red onions",
+                "price": 1.5
+              },
+              {
+                "id": "xt-peppers",
+                "label": "Peppers",
+                "price": 1.5
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic butter",
+                "price": 1.5
+              },
+              {
+                "id": "xt-mushrooms",
+                "label": "Mushrooms",
+                "price": 1.5
+              },
+              {
+                "id": "xt-tomatoes",
+                "label": "Tomatoes",
+                "price": 1.5
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.5
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.5
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.5
+              },
+              {
+                "id": "xt-fresh-chillies",
+                "label": "Fresh Chillies",
+                "price": 1.5
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.5
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 2.5
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 2.5
+              },
+              {
+                "id": "xt-anchovies",
+                "label": "Anchovies",
+                "price": 2.5
+              },
+              {
+                "id": "xt-hotdog",
+                "label": "Hotdog",
+                "price": 2.5
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 2.5
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 2.5
+              },
+              {
+                "id": "xt-tandoori-chicken",
+                "label": "Tandoori Chicken",
+                "price": 2.5
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 2.5
+              },
+              {
+                "id": "xt-donner-meat",
+                "label": "Donner meat",
+                "price": 2.5
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 2.5
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 2.5
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 2.5
+              },
+              {
+                "id": "xt-meatballs",
+                "label": "Meatballs",
+                "price": 2.5
+              }
+            ]
+          },
+          {
+            "id": "chips-choice",
+            "label": "Chips",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "chips",
+                "label": "Chips",
+                "price": 0
+              },
+              {
+                "id": "cheesy-chips",
+                "label": "Cheesy chips",
+                "price": 1.5
+              }
+            ]
+          },
+          {
+            "id": "md-bottle",
+            "label": "Bottle of drink",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "bottle-coke",
+                "label": "Coke",
+                "price": 0
+              },
+              {
+                "id": "bottle-diet-coke",
+                "label": "Diet Coke",
+                "price": 0
+              },
+              {
+                "id": "bottle-fanta",
+                "label": "Fanta",
+                "price": 0
+              },
+              {
+                "id": "bottle-pepsi",
+                "label": "Pepsi",
+                "price": 0
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "md-4",
