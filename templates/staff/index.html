@@ -2693,11 +2693,7 @@ function renderList(list, newIds = []) {
 function wireCardButtons() {
   $$('.card .btn-accept').forEach(b => b.addEventListener('click', () => openAccept(b.dataset.id)));
   $$('.card .btn-complete').forEach(b => b.addEventListener('click', () => updateStatus(b.dataset.id, 'completed')));
-  $$('.card .btn-cancel').forEach(b => b.addEventListener('click', () => {
-    if (confirm('Cancel this order? The customer is notified and any card payment is refunded automatically.')) {
-      updateStatus(b.dataset.id, 'cancelled');
-    }
-  }));
+  $$('.card .btn-cancel').forEach(b => b.addEventListener('click', () => updateStatus(b.dataset.id, 'cancelled')));
   $$('.card .btn-print').forEach(b => b.addEventListener('click', () => printOrder(b.dataset.id)));
   // ⋮ menu: toggle open. Raise the owning row above its neighbours (compact rows
   // are short, so the dropdown overlaps the rows below — z-index sorts the paint).
@@ -2714,9 +2710,7 @@ function wireCardButtons() {
   }));
   $$('.card-menu .menu-cancel').forEach(b => b.addEventListener('click', (e) => {
     e.stopPropagation();
-    if (confirm('Cancel this order? The customer is notified and any card payment is refunded automatically.')) {
-      updateStatus(b.dataset.id, 'cancelled');
-    }
+    updateStatus(b.dataset.id, 'cancelled');
   }));
   $$('.card-menu .menu-complete').forEach(b => b.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -3161,8 +3155,12 @@ function renderRow(o, isNew) {
   }
   m.push(`<button class="menu-print" data-id="${o.id}">Print ticket</button>`);
   if (canRefund) m.push(`<button class="menu-refund" data-id="${o.id}">Refund…</button>`);
-  if (o.status === 'accepted' || o.status === 'pending_accept') {
-    m.push(`<button class="menu-cancel" data-id="${o.id}">${o.paymentMethod === 'card' ? 'Cancel &amp; refund' : 'Cancel order'}</button>`);
+  // Cancel/void is available on ANY order that isn't already cancelled — including
+  // completed ones (e.g. clearing test orders). It auto-refunds only a paid card
+  // order still pending/accepted; otherwise it just voids it. Manager-PIN gated.
+  if (o.status !== 'cancelled') {
+    const willRefund = ['pending_accept', 'accepted'].includes(o.status) && o.paymentMethod === 'card' && ['paid', 'partly_refunded'].includes(pmt.state);
+    m.push(`<button class="menu-cancel" data-id="${o.id}">${willRefund ? 'Cancel &amp; refund' : 'Cancel order'}</button>`);
   }
 
   const menuHtml = `<div class="card-menu">
@@ -3540,6 +3538,7 @@ function noteRefund(result) {
 }
 
 async function updateStatus(id, status) {
+  if (status === 'cancelled') { cancelOrder(id); return; }
   try {
     if (status === 'completed') {
       const o = (state.orders || []).find(x => x.id === id);
@@ -3548,16 +3547,40 @@ async function updateStatus(id, status) {
         return;
       }
     }
-    let authToken;
-    if (status === 'cancelled') {
-      authToken = await requirePerm('void', id); // staff need a manager to approve
-      if (authToken === false) return;           // approval cancelled
-    }
-    const r = await sendStatus(id, status, undefined, authToken);
+    const r = await sendStatus(id, status);
     poll();
     noteRefund(r);
   } catch (e) {
     alert(e.message || 'Network error — try again.');
+  }
+}
+
+// Cancel / void an order — works on any order incl. completed (e.g. clearing test
+// orders). Confirm once, then the request is manager-PIN gated by the server: the
+// first cancel prompts for the manager/owner PIN (a manager session), after which
+// several orders can be cleared without re-entering until the session times out.
+function cancelOrder(id) {
+  const o = (state.orders || []).find(x => x.id === id)
+    || (state.completedOrders || []).find(x => x.id === id)
+    || (state.summaryOrders || []).find(x => x.id === id);
+  const willRefund = o && ['pending_accept', 'accepted'].includes(o.status)
+    && o.paymentMethod === 'card' && ['paid', 'partly_refunded'].includes(o.payment?.state);
+  const msg = willRefund
+    ? 'Cancel this order? The customer is notified and the card payment is refunded automatically.'
+    : 'Cancel this order? It is removed from the board (kept in the audit log).';
+  if (!confirm(msg)) return;
+  doCancel(id);
+}
+async function doCancel(id) {
+  try {
+    const r = await sendStatus(id, 'cancelled');
+    noteRefund(r);
+    poll();
+    if (state.boardTab === 'completed') loadCompleted();
+  } catch (e) {
+    // Server requires a manager session → prompt for the manager PIN, then retry.
+    if (/manager-locked/i.test(e.message || '')) { openManagerModal({ run: () => doCancel(id) }); return; }
+    alert(e.message || 'Could not cancel the order.');
   }
 }
 
@@ -4967,6 +4990,14 @@ function closeManagerModal() {
   state.pendingMgrTarget = null;
   $('#mgrOvl').classList.remove('open');
 }
+// What the manager unlock was for: either a view to open (string) or a { run }
+// callback (e.g. retry a cancel). Captured before close() clears it.
+function runMgrTarget() {
+  const t = state.pendingMgrTarget;
+  closeManagerModal();
+  if (t && typeof t === 'object' && typeof t.run === 'function') t.run();
+  else if (t) setView(t);
+}
 $('#mgrCancel').addEventListener('click', closeManagerModal);
 $('#mgrOvl').addEventListener('click', (e) => { if (e.target.id === 'mgrOvl') closeManagerModal(); });
 $('#mgrPin').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#mgrConfirm').click(); });
@@ -4988,16 +5019,12 @@ $('#mgrConfirm').addEventListener('click', async () => {
       // The server says the gate isn't configured — treat as unlocked so the
       // user can still get into the view they tried to open.
       state.managerUnlocked = true;
-      const target = state.pendingMgrTarget;
-      closeManagerModal();
-      if (target) setView(target);
+      runMgrTarget();
       return;
     }
     if (!res.ok) { $('#mgrError').textContent = data.error || `Error ${res.status}`; return; }
     state.managerUnlocked = true;
-    const target = state.pendingMgrTarget;
-    closeManagerModal();
-    if (target) setView(target);
+    runMgrTarget();
   } catch (e) {
     $('#mgrError').textContent = 'Network error — try again.';
   } finally {
