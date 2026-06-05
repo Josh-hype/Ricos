@@ -1252,6 +1252,7 @@ button{cursor:pointer;border:0;background:none}
     <div class="kds-meta">
       <span class="kds-count" id="kdsCount">0 active</span>
       <span class="kds-clock" id="kdsClock">--:--</span>
+      <button class="kds-exit" id="kdsSound" type="button" title="Toggle new-order sound" aria-label="Toggle sound">🔔</button>
       <button class="kds-exit" id="kdsExit" type="button" title="Exit kitchen display" aria-label="Exit">✕</button>
     </div>
   </header>
@@ -2384,6 +2385,9 @@ const KDS_ROLE = (() => { try { return localStorage.getItem('epos_role') === 'kd
 let kdsToken = (() => { try { return localStorage.getItem('kds_token') || ''; } catch (e) { return ''; } })();
 let kdsPollHandle = null, kdsClockHandle = null;
 const kdsSeen = new Set();
+let kdsPrimed = false;     // suppress the new-order chime on the first paint (existing backlog)
+let kdsAudioHooked = false; // prime audio once on the first touch (autoplay needs a gesture)
+function setKdsSoundLabel() { const b = $('#kdsSound'); if (b) b.textContent = state.soundOn ? '🔔' : '🔕'; }
 
 function kdsHeaders() { return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + kdsToken }; }
 function kdsTick() {
@@ -2397,6 +2401,16 @@ function bootKds() {
   $('#pinScreen').style.display = 'none';
   $('#dash').hidden = true;
   $('#kdsScreen').hidden = false;
+  // Treat whatever's already on screen as "seen" so re-entering doesn't chime the
+  // backlog; only orders that arrive after the first paint ring.
+  kdsSeen.clear(); kdsPrimed = false;
+  setKdsSoundLabel();
+  // A KDS has no PIN login, so autoplay stays blocked until someone touches it —
+  // prime the audio on the first tap anywhere (once per page load).
+  if (!kdsAudioHooked) {
+    kdsAudioHooked = true;
+    document.addEventListener('pointerdown', () => { try { audio.unlock(); } catch (e) {} }, { once: true });
+  }
   kdsTick();
   if (kdsClockHandle) clearInterval(kdsClockHandle);
   kdsClockHandle = setInterval(kdsTick, 20000);
@@ -2439,11 +2453,14 @@ function kdsItemsHtml(o) {
 function renderKds(orders, routing) {
   const grid = $('#kdsGrid');
   $('#kdsCount').textContent = orders.length + ' active';
+  // Orders present now that we hadn't seen on the previous paint = just arrived.
+  const newOrders = orders.filter(o => !kdsSeen.has(o.id));
   if (!orders.length) {
     grid.innerHTML = '<div class="kds-empty">' + (routing === 'print'
       ? 'Order routing is set to <b>Print</b>.<br>Switch to <b>KDS</b> or <b>Both</b> in Back&nbsp;Office to use this display.'
       : 'No orders right now.') + '</div>';
     kdsSeen.clear();
+    kdsPrimed = true;
     return;
   }
   grid.innerHTML = orders.map(o => {
@@ -2473,6 +2490,9 @@ function renderKds(orders, routing) {
   const present = new Set(orders.map(o => o.id));
   for (const o of orders) kdsSeen.add(o.id);
   for (const id of [...kdsSeen]) if (!present.has(id)) kdsSeen.delete(id);
+  // Ring for genuinely new orders (not the first paint, and honouring the mute).
+  if (kdsPrimed && newOrders.length && state.soundOn) { try { audio.chime(); } catch (e) {} }
+  kdsPrimed = true;
   wireKds();
 }
 function wireKds() {
@@ -2516,12 +2536,19 @@ $('#kdsSetupLink').addEventListener('click', openKdsSetup);
 $('#kdsSetupCancel').addEventListener('click', closeKdsSetup);
 $('#kdsSetupOvl').addEventListener('click', (e) => { if (e.target.id === 'kdsSetupOvl') closeKdsSetup(); });
 $('#kdsSetupConfirm').addEventListener('click', async () => {
+  try { audio.unlock(); } catch (e) {} // this tap is our gesture to enable the new-order sound
   const pw = $('#kdsSetupPw').value.trim();
   if (!pw) return;
   $('#kdsSetupConfirm').disabled = true; $('#kdsSetupErr').textContent = '';
   try { await kdsSetup(pw); closeKdsSetup(); bootKds(); }
   catch (e) { $('#kdsSetupErr').textContent = e.message || 'Setup failed.'; }
   finally { $('#kdsSetupConfirm').disabled = false; }
+});
+$('#kdsSound').addEventListener('click', () => {
+  state.soundOn = !state.soundOn;
+  try { localStorage.setItem('ricos-sound', state.soundOn ? 'on' : 'off'); } catch (e) {}
+  setKdsSoundLabel();
+  if (state.soundOn) { try { audio.unlock(); audio.chime(); } catch (e) {} } // confirm it's audible
 });
 $('#kdsExit').addEventListener('click', () => {
   if (!confirm('Exit kitchen display and return to the till sign-in?')) return;
