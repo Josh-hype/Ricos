@@ -1742,6 +1742,10 @@ button{cursor:pointer;border:0;background:none}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
           Card
         </button>
+        <button class="tender" data-tender="split" id="tenderSplit" type="button" title="Split between cash and card — enter the cash amount, the rest goes on card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v18"/><rect x="3" y="7" width="7" height="10" rx="1.5"/><rect x="14" y="7" width="7" height="10" rx="1.5"/></svg>
+          Split
+        </button>
         <button class="tender" data-tender="later" id="tenderLater" type="button" title="Save the order now and collect payment later">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>
           Pay later
@@ -3122,7 +3126,7 @@ function renderRow(o, isNew) {
   const pmt = o.payment || {};
   const isUnpaid = (pmt.state === 'unpaid') || o.paymentMethod === 'unpaid';
   const isCardPay = o.paymentMethod === 'card' || o.paymentMethod === 'counter_card';
-  const method = isUnpaid ? '—' : (isCardPay ? 'Card' : 'Cash');
+  const method = isUnpaid ? '—' : (o.paymentMethod === 'split' ? 'Split' : (isCardPay ? 'Card' : 'Cash'));
   const paidLbl = isUnpaid ? 'Not paid' : 'Paid';
   const paidCls = isUnpaid ? 'np' : 'pd';
 
@@ -3258,7 +3262,8 @@ function renderAlarm(o, qlen) {
   $('#alarmQueue').textContent = qlen > 1 ? `${qlen} waiting` : 'new';
 
   const fulfillment = o.fulfillment === 'delivery' ? 'Delivery' : 'Collection';
-  const pay = o.paymentMethod === 'card' ? 'Paid by card'
+  const pay = o.paymentMethod === 'split' ? 'Paid — split (cash + card)'
+    : o.paymentMethod === 'card' ? 'Paid by card'
     : (o.paymentMethod === 'cash_collection' ? 'CASH on collection' : 'CASH on delivery');
   const sched = o.schedule && o.schedule !== 'asap' ? ` · for ${formatTime(o.schedule)}` : ' · ASAP';
   const addr = o.address
@@ -4372,6 +4377,7 @@ function openPayModal() {
   // "Pay later" only makes sense for a brand-new sale — not when settling an
   // order that was already saved unpaid.
   const later = $('#tenderLater'); if (later) later.hidden = !!existing;
+  const splitBtn = $('#tenderSplit'); if (splitBtn) splitBtn.hidden = !!existing; // split is new-sale only for now
   $('#payReceipt').style.display = '';
   renderQuickCash();
   setTender('cash');
@@ -4403,11 +4409,14 @@ function goHomeAfterSale() {
 
 // Fill + show the success card for a completed/saved order, then arm auto-return.
 // kind: 'new' (fresh sale) | 'existing' (settled an unpaid order) | 'unpaid' (saved for later).
-function showPayDone(o, { kind, tender, tenderedP = 0, changeP = 0 }) {
+function showPayDone(o, { kind, tender, tenderedP = 0, changeP = 0, split = null }) {
   const totalP = o.totals?.totalP || 0;
   if (kind === 'unpaid') {
     $('#payDone h2').textContent = 'Order saved';
     $('#payDoneSub').textContent = `£${(totalP / 100).toFixed(2)} · Pay later · Order #${orderNo(o)}`;
+  } else if (tender === 'split' && split) {
+    $('#payDone h2').textContent = 'Payment complete';
+    $('#payDoneSub').textContent = `Cash £${(split.cashP / 100).toFixed(2)} + Card £${(split.cardP / 100).toFixed(2)} · Order #${orderNo(o)}`;
   } else if (changeP > 0) {
     $('#payDone h2').textContent = 'Give change';
     $('#payDoneSub').textContent = `£${(changeP / 100).toFixed(2)} change · Order #${orderNo(o)}`;
@@ -4441,15 +4450,22 @@ function setTender(tender) {
   sale.pay.tender = tender;
   $$('.tenders .tender').forEach(x => x.classList.toggle('sel', x.dataset.tender === tender));
   const isCash = tender === 'cash';
+  const isSplit = tender === 'split';
   const isLater = tender === 'later';
-  $('#payTitle').textContent = isLater ? 'Save — pay later' : (isCash ? 'Cash payment' : 'Card payment');
-  ['#payAmount', '#payChange', '#payQuickCash', '#payPad'].forEach(s => { $(s).hidden = !isCash; });
-  // The hint panel covers both the card and the pay-later cases (no keypad).
-  $('#payCardHint').hidden = isCash;
+  $('#payTitle').textContent = isLater ? 'Save — pay later'
+    : isSplit ? 'Split · cash + card'
+    : (isCash ? 'Cash payment' : 'Card payment');
+  // Keypad + amount + change show for plain cash AND split (split uses the keypad
+  // to enter the CASH part; the remainder goes on the card). Quick-cash notes only
+  // make sense for a plain cash payment.
+  ['#payAmount', '#payChange', '#payPad'].forEach(s => { $(s).hidden = !(isCash || isSplit); });
+  $('#payQuickCash').hidden = !isCash;
+  // The hint panel covers the card and pay-later cases (no keypad).
+  $('#payCardHint').hidden = isCash || isSplit;
   $('#payCardHint').textContent = isLater
     ? 'The order is saved unpaid and sent to the kitchen. Collect payment later from the order’s ⋮ menu.'
     : 'The card reader will prompt the customer to tap, insert or swipe.';
-  if (isCash) syncPayAmount(); else updatePayConfirm();
+  if (isCash || isSplit) syncPayAmount(); else updatePayConfirm();
 }
 
 // One-tap UK quick-cash: Exact (full width) + the next sensible notes above the total.
@@ -4466,6 +4482,16 @@ function renderQuickCash() {
 function syncPayAmount() {
   const totalP = payCtxTotalP();
   const t = sale.pay.tenderedP;
+  if (sale.pay.tender === 'split') {
+    // The keypad holds the CASH part; the card takes the remainder.
+    const cardP = totalP - t;
+    $('#payAmount').textContent = `Cash £${(t / 100).toFixed(2)}`;
+    $('#payChange').classList.remove('short');
+    $('#payChange').textContent = cardP > 0 ? `Card £${(cardP / 100).toFixed(2)}`
+      : (t > totalP ? `£${((t - totalP) / 100).toFixed(2)} over total` : 'Covers the whole total');
+    updatePayConfirm();
+    return;
+  }
   if (t === 0) {
     $('#payAmount').textContent = `£${(totalP / 100).toFixed(2)}`;
     $('#payChange').textContent = '';
@@ -4491,6 +4517,14 @@ function updatePayConfirm() {
   if (sale.pay.tender === 'card') {
     btn.disabled = false;
     lbl.textContent = `Take card payment · £${(totalP / 100).toFixed(2)}`;
+    return;
+  }
+  if (sale.pay.tender === 'split') {
+    const cashP = sale.pay.tenderedP;
+    const cardP = totalP - cashP;
+    if (cashP <= 0) { btn.disabled = true; lbl.textContent = 'Enter the cash amount'; }
+    else if (cardP <= 0) { btn.disabled = true; lbl.textContent = 'Cash covers it — use Cash'; }
+    else { btn.disabled = false; lbl.textContent = `Take £${(cardP / 100).toFixed(2)} on card`; }
     return;
   }
   const t = sale.pay.tenderedP;
@@ -4587,10 +4621,16 @@ function buildReceiptText(o, ctx) {
   if (t.deliveryFeeP) { out.push(row('Subtotal', money(t.subtotalP))); out.push(row('Delivery', money(t.deliveryFeeP))); }
   out.push(row('TOTAL', money(t.totalP)));
   out.push(light);
-  out.push(center('PAID BY ' + tender));
-  if (tender === 'CASH' && ctx && ctx.tenderedP > 0) {
-    out.push(row('Cash', money(ctx.tenderedP)));
-    if (ctx.changeP > 0) out.push(row('Change', money(ctx.changeP)));
+  if (ctx && ctx.tender === 'split' && ctx.split) {
+    out.push(center('PAID — SPLIT'));
+    out.push(row('Cash', money(ctx.split.cashP)));
+    out.push(row('Card', money(ctx.split.cardP)));
+  } else {
+    out.push(center('PAID BY ' + tender));
+    if (tender === 'CASH' && ctx && ctx.tenderedP > 0) {
+      out.push(row('Cash', money(ctx.tenderedP)));
+      if (ctx.changeP > 0) out.push(row('Change', money(ctx.changeP)));
+    }
   }
   out.push(light);
   if (o.createdBy && o.createdBy.name) out.push(center('Served by ' + o.createdBy.name));
@@ -4680,7 +4720,9 @@ function buildReceiptDoc(o, ctx) {
   try { when = new Date(o.createdAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) {}
   // Payment line only when we actually know it (counter sales pass ctx.tender; an online
   // kitchen copy passes none, so we don't claim a tender we don't have).
-  const paid = (ctx && ctx.tender) ? ('PAID BY ' + (ctx.tender === 'card' ? 'CARD' : 'CASH')) : '';
+  const isSplitPay = !!(ctx && ctx.tender === 'split' && ctx.split);
+  const paid = isSplitPay ? 'PAID — SPLIT'
+    : (ctx && ctx.tender) ? ('PAID BY ' + (ctx.tender === 'card' ? 'CARD' : 'CASH')) : '';
 
   const ops = [];
   // No logo — a big bold wordmark reads better on thermal than the dithered badge.
@@ -4710,7 +4752,10 @@ function buildReceiptDoc(o, ctx) {
   ops.push(rowOp('TOTAL', '£' + money(t.totalP), SZ.body, true));
   ops.push(ruleOp());
   if (paid) ops.push({ t: 'text', s: paid, align: 'center', size: SZ.body, bold: true });
-  if (ctx && ctx.tender === 'cash' && ctx.tenderedP > 0) {
+  if (isSplitPay) {
+    ops.push(rowOp('Cash', money(ctx.split.cashP), SZ.body, true));
+    ops.push(rowOp('Card', money(ctx.split.cardP), SZ.body, true));
+  } else if (ctx && ctx.tender === 'cash' && ctx.tenderedP > 0) {
     ops.push(rowOp('Cash', money(ctx.tenderedP), SZ.body, true));
     if (ctx.changeP > 0) ops.push(rowOp('Change', money(ctx.changeP), SZ.body, true));
   }
@@ -4729,7 +4774,7 @@ function buildKitchenDoc(o, ctx) { return buildReceiptDoc(o, ctx); }
 // Print a kitchen ticket or customer receipt. Prefer the rich printDoc (native font
 // sizes + logo); fall back to the plain-text builders on older APKs without printDoc.
 function printTo(kind, o, pctx) {
-  const ctx = { tender: (pctx && pctx.tender) || null, tenderedP: (pctx && pctx.tenderedP) || 0, changeP: (pctx && pctx.changeP) || 0 };
+  const ctx = { tender: (pctx && pctx.tender) || null, tenderedP: (pctx && pctx.tenderedP) || 0, changeP: (pctx && pctx.changeP) || 0, split: (pctx && pctx.split) || null };
   if (window.EPOSNative && window.EPOSNative.printDoc) {
     try {
       const ops = buildReceiptDoc(o, ctx); // kitchen + customer copies share the receipt layout
@@ -4789,14 +4834,16 @@ async function finalizeOrder(extra, ctx) {
   } catch (e) { alert('Network error — try again.'); return false; }
   const o = data.order;
   const isUnpaid = extra.tender === 'unpaid';
-  const tender = isUnpaid ? 'unpaid' : (ctx.isCash ? 'cash' : 'card');
+  const split = ctx.split || null;
+  const tender = isUnpaid ? 'unpaid' : (extra.tender === 'split' ? 'split' : (ctx.isCash ? 'cash' : 'card'));
   const changeP = (!isUnpaid && ctx.isCash && ctx.tenderedP > 0) ? Math.max(0, ctx.tenderedP - totalP) : 0;
-  showPayDone(o, { kind: isUnpaid ? 'unpaid' : 'new', tender, tenderedP: ctx.tenderedP, changeP });
-  if (!isUnpaid && ctx.isCash) { try { if (window.EPOSNative && window.EPOSNative.kickDrawer) window.EPOSNative.kickDrawer(); } catch (e) {} }
+  showPayDone(o, { kind: isUnpaid ? 'unpaid' : 'new', tender, tenderedP: ctx.tenderedP, changeP, split });
+  // Open the drawer for any sale with a cash component (plain cash or a split).
+  if (!isUnpaid && (ctx.isCash || split)) { try { if (window.EPOSNative && window.EPOSNative.kickDrawer) window.EPOSNative.kickDrawer(); } catch (e) {} }
   // Counter sale → auto-print the KITCHEN ticket (unless this shop routes to a KDS;
   // the counter order is 'accepted', so it shows on the display instead). Remember a
   // PAID sale so "Receipt" can print a customer receipt on request (unpaid saves don't).
-  state.lastSale = isUnpaid ? null : { o, tender, tenderedP: ctx.tenderedP, changeP };
+  state.lastSale = isUnpaid ? null : { o, tender, tenderedP: ctx.tenderedP, changeP, split };
   if (state.printOnAccept) printTo('kitchen', o, isUnpaid ? null : state.lastSale);
   state.seenIds.add(o.id);
   poll();
@@ -4827,15 +4874,16 @@ async function payExistingCash(tenderedP) {
 // charge, show the "present card" overlay, poll the reader, then finalise — which
 // re-verifies the amount and captures server-side.
 let cardPoll = null;
-async function runCardPayment() {
+async function runCardPayment(split) {
   if (sale.card) return; // a card flow is already running
   const payingExisting = !!sale.payOrder;
-  const totalP = payCtxTotalP();
+  // For a split, only the card PORTION is charged on the reader (the rest is cash).
+  const chargeP = split ? split.cardP : payCtxTotalP();
   showCardOverlay('Starting…', true);
   let started;
   try {
     const url = payingExisting ? `/api/staff/orders/${sale.payOrder.id}/pay` : '/api/staff/terminal/charge';
-    const payload = payingExisting ? { tender: 'card', action: 'start' } : buildSalePayload({});
+    const payload = payingExisting ? { tender: 'card', action: 'start' } : buildSalePayload(split ? { cardAmountP: split.cardP } : {});
     const res = await fetch(url, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -4850,8 +4898,9 @@ async function runCardPayment() {
     paymentIntentId: started.paymentIntentId,
     orderId: payingExisting ? sale.payOrder.id : started.orderId,
     existing: payingExisting,
+    split: split || null,
   };
-  showCardOverlay(`Present card on the reader · £${(totalP / 100).toFixed(2)}`, true);
+  showCardOverlay(`Present card on the reader · £${(chargeP / 100).toFixed(2)}`, true);
 
   const deadline = Date.now() + 75000; // ~75s to tap before we offer cancel
   const tick = async () => {
@@ -4884,8 +4933,10 @@ async function runCardPayment() {
         showPayDone(data.order, { kind: 'existing', tender: 'card' });
         poll();
       } else {
-        const refs = { tender: 'card', paymentIntentId: c.paymentIntentId, orderId: c.orderId };
-        const ok = await finalizeOrder(refs, { isCash: false, tenderedP: 0 });
+        const refs = c.split
+          ? { tender: 'split', cashP: c.split.cashP, paymentIntentId: c.paymentIntentId, orderId: c.orderId }
+          : { tender: 'card', paymentIntentId: c.paymentIntentId, orderId: c.orderId };
+        const ok = await finalizeOrder(refs, { isCash: false, tenderedP: 0, split: c.split || null });
         hideCardOverlay();
         if (!ok) updatePayConfirm();
       }
@@ -4941,6 +4992,18 @@ $('#payConfirm').addEventListener('click', async () => {
     $('#payConfirm').querySelector('span').textContent = 'Saving…';
     try { await finalizeOrder({ tender: 'unpaid' }, { isCash: false, tenderedP: 0 }); }
     finally { sale.submitting = false; updatePayConfirm(); }
+    return;
+  }
+
+  // Split: the keypad holds the CASH part; the card reader takes the remainder.
+  // New sales only for now (settling an existing unpaid order stays cash/card).
+  if (tender === 'split') {
+    if (payingExisting || !sale.cart.length) return;
+    const totalP = payCtxTotalP();
+    const cashP = sale.pay.tenderedP;
+    const cardP = totalP - cashP;
+    if (cashP <= 0 || cardP <= 0) return; // confirm button is disabled in these cases
+    runCardPayment({ cashP, cardP });
     return;
   }
 

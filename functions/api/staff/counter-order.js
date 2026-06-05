@@ -36,7 +36,9 @@ export const onRequestPost = async ({ request, env }) => {
   // cash (default) · card (Terminal) · unpaid (save now, collect payment later
   // from the order's "Pay now" action — lands on Live but counts as £0 takings).
   const tender = body.tender === 'card' ? 'card'
-    : (body.tender === 'unpaid' ? 'unpaid' : 'cash');
+    : body.tender === 'unpaid' ? 'unpaid'
+    : body.tender === 'split' ? 'split'
+    : 'cash';
   const config = getConfig();
 
   // Price the sale (server-authoritative; identical maths to /terminal/charge).
@@ -80,6 +82,40 @@ export const onRequestPost = async ({ request, env }) => {
     paymentExtra = { intentId: piId, connectedAccountId: acct };
   }
 
+  // Split: part cash + part card. /terminal/charge authorised the CARD portion;
+  // here we verify that authorisation equals (total − cash), capture it, and
+  // record both parts so the order is fully paid (parts sum to the total).
+  let splitParts = null;
+  if (tender === 'split') {
+    const piId = String(body.paymentIntentId || '');
+    const chargeOrderId = String(body.orderId || '');
+    if (!piId || !chargeOrderId) return err('Card payment not started — start it on the reader first.', 400);
+    const cashP = Math.max(0, Math.min(totals.totalP, Math.round(Number(body.cashP) || 0)));
+    const cardP = totals.totalP - cashP;
+    if (cardP <= 0) return err('The card part of a split must be more than £0 — use plain Cash instead.', 400);
+    const acct = config.stripe?.connectedAccountId;
+    if (!acct || acct === 'TBD') return err('Card payments are not configured for this shop.', 400);
+
+    let pi;
+    try { pi = await retrievePaymentIntent(piId, acct, env); }
+    catch (e) { return err('Could not verify the card payment.', 502); }
+    if (pi.status !== 'requires_capture') return err(`Card not authorised yet (${pi.status}).`, 409);
+    if (pi.amount !== cardP) return err('Card amount mismatch — not captured.', 409);
+    if (String(pi.currency || '').toLowerCase() !== 'gbp') return err('Card currency mismatch — not captured.', 409);
+    if (pi.metadata?.orderId !== chargeOrderId) return err('Card/order mismatch — not captured.', 409);
+
+    try { await capturePaymentIntent(piId, acct, env); }
+    catch (e) { return err('Card capture failed — the customer was not charged.', 502); }
+
+    id = chargeOrderId;
+    paymentExtra = { intentId: piId, connectedAccountId: acct };
+    const splitAt = new Date().toISOString();
+    splitParts = [
+      { tender: 'cash', amountP: cashP, at: splitAt },
+      { tender: 'card', amountP: cardP, at: splitAt, intentId: piId, connectedAccountId: acct },
+    ];
+  }
+
   // Default ready time uses the shop's ASAP prep, same as the website.
   const prepMin = Math.max(5, Math.min(180, Number(config.ordering?.asapMinPrepMinutes) || 20));
   const at = new Date().toISOString();
@@ -110,10 +146,14 @@ export const onRequestPost = async ({ request, env }) => {
     address,
     totals,
     paymentMethod: tender === 'card' ? 'counter_card'
-      : (tender === 'unpaid' ? 'unpaid' : 'counter_cash'),
+      : tender === 'unpaid' ? 'unpaid'
+      : tender === 'split' ? 'split'
+      : 'counter_cash',
     payment: tender === 'unpaid'
       ? { state: 'unpaid' }
-      : { state: 'paid', paidAt: at, tender, ...paymentExtra },
+      : tender === 'split'
+        ? { state: 'paid', paidAt: at, tender: 'split', paidP: totals.totalP, parts: splitParts, ...paymentExtra }
+        : { state: 'paid', paidAt: at, tender, ...paymentExtra },
     marketing: { email: false, sms: false },
     createdBy: takenBy,
     history: [

@@ -33,6 +33,11 @@ export const onRequestGet = async ({ request, env }) => {
   const valid = live.filter(o => !isUnpaid(o));
   const sum = (arr, f) => arr.reduce((a, o) => a + (f(o) || 0), 0);
   const grossP = sum(valid, o => o.totals?.totalP);
+  // Per-order money attributed to each tender (handles split orders by their parts).
+  const splitPartP = (o, tender) => (o.payment?.parts || [])
+    .filter(p => p.tender === tender).reduce((a, p) => a + (p.amountP || 0), 0);
+  const cashPartP = (o) => o.paymentMethod === 'split' ? splitPartP(o, 'cash') : (isCard(o) ? 0 : (o.totals?.totalP || 0));
+  const cardPartP = (o) => o.paymentMethod === 'split' ? splitPartP(o, 'card') : (isCard(o) ? (o.totals?.totalP || 0) : 0);
 
   const summary = {
     from,
@@ -46,13 +51,16 @@ export const onRequestGet = async ({ request, env }) => {
     // AND the legacy single-refund record) across every order in range —
     // including cancelled ones, since a cancellation auto-refunds.
     refundedP: sum(orders, o => refundedSoFar(o)),
+    // A split order pays part cash + part card, so its money is attributed to each
+    // method by its recorded parts (not lumped under one). Whole-tender orders put
+    // their full total on the matching side.
     card: {
-      count: valid.filter(isCard).length,
-      grossP: sum(valid.filter(isCard), o => o.totals?.totalP),
+      count: valid.filter(o => isCard(o) || o.paymentMethod === 'split').length,
+      grossP: sum(valid, cardPartP),
     },
     cash: {
-      count: valid.filter(o => !isCard(o)).length,
-      grossP: sum(valid.filter(o => !isCard(o)), o => o.totals?.totalP),
+      count: valid.filter(o => !isCard(o)).length, // includes splits — they carry a cash part
+      grossP: sum(valid, cashPartP),
     },
     collection: valid.filter(o => o.fulfillment === 'collection').length,
     delivery: valid.filter(o => o.fulfillment === 'delivery').length,

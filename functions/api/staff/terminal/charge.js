@@ -28,6 +28,16 @@ export const onRequestPost = async ({ request, env }) => {
   const priced = await priceCounterSale({ items: body.items, mode: body.mode, address: body.address }, config);
   if (!priced.ok) return err(priced.error, 400);
 
+  // Normal card sale charges the full total. For a split payment the till passes
+  // cardAmountP (the card portion); we authorise just that, and /counter-order
+  // captures it alongside the cash part. Validated to be within the priced total.
+  const totalP = priced.totals.totalP;
+  let chargeP = totalP;
+  if (body.cardAmountP != null) {
+    chargeP = Math.round(Number(body.cardAmountP) || 0);
+    if (!(chargeP > 0) || chargeP > totalP) return err('Invalid card amount for the split.', 400);
+  }
+
   // Find the online counter reader.
   let readers;
   try { readers = await listTerminalReaders(acct, env); }
@@ -46,11 +56,11 @@ export const onRequestPost = async ({ request, env }) => {
   let pi;
   try {
     pi = await createPaymentIntent({
-      amountP: priced.totals.totalP,
+      amountP: chargeP,
       currency: 'gbp',
       orderId,
       connectedAccountId: acct,
-      applicationFeeP: cardFeeP(priced.totals.totalP, config),
+      applicationFeeP: cardFeeP(chargeP, config),
       cardPresent: true,
     }, env);
   } catch (e) {
@@ -66,7 +76,8 @@ export const onRequestPost = async ({ request, env }) => {
   return Response.json({
     orderId,
     paymentIntentId: pi.id,
-    amountP: priced.totals.totalP,
+    amountP: chargeP,
+    orderTotalP: totalP,
     reader: { id: reader.id, label: reader.label || reader.device_type || 'Reader' },
   });
 };
