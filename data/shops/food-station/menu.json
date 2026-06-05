@@ -4519,32 +4519,404 @@
       {
         "id": "parmo-plain",
         "name": "Plain Parmesan",
-        "priceP": 900
+        "priceP": 900,
+        "modifiers": [
+          {
+            "id": "chips",
+            "label": "Chips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "cheesy-chips",
+            "label": "Cheesy chips",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "parmo-bbq",
         "name": "BBQ Parmesan",
-        "priceP": 1050
+        "priceP": 1050,
+        "modifiers": [
+          {
+            "id": "chips",
+            "label": "Chips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "cheesy-chips",
+            "label": "Cheesy chips",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "parmo-hot",
         "name": "Hot Parmesan",
-        "priceP": 1050
+        "priceP": 1050,
+        "modifiers": [
+          {
+            "id": "chips",
+            "label": "Chips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "cheesy-chips",
+            "label": "Cheesy chips",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "parmo-ham",
         "name": "Ham Parmesan",
-        "priceP": 1050
+        "priceP": 1050,
+        "modifiers": [
+          {
+            "id": "chips",
+            "label": "Chips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "cheesy-chips",
+            "label": "Cheesy chips",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "parmo-bacon",
         "name": "Bacon Parmesan",
-        "priceP": 1050
+        "priceP": 1050,
+        "modifiers": [
+          {
+            "id": "chips",
+            "label": "Chips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "cheesy-chips",
+            "label": "Cheesy chips",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "parmo-doner",
         "name": "Doner Parmesan",
-        "priceP": 1050
+        "priceP": 1050,
+        "modifiers": [
+          {
+            "id": "chips",
+            "label": "Chips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "cheesy-chips",
+            "label": "Cheesy chips",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       }
     ]
   },
