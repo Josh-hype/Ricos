@@ -1126,12 +1126,12 @@ button{cursor:pointer;border:0;background:none}
 .item-modal-body textarea.item-special-input{width:100%;min-height:60px;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:11px 14px;font-size:15px;font-weight:500;color:var(--ink);font-family:var(--sans);resize:vertical}
 .item-modal-body textarea.item-special-input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-tint)}
 
-.spice-select, .meal-choice-sel{
+.spice-select, .meal-choice-sel, .opt-sel{
   width:100%;height:46px;border:1px solid var(--line);border-radius:12px;background:var(--panel);
   padding:0 14px;font-size:15px;font-weight:600;color:var(--ink);font-family:var(--sans);
   box-shadow:var(--sh-sm);transition:.15s;
 }
-.spice-select:focus, .meal-choice-sel:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-tint)}
+.spice-select:focus, .meal-choice-sel:focus, .opt-sel:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-tint)}
 
 .opt-group{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
 .opt-group .opt-legend{font-size:13px;font-weight:700;color:var(--ink-2);margin-bottom:2px}
@@ -4054,9 +4054,7 @@ function openItemDetail(id) {
   const sizeKeys = new Set();
   (canonical.modifiers || []).forEach(m => { if (m.priceDeltaPBySize) Object.keys(m.priceDeltaPBySize).forEach(k => sizeKeys.add(k)); });
   function activeSize() {
-    let active = null;
-    body.querySelectorAll('.opt-group input:checked').forEach(inp => { if (sizeKeys.has(inp.value)) active = inp.value; });
-    return active;
+    return optModIds(body).find(id => sizeKeys.has(id)) || null;
   }
   function modDeltaP(mod, active) {
     if (!mod) return 0;
@@ -4067,27 +4065,32 @@ function openItemDetail(id) {
     let p = canonical.priceP || 0;
     if (mealInput && mealInput.checked && canonical.mealAddP) p += canonical.mealAddP;
     const active = activeSize();
-    body.querySelectorAll('.opt-group input:checked').forEach(inp => {
-      p += modDeltaP(canonical.modifiers?.find(m => m.id === inp.value), active);
-    });
-    // Refresh each choice's selected highlight + its +£ label for the current size.
+    optModIds(body).forEach(id => { p += modDeltaP(canonical.modifiers?.find(m => m.id === id), active); });
+    // Multi-select checkboxes: selected highlight + size-aware +£ label.
     body.querySelectorAll('.opt-choice').forEach(lbl => {
       const inp = lbl.querySelector('input');
       if (!inp) return;
       // Drive the highlight from JS too: the Sunmi WebView may not support CSS
-      // :has(), so the visually-hidden radio wouldn't otherwise look selected.
+      // :has(), so the visually-hidden checkbox wouldn't otherwise look selected.
       lbl.classList.toggle('sel', !!inp.checked);
       const span = lbl.querySelector('.opt-delta');
       if (!span) return;
       const d = modDeltaP(canonical.modifiers?.find(m => m.id === inp.value), active);
       span.textContent = d ? `+£${(d / 100).toFixed(2)}` : '';
     });
+    // Single-select dropdowns: refresh each option's +£ for the current size.
+    body.querySelectorAll('.opt-group select option').forEach(opt => {
+      if (!opt.value) return;
+      const base = opt.dataset.label || opt.textContent;
+      const d = modDeltaP(canonical.modifiers?.find(m => m.id === opt.value), active);
+      opt.textContent = d ? `${base} (+£${(d / 100).toFixed(2)})` : base;
+    });
     if (priceEl) priceEl.textContent = `£${(p / 100).toFixed(2)}`;
     const addEl = body.querySelector('.item-add');
     const addLbl = addEl && addEl.querySelector('span');
     if (addLbl && !addEl.classList.contains('added')) addLbl.textContent = `Add to order · £${(p / 100).toFixed(2)}`;
   }
-  body.querySelectorAll('.opt-group input').forEach(inp => inp.addEventListener('change', recalc));
+  body.querySelectorAll('.opt-group input, .opt-group select').forEach(el => el.addEventListener('change', recalc));
   if (mealInput) {
     mealInput.addEventListener('change', () => {
       mealInput.closest('.meal-toggle').classList.toggle('active', mealInput.checked);
@@ -4099,12 +4102,14 @@ function openItemDetail(id) {
   // Add to order button.
   const addBtn = body.querySelector('.item-add');
   addBtn.addEventListener('click', () => {
-    // Required option groups must have a selection (radios default-check the
-    // first choice, so this mainly catches required multi-select groups).
+    // Required option groups must have a selection (a dropdown's "Choose…" / an
+    // unticked multi-select group).
     let optionErr = false;
     body.querySelectorAll('.opt-group[data-required="1"]').forEach(grp => {
       const errEl = grp.querySelector('[data-err]');
-      if (!grp.querySelector('input:checked')) {
+      const sel = grp.querySelector('select');
+      const chosen = sel ? !!sel.value : !!grp.querySelector('input:checked');
+      if (!chosen) {
         if (errEl) errEl.textContent = `Please choose ${grp.dataset.label || 'an option'}.`;
         optionErr = true;
       } else if (errEl) { errEl.textContent = ''; }
@@ -4125,7 +4130,7 @@ function openItemDetail(id) {
     }
     const spiceSel = body.querySelector('.spice-select');
     const spice = spiceSel ? spiceSel.value : null;
-    const modifiers = [...body.querySelectorAll('.opt-group input:checked')].map(i => i.value);
+    const modifiers = optModIds(body);
     const noteEl = body.querySelector('.item-special-input');
     const notes = noteEl ? noteEl.value.trim().slice(0, 140) : '';
     addToCart(id, { spice, meal: isMeal, modifiers, mealChoices, notes });
@@ -4181,36 +4186,54 @@ function itemDetailHTML(v, canonical) {
   `;
 }
 
+// Chosen modifier ids in the open item modal — from both multi-select checkboxes
+// and single-select dropdowns. The single source of truth for price + payload.
+function optModIds(scope) {
+  const ids = [];
+  scope.querySelectorAll('.opt-group input:checked').forEach(i => ids.push(i.value));
+  scope.querySelectorAll('.opt-group select').forEach(s => { if (s.value) ids.push(s.value); });
+  return ids;
+}
+// Pence delta a choice adds (canonical priceDeltaP is authoritative; visual.price
+// is display-only and can drift). Base/11" value — recalc() re-resolves any
+// size-priced ones live.
+function choiceDeltaP(c, canonical) {
+  const mod = canonical.modifiers?.find(m => m.id === c.id);
+  return mod ? (mod.priceDeltaP || 0) : Math.round((Number(c.price) || 0) * 100);
+}
 function optionGroupHTML(g, canonical) {
-  const type = g.select === 'multi' ? 'checkbox' : 'radio';
   const required = !!g.required;
+  const choices = g.choices || [];
+  const legend = `<div class="opt-legend">${escapeHtml(g.label || '')}${required ? '' : ' <em>(optional)</em>'}</div>`;
+  const errEl = `<div class="opt-required-err" data-err aria-live="polite"></div>`;
+  const open = `<fieldset class="opt-group" data-required="${required ? '1' : '0'}" data-label="${escapeHtml(g.label || 'an option')}">${legend}`;
+
+  // Single-select → a compact dropdown (like the meal-choice pickers), so big
+  // platters with 4+ required picks don't become a wall of boxes. We pre-select
+  // a `default:true` choice or a lone choice; otherwise show "Choose…" and force
+  // a pick. Multi-select stays as tappable checkboxes (a dropdown can't multi-pick).
+  if (g.select !== 'multi') {
+    const autoId = choices.length === 1 ? choices[0].id : (choices.find(c => c.default === true)?.id || null);
+    const opts = (autoId ? '' : '<option value="">Choose…</option>') + choices.map(c => {
+      const d = choiceDeltaP(c, canonical);
+      const label = `${c.label}${d ? ` (+£${(d / 100).toFixed(2)})` : ''}`;
+      return `<option value="${escapeHtml(c.id)}" data-label="${escapeHtml(c.label)}"${c.id === autoId ? ' selected' : ''}>${escapeHtml(label)}</option>`;
+    }).join('');
+    return `${open}<select class="opt-sel">${opts}</select>${errEl}</fieldset>`;
+  }
+
   const gid = 'optg-' + Math.random().toString(36).slice(2, 8);
-  // A choice may be pre-selected with `default:true` (meal-deal sides that are
-  // included by default). For single-selects an explicit default suppresses the
-  // usual first-choice auto-check so we never double-check a radio group.
-  const hasDefault = (g.choices || []).some(c => c.default === true);
-  const rows = (g.choices || []).map((c, i) => {
-    const checked = (c.default === true || (type === 'radio' && required && !hasDefault && i === 0)) ? 'checked' : '';
-    // Use the canonical priceDeltaP so the live total matches what the server
-    // will charge. visual.price is display-only and can drift. The delta span is
-    // always emitted (empty when £0) so recalc() can refresh it when the chosen
-    // size changes a size-priced modifier (pizza toppings / stuffed crust).
-    const mod = canonical.modifiers?.find(m => m.id === c.id);
-    const deltaP = mod ? (mod.priceDeltaP || 0) : Math.round((Number(c.price) || 0) * 100);
-    const delta = `<span class="opt-delta">${deltaP ? '+£' + (deltaP / 100).toFixed(2) : ''}</span>`;
+  const rows = choices.map(c => {
+    const checked = c.default === true ? 'checked' : '';
+    const d = choiceDeltaP(c, canonical);
+    const delta = `<span class="opt-delta">${d ? '+£' + (d / 100).toFixed(2) : ''}</span>`;
     return `<label class="opt-choice">
-      <input type="${type}" name="${gid}" value="${escapeHtml(c.id)}" ${checked} />
+      <input type="checkbox" name="${gid}" value="${escapeHtml(c.id)}" ${checked} />
       <span>${escapeHtml(c.label)}</span>
       ${delta}
     </label>`;
   }).join('');
-  return `
-    <fieldset class="opt-group" data-required="${required ? '1' : '0'}" data-label="${escapeHtml(g.label || 'an option')}">
-      <div class="opt-legend">${escapeHtml(g.label || '')}${required ? '' : ' <em>(optional)</em>'}</div>
-      ${rows}
-      <div class="opt-required-err" data-err aria-live="polite"></div>
-    </fieldset>
-  `;
+  return `${open}${rows}${errEl}</fieldset>`;
 }
 
 // Meal choice pickers: each slot draws from a menu category, optionally narrowed
