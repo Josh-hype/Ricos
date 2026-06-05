@@ -5,7 +5,7 @@
     "tradingName": "Food Station",
     "_comment_shortName": "Conversational short form used in page headers, aria labels and the staff PWA name.",
     "shortName": "Food Station",
-    "_comment_todo": "Domain foodstationyork.uk is now owned. Order confirmations send from sales@foodstationyork.uk via Resend (verify the domain's SPF/DKIM in Resend; no mailbox needed). Recommend Cloudflare Email Routing to forward sales@ -> the shop's inbox so replies are received. STILL PENDING before go-live: stripe.connectedAccountId (real acct_xxx from Stripe Connect onboarding).",
+    "_comment_todo": "Domain foodstationyork.uk is now owned. Order confirmations send from sales@foodstationyork.uk via Resend (verify the domain's SPF/DKIM in Resend; no mailbox needed). Recommend Cloudflare Email Routing to forward sales@ -> the shop's inbox so replies are received. Stripe Connect account is set (stripe.connectedAccountId). Remaining Cloudflare go-live steps: set STRIPE_SECRET_KEY + STRIPE_PUBLISHABLE_KEY (platform keys) and the Connect webhook -> STRIPE_WEBHOOK_SECRET, then redeploy.",
     "legalName": "FOOD STATION 56 LTD",
     "companyNumber": "15387417",
     "address": {
@@ -63,7 +63,7 @@
 
   "_comment_stripe": "Stripe Connect: this site's PaymentIntents are created on the venue's connected account. connectedAccountId is the venue's acct_xxx string from Stripe Connect.",
   "stripe": {
-    "connectedAccountId": "acct_REPLACE_WITH_STRIPE_CONNECT_ID"
+    "connectedAccountId": "acct_1Tey3sJlWcdyhDMU"
   },
 
   "hours": {
