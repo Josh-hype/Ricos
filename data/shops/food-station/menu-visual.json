@@ -5202,7 +5202,7 @@
         "id": "gb-plain",
         "name": "Plain Garlic Bread",
         "price": 5,
-        "desc": "Stone-baked, brushed with garlic butter.",
+        "desc": "Brushed with garlic butter.",
         "options": [
           {
             "id": "size",
