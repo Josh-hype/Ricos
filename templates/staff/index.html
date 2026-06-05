@@ -1241,7 +1241,7 @@ button{cursor:pointer;border:0;background:none}
 <!-- ============================== PIN gate -->
 <section id="pinScreen" class="pin-screen">
   <form id="pinForm" class="pin-card" autocomplete="off">
-    <h1>{{shopShortName}} — staff orders</h1>
+    <h1 id="pinTitle">{{shopShortName}} — staff orders</h1>
     <div class="sub" id="pinSub">Enter your PIN to continue</div>
     <input type="number" inputmode="numeric" pattern="[0-9]*" class="pin-input"
            id="pinInput" maxlength="8" placeholder="••••" autofocus required />
@@ -1326,7 +1326,7 @@ button{cursor:pointer;border:0;background:none}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 10.5L12 3l9 7.5M5 9.5V20a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V9.5"/></svg>
       </button>
       <div class="loc">
-        <div class="eyebrow">{{shopShortName}}</div>
+        <div class="eyebrow" id="topEyebrow">{{shopShortName}}</div>
         <div class="name" id="viewTitle">Orders</div>
       </div>
       <div class="top-spacer"></div>
@@ -2401,6 +2401,30 @@ async function loadShopConfig() {
   } catch (e) { /* receipts still print, just without the header */ }
 }
 
+// The app's shop name is baked at build time (one shop), but a single APK serves
+// every shop — so on boot we ask the CONNECTED backend who it is and relabel the
+// PIN screen + topbar to the real shop. This is why a Food Station till no longer
+// shows "Rico's". Runs before login; failures leave the baked name untouched.
+async function applyShopBranding() {
+  // In the app, wait until native.js has loaded the provisioned backend before we
+  // hit /api — calling it with no backend set would force the "set up this till"
+  // screen. If it never appears, the device isn't provisioned; leave that to native.js.
+  if (window.EPOS_IS_APP) {
+    for (let i = 0; i < 30 && !window.EPOS_API_BASE; i++) await new Promise(r => setTimeout(r, 150));
+    if (!window.EPOS_API_BASE) return;
+  }
+  try {
+    const res = await fetch('/api/config', { cache: 'no-store' });
+    if (!res.ok) return;
+    const cfg = await res.json();
+    const name = (cfg.business && (cfg.business.shortName || cfg.business.tradingName) || '').trim();
+    if (!name) return;
+    const h1 = document.getElementById('pinTitle'); if (h1) h1.textContent = `${name} — staff orders`;
+    const eb = document.getElementById('topEyebrow'); if (eb) eb.textContent = name;
+    try { document.title = `${name} — orders`; } catch (e) {}
+  } catch (e) { /* keep the baked name */ }
+}
+
 // Effective print⇄KDS routing for this shop. When on, the till skips the kitchen
 // print on accept (the KDS shows the order instead).
 async function loadSettings() {
@@ -2623,6 +2647,9 @@ $('#manualClose').addEventListener('click', closeManualModal);
 $('#manualOvl').addEventListener('click', (e) => { if (e.target.id === 'manualOvl') closeManualModal(); });
 $('#manualAdd').addEventListener('click', submitManualItem);
 $('#manualPrice').addEventListener('keydown', (e) => { if (e.key === 'Enter') submitManualItem(); });
+// Relabel the app to whichever shop this till is actually pointed at (the baked
+// name is just the build-time default).
+applyShopBranding();
 // Pair already? Boot straight into the display.
 if (KDS_ROLE && kdsToken) bootKds();
 

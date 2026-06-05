@@ -20,6 +20,7 @@ export function getPublicConfig() {
   return {
     business: {
       tradingName: business.tradingName,
+      shortName: business.shortName,
       address: business.address,
       phone: business.phone,
       email: business.email,
