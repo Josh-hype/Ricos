@@ -4,7 +4,6 @@
    Sends a rejection email when status moves to 'cancelled' from a state
    where the customer has been waiting on the kitchen's decision. */
 import { requirePermission } from '../../../../_lib/permissions.js';
-import { requireManager } from '../../../../_lib/auth.js';
 import { logAudit } from '../../../../_lib/audit.js';
 import { getConfig } from '../../../../_lib/config.js';
 import { getOrder, putOrder, recordRefund, refundedSoFar } from '../../../../_lib/kv.js';
@@ -69,15 +68,15 @@ export const onRequestPost = async ({ request, env, params }) => {
     return j({ error: 'Order is unpaid — take payment before completing it.' }, 409);
   }
 
-  // Cancelling / voiding an order ALWAYS requires the manager (or owner) PIN — a
-  // manager session. This holds even in legacy single-PIN shops, where role
-  // permissions aren't enforced. (When no MANAGER_PIN_HASH is configured for the
-  // shop, requireManager is a no-op.) A paid card order that was still pending /
-  // accepted is auto-refunded below.
+  // Cancelling / voiding an order needs the 'void' permission — held by owner and
+  // manager operators. A staff operator can have it approved by an owner/manager
+  // entering their PIN (the X-Authorize-Token). The till forces this PIN prompt
+  // for every cancel (even for an owner/manager), so a cancellation always takes
+  // an owner/manager PIN. A paid card order still pending/accepted is auto-refunded.
   const voidCtx = {};
   if (status === 'cancelled') {
-    const mgrDenied = await requireManager(request, env);
-    if (mgrDenied) return mgrDenied;
+    const vd = await requirePermission(request, env, 'void', voidCtx, { orderId: id });
+    if (vd) return vd;
   }
 
   const wasRejectable = REJECTABLE_FROM.has(order.status);

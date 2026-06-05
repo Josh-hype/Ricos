@@ -3559,22 +3559,23 @@ async function updateStatus(id, status) {
 // orders). Confirm once, then the request is manager-PIN gated by the server: the
 // first cancel prompts for the manager/owner PIN (a manager session), after which
 // several orders can be cleared without re-entering until the session times out.
-function cancelOrder(id) {
-  // A cancellation ALWAYS requires the manager/owner PIN. Force the PIN prompt
-  // EVERY time — even if a manager session is already open (e.g. you unlocked
-  // Back Office or Reports earlier) — so a prior unlock can't let a cancel slip
-  // through unchallenged. Dismissing the prompt aborts; doCancel runs only after
-  // the PIN is entered and accepted by the server.
-  forceManagerPin(() => doCancel(id));
+async function cancelOrder(id) {
+  // Cancelling needs the 'void' permission — an owner or manager. Force the PIN
+  // prompt EVERY time (even if the signed-in operator could void it themselves),
+  // so a cancellation always takes a deliberate owner/manager PIN. requirePerm
+  // with force returns a short-lived authorisation token to replay on the request,
+  // or false if the prompt was dismissed / the PIN wasn't an owner/manager.
+  const token = await requirePerm('void', id, true);
+  if (!token) return;
+  doCancel(id, token);
 }
-async function doCancel(id) {
+async function doCancel(id, token) {
   try {
-    const r = await sendStatus(id, 'cancelled');
+    const r = await sendStatus(id, 'cancelled', undefined, token);
     noteRefund(r);
     poll();
     if (state.boardTab === 'completed') loadCompleted();
   } catch (e) {
-    if (/manager-locked/i.test(e.message || '')) { forceManagerPin(() => doCancel(id)); return; }
     alert(e.message || 'Could not cancel the order.');
   }
 }
@@ -4993,12 +4994,6 @@ function runMgrTarget() {
   if (t && typeof t === 'object' && typeof t.run === 'function') t.run();
   else if (t) setView(t);
 }
-// Always demand the manager/owner PIN, then run `onOk`. `requirePin` marks this as
-// a protected ACTION (not just opening a manager view): if the shop has no manager
-// PIN configured, we refuse rather than silently allow it.
-function forceManagerPin(onOk) {
-  openManagerModal({ run: onOk, requirePin: true });
-}
 $('#mgrCancel').addEventListener('click', closeManagerModal);
 $('#mgrOvl').addEventListener('click', (e) => { if (e.target.id === 'mgrOvl') closeManagerModal(); });
 $('#mgrPin').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#mgrConfirm').click(); });
@@ -5017,14 +5012,8 @@ $('#mgrConfirm').addEventListener('click', async () => {
     if (res.status === 401) { $('#mgrError').textContent = data.error || 'Wrong PIN.'; return; }
     if (res.status === 429) { $('#mgrError').textContent = data.error || 'Too many attempts.'; return; }
     if (res.status === 400 && data.error?.startsWith('Manager protection')) {
-      // The shop has no manager PIN configured. A protected ACTION (e.g. cancel)
-      // must NOT proceed unprotected — tell the user to set one. For opening a
-      // manager-only VIEW we keep the old behaviour (treat as unlocked).
-      const t = state.pendingMgrTarget;
-      if (t && typeof t === 'object' && t.requirePin) {
-        $('#mgrError').textContent = 'No manager PIN is set for this shop. Set MANAGER_PIN_HASH in the shop’s settings to protect this.';
-        return;
-      }
+      // The server says the gate isn't configured — treat as unlocked so the
+      // user can still get into the view they tried to open.
       state.managerUnlocked = true;
       runMgrTarget();
       return;
