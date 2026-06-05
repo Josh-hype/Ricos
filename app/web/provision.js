@@ -17,11 +17,11 @@
 
   // 6-digit Restaurant ID → shop backend origin. MUST be the shop's reachable custom
   // domain — the *.pages.dev hostnames are firewalled on this Cloudflare setup ("Host
-  // not in allowlist", 403), so never use them here. (Food Station needs its own custom
-  // domain before its ID will work; it isn't launched yet.)
+  // not in allowlist", 403), so never use them here. Use the live www host (not the
+  // bare apex, which 301-redirects and can break API POSTs).
   var DIRECTORY = {
     '190059': 'https://ricosyork.co.uk',
-    '833541': 'https://food-station.pages.dev'
+    '833541': 'https://www.foodstationyork.uk'
   };
 
   function prefs() {
