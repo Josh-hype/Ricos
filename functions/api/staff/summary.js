@@ -25,7 +25,9 @@ export const onRequestGet = async ({ request, env }) => {
   const orders = await listOrdersBetween(env, from, to);
 
   const isCard = (o) => o.paymentMethod === 'card' || o.paymentMethod === 'counter_card';
-  const isUnpaid = (o) => (o.payment?.state === 'unpaid') || o.paymentMethod === 'unpaid';
+  // Not fully paid: saved-unpaid OR a split bill only part-collected (an abandoned
+  // collection). Kept out of takings and surfaced as outstanding.
+  const isUnpaid = (o) => (o.payment?.state === 'unpaid') || (o.payment?.state === 'part_paid') || o.paymentMethod === 'unpaid';
   // Real orders that aren't cancelled / never-paid-online. `valid` carries the
   // money (paid only); unpaid "pay later" orders are live but count as £0 takings
   // until they're collected — so they're kept out of the financial sums.

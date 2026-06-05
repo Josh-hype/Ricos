@@ -64,8 +64,8 @@ export const onRequestPost = async ({ request, env, params }) => {
 
   // An unpaid "pay later" order can't be completed until it's settled — it stays
   // on the live board. (It can still be cancelled, or progressed to ready.)
-  if (status === 'completed' && ((order.payment && order.payment.state === 'unpaid') || order.paymentMethod === 'unpaid')) {
-    return j({ error: 'Order is unpaid — take payment before completing it.' }, 409);
+  if (status === 'completed' && ((order.payment && (order.payment.state === 'unpaid' || order.payment.state === 'part_paid')) || order.paymentMethod === 'unpaid')) {
+    return j({ error: 'Order is not fully paid — take payment before completing it.' }, 409);
   }
 
   // Cancelling / voiding an order needs the 'void' permission — held by owner and

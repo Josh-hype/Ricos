@@ -33,10 +33,16 @@ export const onRequestPost = async ({ request, env, params }) => {
   const id = String(params.id || '').toUpperCase();
   const order = await getOrder(id, env);
   if (!order) return err('Order not found.', 404);
-  if ((order.payment?.state || '') !== 'unpaid') {
+  // Accept an order awaiting payment OR partly paid (a split bill collected in
+  // parts — each person settles their share until the order is covered).
+  const pstate = order.payment?.state || '';
+  if (pstate !== 'unpaid' && pstate !== 'part_paid') {
     return err('This order is not awaiting payment.', 409);
   }
   const totalP = order.totals?.totalP || 0;
+  const paidSoFar = (order.payment?.parts || []).reduce((a, p) => a + (p.amountP || 0), 0);
+  const remaining = totalP - paidSoFar;
+  if (remaining <= 0) return err('This order is already paid.', 409);
 
   let body;
   try { body = await request.json(); } catch { return err('Invalid JSON', 400); }
@@ -45,11 +51,20 @@ export const onRequestPost = async ({ request, env, params }) => {
   const operator = ctx.operator?.name || sess?.name || null;
   const operatorId = ctx.operator?.id || sess?.op || null;
 
-  // ── Cash: mark paid immediately ────────────────────────────────────────────
+  // The part to collect now. Default = the whole remaining balance; a split bill
+  // passes amountP for one person's share. Never collect more than remains.
+  let partP = remaining;
+  if (body.amountP != null) {
+    partP = Math.round(Number(body.amountP) || 0);
+    if (!(partP > 0)) return err('Enter an amount to collect.', 400);
+    if (partP > remaining) partP = remaining;
+  }
+
+  // ── Cash: record the cash part immediately ─────────────────────────────────
   if (tender === 'cash') {
-    markPaid(order, { tender: 'cash', method: 'counter_cash', by: operator });
+    applyPart(order, { tender: 'cash', amountP: partP, by: operator });
     await putOrder(order, env);
-    await audit(env, operatorId, operator, id, { tender: 'cash', totalP });
+    await audit(env, operatorId, operator, id, { tender: 'cash', amountP: partP });
     return Response.json({ order });
   }
 
@@ -69,11 +84,11 @@ export const onRequestPost = async ({ request, env, params }) => {
     let pi;
     try {
       pi = await createPaymentIntent({
-        amountP: totalP,
+        amountP: partP,
         currency: 'gbp',
         orderId: id,
         connectedAccountId: acct,
-        applicationFeeP: cardFeeP(totalP, config),
+        applicationFeeP: cardFeeP(partP, config),
         cardPresent: true,
         // Unique per attempt so a cancel-then-retry isn't blocked by idempotency
         // returning a now-cancelled PaymentIntent (the order id is fixed here).
@@ -86,7 +101,7 @@ export const onRequestPost = async ({ request, env, params }) => {
 
     return Response.json({
       paymentIntentId: pi.id,
-      amountP: totalP,
+      amountP: partP,
       reader: { id: reader.id, label: reader.label || reader.device_type || 'Reader' },
     });
   }
@@ -98,31 +113,46 @@ export const onRequestPost = async ({ request, env, params }) => {
   try { pi = await retrievePaymentIntent(piId, acct, env); }
   catch (e) { return err('Could not verify the card payment.', 502); }
   if (pi.status !== 'requires_capture') return err(`Card not authorised yet (${pi.status}).`, 409);
-  if (pi.amount !== totalP) return err('Card amount mismatch — not captured.', 409);
+  // The authorised amount IS the part being collected — capture only that, and
+  // never more than the order's outstanding balance.
+  if (pi.amount > remaining) return err('Card amount exceeds the balance — not captured.', 409);
   if (String(pi.currency || '').toLowerCase() !== 'gbp') return err('Card currency mismatch — not captured.', 409);
   if (pi.metadata?.orderId !== id) return err('Card/order mismatch — not captured.', 409);
 
   try { await capturePaymentIntent(piId, acct, env); }
   catch (e) { return err('Card capture failed — the customer was not charged.', 502); }
 
-  markPaid(order, { tender: 'card', method: 'counter_card', by: operator, intentId: piId, connectedAccountId: acct });
+  applyPart(order, { tender: 'card', amountP: pi.amount, by: operator, intentId: piId, connectedAccountId: acct });
   await putOrder(order, env);
-  await audit(env, operatorId, operator, id, { tender: 'card', totalP });
+  await audit(env, operatorId, operator, id, { tender: 'card', amountP: pi.amount });
   return Response.json({ order });
 };
 
-// Flip an unpaid order to paid in place (pure mutation; caller persists).
-function markPaid(order, { tender, method, by, intentId, connectedAccountId }) {
+// Append one payment part and recompute the order's paid state. A single full
+// payment ⇒ one part, state 'paid', a plain cash/card method (unchanged from the
+// old behaviour). Multiple parts (a split bill) ⇒ the balance fills to 'paid' and
+// the method becomes 'split'.
+function applyPart(order, { tender, amountP, by, intentId, connectedAccountId }) {
   const at = new Date().toISOString();
-  order.paymentMethod = method;
+  order.payment = order.payment || {};
+  const parts = Array.isArray(order.payment.parts) ? order.payment.parts.slice() : [];
+  parts.push({ tender, amountP, at, ...(intentId ? { intentId } : {}), ...(connectedAccountId ? { connectedAccountId } : {}) });
+  const paidP = parts.reduce((a, p) => a + (p.amountP || 0), 0);
+  const total = order.totals?.totalP || 0;
+  const fullyPaid = paidP >= total;
+  const split = parts.length > 1;
   order.payment = {
-    ...(order.payment || {}),
-    state: 'paid', paidAt: at, tender,
-    ...(intentId ? { intentId } : {}),
-    ...(connectedAccountId ? { connectedAccountId } : {}),
+    ...order.payment,
+    parts,
+    paidP,
+    state: fullyPaid ? 'paid' : 'part_paid',
+    tender: split ? 'split' : tender,
+    ...(fullyPaid ? { paidAt: at } : {}),
+    ...(intentId ? { intentId, connectedAccountId } : {}),
   };
+  order.paymentMethod = split ? 'split' : (tender === 'card' ? 'counter_card' : 'counter_cash');
   order.history = order.history || [];
-  order.history.push({ at, event: 'paid', tender, ...(by ? { by } : {}) });
+  order.history.push({ at, event: fullyPaid ? 'paid' : 'part_paid', tender, amountP, ...(by ? { by } : {}) });
 }
 
 function audit(env, op, opName, target, details) {

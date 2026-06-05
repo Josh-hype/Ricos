@@ -953,7 +953,19 @@ button{cursor:pointer;border:0;background:none}
 .pay-left{padding:26px 26px 22px;display:flex;flex-direction:column;background:linear-gradient(165deg,#0B1A2E,#11283F);color:#fff;min-height:300px}
 .pay-left .p-lab{color:#7FA6CC;font-size:12.5px;font-weight:600;letter-spacing:.02em}
 .pay-left .p-total{color:#fff;font-family:var(--mono);font-size:42px;font-weight:500;letter-spacing:-.03em;margin-top:6px;line-height:1.1}
-.tenders{display:flex;gap:8px;margin-top:18px}
+.tenders{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+/* Split-by-item overlay */
+.split-list{display:flex;flex-direction:column;gap:7px;max-height:46vh;overflow-y:auto;margin-bottom:12px}
+.split-row{display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid var(--line);border-radius:11px;background:var(--panel)}
+.split-row .sr-name{flex:1;font-size:14.5px;font-weight:600;color:var(--ink);min-width:0}
+.split-row .sr-amt{font-family:var(--mono);font-weight:700;color:var(--ink-2)}
+.split-row .sr-who{display:flex;gap:5px;flex:none}
+.split-row .srw{width:38px;height:38px;border:1.5px solid var(--line);border-radius:9px;background:var(--canvas);font-weight:800;font-size:15px;color:var(--muted);cursor:pointer}
+.split-row .srw.on{border-color:var(--blue);background:var(--blue-tint);color:var(--blue)}
+.split-tot{display:flex;gap:10px;margin-bottom:8px}
+.split-tot .sp-col{flex:1;display:flex;flex-direction:column;gap:2px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:11px;background:var(--canvas)}
+.split-tot .sp-lab{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.split-tot .sp-amt{font-size:20px;font-weight:800;color:var(--ink)}
 .tender{
   flex:1;height:46px;border-radius:13px;border:1px solid rgba(255,255,255,.16);
   background:rgba(255,255,255,.05);color:#cfe0f2;font-size:12.5px;font-weight:700;
@@ -1746,6 +1758,10 @@ button{cursor:pointer;border:0;background:none}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v18"/><rect x="3" y="7" width="7" height="10" rx="1.5"/><rect x="14" y="7" width="7" height="10" rx="1.5"/></svg>
           Split
         </button>
+        <button class="tender" data-tender="byitem" id="tenderByItem" type="button" title="Split the bill by item — assign items to person 1 / person 2; each pays their share">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="8" cy="8" r="3"/><circle cx="16" cy="8" r="3"/><path d="M3 20a5 5 0 0110 0M11 20a5 5 0 0110 0"/></svg>
+          By item
+        </button>
         <button class="tender" data-tender="later" id="tenderLater" type="button" title="Save the order now and collect payment later">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>
           Pay later
@@ -1783,6 +1799,21 @@ button{cursor:pointer;border:0;background:none}
         <button class="pdc-new" id="payNewSale" type="button">New sale</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Split the bill by item: assign each item to person 1 / 2, then collect each share -->
+<div class="ovl" id="splitItemOvl" role="dialog" aria-modal="true" aria-labelledby="splitItemTitle">
+  <div class="modal" style="max-width:540px">
+    <h2 id="splitItemTitle">Split by item</h2>
+    <p style="color:var(--muted);font-size:13.5px;font-weight:500;margin-bottom:12px;text-align:center">Tap <b>1</b> or <b>2</b> on each item to choose who pays for it. Then collect each person’s share.</p>
+    <div class="split-list" id="splitItemList"></div>
+    <div class="split-tot">
+      <div class="sp-col"><span class="sp-lab">Person 1</span><span class="sp-amt mono" id="splitP1">£0.00</span></div>
+      <div class="sp-col"><span class="sp-lab">Person 2</span><span class="sp-amt mono" id="splitP2">£0.00</span></div>
+    </div>
+    <div class="pin-error" id="splitItemErr" aria-live="polite"></div>
+    <div class="row"><button class="cancel" id="splitItemCancel" type="button">Cancel</button><button class="confirm" id="splitItemStart" type="button">Start collecting</button></div>
   </div>
 </div>
 
@@ -2052,8 +2083,10 @@ function renderBoard() {
 const LIVE_STATUSES = ['pending_accept', 'accepted', 'ready', 'out_for_delivery'];
 
 // An unpaid "pay later" order — can't be completed until it's settled.
+// "Owes money" — not fully paid: a saved-unpaid order OR a split bill that's only
+// part collected. Such orders stay on Live, show "Pay now", and can't be completed.
 function isUnpaidOrder(o) {
-  return !!(o && ((o.payment && o.payment.state === 'unpaid') || o.paymentMethod === 'unpaid'));
+  return !!(o && ((o.payment && (o.payment.state === 'unpaid' || o.payment.state === 'part_paid')) || o.paymentMethod === 'unpaid'));
 }
 
 // Show the "Complete all" button only on the Live tab when there's something to
@@ -2657,7 +2690,7 @@ function handleOrders(orders) {
 function orderIsInstore(o) { return typeof o.source === 'string' && o.source.indexOf('counter') === 0; }
 function orderMatchesFilter(o) {
   const f = state.boardFilter;
-  if (f === 'unpaid') return (o.payment && o.payment.state === 'unpaid') || o.paymentMethod === 'unpaid';
+  if (f === 'unpaid') return (o.payment && (o.payment.state === 'unpaid' || o.payment.state === 'part_paid')) || o.paymentMethod === 'unpaid';
   if (f === 'instore') return orderIsInstore(o);
   if (f === 'online') return !orderIsInstore(o);
   return true; // 'all'
@@ -2667,7 +2700,7 @@ function updateChipCounts(list) {
   const arr = list || [];
   const counts = {
     all: arr.length,
-    unpaid: arr.filter(o => (o.payment && o.payment.state === 'unpaid') || o.paymentMethod === 'unpaid').length,
+    unpaid: arr.filter(o => (o.payment && (o.payment.state === 'unpaid' || o.payment.state === 'part_paid')) || o.paymentMethod === 'unpaid').length,
     instore: arr.filter(orderIsInstore).length,
     online: arr.filter(o => !orderIsInstore(o)).length,
   };
@@ -3125,10 +3158,12 @@ function renderRow(o, isNew) {
 
   const pmt = o.payment || {};
   const isUnpaid = (pmt.state === 'unpaid') || o.paymentMethod === 'unpaid';
+  const isPartPaid = pmt.state === 'part_paid';
+  const owesMoney = isUnpaid || isPartPaid;
   const isCardPay = o.paymentMethod === 'card' || o.paymentMethod === 'counter_card';
   const method = isUnpaid ? '—' : (o.paymentMethod === 'split' ? 'Split' : (isCardPay ? 'Card' : 'Cash'));
-  const paidLbl = isUnpaid ? 'Not paid' : 'Paid';
-  const paidCls = isUnpaid ? 'np' : 'pd';
+  const paidLbl = isUnpaid ? 'Not paid' : (isPartPaid ? 'Part paid' : 'Paid');
+  const paidCls = owesMoney ? 'np' : 'pd';
 
   const stLabel = { pending_accept: 'new', accepted: 'accepted', ready: 'ready', out_for_delivery: 'out', completed: 'completed', cancelled: 'cancelled' };
   const fulf = o.fulfillment === 'delivery' ? 'Delivery' : (o.source === 'counter-walkin' ? 'Walk-in' : 'Collection');
@@ -3148,13 +3183,13 @@ function renderRow(o, isNew) {
 
   // Every order action lives in the ⋮ now (no inline buttons on the row).
   const m = [];
-  if (isUnpaid && ['pending_accept', 'accepted', 'ready', 'out_for_delivery'].includes(o.status)) {
-    m.push(`<button class="menu-pay" data-id="${o.id}">Pay now</button>`);
+  if (owesMoney && ['pending_accept', 'accepted', 'ready', 'out_for_delivery'].includes(o.status)) {
+    m.push(`<button class="menu-pay" data-id="${o.id}">${isPartPaid ? 'Collect rest' : 'Pay now'}</button>`);
   }
   if (o.status === 'pending_accept') m.push(`<button class="menu-accept" data-id="${o.id}">Accept…</button>`);
   // No "Mark ready" on the till — accepted orders go straight to Complete (the
   // kitchen bumps to ready on the KDS).
-  if (['accepted', 'ready', 'out_for_delivery'].includes(o.status) && !isUnpaid) {
+  if (['accepted', 'ready', 'out_for_delivery'].includes(o.status) && !owesMoney) {
     m.push(`<button class="menu-complete" data-id="${o.id}">Complete order</button>`);
   }
   m.push(`<button class="menu-print" data-id="${o.id}">Print ticket</button>`);
@@ -4350,9 +4385,117 @@ $('#saleCharge').addEventListener('click', () => {
   openPayModal();
 });
 
+/* ============================== Split the bill by item ==============================
+   Assign each cart line to person 1 or 2, create the order once (unpaid + sent to
+   the kitchen), then collect each person's share against it via the cumulative
+   /pay endpoint. The order fills to 'paid' once both shares are in. */
+function splitLineAmountP(c) { return lineUnitP(c) * c.qty; }
+function splitTotals() {
+  let p1 = 0, p2 = 0;
+  sale.cart.forEach((c, i) => {
+    const amt = splitLineAmountP(c);
+    if ((sale.splitAssign[i] || 1) === 2) p2 += amt; else p1 += amt;
+  });
+  return { p1, p2 };
+}
+function renderSplitItems() {
+  const list = $('#splitItemList');
+  list.innerHTML = sale.cart.map((c, i) => {
+    const v = sale.byVisualId.get(c.id);
+    const name = c.custom ? c.name : (v?.name || sale.byId.get(c.id)?.name || 'Item');
+    const amt = splitLineAmountP(c);
+    const who = sale.splitAssign[i] || 1;
+    return `<div class="split-row">
+      <span class="sr-name">${c.qty}× ${escapeHtml(name)}</span>
+      <span class="sr-amt">£${(amt / 100).toFixed(2)}</span>
+      <div class="sr-who">
+        <button type="button" class="srw ${who === 1 ? 'on' : ''}" data-i="${i}" data-who="1">1</button>
+        <button type="button" class="srw ${who === 2 ? 'on' : ''}" data-i="${i}" data-who="2">2</button>
+      </div>
+    </div>`;
+  }).join('');
+  const { p1, p2 } = splitTotals();
+  $('#splitP1').textContent = `£${(p1 / 100).toFixed(2)}`;
+  $('#splitP2').textContent = `£${(p2 / 100).toFixed(2)}`;
+  $('#splitItemStart').disabled = !(p1 > 0 && p2 > 0);
+}
+function openItemSplit() {
+  if (!sale.cart.length) return;
+  closePayModal();
+  sale.splitAssign = sale.cart.map(() => 1); // everything to person 1 by default
+  $('#splitItemErr').textContent = '';
+  renderSplitItems();
+  $('#splitItemOvl').classList.add('open');
+}
+function closeItemSplit() { $('#splitItemOvl').classList.remove('open'); }
+$('#splitItemList').addEventListener('click', (e) => {
+  const b = e.target.closest('.srw'); if (!b) return;
+  sale.splitAssign[Number(b.dataset.i)] = Number(b.dataset.who);
+  renderSplitItems();
+});
+$('#splitItemCancel').addEventListener('click', closeItemSplit);
+$('#splitItemOvl').addEventListener('click', (e) => { if (e.target.id === 'splitItemOvl') closeItemSplit(); });
+$('#splitItemStart').addEventListener('click', async () => {
+  const { p1, p2 } = splitTotals();
+  if (!(p1 > 0 && p2 > 0)) { $('#splitItemErr').textContent = 'Assign at least one item to each person.'; return; }
+  $('#splitItemStart').disabled = true;
+  let order;
+  try { order = await createUnpaidForSplit(); }
+  catch (e) { $('#splitItemErr').textContent = e.message || 'Could not create the order.'; $('#splitItemStart').disabled = false; return; }
+  closeItemSplit();
+  sale.split = { queue: [{ label: 'Person 1', amountP: p1 }, { label: 'Person 2', amountP: p2 }], idx: 0 };
+  sale.payOrder = order;
+  beginCollectPerson(0);
+});
+
+// Create the order up front (unpaid + sent to the kitchen) so each share can be
+// collected against it. Prints the kitchen ticket like any accepted order.
+async function createUnpaidForSplit() {
+  const res = await fetch('/api/staff/counter-order', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(buildSalePayload({ tender: 'unpaid' })),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (res.status === 401) { $('#logoutBtn').click(); throw new Error('Signed out — sign in again.'); }
+  if (!res.ok || !data.order) throw new Error(data.error || `Couldn't create the order (${res.status}).`);
+  state.seenIds.add(data.order.id);
+  if (state.printOnAccept) { try { printTo('kitchen', data.order, null); } catch (e) {} }
+  return data.order;
+}
+
+function beginCollectPerson(idx) {
+  const s = sale.split; if (!s) return;
+  const o = sale.payOrder;
+  const remaining = (o.totals?.totalP || 0) - (o.payment?.paidP || 0);
+  // The last person settles whatever's left (absorbs any rounding / fee).
+  const isLast = idx >= s.queue.length - 1;
+  sale.collectP = isLast ? remaining : Math.min(s.queue[idx].amountP, remaining);
+  sale.pay.tenderedP = 0;
+  openPayModal();
+}
+
+// One person's share has been collected — move on, or finish once fully paid.
+function advanceSplitCollect(order) {
+  sale.payOrder = order;
+  if ((order.payment?.state || '') === 'paid') {
+    sale.split = null; sale.collectP = null;
+    showPayDone(order, { kind: 'existing', tender: 'split' });
+    poll();
+    return;
+  }
+  sale.split.idx += 1;
+  if (sale.split.idx >= sale.split.queue.length) {
+    sale.split.queue.push({ label: 'Remaining', amountP: (order.totals?.totalP || 0) - (order.payment?.paidP || 0) });
+  }
+  beginCollectPerson(sale.split.idx);
+}
+
 // The amount the pay modal is collecting: an existing order's total when we're
 // settling one (the "Pay now" flow), otherwise the live cart total.
-function payCtxTotalP() { return sale.payOrder ? (sale.payOrder.totals?.totalP || 0) : cartTotalP(); }
+function payCtxTotalP() {
+  if (sale.collectP != null) return sale.collectP; // one person's share during a split-bill collection
+  return sale.payOrder ? (sale.payOrder.totals?.totalP || 0) : cartTotalP();
+}
 
 function openPayModal() {
   clearPayAutoReturn();
@@ -4360,13 +4503,14 @@ function openPayModal() {
   sale.pay.tender = 'cash';
   sale.card = null;
   const existing = sale.payOrder;
+  const collecting = !!(sale.split && sale.collectP != null);
   const t = existing ? (existing.totals || {}) : null;
-  const totalP = existing ? (t.totalP || 0) : cartTotalP();
-  const subP = existing ? (t.subtotalP || 0) : cartSubP();
+  const totalP = collecting ? sale.collectP : (existing ? (t.totalP || 0) : cartTotalP());
+  const subP = collecting ? sale.collectP : (existing ? (t.subtotalP || 0) : cartSubP());
   $('#payTotal').textContent = `£${(totalP / 100).toFixed(2)}`;
   $('#payGrand').textContent = `£${(totalP / 100).toFixed(2)}`;
   $('#paySub').textContent = `£${(subP / 100).toFixed(2)}`;
-  const feeP = existing ? (t.serviceFeeP || 0) : sale.serviceFeeP;
+  const feeP = collecting ? 0 : (existing ? (t.serviceFeeP || 0) : sale.serviceFeeP);
   const feeRow = $('#payFeeRow');
   if (feeP > 0) { feeRow.hidden = false; $('#payFee').textContent = `£${(feeP / 100).toFixed(2)}`; }
   else { feeRow.hidden = true; }
@@ -4376,9 +4520,14 @@ function openPayModal() {
   $('#paySubLab').textContent = `Items (${itemCount})`;
   // "Pay later" only makes sense for a brand-new sale — not when settling an
   // order that was already saved unpaid.
-  const later = $('#tenderLater'); if (later) later.hidden = !!existing;
-  const splitBtn = $('#tenderSplit'); if (splitBtn) splitBtn.hidden = !!existing; // split is new-sale only for now
+  // Split / By-item / Pay-later only on a fresh sale (not when settling an existing
+  // order, and not while collecting one person's share of a split bill).
+  const newSaleOnly = !!existing || collecting;
+  ['#tenderLater', '#tenderSplit', '#tenderByItem'].forEach(id => { const b = $(id); if (b) b.hidden = newSaleOnly; });
   $('#payReceipt').style.display = '';
+  // During a split-bill collection, label whose share is being collected.
+  const lab = $('#payOvl .p-lab');
+  if (lab) lab.textContent = collecting ? `${sale.split.queue[sale.split.idx].label} pays` : 'Amount due';
   renderQuickCash();
   setTender('cash');
   $('#payDone').classList.remove('show');
@@ -4403,6 +4552,8 @@ function goHomeAfterSale() {
   sale.customer = null;
   sale.deliveryFeeP = 0;
   sale.payOrder = null;
+  sale.split = null;
+  sale.collectP = null;
   closePayModal();
   setView('live');
 }
@@ -4417,6 +4568,9 @@ function showPayDone(o, { kind, tender, tenderedP = 0, changeP = 0, split = null
   } else if (tender === 'split' && split) {
     $('#payDone h2').textContent = 'Payment complete';
     $('#payDoneSub').textContent = `Cash £${(split.cashP / 100).toFixed(2)} + Card £${(split.cardP / 100).toFixed(2)} · Order #${orderNo(o)}`;
+  } else if (tender === 'split') {
+    $('#payDone h2').textContent = 'Payment complete';
+    $('#payDoneSub').textContent = `£${(totalP / 100).toFixed(2)} · Split paid · Order #${orderNo(o)}`;
   } else if (changeP > 0) {
     $('#payDone h2').textContent = 'Give change';
     $('#payDoneSub').textContent = `£${(changeP / 100).toFixed(2)} change · Order #${orderNo(o)}`;
@@ -4541,6 +4695,8 @@ $('#payClose').addEventListener('click', closePayModal);
 $('#payOvl').addEventListener('click', (e) => { if (e.target.id === 'payOvl') closePayModal(); });
 $$('.tenders .tender').forEach(b => b.addEventListener('click', () => {
   if (b.disabled) return;
+  // "By item" isn't a tender — it opens the split-the-bill-by-item flow.
+  if (b.dataset.tender === 'byitem') { openItemSplit(); return; }
   sale.pay.tenderedP = 0;
   setTender(b.dataset.tender);
 }));
@@ -4853,18 +5009,20 @@ async function finalizeOrder(extra, ctx) {
 // Settle an existing unpaid order with cash (the "Pay now" → Cash path).
 async function payExistingCash(tenderedP) {
   const o = sale.payOrder; if (!o) return false;
-  const totalP = o.totals?.totalP || 0;
+  const collecting = !!(sale.split && sale.collectP != null);
+  const dueP = payCtxTotalP();
   let data;
   try {
     const res = await fetch(`/api/staff/orders/${o.id}/pay`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tender: 'cash', tenderedP: tenderedP || 0 }),
+      body: JSON.stringify({ tender: 'cash', tenderedP: tenderedP || 0, ...(collecting ? { amountP: sale.collectP } : {}) }),
     });
     data = await res.json().catch(() => ({}));
     if (res.status === 401) { $('#logoutBtn').click(); return false; }
     if (!res.ok || !data.order) { alert(data.error || `Couldn't take the payment (${res.status}).`); return false; }
   } catch (e) { alert('Network error — try again.'); return false; }
-  const changeP = tenderedP > 0 ? Math.max(0, tenderedP - totalP) : 0;
+  if (collecting) { advanceSplitCollect(data.order); return true; }
+  const changeP = tenderedP > 0 ? Math.max(0, tenderedP - dueP) : 0;
   showPayDone(data.order, { kind: 'existing', tender: 'cash', tenderedP, changeP });
   poll();
   return true;
@@ -4883,7 +5041,10 @@ async function runCardPayment(split) {
   let started;
   try {
     const url = payingExisting ? `/api/staff/orders/${sale.payOrder.id}/pay` : '/api/staff/terminal/charge';
-    const payload = payingExisting ? { tender: 'card', action: 'start' } : buildSalePayload(split ? { cardAmountP: split.cardP } : {});
+    const collectingSplit = !!(sale.split && sale.collectP != null);
+    const payload = payingExisting
+      ? { tender: 'card', action: 'start', ...(collectingSplit ? { amountP: sale.collectP } : {}) }
+      : buildSalePayload(split ? { cardAmountP: split.cardP } : {});
     const res = await fetch(url, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -4930,6 +5091,7 @@ async function runCardPayment(split) {
         } catch (e) { hideCardOverlay(); alert('Card approved but saving failed — check the order before re-charging.'); return; }
         hideCardOverlay();
         if (!data || !data.order) { alert((data && data.error) || 'Card approved but the order did not update.'); updatePayConfirm(); return; }
+        if (sale.split && sale.collectP != null) { advanceSplitCollect(data.order); poll(); return; }
         showPayDone(data.order, { kind: 'existing', tender: 'card' });
         poll();
       } else {
