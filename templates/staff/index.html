@@ -2008,6 +2008,11 @@ function renderBoard() {
 // The live "live" statuses — orders still on the board, not yet done/cancelled.
 const LIVE_STATUSES = ['pending_accept', 'accepted', 'ready', 'out_for_delivery'];
 
+// An unpaid "pay later" order — can't be completed until it's settled.
+function isUnpaidOrder(o) {
+  return !!(o && ((o.payment && o.payment.state === 'unpaid') || o.paymentMethod === 'unpaid'));
+}
+
 // Show the "Complete all" button only on the Live tab when there's something to
 // complete. Hidden on the Completed tab and everywhere off the live board.
 function updateBoardActions() {
@@ -2020,9 +2025,17 @@ function updateBoardActions() {
 // Mark every live order done in one go (with a confirm). Customers are notified
 // just as if each were completed individually.
 async function completeAll() {
-  const live = (state.orders || []).filter(o => LIVE_STATUSES.includes(o.status));
-  if (!live.length) return;
-  if (!confirm(`Complete all ${live.length} live order${live.length > 1 ? 's' : ''}? They'll be marked done and customers notified.`)) return;
+  // Unpaid "pay later" orders are NEVER completed in bulk — they stay on Live
+  // until someone takes payment.
+  const active = (state.orders || []).filter(o => LIVE_STATUSES.includes(o.status));
+  const live = active.filter(o => !isUnpaidOrder(o));
+  const unpaid = active.length - live.length;
+  if (!live.length) {
+    if (unpaid) alert(`${unpaid} unpaid order${unpaid > 1 ? 's' : ''} can't be completed until paid — they stay on the board.`);
+    return;
+  }
+  const note = unpaid ? `\n\n${unpaid} unpaid order${unpaid > 1 ? 's' : ''} will stay on the board until paid.` : '';
+  if (!confirm(`Complete all ${live.length} paid live order${live.length > 1 ? 's' : ''}? They'll be marked done and customers notified.${note}`)) return;
   const btn = $('#completeAllBtn');
   if (btn) { btn.disabled = true; btn.textContent = 'Completing…'; }
   let failed = 0;
@@ -2940,7 +2953,7 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
   if (o.status === 'accepted') {
     menuItems.push(`<button class="menu-cancel" data-id="${o.id}">${o.paymentMethod === 'card' ? 'Cancel &amp; refund' : 'Cancel order'}</button>`);
   }
-  if (liveStatuses.includes(o.status)) {
+  if (liveStatuses.includes(o.status) && !isUnpaid) {
     menuItems.push(`<button class="menu-complete" data-id="${o.id}">Complete order</button>`);
   }
   const menuHtml = menuItems.length
@@ -3038,7 +3051,7 @@ function renderRow(o, isNew) {
     const nl = o.fulfillment === 'delivery' ? 'Mark out for delivery' : 'Mark ready';
     m.push(`<button class="menu-progress" data-id="${o.id}" data-status="${ns}">${nl}</button>`);
   }
-  if (['accepted', 'ready', 'out_for_delivery'].includes(o.status)) {
+  if (['accepted', 'ready', 'out_for_delivery'].includes(o.status) && !isUnpaid) {
     m.push(`<button class="menu-complete" data-id="${o.id}">Complete order</button>`);
   }
   m.push(`<button class="menu-print" data-id="${o.id}">Print ticket</button>`);
@@ -3423,6 +3436,13 @@ function noteRefund(result) {
 
 async function updateStatus(id, status) {
   try {
+    if (status === 'completed') {
+      const o = (state.orders || []).find(x => x.id === id);
+      if (isUnpaidOrder(o)) {
+        alert('This order is unpaid — take payment (Pay now) before completing it.');
+        return;
+      }
+    }
     let authToken;
     if (status === 'cancelled') {
       authToken = await requirePerm('void', id); // staff need a manager to approve

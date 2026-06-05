@@ -62,6 +62,12 @@ export const onRequestPost = async ({ request, env, params }) => {
   if (!ALLOWED.includes(status)) return j({ error: 'Invalid status.' }, 400);
   const reason = (body.reason || '').toString().trim().slice(0, 280);
 
+  // An unpaid "pay later" order can't be completed until it's settled — it stays
+  // on the live board. (It can still be cancelled, or progressed to ready.)
+  if (status === 'completed' && ((order.payment && order.payment.state === 'unpaid') || order.paymentMethod === 'unpaid')) {
+    return j({ error: 'Order is unpaid — take payment before completing it.' }, 409);
+  }
+
   // Cancelling auto-refunds a paid card order, so it needs the void permission
   // (a manager can authorise it for a staff operator via the approval token).
   const voidCtx = {};
