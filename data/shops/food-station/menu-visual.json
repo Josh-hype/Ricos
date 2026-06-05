@@ -8781,7 +8781,268 @@
         "id": "md-1",
         "name": "Meal Deal 1 — Goodie Box",
         "price": 15,
-        "desc": "11\" margherita, doner, chips, 4 nuggets, 4 onion rings, can of drink."
+        "desc": "11\" margherita, doner, chips, 4 nuggets, 4 onion rings, can of drink.",
+        "options": [
+          {
+            "id": "md-pizza",
+            "label": "11\" Pizza",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "md1-margherita",
+                "label": "Margherita",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "crust",
+            "label": "Choose crust",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "thin-base",
+                "label": "Thin Base",
+                "price": 0
+              },
+              {
+                "id": "deep-pan",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          },
+          {
+            "id": "extra-toppings",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-mozzarella-cheese",
+                "label": "Mozzarella cheese",
+                "price": 2
+              },
+              {
+                "id": "xt-cheddar",
+                "label": "Cheddar",
+                "price": 2
+              },
+              {
+                "id": "xt-feta-cheese",
+                "label": "Feta cheese",
+                "price": 2
+              },
+              {
+                "id": "xt-halloumi-cheese",
+                "label": "Halloumi cheese",
+                "price": 2
+              },
+              {
+                "id": "xt-red-onions",
+                "label": "Red onions",
+                "price": 1
+              },
+              {
+                "id": "xt-peppers",
+                "label": "Peppers",
+                "price": 1
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic butter",
+                "price": 1
+              },
+              {
+                "id": "xt-mushrooms",
+                "label": "Mushrooms",
+                "price": 1
+              },
+              {
+                "id": "xt-tomatoes",
+                "label": "Tomatoes",
+                "price": 1
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1
+              },
+              {
+                "id": "xt-fresh-chillies",
+                "label": "Fresh Chillies",
+                "price": 1
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 2
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 2
+              },
+              {
+                "id": "xt-anchovies",
+                "label": "Anchovies",
+                "price": 2
+              },
+              {
+                "id": "xt-hotdog",
+                "label": "Hotdog",
+                "price": 2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 2
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 2
+              },
+              {
+                "id": "xt-tandoori-chicken",
+                "label": "Tandoori Chicken",
+                "price": 2
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 2
+              },
+              {
+                "id": "xt-donner-meat",
+                "label": "Donner meat",
+                "price": 2
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 2
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 2
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 2
+              },
+              {
+                "id": "xt-meatballs",
+                "label": "Meatballs",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "md-sides",
+            "label": "Sides",
+            "select": "multi",
+            "required": true,
+            "choices": [
+              {
+                "id": "md1-doner",
+                "label": "Doner",
+                "price": 0,
+                "default": true
+              },
+              {
+                "id": "md1-chips",
+                "label": "Chips",
+                "price": 0,
+                "default": true
+              },
+              {
+                "id": "md1-nuggets-4",
+                "label": "4 x Nuggets",
+                "price": 0,
+                "default": true
+              },
+              {
+                "id": "md1-onion-rings-4",
+                "label": "4 x Onion rings",
+                "price": 0,
+                "default": true
+              }
+            ]
+          },
+          {
+            "id": "md-drink",
+            "label": "Can of drink",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "can-coke",
+                "label": "Can of Coke",
+                "price": 0
+              },
+              {
+                "id": "can-diet-coke",
+                "label": "Can of Diet Coke",
+                "price": 0
+              },
+              {
+                "id": "can-coke-zero",
+                "label": "Can of Coke Zero",
+                "price": 0
+              },
+              {
+                "id": "can-fanta",
+                "label": "Can of Fanta",
+                "price": 0
+              },
+              {
+                "id": "can-fanta-lemon",
+                "label": "Can of Fanta Lemon",
+                "price": 0
+              },
+              {
+                "id": "can-pepsi",
+                "label": "Can of Pepsi",
+                "price": 0
+              },
+              {
+                "id": "can-7up",
+                "label": "Can of 7up",
+                "price": 0
+              },
+              {
+                "id": "can-dr-pepper",
+                "label": "Can of Dr Pepper",
+                "price": 0
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "md-2",

@@ -4032,8 +4032,12 @@ function optionGroupHTML(g, canonical) {
   const type = g.select === 'multi' ? 'checkbox' : 'radio';
   const required = !!g.required;
   const gid = 'optg-' + Math.random().toString(36).slice(2, 8);
+  // A choice may be pre-selected with `default:true` (meal-deal sides that are
+  // included by default). For single-selects an explicit default suppresses the
+  // usual first-choice auto-check so we never double-check a radio group.
+  const hasDefault = (g.choices || []).some(c => c.default === true);
   const rows = (g.choices || []).map((c, i) => {
-    const checked = (type === 'radio' && required && i === 0) ? 'checked' : '';
+    const checked = (c.default === true || (type === 'radio' && required && !hasDefault && i === 0)) ? 'checked' : '';
     // Use the canonical priceDeltaP so the live total matches what the server
     // will charge. visual.price is display-only and can drift.
     const mod = canonical.modifiers?.find(m => m.id === c.id);

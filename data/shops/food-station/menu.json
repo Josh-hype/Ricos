@@ -7039,7 +7039,224 @@
       {
         "id": "md-1",
         "name": "Meal Deal 1 — Goodie Box",
-        "priceP": 1500
+        "priceP": 1500,
+        "modifiers": [
+          {
+            "id": "md1-margherita",
+            "label": "Margherita",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 250
+          },
+          {
+            "id": "xt-mozzarella-cheese",
+            "label": "Mozzarella cheese",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "xt-cheddar",
+            "label": "Cheddar",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "xt-feta-cheese",
+            "label": "Feta cheese",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "xt-halloumi-cheese",
+            "label": "Halloumi cheese",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "xt-red-onions",
+            "label": "Red onions",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "xt-peppers",
+            "label": "Peppers",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic butter",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "xt-mushrooms",
+            "label": "Mushrooms",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "xt-tomatoes",
+            "label": "Tomatoes",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "xt-fresh-chillies",
+            "label": "Fresh Chillies",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "xt-anchovies",
+            "label": "Anchovies",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "xt-hotdog",
+            "label": "Hotdog",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "xt-tandoori-chicken",
+            "label": "Tandoori Chicken",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "xt-donner-meat",
+            "label": "Donner meat",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "xt-meatballs",
+            "label": "Meatballs",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "md1-doner",
+            "label": "Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md1-chips",
+            "label": "Chips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md1-nuggets-4",
+            "label": "4 x Nuggets",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md1-onion-rings-4",
+            "label": "4 x Onion rings",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-coke",
+            "label": "Can of Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-diet-coke",
+            "label": "Can of Diet Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-coke-zero",
+            "label": "Can of Coke Zero",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-fanta",
+            "label": "Can of Fanta",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-fanta-lemon",
+            "label": "Can of Fanta Lemon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-pepsi",
+            "label": "Can of Pepsi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-7up",
+            "label": "Can of 7up",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-dr-pepper",
+            "label": "Can of Dr Pepper",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "md-2",

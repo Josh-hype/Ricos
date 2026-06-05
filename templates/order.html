@@ -1736,8 +1736,12 @@ function optionGroupsHTML(item) {
   return item.options.map(g => {
     const type = g.select === 'multi' ? 'checkbox' : 'radio';
     const gid = 'optg-' + g.id;
+    // A choice may be pre-selected with `default:true` (used for meal-deal sides
+    // that are included by default). For single-selects an explicit default
+    // suppresses the usual first-choice auto-check so we never double-check.
+    const hasDefault = (g.choices || []).some(c => c.default === true);
     const rows = (g.choices || []).map((c, i) => {
-      const checked = (type === 'radio' && g.required && i === 0) ? 'checked' : '';
+      const checked = (c.default === true || (type === 'radio' && g.required && !hasDefault && i === 0)) ? 'checked' : '';
       const delta = c.price ? `<span class="opt-delta">+${fmt(c.price)}</span>` : '';
       return `<label class="opt-choice"><input type="${type}" name="${gid}" value="${escapeHTML(c.id)}" data-price="${Number(c.price) || 0}" data-label="${escapeHTML(c.label)}" ${checked}/><span>${escapeHTML(c.label)}</span>${delta}</label>`;
     }).join('');
