@@ -10695,7 +10695,384 @@
       {
         "id": "md-5",
         "name": "Meal Deal 5",
-        "priceP": 2200
+        "priceP": 2200,
+        "modifiers": [
+          {
+            "id": "md5-marg",
+            "label": "Margherita",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-bbq-marg",
+            "label": "BBQ Margherita",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-4cheese",
+            "label": "4 Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-london",
+            "label": "London",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-halloumi",
+            "label": "Halloumi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-veg-supreme",
+            "label": "Veg Supreme",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-hot-veg",
+            "label": "Hot Veg",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-alfunghi",
+            "label": "Alfunghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-prosciutto",
+            "label": "Prosciutto",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-farmhouse",
+            "label": "Farmhouse",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-hawaiian",
+            "label": "Hawaiian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-chicken-sweetcorn",
+            "label": "Chicken Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-bbq-chicken",
+            "label": "BBQ Chicken",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-chicken-supreme",
+            "label": "Chicken Supreme",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-kiev",
+            "label": "Kiev",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-double-bite",
+            "label": "Double Bite",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-hot-shot",
+            "label": "Hot Shot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-doner",
+            "label": "Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-mexicano",
+            "label": "Mexicano",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-meat-supreme",
+            "label": "Meat Supreme",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-tuna-sweetcorn",
+            "label": "Tuna Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-tuna-mushroom",
+            "label": "Tuna Mushrooms",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-seafood",
+            "label": "Seafood",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-bbq-meaty",
+            "label": "BBQ Meaty Mighty",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-bbq-pokker",
+            "label": "BBQ Pokker",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-hotdog-pizza",
+            "label": "Hotdog",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "stuffed",
+            "label": "Stuffed crust",
+            "priceDeltaP": 350
+          },
+          {
+            "id": "xt-mozzarella-cheese",
+            "label": "Mozzarella cheese",
+            "priceDeltaP": 250
+          },
+          {
+            "id": "xt-cheddar",
+            "label": "Cheddar",
+            "priceDeltaP": 250
+          },
+          {
+            "id": "xt-feta-cheese",
+            "label": "Feta cheese",
+            "priceDeltaP": 250
+          },
+          {
+            "id": "xt-halloumi-cheese",
+            "label": "Halloumi cheese",
+            "priceDeltaP": 250
+          },
+          {
+            "id": "xt-red-onions",
+            "label": "Red onions",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "xt-peppers",
+            "label": "Peppers",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic butter",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "xt-mushrooms",
+            "label": "Mushrooms",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "xt-tomatoes",
+            "label": "Tomatoes",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "xt-fresh-chillies",
+            "label": "Fresh Chillies",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 250
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 250
+          },
+          {
+            "id": "xt-anchovies",
+            "label": "Anchovies",
+            "priceDeltaP": 250
+          },
+          {
+            "id": "xt-hotdog",
+            "label": "Hotdog",
+            "priceDeltaP": 250
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 250
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 250
+          },
+          {
+            "id": "xt-tandoori-chicken",
+            "label": "Tandoori Chicken",
+            "priceDeltaP": 250
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 250
+          },
+          {
+            "id": "xt-donner-meat",
+            "label": "Donner meat",
+            "priceDeltaP": 250
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 250
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 250
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 250
+          },
+          {
+            "id": "xt-meatballs",
+            "label": "Meatballs",
+            "priceDeltaP": 250
+          },
+          {
+            "id": "md5-cheeseburger",
+            "label": "Cheeseburger",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md5-garlic-bread",
+            "label": "Garlic bread",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bottle-coke",
+            "label": "Bottle of Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bottle-diet-coke",
+            "label": "Bottle of Diet Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bottle-fanta",
+            "label": "Bottle of Fanta",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bottle-pepsi",
+            "label": "Bottle of Pepsi",
+            "priceDeltaP": 0
+          }
+        ]
       }
     ]
   }
