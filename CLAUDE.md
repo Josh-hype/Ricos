@@ -149,9 +149,14 @@ Each project (`ricos`, the Food Station project, and any future shop):
 - **Custom domain:** add it under the project's Custom domains.
 
 A push to `main` rebuilds **every** project (each with its own `SHOP_SLUG`).
-Stripe is **Stripe Connect**, currently **TEST** mode (per-shop
-`connectedAccountId`). Cloudflare keeps every past deployment — one-click
-**Rollback** if a deploy breaks a site.
+Stripe is **Stripe Connect** in **LIVE** mode. The platform's API keys
+(`STRIPE_SECRET_KEY` / `STRIPE_PUBLISHABLE_KEY`) are **shared across all shops** —
+each shop's project sets the same platform keys; what differs per shop is the
+`connectedAccountId` (the venue's `acct_…`) and that shop's own Connect webhook
+endpoint + `STRIPE_WEBHOOK_SECRET`. Because the secret key is shared, **never
+roll it with immediate expiry** — that breaks every live shop at once; roll with
+a grace window and update every project before it lapses. Cloudflare keeps every
+past deployment — one-click **Rollback** if a deploy breaks a site.
 
 ---
 
