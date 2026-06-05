@@ -576,26 +576,32 @@ button{cursor:pointer;border:0;background:none}
 .kds-card.new{animation:kdsflash 1.1s ease-in-out 5}
 @keyframes kdsflash{0%,100%{border-color:transparent}50%{border-color:var(--amber-bg)}}
 .kds-card-head{
-  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
-  padding:13px 15px;background:#F4F7FB;border-bottom:1px solid var(--line);
+  display:flex;flex-direction:column;gap:6px;
+  padding:11px 15px;background:#F4F7FB;border-bottom:1px solid var(--line);
 }
-.kds-card-head .kc-ref{font-family:var(--mono);font-size:21px;font-weight:600;letter-spacing:-.02em}
+.kds-card-head .kc-hrow{display:flex;align-items:center;gap:8px}
+.kds-card-head .kc-ref{margin-left:auto;font-family:var(--mono);font-size:21px;font-weight:600;letter-spacing:-.02em}
 .kds-card-head .kc-type{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;background:var(--blue-tint);color:var(--accent-strong);padding:4px 9px;border-radius:7px}
 .kds-card-head .kc-type.delivery{background:var(--amber-tint);color:var(--amber)}
-.kds-card-head .kc-time{margin-left:auto;font-size:12.5px;font-weight:700;color:var(--muted)}
+.kds-card-head .kc-time{font-size:12.5px;font-weight:700;color:var(--muted)}
+.kds-card-head .kc-pay{margin-left:auto;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.kds-card-head .kc-pay.unpaid{color:var(--red)}
 .kds-card .kc-who{padding:8px 15px 0;font-size:13px;font-weight:700;color:var(--ink-2)}
-.kc-items{list-style:none;margin:0;padding:8px 8px 4px;flex:1}
+.kc-items{list-style:none;margin:0;padding:4px 8px;flex:1}
 .kc-item{
-  display:flex;align-items:baseline;gap:9px;padding:11px 9px;border-radius:10px;
+  display:block;padding:10px 9px;border-radius:10px;
   font-size:16px;line-height:1.3;cursor:pointer;-webkit-tap-highlight-color:transparent;
 }
+.kc-item + .kc-item{border-top:1px solid var(--line)}
 .kc-item:active{background:var(--canvas)}
+.kc-line{display:flex;align-items:baseline;gap:9px}
 .kc-item .kc-qty{font-family:var(--mono);font-weight:600;color:var(--blue);min-width:30px}
 .kc-item .kc-name{font-weight:700;flex:1}
-.kc-item .kc-ex{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-top:2px}
-.kc-item .kc-note{display:block;font-size:14px;font-weight:800;color:var(--red);margin-top:3px}
+.kc-mod{display:flex;align-items:baseline;gap:9px;font-size:14.5px;font-weight:600;color:var(--muted);margin-top:4px}
+.kc-mod .kc-mq{font-family:var(--mono);min-width:30px;color:var(--muted);font-weight:600}
+.kc-item .kc-note{display:block;font-size:14px;font-weight:800;color:var(--red);margin-top:4px}
 .kc-item.struck{color:var(--muted-2)}
-.kc-item.struck .kc-qty{color:var(--muted-2)}
+.kc-item.struck .kc-qty,.kc-item.struck .kc-mod,.kc-item.struck .kc-mq{color:var(--muted-2)}
 .kc-item.struck .kc-name{text-decoration:line-through;text-decoration-thickness:2px}
 .kc-ready{
   margin:6px 12px 14px;height:54px;border:0;border-radius:13px;
@@ -2411,15 +2417,22 @@ async function kdsPoll() {
 function kdsItemsHtml(o) {
   const struck = new Set(o.kdsStruck || []);
   return (o.totals && o.totals.lines ? o.totals.lines : []).map((li, idx) => {
+    const qty = li.qty || 1;
     const extras = []
       .concat(li.spice ? [li.spice] : [])
       .concat(li.meal ? ['Meal'] : [])
       .concat(Array.isArray(li.modifiers) ? li.modifiers : [])
       .concat(Array.isArray(li.mealChoices) ? li.mealChoices : []);
-    const exTxt = extras.map(e => escapeHtml(typeof e === 'string' ? e : (e && (e.label || e.name)) || '')).filter(Boolean).join(', ');
+    // Each option on its own "qty × label" line for at-a-glance kitchen reading.
+    const modsHtml = extras
+      .map(e => escapeHtml(typeof e === 'string' ? e : (e && (e.label || e.name)) || ''))
+      .filter(Boolean)
+      .map(lbl => `<div class="kc-mod"><span class="kc-mq">${qty}×</span><span>${lbl}</span></div>`)
+      .join('');
     return `<li class="kc-item${struck.has(idx) ? ' struck' : ''}" data-id="${o.id}" data-idx="${idx}">
-        <span class="kc-qty">${li.qty || 1}×</span>
-        <span class="kc-name">${escapeHtml(li.name)}${exTxt ? `<span class="kc-ex">${exTxt}</span>` : ''}${li.notes ? `<span class="kc-note">📝 ${escapeHtml(li.notes)}</span>` : ''}</span>
+        <div class="kc-line"><span class="kc-qty">${qty}×</span><span class="kc-name">${escapeHtml(li.name)}</span></div>
+        ${modsHtml}
+        ${li.notes ? `<div class="kc-note">📝 ${escapeHtml(li.notes)}</div>` : ''}
       </li>`;
   }).join('');
 }
@@ -2437,12 +2450,20 @@ function renderKds(orders, routing) {
     const isNew = !kdsSeen.has(o.id);
     const isDelivery = o.fulfillment === 'delivery';
     const type = isDelivery ? 'Delivery' : (o.source === 'counter-walkin' ? 'Walk-in' : 'Collection');
+    // Unpaid is the flag the kitchen cares about (e.g. pay-later / cash-on-delivery);
+    // anything not explicitly unpaid reads as Paid.
+    const paid = !((o.payment && o.payment.state === 'unpaid') || o.paymentMethod === 'unpaid');
     const who = (o.customer && o.customer.name && o.customer.name !== 'Walk-in') ? `<div class="kc-who">${escapeHtml(o.customer.name)}</div>` : '';
     return `<article class="kds-card${isNew ? ' new' : ''}" data-id="${o.id}">
       <div class="kds-card-head">
-        <span class="kc-ref">#${escapeHtml(orderNo(o))}</span>
-        <span class="kc-type${isDelivery ? ' delivery' : ''}">${type}</span>
-        <span class="kc-time">${humanAgo(new Date(o.createdAt))}</span>
+        <div class="kc-hrow">
+          <span class="kc-type${isDelivery ? ' delivery' : ''}">${type}</span>
+          <span class="kc-ref">#${escapeHtml(orderNo(o))}</span>
+        </div>
+        <div class="kc-hrow">
+          <span class="kc-time">⏰ ${humanAgo(new Date(o.createdAt))}</span>
+          <span class="kc-pay${paid ? ' paid' : ' unpaid'}">${paid ? 'Paid' : 'Not paid'}</span>
+        </div>
       </div>
       ${who}
       <ul class="kc-items">${kdsItemsHtml(o)}</ul>
