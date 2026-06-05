@@ -2302,6 +2302,7 @@ function enterDashboard() {
   $('#dash').hidden = false;
   loadMe();
   loadSettings();
+  loadShopConfig();
   setView('live');
   // Prime the audio context with a silent tone so iOS lets us play later.
   if (state.soundOn) {
@@ -2310,6 +2311,18 @@ function enterDashboard() {
   poll();
   state.pollHandle = setInterval(poll, 5000);
   resetIdle();
+}
+
+// Load the shop config (business name/phone/address, theme) at sign-in so receipts
+// printed from the BOARD have the full header — the sale view also loads it, but a
+// board "Print ticket" happens before any sale is opened. Sets sale.config so the
+// rich receipt's "Rico's Peri Peri" wordmark + address aren't blank.
+async function loadShopConfig() {
+  if (sale.config) return;
+  try {
+    const res = await fetch('/api/config', { cache: 'no-store' });
+    if (res.ok) sale.config = await res.json();
+  } catch (e) { /* receipts still print, just without the header */ }
 }
 
 // Effective print⇄KDS routing for this shop. When on, the till skips the kitchen
