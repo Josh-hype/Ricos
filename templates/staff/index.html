@@ -2572,8 +2572,6 @@ function renderList(list, newIds = []) {
 
 function wireCardButtons() {
   $$('.card .btn-accept').forEach(b => b.addEventListener('click', () => openAccept(b.dataset.id)));
-  $$('.card .btn-ready').forEach(b => b.addEventListener('click', () => updateStatus(b.dataset.id, 'ready')));
-  $$('.card .btn-out').forEach(b => b.addEventListener('click', () => updateStatus(b.dataset.id, 'out_for_delivery')));
   $$('.card .btn-complete').forEach(b => b.addEventListener('click', () => updateStatus(b.dataset.id, 'completed')));
   $$('.card .btn-cancel').forEach(b => b.addEventListener('click', () => {
     if (confirm('Cancel this order? The customer is notified and any card payment is refunded automatically.')) {
@@ -2611,10 +2609,6 @@ function wireCardButtons() {
   $$('.card-menu .menu-accept').forEach(b => b.addEventListener('click', (e) => {
     e.stopPropagation();
     openAccept(b.dataset.id);
-  }));
-  $$('.card-menu .menu-progress').forEach(b => b.addEventListener('click', (e) => {
-    e.stopPropagation();
-    updateStatus(b.dataset.id, b.dataset.status);
   }));
   $$('.card-menu .menu-print').forEach(b => b.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -2899,14 +2893,8 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
       <button class="btn-accept" data-id="${o.id}">Accept →</button>
       <button class="btn-print" data-id="${o.id}">Print</button>
       <button class="btn-cancel" data-id="${o.id}">Cancel</button>`;
-  } else if (o.status === 'accepted') {
-    const verb = o.fulfillment === 'delivery' ? '→ Out' : '→ Ready';
-    const cls = o.fulfillment === 'delivery' ? 'btn-out' : 'btn-ready';
-    const status = o.fulfillment === 'delivery' ? 'out_for_delivery' : 'ready';
-    actions = `
-      <button class="${cls}" data-id="${o.id}" data-status="${status}">${verb}</button>
-      <button class="btn-print" data-id="${o.id}">Print</button>`;
-  } else if (o.status === 'ready' || o.status === 'out_for_delivery') {
+  } else if (['accepted', 'ready', 'out_for_delivery'].includes(o.status)) {
+    // No "Mark ready" step on the till — straight to Complete (kitchen bumps on the KDS).
     actions = `
       <button class="btn-complete" data-id="${o.id}">→ Complete</button>
       <button class="btn-print" data-id="${o.id}">Print</button>`;
@@ -3046,11 +3034,8 @@ function renderRow(o, isNew) {
     m.push(`<button class="menu-pay" data-id="${o.id}">Pay now</button>`);
   }
   if (o.status === 'pending_accept') m.push(`<button class="menu-accept" data-id="${o.id}">Accept…</button>`);
-  if (o.status === 'accepted') {
-    const ns = o.fulfillment === 'delivery' ? 'out_for_delivery' : 'ready';
-    const nl = o.fulfillment === 'delivery' ? 'Mark out for delivery' : 'Mark ready';
-    m.push(`<button class="menu-progress" data-id="${o.id}" data-status="${ns}">${nl}</button>`);
-  }
+  // No "Mark ready" on the till — accepted orders go straight to Complete (the
+  // kitchen bumps to ready on the KDS).
   if (['accepted', 'ready', 'out_for_delivery'].includes(o.status) && !isUnpaid) {
     m.push(`<button class="menu-complete" data-id="${o.id}">Complete order</button>`);
   }
