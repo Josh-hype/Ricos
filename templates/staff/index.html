@@ -1109,6 +1109,8 @@ button{cursor:pointer;border:0;background:none}
 
 .item-section{display:flex;flex-direction:column;gap:8px}
 .item-section .sec-label{font-size:12.5px;font-weight:700;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em}
+.item-modal-body textarea.item-special-input{width:100%;min-height:60px;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:11px 14px;font-size:15px;font-weight:500;color:var(--ink);font-family:var(--sans);resize:vertical}
+.item-modal-body textarea.item-special-input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-tint)}
 
 .spice-select, .meal-choice-sel{
   width:100%;height:46px;border:1px solid var(--line);border-radius:12px;background:var(--panel);
@@ -3834,6 +3836,7 @@ function renderSaleTicket() {
           <div class="l-mid">
             <div class="l-name">${escapeHtml(name)}</div>
             ${mods ? `<div class="l-mods">${escapeHtml(mods)}</div>` : ''}
+            ${c.notes ? `<div class="l-mods" style="font-style:italic">“${escapeHtml(c.notes)}”</div>` : ''}
             <div class="qty-ctrl">
               <button type="button" data-act="dec" data-i="${i}" aria-label="Decrease quantity">−</button>
               <span class="qv">${c.qty}</span>
@@ -3875,7 +3878,7 @@ function renderSaleTicket() {
 function lineKey(id, opts) {
   const modIds = (opts.modifiers || []).slice().sort();
   const choiceIds = (opts.mealChoices || []).slice();
-  return `${id}|${opts.spice || ''}|${opts.meal ? 'M' : ''}|${modIds.join(',')}|${choiceIds.join(',')}`;
+  return `${id}|${opts.spice || ''}|${opts.meal ? 'M' : ''}|${modIds.join(',')}|${choiceIds.join(',')}|${opts.notes || ''}`;
 }
 
 function addToCart(id, opts = {}) {
@@ -3891,6 +3894,7 @@ function addToCart(id, opts = {}) {
       meal: !!opts.meal,
       modifiers: (opts.modifiers || []).slice(),
       mealChoices: (opts.mealChoices || []).slice(),
+      notes: opts.notes || null,
       _key: key,
     });
   }
@@ -3969,7 +3973,9 @@ function openItemDetail(id) {
     const spiceSel = body.querySelector('.spice-select');
     const spice = spiceSel ? spiceSel.value : null;
     const modifiers = [...body.querySelectorAll('.opt-group input:checked')].map(i => i.value);
-    addToCart(id, { spice, meal: isMeal, modifiers, mealChoices });
+    const noteEl = body.querySelector('.item-special-input');
+    const notes = noteEl ? noteEl.value.trim().slice(0, 140) : '';
+    addToCart(id, { spice, meal: isMeal, modifiers, mealChoices, notes });
     addBtn.classList.add('added');
     addBtn.querySelector('span').textContent = '✓ Added';
     setTimeout(closeItemDetail, 450);
@@ -4017,6 +4023,7 @@ function itemDetailHTML(v, canonical) {
     ${spice}
     ${options}
     ${meal}
+    ${(sale.config && sale.config.ordering && sale.config.ordering.itemNotes) ? `<div class="item-section"><div class="sec-label">Special instructions</div><textarea class="item-special-input" rows="2" maxlength="140" placeholder="e.g. No onions, well done…"></textarea></div>` : ''}
     <button type="button" class="item-add"><span>Add to order</span></button>
   `;
 }
@@ -4552,6 +4559,7 @@ function buildSalePayload(extra) {
     id: c.id, qty: c.qty, spice: c.spice || null, meal: !!c.meal,
     modifiers: Array.isArray(c.modifiers) ? c.modifiers : [],
     mealChoices: Array.isArray(c.mealChoices) ? c.mealChoices : [],
+    notes: c.notes || null,
   }));
   const payload = Object.assign({ items, mode: sale.mode }, extra || {});
   if (sale.takenBy) payload.takenBy = { id: sale.takenBy.id };

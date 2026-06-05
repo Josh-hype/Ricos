@@ -1880,10 +1880,7 @@ function itemDetailHTML(item) {
       ${spiceField}
       ${mealField}
       ${mealChooseField}
-      <div class="item-special">
-        <label>Special instructions</label>
-        <textarea class="item-special-input" rows="2" maxlength="140" placeholder="e.g. No onions, well done… (optional)"></textarea>
-      </div>
+      ${(window.SHOP_CONFIG && window.SHOP_CONFIG.ordering && window.SHOP_CONFIG.ordering.itemNotes) ? `<div class="item-special"><label>Special instructions</label><textarea class="item-special-input" rows="2" maxlength="140" placeholder="e.g. No onions, well done… (optional)"></textarea></div>` : ''}
       <button type="button" class="item-detail-add">+ Add to order</button>
     </div>
   `;

@@ -86,7 +86,8 @@
       "maxOrdersPerSlot": 6,
       "horizonDays": 2
     },
-    "lastOrderBeforeCloseMinutes": 30
+    "lastOrderBeforeCloseMinutes": 30,
+    "itemNotes": true
   },
 
   "promo": {
