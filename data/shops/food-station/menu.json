@@ -5950,6 +5950,76 @@
             "id": "h",
             "label": "½lb",
             "priceDeltaP": 100
+          },
+          {
+            "id": "chips",
+            "label": "Chips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "cheesy-chips",
+            "label": "Cheesy chips",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
           }
         ]
       },
@@ -5962,6 +6032,76 @@
             "id": "h",
             "label": "½lb",
             "priceDeltaP": 100
+          },
+          {
+            "id": "chips",
+            "label": "Chips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "cheesy-chips",
+            "label": "Cheesy chips",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
           }
         ]
       },
@@ -5974,6 +6114,76 @@
             "id": "h",
             "label": "½lb",
             "priceDeltaP": 100
+          },
+          {
+            "id": "chips",
+            "label": "Chips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "cheesy-chips",
+            "label": "Cheesy chips",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
           }
         ]
       },
@@ -5986,6 +6196,76 @@
             "id": "h",
             "label": "½lb",
             "priceDeltaP": 110
+          },
+          {
+            "id": "chips",
+            "label": "Chips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "cheesy-chips",
+            "label": "Cheesy chips",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
           }
         ]
       },
@@ -5998,6 +6278,76 @@
             "id": "h",
             "label": "½lb",
             "priceDeltaP": 100
+          },
+          {
+            "id": "chips",
+            "label": "Chips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "cheesy-chips",
+            "label": "Cheesy chips",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
           }
         ]
       },
@@ -6010,6 +6360,76 @@
             "id": "h",
             "label": "½lb",
             "priceDeltaP": 100
+          },
+          {
+            "id": "chips",
+            "label": "Chips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "cheesy-chips",
+            "label": "Cheesy chips",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
           }
         ]
       },
@@ -6022,23 +6442,309 @@
             "id": "h",
             "label": "½lb",
             "priceDeltaP": 100
+          },
+          {
+            "id": "chips",
+            "label": "Chips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "cheesy-chips",
+            "label": "Cheesy chips",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
           }
         ]
       },
       {
         "id": "bg-combo",
         "name": "Combo Burger & Chips",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "chips",
+            "label": "Chips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "cheesy-chips",
+            "label": "Cheesy chips",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "bg-mega",
         "name": "Mega Burger & Chips",
-        "priceP": 1050
+        "priceP": 1050,
+        "modifiers": [
+          {
+            "id": "chips",
+            "label": "Chips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "cheesy-chips",
+            "label": "Cheesy chips",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "bg-special",
         "name": "Special Burger & Chips",
-        "priceP": 1150
+        "priceP": 1150,
+        "modifiers": [
+          {
+            "id": "chips",
+            "label": "Chips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "cheesy-chips",
+            "label": "Cheesy chips",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          }
+        ]
       }
     ]
   },
