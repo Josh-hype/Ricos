@@ -10028,7 +10028,669 @@
       {
         "id": "md-4",
         "name": "Meal Deal 4",
-        "priceP": 2000
+        "priceP": 2000,
+        "modifiers": [
+          {
+            "id": "p1-marg",
+            "label": "Pizza 1 — Margherita",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-bbq-marg",
+            "label": "Pizza 1 — BBQ Margherita",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-4cheese",
+            "label": "Pizza 1 — 4 Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-london",
+            "label": "Pizza 1 — London",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-halloumi",
+            "label": "Pizza 1 — Halloumi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-veg-supreme",
+            "label": "Pizza 1 — Veg Supreme",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-veg",
+            "label": "Pizza 1 — Hot Veg",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-alfunghi",
+            "label": "Pizza 1 — Alfunghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-prosciutto",
+            "label": "Pizza 1 — Prosciutto",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-farmhouse",
+            "label": "Pizza 1 — Farmhouse",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hawaiian",
+            "label": "Pizza 1 — Hawaiian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-chicken-sweetcorn",
+            "label": "Pizza 1 — Chicken Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-bbq-chicken",
+            "label": "Pizza 1 — BBQ Chicken",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-chicken-supreme",
+            "label": "Pizza 1 — Chicken Supreme",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-kiev",
+            "label": "Pizza 1 — Kiev",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-pepperoni",
+            "label": "Pizza 1 — Pepperoni",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-double-bite",
+            "label": "Pizza 1 — Double Bite",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-shot",
+            "label": "Pizza 1 — Hot Shot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-doner",
+            "label": "Pizza 1 — Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-mexicano",
+            "label": "Pizza 1 — Mexicano",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-meat-supreme",
+            "label": "Pizza 1 — Meat Supreme",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-tuna-sweetcorn",
+            "label": "Pizza 1 — Tuna Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-tuna-mushroom",
+            "label": "Pizza 1 — Tuna Mushrooms",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-seafood",
+            "label": "Pizza 1 — Seafood",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-bbq-meaty",
+            "label": "Pizza 1 — BBQ Meaty Mighty",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-bbq-pokker",
+            "label": "Pizza 1 — BBQ Pokker",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hotdog-pizza",
+            "label": "Pizza 1 — Hotdog",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-thin-base",
+            "label": "Pizza 1 — Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-deep-pan",
+            "label": "Pizza 1 — Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-stuffed",
+            "label": "Pizza 1 — Stuffed crust",
+            "priceDeltaP": 250
+          },
+          {
+            "id": "p1-xt-mozzarella-cheese",
+            "label": "Pizza 1 — Mozzarella cheese",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p1-xt-cheddar",
+            "label": "Pizza 1 — Cheddar",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p1-xt-feta-cheese",
+            "label": "Pizza 1 — Feta cheese",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p1-xt-halloumi-cheese",
+            "label": "Pizza 1 — Halloumi cheese",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p1-xt-red-onions",
+            "label": "Pizza 1 — Red onions",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "p1-xt-peppers",
+            "label": "Pizza 1 — Peppers",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "p1-xt-garlic-butter",
+            "label": "Pizza 1 — Garlic butter",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "p1-xt-mushrooms",
+            "label": "Pizza 1 — Mushrooms",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "p1-xt-tomatoes",
+            "label": "Pizza 1 — Tomatoes",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "p1-xt-sweetcorn",
+            "label": "Pizza 1 — Sweetcorn",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "p1-xt-black-olives",
+            "label": "Pizza 1 — Black Olives",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "p1-xt-jalapenos",
+            "label": "Pizza 1 — Jalapenos",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "p1-xt-fresh-chillies",
+            "label": "Pizza 1 — Fresh Chillies",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "p1-xt-pineapple",
+            "label": "Pizza 1 — Pineapple",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "p1-xt-tuna",
+            "label": "Pizza 1 — Tuna",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p1-xt-prawns",
+            "label": "Pizza 1 — Prawns",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p1-xt-anchovies",
+            "label": "Pizza 1 — Anchovies",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p1-xt-hotdog",
+            "label": "Pizza 1 — Hotdog",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p1-xt-ham",
+            "label": "Pizza 1 — Ham",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p1-xt-chicken",
+            "label": "Pizza 1 — Chicken",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p1-xt-tandoori-chicken",
+            "label": "Pizza 1 — Tandoori Chicken",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p1-xt-pepperoni",
+            "label": "Pizza 1 — Pepperoni",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p1-xt-donner-meat",
+            "label": "Pizza 1 — Donner meat",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p1-xt-salami",
+            "label": "Pizza 1 — Salami",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p1-xt-spicy-beef",
+            "label": "Pizza 1 — Spicy Beef",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p1-xt-bacon",
+            "label": "Pizza 1 — Bacon",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p1-xt-meatballs",
+            "label": "Pizza 1 — Meatballs",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p2-marg",
+            "label": "Pizza 2 — Margherita",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-bbq-marg",
+            "label": "Pizza 2 — BBQ Margherita",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-4cheese",
+            "label": "Pizza 2 — 4 Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-london",
+            "label": "Pizza 2 — London",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-halloumi",
+            "label": "Pizza 2 — Halloumi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-veg-supreme",
+            "label": "Pizza 2 — Veg Supreme",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hot-veg",
+            "label": "Pizza 2 — Hot Veg",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-alfunghi",
+            "label": "Pizza 2 — Alfunghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-prosciutto",
+            "label": "Pizza 2 — Prosciutto",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-farmhouse",
+            "label": "Pizza 2 — Farmhouse",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hawaiian",
+            "label": "Pizza 2 — Hawaiian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-chicken-sweetcorn",
+            "label": "Pizza 2 — Chicken Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-bbq-chicken",
+            "label": "Pizza 2 — BBQ Chicken",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-chicken-supreme",
+            "label": "Pizza 2 — Chicken Supreme",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-kiev",
+            "label": "Pizza 2 — Kiev",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-pepperoni",
+            "label": "Pizza 2 — Pepperoni",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-double-bite",
+            "label": "Pizza 2 — Double Bite",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hot-shot",
+            "label": "Pizza 2 — Hot Shot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-doner",
+            "label": "Pizza 2 — Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-mexicano",
+            "label": "Pizza 2 — Mexicano",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-meat-supreme",
+            "label": "Pizza 2 — Meat Supreme",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-tuna-sweetcorn",
+            "label": "Pizza 2 — Tuna Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-tuna-mushroom",
+            "label": "Pizza 2 — Tuna Mushrooms",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-seafood",
+            "label": "Pizza 2 — Seafood",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-bbq-meaty",
+            "label": "Pizza 2 — BBQ Meaty Mighty",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-bbq-pokker",
+            "label": "Pizza 2 — BBQ Pokker",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hotdog-pizza",
+            "label": "Pizza 2 — Hotdog",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-thin-base",
+            "label": "Pizza 2 — Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-deep-pan",
+            "label": "Pizza 2 — Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-stuffed",
+            "label": "Pizza 2 — Stuffed crust",
+            "priceDeltaP": 250
+          },
+          {
+            "id": "p2-xt-mozzarella-cheese",
+            "label": "Pizza 2 — Mozzarella cheese",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p2-xt-cheddar",
+            "label": "Pizza 2 — Cheddar",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p2-xt-feta-cheese",
+            "label": "Pizza 2 — Feta cheese",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p2-xt-halloumi-cheese",
+            "label": "Pizza 2 — Halloumi cheese",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p2-xt-red-onions",
+            "label": "Pizza 2 — Red onions",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "p2-xt-peppers",
+            "label": "Pizza 2 — Peppers",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "p2-xt-garlic-butter",
+            "label": "Pizza 2 — Garlic butter",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "p2-xt-mushrooms",
+            "label": "Pizza 2 — Mushrooms",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "p2-xt-tomatoes",
+            "label": "Pizza 2 — Tomatoes",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "p2-xt-sweetcorn",
+            "label": "Pizza 2 — Sweetcorn",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "p2-xt-black-olives",
+            "label": "Pizza 2 — Black Olives",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "p2-xt-jalapenos",
+            "label": "Pizza 2 — Jalapenos",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "p2-xt-fresh-chillies",
+            "label": "Pizza 2 — Fresh Chillies",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "p2-xt-pineapple",
+            "label": "Pizza 2 — Pineapple",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "p2-xt-tuna",
+            "label": "Pizza 2 — Tuna",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p2-xt-prawns",
+            "label": "Pizza 2 — Prawns",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p2-xt-anchovies",
+            "label": "Pizza 2 — Anchovies",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p2-xt-hotdog",
+            "label": "Pizza 2 — Hotdog",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p2-xt-ham",
+            "label": "Pizza 2 — Ham",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p2-xt-chicken",
+            "label": "Pizza 2 — Chicken",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p2-xt-tandoori-chicken",
+            "label": "Pizza 2 — Tandoori Chicken",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p2-xt-pepperoni",
+            "label": "Pizza 2 — Pepperoni",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p2-xt-donner-meat",
+            "label": "Pizza 2 — Donner meat",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p2-xt-salami",
+            "label": "Pizza 2 — Salami",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p2-xt-spicy-beef",
+            "label": "Pizza 2 — Spicy Beef",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p2-xt-bacon",
+            "label": "Pizza 2 — Bacon",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "p2-xt-meatballs",
+            "label": "Pizza 2 — Meatballs",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "md4-2chips",
+            "label": "2 x Chips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md4-cheese-chips",
+            "label": "Extra cheese on chips",
+            "priceDeltaP": 150
+          },
+          {
+            "id": "d1-coke",
+            "label": "Can of Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "d1-diet-coke",
+            "label": "Can of Diet Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "d1-coke-zero",
+            "label": "Can of Coke Zero",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "d1-fanta",
+            "label": "Can of Fanta",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "d1-fanta-lemon",
+            "label": "Can of Fanta Lemon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "d1-pepsi",
+            "label": "Can of Pepsi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "d1-7up",
+            "label": "Can of 7up",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "d1-dr-pepper",
+            "label": "Can of Dr Pepper",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "d2-coke",
+            "label": "Can of Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "d2-diet-coke",
+            "label": "Can of Diet Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "d2-coke-zero",
+            "label": "Can of Coke Zero",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "d2-fanta",
+            "label": "Can of Fanta",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "d2-fanta-lemon",
+            "label": "Can of Fanta Lemon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "d2-pepsi",
+            "label": "Can of Pepsi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "d2-7up",
+            "label": "Can of 7up",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "d2-dr-pepper",
+            "label": "Can of Dr Pepper",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "md-5",
