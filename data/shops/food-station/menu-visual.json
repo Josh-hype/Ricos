@@ -6,9 +6,9 @@
     "items": [
       {
         "id": "marg",
-        "name": "Margarita",
+        "name": "Margherita",
         "price": 8,
-        "desc": "Tomato sauce, mozzarella.",
+        "desc": "With tomato sauce & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -198,9 +198,9 @@
       },
       {
         "id": "bbq-marg",
-        "name": "BBQ Margarita",
+        "name": "BBQ Margherita",
         "price": 8,
-        "desc": "BBQ sauce, mozzarella.",
+        "desc": "With BBQ sauce & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -392,7 +392,7 @@
         "id": "4cheese",
         "name": "4 Cheese",
         "price": 8.5,
-        "desc": "Pizza sauce, cheddar, feta, mozzarella, halloumi.",
+        "desc": "With pizza sauce, cheddar, feta, halloumi & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -582,9 +582,9 @@
       },
       {
         "id": "london",
-        "name": "London Pizza",
+        "name": "London",
         "price": 8.8,
-        "desc": "Pizza sauce, mozzarella, halloumi.",
+        "desc": "With pizza sauce, chips & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -774,9 +774,9 @@
       },
       {
         "id": "halloumi",
-        "name": "Halloumi Pizza",
+        "name": "Halloumi",
         "price": 9,
-        "desc": "Pizza sauce, mozzarella, halloumi.",
+        "desc": "With pizza sauce, red onions, peppers, garlic butter, halloumi cheese & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -968,7 +968,7 @@
         "id": "veg-supreme",
         "name": "Veg Supreme",
         "price": 8.8,
-        "desc": "Mozzarella, red onion, mushroom, peppers, tomato, sweetcorn, black olives.",
+        "desc": "With pizza sauce, red onions, peppers, mushrooms, tomatoes, sweetcorn, black olives & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -1160,7 +1160,7 @@
         "id": "hot-veg",
         "name": "Hot Veg",
         "price": 8.8,
-        "desc": "Mozzarella, red onion, mushroom, black olives, jalapeno, fresh chilli.",
+        "desc": "With pizza sauce, red onions, mushrooms, jalapenos, fresh chillies, black olives & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -1353,7 +1353,7 @@
         "id": "alfunghi",
         "name": "Alfunghi",
         "price": 8.5,
-        "desc": "Mushroom and mozzarella.",
+        "desc": "With pizza sauce, mushrooms & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -1545,7 +1545,7 @@
         "id": "prosciutto",
         "name": "Prosciutto",
         "price": 9,
-        "desc": "Ham.",
+        "desc": "With pizza sauce, ham & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -1929,7 +1929,7 @@
         "id": "farmhouse",
         "name": "Farmhouse",
         "price": 9,
-        "desc": "Ham and mushroom.",
+        "desc": "With pizza sauce, ham, mushrooms & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -2313,7 +2313,7 @@
         "id": "hawaiian",
         "name": "Hawaiian",
         "price": 9,
-        "desc": "Ham and pineapple.",
+        "desc": "With pizza sauce, ham, pineapple & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -2505,7 +2505,7 @@
         "id": "chicken-sweetcorn",
         "name": "Chicken Sweetcorn",
         "price": 9,
-        "desc": "Chicken, sweetcorn.",
+        "desc": "With pizza sauce, chicken, sweetcorn & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -2697,7 +2697,7 @@
         "id": "bbq-chicken",
         "name": "BBQ Chicken",
         "price": 9,
-        "desc": "BBQ chicken.",
+        "desc": "With BBQ sauce, chicken, peppers & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -2889,7 +2889,7 @@
         "id": "chicken-supreme",
         "name": "Chicken Supreme",
         "price": 10,
-        "desc": "Chicken, peppers, BBQ.",
+        "desc": "With pizza sauce, chicken, red onions, mushrooms, peppers, garlic butter & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -3081,7 +3081,7 @@
         "id": "kiev",
         "name": "Kiev",
         "price": 9,
-        "desc": "Chicken, red onion, mushroom, peppers, garlic butter.",
+        "desc": "With pizza sauce, chicken, ham, garlic butter & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -3273,7 +3273,7 @@
         "id": "pepperoni",
         "name": "Pepperoni",
         "price": 9,
-        "desc": "Pepperoni, mozzarella.",
+        "desc": "With pizza sauce, pepperoni & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -3465,7 +3465,7 @@
         "id": "double-bite",
         "name": "Double Bite",
         "price": 10.5,
-        "desc": "Double pepperoni, double cheese.",
+        "desc": "With pizza sauce, double pepperoni & double mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -3657,7 +3657,7 @@
         "id": "hot-shot",
         "name": "Hot Shot",
         "price": 10,
-        "desc": "Pepperoni, jalapeno, garlic butter.",
+        "desc": "With pizza sauce, pepperoni, jalapenos, garlic butter & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -3850,7 +3850,7 @@
         "id": "doner",
         "name": "Doner",
         "price": 9.5,
-        "desc": "Doner, red onion, mushroom.",
+        "desc": "With pizza sauce, doner meat, red onions, mushrooms & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -4042,7 +4042,200 @@
         "id": "mexicano",
         "name": "Mexicano",
         "price": 10,
-        "desc": "Spicy beef, red onion, peppers, fresh chilli.",
+        "desc": "With pizza sauce, spicy beef, red onions, peppers, fresh chilli & mozzarella cheese",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz13",
+                "label": "13\"",
+                "price": 1
+              }
+            ]
+          },
+          {
+            "id": "crust",
+            "label": "Choose crust",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "thin-base",
+                "label": "Thin Base",
+                "price": 0
+              },
+              {
+                "id": "deep-pan",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "stuffed",
+                "label": "Stuffed crust",
+                "price": 2.5
+              }
+            ]
+          },
+          {
+            "id": "extra-toppings",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-mozzarella-cheese",
+                "label": "Mozzarella cheese",
+                "price": 2
+              },
+              {
+                "id": "xt-cheddar",
+                "label": "Cheddar",
+                "price": 2
+              },
+              {
+                "id": "xt-feta-cheese",
+                "label": "Feta cheese",
+                "price": 2
+              },
+              {
+                "id": "xt-halloumi-cheese",
+                "label": "Halloumi cheese",
+                "price": 2
+              },
+              {
+                "id": "xt-red-onions",
+                "label": "Red onions",
+                "price": 1
+              },
+              {
+                "id": "xt-peppers",
+                "label": "Peppers",
+                "price": 1
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic butter",
+                "price": 1
+              },
+              {
+                "id": "xt-mushrooms",
+                "label": "Mushrooms",
+                "price": 1
+              },
+              {
+                "id": "xt-tomatoes",
+                "label": "Tomatoes",
+                "price": 1
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1
+              },
+              {
+                "id": "xt-fresh-chillies",
+                "label": "Fresh Chillies",
+                "price": 1
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 2
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 2
+              },
+              {
+                "id": "xt-anchovies",
+                "label": "Anchovies",
+                "price": 2
+              },
+              {
+                "id": "xt-hotdog",
+                "label": "Hotdog",
+                "price": 2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 2
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 2
+              },
+              {
+                "id": "xt-tandoori-chicken",
+                "label": "Tandoori Chicken",
+                "price": 2
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 2
+              },
+              {
+                "id": "xt-donner-meat",
+                "label": "Donner meat",
+                "price": 2
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 2
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 2
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 2
+              },
+              {
+                "id": "xt-meatballs",
+                "label": "Meatballs",
+                "price": 2
+              }
+            ]
+          }
+        ],
+        "spicyTag": true
+      },
+      {
+        "id": "meat-supreme",
+        "name": "Meat Supreme",
+        "price": 10,
+        "desc": "With pizza sauce, ham, pepperoni, salami & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -4228,206 +4421,13 @@
               }
             ]
           }
-        ],
-        "spicyTag": true
-      },
-      {
-        "id": "meat-supreme",
-        "name": "Meat Supreme",
-        "price": 10,
-        "desc": "Ham, pepperoni, salami.",
-        "options": [
-          {
-            "id": "size",
-            "label": "Size",
-            "select": "single",
-            "required": true,
-            "choices": [
-              {
-                "id": "sz11",
-                "label": "11\"",
-                "price": 0
-              },
-              {
-                "id": "sz13",
-                "label": "13\"",
-                "price": 2
-              }
-            ]
-          },
-          {
-            "id": "crust",
-            "label": "Choose crust",
-            "select": "single",
-            "required": true,
-            "choices": [
-              {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
-                "price": 0
-              },
-              {
-                "id": "stuffed",
-                "label": "Stuffed crust",
-                "price": 2.5
-              }
-            ]
-          },
-          {
-            "id": "extra-toppings",
-            "label": "Extra toppings",
-            "select": "multi",
-            "required": false,
-            "choices": [
-              {
-                "id": "xt-mozzarella-cheese",
-                "label": "Mozzarella cheese",
-                "price": 2
-              },
-              {
-                "id": "xt-cheddar",
-                "label": "Cheddar",
-                "price": 2
-              },
-              {
-                "id": "xt-feta-cheese",
-                "label": "Feta cheese",
-                "price": 2
-              },
-              {
-                "id": "xt-halloumi-cheese",
-                "label": "Halloumi cheese",
-                "price": 2
-              },
-              {
-                "id": "xt-red-onions",
-                "label": "Red onions",
-                "price": 1
-              },
-              {
-                "id": "xt-peppers",
-                "label": "Peppers",
-                "price": 1
-              },
-              {
-                "id": "xt-garlic-butter",
-                "label": "Garlic butter",
-                "price": 1
-              },
-              {
-                "id": "xt-mushrooms",
-                "label": "Mushrooms",
-                "price": 1
-              },
-              {
-                "id": "xt-tomatoes",
-                "label": "Tomatoes",
-                "price": 1
-              },
-              {
-                "id": "xt-sweetcorn",
-                "label": "Sweetcorn",
-                "price": 1
-              },
-              {
-                "id": "xt-black-olives",
-                "label": "Black Olives",
-                "price": 1
-              },
-              {
-                "id": "xt-jalapenos",
-                "label": "Jalapenos",
-                "price": 1
-              },
-              {
-                "id": "xt-fresh-chillies",
-                "label": "Fresh Chillies",
-                "price": 1
-              },
-              {
-                "id": "xt-pineapple",
-                "label": "Pineapple",
-                "price": 1
-              },
-              {
-                "id": "xt-tuna",
-                "label": "Tuna",
-                "price": 2
-              },
-              {
-                "id": "xt-prawns",
-                "label": "Prawns",
-                "price": 2
-              },
-              {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
-                "price": 2
-              },
-              {
-                "id": "xt-hotdog",
-                "label": "Hotdog",
-                "price": 2
-              },
-              {
-                "id": "xt-ham",
-                "label": "Ham",
-                "price": 2
-              },
-              {
-                "id": "xt-chicken",
-                "label": "Chicken",
-                "price": 2
-              },
-              {
-                "id": "xt-tandoori-chicken",
-                "label": "Tandoori Chicken",
-                "price": 2
-              },
-              {
-                "id": "xt-pepperoni",
-                "label": "Pepperoni",
-                "price": 2
-              },
-              {
-                "id": "xt-donner-meat",
-                "label": "Donner meat",
-                "price": 2
-              },
-              {
-                "id": "xt-salami",
-                "label": "Salami",
-                "price": 2
-              },
-              {
-                "id": "xt-spicy-beef",
-                "label": "Spicy Beef",
-                "price": 2
-              },
-              {
-                "id": "xt-bacon",
-                "label": "Bacon",
-                "price": 2
-              },
-              {
-                "id": "xt-meatballs",
-                "label": "Meatballs",
-                "price": 2
-              }
-            ]
-          }
         ]
       },
       {
         "id": "tuna-sweetcorn",
         "name": "Tuna Sweetcorn",
         "price": 9.9,
-        "desc": "Tuna, sweetcorn.",
+        "desc": "With tuna, sweetcorn & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -4617,9 +4617,9 @@
       },
       {
         "id": "tuna-mushroom",
-        "name": "Tuna Mushroom",
+        "name": "Tuna Mushrooms",
         "price": 9.9,
-        "desc": "Tuna, mushroom.",
+        "desc": "With tuna, mushrooms & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -4811,7 +4811,7 @@
         "id": "seafood",
         "name": "Seafood",
         "price": 10,
-        "desc": "Tuna, prawns, anchovies.",
+        "desc": "With tuna, prawns, anchovies & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -5003,7 +5003,7 @@
         "id": "bbq-meaty",
         "name": "BBQ Meaty Mighty",
         "price": 10.9,
-        "desc": "BBQ ham, salami, pepperoni, bacon, meatball.",
+        "desc": "With BBQ chicken, pepperoni, bacon & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -5195,7 +5195,7 @@
         "id": "bbq-pokker",
         "name": "BBQ Pokker",
         "price": 10.9,
-        "desc": "BBQ chicken, pepperoni, bacon.",
+        "desc": "With BBQ ham, salami, pepperoni, bacon, meatballs & mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -5385,9 +5385,9 @@
       },
       {
         "id": "hotdog-pizza",
-        "name": "Hotdog Pizza",
+        "name": "Hotdog",
         "price": 9.9,
-        "desc": "Hotdog, mozzarella.",
+        "desc": "With red onion, hotdog, mushrooms & mozzarella cheese",
         "options": [
           {
             "id": "size",

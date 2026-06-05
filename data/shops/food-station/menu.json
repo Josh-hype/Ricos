@@ -5,7 +5,7 @@
     "items": [
       {
         "id": "marg",
-        "name": "Margarita",
+        "name": "Margherita",
         "priceP": 800,
         "modifiers": [
           {
@@ -167,7 +167,7 @@
       },
       {
         "id": "bbq-marg",
-        "name": "BBQ Margarita",
+        "name": "BBQ Margherita",
         "priceP": 800,
         "modifiers": [
           {
@@ -491,7 +491,7 @@
       },
       {
         "id": "london",
-        "name": "London Pizza",
+        "name": "London",
         "priceP": 880,
         "modifiers": [
           {
@@ -653,7 +653,7 @@
       },
       {
         "id": "halloumi",
-        "name": "Halloumi Pizza",
+        "name": "Halloumi",
         "priceP": 900,
         "modifiers": [
           {
@@ -3413,7 +3413,7 @@
           {
             "id": "sz13",
             "label": "13\"",
-            "priceDeltaP": 180
+            "priceDeltaP": 100
           },
           {
             "id": "thin-base",
@@ -3575,7 +3575,7 @@
           {
             "id": "sz13",
             "label": "13\"",
-            "priceDeltaP": 200
+            "priceDeltaP": 180
           },
           {
             "id": "thin-base",
@@ -3893,7 +3893,7 @@
       },
       {
         "id": "tuna-mushroom",
-        "name": "Tuna Mushroom",
+        "name": "Tuna Mushrooms",
         "priceP": 990,
         "modifiers": [
           {
@@ -4541,7 +4541,7 @@
       },
       {
         "id": "hotdog-pizza",
-        "name": "Hotdog Pizza",
+        "name": "Hotdog",
         "priceP": 990,
         "modifiers": [
           {
