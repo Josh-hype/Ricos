@@ -593,6 +593,7 @@ button{cursor:pointer;border:0;background:none}
 .kc-item .kc-qty{font-family:var(--mono);font-weight:600;color:var(--blue);min-width:30px}
 .kc-item .kc-name{font-weight:700;flex:1}
 .kc-item .kc-ex{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-top:2px}
+.kc-item .kc-note{display:block;font-size:14px;font-weight:800;color:var(--red);margin-top:3px}
 .kc-item.struck{color:var(--muted-2)}
 .kc-item.struck .kc-qty{color:var(--muted-2)}
 .kc-item.struck .kc-name{text-decoration:line-through;text-decoration-thickness:2px}
@@ -2387,7 +2388,7 @@ function kdsItemsHtml(o) {
     const exTxt = extras.map(e => escapeHtml(typeof e === 'string' ? e : (e && (e.label || e.name)) || '')).filter(Boolean).join(', ');
     return `<li class="kc-item${struck.has(idx) ? ' struck' : ''}" data-id="${o.id}" data-idx="${idx}">
         <span class="kc-qty">${li.qty || 1}×</span>
-        <span class="kc-name">${escapeHtml(li.name)}${exTxt ? `<span class="kc-ex">${exTxt}</span>` : ''}</span>
+        <span class="kc-name">${escapeHtml(li.name)}${exTxt ? `<span class="kc-ex">${exTxt}</span>` : ''}${li.notes ? `<span class="kc-note">📝 ${escapeHtml(li.notes)}</span>` : ''}</span>
       </li>`;
   }).join('');
 }
@@ -4372,6 +4373,7 @@ function buildReceiptText(o, ctx) {
       const s = (typeof ex === 'string') ? ex : (ex && (ex.label || ex.name)) || '';
       if (s) out.push('   ' + s);
     }
+    if (li.notes) out.push('   >> ' + li.notes);
   }
   out.push(light);
   if (t.deliveryFeeP) { out.push(row('Subtotal', money(t.subtotalP))); out.push(row('Delivery', money(t.deliveryFeeP))); }
@@ -4493,6 +4495,7 @@ function buildReceiptDoc(o, ctx) {
   for (const li of (t.lines || [])) {
     ops.push(rowOp((li.qty || 1) + 'x ' + li.name, money(li.lineTotalP), SZ.body, true));
     for (const ex of lineExtras(li)) ops.push({ t: 'text', s: '   ' + ex, size: SZ.sm, bold: true });
+    if (li.notes) ops.push({ t: 'text', s: '   >> ' + li.notes, size: SZ.sm, bold: true });
   }
   ops.push(ruleOp());
   if (t.deliveryFeeP) { ops.push(rowOp('Subtotal', money(t.subtotalP), SZ.body, true)); ops.push(rowOp('Delivery', money(t.deliveryFeeP), SZ.body, true)); }

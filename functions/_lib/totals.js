@@ -67,6 +67,9 @@ export function computeTotals(input, config, opts = {}) {
       spice: typeof line.spice === 'string' ? line.spice.slice(0, 40) : null,
       modifiers: modSummaries,
       mealChoices: mealChoiceNames,
+      // Per-item special instructions (free text) — capped + recorded for the
+      // kitchen ticket / KDS. The client can't be trusted for length.
+      notes: (typeof line.notes === 'string' && line.notes.trim()) ? line.notes.trim().slice(0, 140) : null,
       unitPriceP: lineP,
       lineTotalP,
     });

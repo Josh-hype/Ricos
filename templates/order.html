@@ -851,6 +851,12 @@
   .item-detail-add:hover { background: var(--red); }
   .item-detail-add.added { background: var(--success); color: var(--white); }
 
+  /* Per-item Special instructions */
+  .item-special { margin: 2px 0 4px; }
+  .item-special label { display:block; font-size:0.82rem; font-weight:700; color:var(--grey); text-transform:uppercase; letter-spacing:0.02em; margin-bottom:5px; }
+  .item-special textarea { width:100%; padding:9px 11px; border:1.5px solid var(--ink); border-radius:8px; font-size:0.95rem; resize:vertical; min-height:46px; font-family:inherit; }
+  .item-special textarea::placeholder { color:var(--grey); }
+
   /* ============================================================
      CART
      ============================================================ */
@@ -1814,11 +1820,13 @@ function openItemDetail(itemId) {
       mealChoices = selects.map(s => s.value);
     }
 
+    const noteEl = body.querySelector('.item-special-input');
     addToCart(itemId, {
       spice: spiceSel ? spiceSel.value : null,
       meal: isMeal,
       mealChoices,
       options,
+      notes: noteEl ? noteEl.value.trim().slice(0, 140) : '',
     });
     addBtn.classList.add('added');
     addBtn.textContent = '✓ Added to cart';
@@ -1872,6 +1880,10 @@ function itemDetailHTML(item) {
       ${spiceField}
       ${mealField}
       ${mealChooseField}
+      <div class="item-special">
+        <label>Special instructions</label>
+        <textarea class="item-special-input" rows="2" maxlength="140" placeholder="e.g. No onions, well done… (optional)"></textarea>
+      </div>
       <button type="button" class="item-detail-add">+ Add to order</button>
     </div>
   `;
@@ -2021,8 +2033,9 @@ function addToCart(itemId, opts) {
   const optionIds = options.map(o => o.id);
   const optionNames = options.map(o => o.label).filter(Boolean);
   const optionDelta = options.reduce((s, o) => s + (Number(o.price) || 0), 0);
-  // Different option / side / drink combinations are separate cart lines.
-  const lineKey = `${itemId}|${opts.spice || ''}|${opts.meal ? 'meal' : ''}|${choiceIds.join(',')}|${optionIds.slice().sort().join(',')}`;
+  const notes = (opts.notes || '').trim().slice(0, 140);
+  // Different option / side / drink / note combinations are separate cart lines.
+  const lineKey = `${itemId}|${opts.spice || ''}|${opts.meal ? 'meal' : ''}|${choiceIds.join(',')}|${optionIds.slice().sort().join(',')}|${notes}`;
   const existing = state.cart.find(c => c.key === lineKey);
   if (existing) {
     existing.qty += 1;
@@ -2043,6 +2056,7 @@ function addToCart(itemId, opts) {
       mealChoiceNames: choiceNames,
       modifiers: optionIds,
       optionNames,
+      notes: notes || null,
     });
   }
   saveState();
@@ -2112,6 +2126,7 @@ function cartLineHTML(line) {
       <div class="cart-item-name">${escapeHTML(line.name)}</div>
       <div class="cart-item-price">${fmt(line.price * line.qty)}</div>
       ${meta ? `<div class="cart-item-meta">${escapeHTML(meta)}</div>` : ''}
+      ${line.notes ? `<div class="cart-item-meta" style="font-style:italic">“${escapeHTML(line.notes)}”</div>` : ''}
       <div class="cart-item-controls">
         <button class="qty-btn" data-action="dec" data-key="${line.key}" aria-label="Decrease quantity">−</button>
         <span class="qty-num">${line.qty}</span>
@@ -2709,6 +2724,7 @@ function buildOrderRequest() {
       spice: l.spice || null,
       modifiers: Array.isArray(l.modifiers) ? l.modifiers : [],
       mealChoices: Array.isArray(l.mealChoices) ? l.mealChoices : [],
+      notes: l.notes || null,
     })),
     fulfillment: state.mode === 'deliver' ? 'delivery' : 'collection',
     deliveryAddress: state.mode === 'deliver' ? {
