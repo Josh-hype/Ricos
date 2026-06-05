@@ -23,11 +23,22 @@ export function computeTotals(input, config, opts = {}) {
 
     // Modifiers (size, sauce, etc.) — each modifier contributes priceDeltaP.
     const modIds = Array.isArray(line.modifiers) ? [...new Set(line.modifiers)] : [];
+    // Some modifiers are priced by the chosen size (pizza toppings + stuffed
+    // crust cost more on a 13"). Such a modifier carries priceDeltaPBySize keyed
+    // by the size modifier id; we find which size is selected and use its delta,
+    // falling back to the flat priceDeltaP (used for 11" and every other item).
+    const sizeKeys = new Set();
+    for (const m of item.modifiers || []) {
+      if (m.priceDeltaPBySize) for (const k of Object.keys(m.priceDeltaPBySize)) sizeKeys.add(k);
+    }
+    const activeSize = modIds.find(id => sizeKeys.has(id)) || null;
     const modSummaries = [];
     for (const modId of modIds) {
       const mod = item.modifiers?.find(x => x.id === modId);
       if (!mod) continue; // ignore unknown modifiers silently
-      lineP += mod.priceDeltaP || 0;
+      lineP += (mod.priceDeltaPBySize && activeSize && mod.priceDeltaPBySize[activeSize] != null)
+        ? mod.priceDeltaPBySize[activeSize]
+        : (mod.priceDeltaP || 0);
       modSummaries.push(mod.label);
     }
 

@@ -3768,9 +3768,18 @@ function lineUnitP(c) {
   if (!item) return 0;
   let p = item.priceP || 0;
   if (c.meal && item.mealAddP != null) p += item.mealAddP;
-  for (const modId of (c.modifiers || [])) {
+  const mods = c.modifiers || [];
+  // Size-priced modifiers (pizza toppings / stuffed crust) carry
+  // priceDeltaPBySize keyed by the chosen size modifier id — match computeTotals().
+  const sizeKeys = new Set();
+  for (const m of item.modifiers || []) if (m.priceDeltaPBySize) for (const k of Object.keys(m.priceDeltaPBySize)) sizeKeys.add(k);
+  const active = mods.find(id => sizeKeys.has(id)) || null;
+  for (const modId of mods) {
     const mod = item.modifiers?.find(m => m.id === modId);
-    if (mod) p += mod.priceDeltaP || 0;
+    if (!mod) continue;
+    p += (mod.priceDeltaPBySize && active && mod.priceDeltaPBySize[active] != null)
+      ? mod.priceDeltaPBySize[active]
+      : (mod.priceDeltaP || 0);
   }
   return p;
 }
@@ -3922,12 +3931,34 @@ function openItemDetail(id) {
   const priceEl = body.querySelector('#itemDetailPrice');
   const mealInput = body.querySelector('.meal-toggle input');
   const mealChoicesEl = body.querySelector('#mealChoices');
+  // Size-priced modifiers (pizza toppings / stuffed crust) carry
+  // priceDeltaPBySize keyed by the size modifier id. Resolve the delta for the
+  // size currently ticked; everything else uses its flat priceDeltaP.
+  const sizeKeys = new Set();
+  (canonical.modifiers || []).forEach(m => { if (m.priceDeltaPBySize) Object.keys(m.priceDeltaPBySize).forEach(k => sizeKeys.add(k)); });
+  function activeSize() {
+    let active = null;
+    body.querySelectorAll('.opt-group input:checked').forEach(inp => { if (sizeKeys.has(inp.value)) active = inp.value; });
+    return active;
+  }
+  function modDeltaP(mod, active) {
+    if (!mod) return 0;
+    if (mod.priceDeltaPBySize && active && mod.priceDeltaPBySize[active] != null) return mod.priceDeltaPBySize[active];
+    return mod.priceDeltaP || 0;
+  }
   function recalc() {
     let p = canonical.priceP || 0;
     if (mealInput && mealInput.checked && canonical.mealAddP) p += canonical.mealAddP;
+    const active = activeSize();
     body.querySelectorAll('.opt-group input:checked').forEach(inp => {
-      const mod = canonical.modifiers?.find(m => m.id === inp.value);
-      if (mod) p += mod.priceDeltaP || 0;
+      p += modDeltaP(canonical.modifiers?.find(m => m.id === inp.value), active);
+    });
+    // Refresh each choice's +£ label for the current size.
+    body.querySelectorAll('.opt-choice').forEach(lbl => {
+      const inp = lbl.querySelector('input'); const span = lbl.querySelector('.opt-delta');
+      if (!inp || !span) return;
+      const d = modDeltaP(canonical.modifiers?.find(m => m.id === inp.value), active);
+      span.textContent = d ? `+£${(d / 100).toFixed(2)}` : '';
     });
     if (priceEl) priceEl.textContent = `£${(p / 100).toFixed(2)}`;
     const addEl = body.querySelector('.item-add');
@@ -4039,10 +4070,12 @@ function optionGroupHTML(g, canonical) {
   const rows = (g.choices || []).map((c, i) => {
     const checked = (c.default === true || (type === 'radio' && required && !hasDefault && i === 0)) ? 'checked' : '';
     // Use the canonical priceDeltaP so the live total matches what the server
-    // will charge. visual.price is display-only and can drift.
+    // will charge. visual.price is display-only and can drift. The delta span is
+    // always emitted (empty when £0) so recalc() can refresh it when the chosen
+    // size changes a size-priced modifier (pizza toppings / stuffed crust).
     const mod = canonical.modifiers?.find(m => m.id === c.id);
     const deltaP = mod ? (mod.priceDeltaP || 0) : Math.round((Number(c.price) || 0) * 100);
-    const delta = deltaP ? `<span class="opt-delta">+£${(deltaP / 100).toFixed(2)}</span>` : '';
+    const delta = `<span class="opt-delta">${deltaP ? '+£' + (deltaP / 100).toFixed(2) : ''}</span>`;
     return `<label class="opt-choice">
       <input type="${type}" name="${gid}" value="${escapeHtml(c.id)}" ${checked} />
       <span>${escapeHtml(c.label)}</span>

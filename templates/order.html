@@ -1742,19 +1742,48 @@ function optionGroupsHTML(item) {
     const hasDefault = (g.choices || []).some(c => c.default === true);
     const rows = (g.choices || []).map((c, i) => {
       const checked = (c.default === true || (type === 'radio' && g.required && !hasDefault && i === 0)) ? 'checked' : '';
-      const delta = c.price ? `<span class="opt-delta">+${fmt(c.price)}</span>` : '';
+      // Delta span is always emitted (empty when £0) so recalc can refresh it
+      // when the chosen size re-prices a modifier (pizza toppings / stuffed crust).
+      const delta = `<span class="opt-delta">${c.price ? '+' + fmt(c.price) : ''}</span>`;
       return `<label class="opt-choice"><input type="${type}" name="${gid}" value="${escapeHTML(c.id)}" data-price="${Number(c.price) || 0}" data-label="${escapeHTML(c.label)}" ${checked}/><span>${escapeHTML(c.label)}</span>${delta}</label>`;
     }).join('');
     return `<fieldset class="opt-group" data-select="${type === 'checkbox' ? 'multi' : 'single'}" data-required="${g.required ? '1' : '0'}"><legend>${escapeHTML(g.label)}</legend>${rows}<div class="opt-required-note" data-err></div></fieldset>`;
   }).join('');
 }
 
+/* Pizza toppings + stuffed crust are priced by the chosen size: the choice
+   carries `priceBySize` keyed by the size choice id (e.g. { sz13: 2.5 }). These
+   helpers resolve the £ price for the currently-ticked size, falling back to the
+   flat `price` (11" and every other item, which carry no priceBySize). */
+function optionChoiceMap(item) {
+  const m = new Map();
+  for (const g of (item && item.options) || []) for (const c of g.choices || []) m.set(c.id, c);
+  return m;
+}
+function activeSizeId(item, body) {
+  const keys = new Set();
+  for (const g of (item && item.options) || []) for (const c of g.choices || []) {
+    if (c.priceBySize) for (const k of Object.keys(c.priceBySize)) keys.add(k);
+  }
+  let active = null;
+  body.querySelectorAll('.opt-group input:checked').forEach(inp => { if (keys.has(inp.value)) active = inp.value; });
+  return active;
+}
+function choicePrice(choice, activeSize) {
+  if (choice && choice.priceBySize && activeSize && choice.priceBySize[activeSize] != null) return Number(choice.priceBySize[activeSize]) || 0;
+  return choice ? (Number(choice.price) || 0) : 0;
+}
+
 /* Read the currently-ticked options from the open modal body.
-   Returns [{ id, label, price }]. */
-function readSelectedOptions(body) {
+   Returns [{ id, label, price }] with size-resolved prices. */
+function readSelectedOptions(body, item) {
+  const byId = optionChoiceMap(item);
+  const active = activeSizeId(item, body);
   const out = [];
   body.querySelectorAll('.opt-group input:checked').forEach(inp => {
-    out.push({ id: inp.value, label: inp.dataset.label, price: Number(inp.dataset.price) || 0 });
+    const choice = byId.get(inp.value);
+    const price = choice ? choicePrice(choice, active) : (Number(inp.dataset.price) || 0);
+    out.push({ id: inp.value, label: inp.dataset.label, price });
   });
   return out;
 }
@@ -1774,10 +1803,20 @@ function openItemDetail(itemId) {
   const priceEl = body.querySelector('#itemDetailPrice');
 
   // Live price = base + meal upgrade (if ticked) + selected option deltas.
+  // Option deltas are size-resolved, and each choice's +£ label is refreshed for
+  // the ticked size so the customer always sees the price they'll be charged.
   const recalcPrice = () => {
     let p = item.price;
     if (mealInput && mealInput.checked && item.meal) p += item.meal.addPrice;
-    for (const o of readSelectedOptions(body)) p += o.price;
+    for (const o of readSelectedOptions(body, item)) p += o.price;
+    const active = activeSizeId(item, body);
+    const byId = optionChoiceMap(item);
+    body.querySelectorAll('.opt-choice').forEach(lbl => {
+      const inp = lbl.querySelector('input'); const span = lbl.querySelector('.opt-delta');
+      if (!inp || !span) return;
+      const pr = choicePrice(byId.get(inp.value), active);
+      span.textContent = pr ? '+' + fmt(pr) : '';
+    });
     if (priceEl) priceEl.textContent = fmt(p);
   };
   body.querySelectorAll('.opt-group input').forEach(inp => inp.addEventListener('change', recalcPrice));
@@ -1809,7 +1848,7 @@ function openItemDetail(itemId) {
       } else if (errEl) { errEl.textContent = ''; }
     });
     if (optionErr) return;
-    const options = readSelectedOptions(body);
+    const options = readSelectedOptions(body, item);
 
     // When the meal has side/drink pickers, require every one to be chosen.
     let mealChoices = [];
