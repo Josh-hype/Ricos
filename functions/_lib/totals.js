@@ -12,6 +12,25 @@ export function computeTotals(input, config, opts = {}) {
   let subtotalP = 0;
 
   for (const line of input.items || []) {
+    // Manual / off-menu line: the staff till lets an operator type a custom name
+    // + price for something not on the menu. The price is staff-entered (there's
+    // no menu reference to recompute from), so it's trusted ONLY when the caller
+    // opts in — opts.allowCustom is set by the staff counter flow, never by the
+    // customer web checkout, so a shopper can't inject a £0.01 line.
+    if (line.custom) {
+      if (!opts.allowCustom) return { ok: false, reason: 'Custom items are not allowed here.' };
+      const qty = Math.max(1, Math.min(20, Math.floor(Number(line.qty)) || 1));
+      const unitP = Math.max(0, Math.min(1000000, Math.round(Number(line.priceP) || 0)));
+      const name = (typeof line.name === 'string' ? line.name.trim() : '').slice(0, 80) || 'Custom item';
+      const lineTotalP = unitP * qty;
+      subtotalP += lineTotalP;
+      lines.push({
+        id: null, custom: true, name, qty, meal: false, spice: null,
+        modifiers: [], mealChoices: [], notes: null,
+        unitPriceP: unitP, lineTotalP,
+      });
+      continue;
+    }
     const item = itemsById.get(line.id);
     if (!item) {
       return { ok: false, reason: `Unknown item: ${line.id}` };

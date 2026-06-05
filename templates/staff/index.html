@@ -825,7 +825,15 @@ button{cursor:pointer;border:0;background:none}
    nowrap category chips inside (grid items default to min-width:auto,
    which would otherwise push the ticket column off-screen). */
 .catalog{display:flex;flex-direction:column;min-height:0;min-width:0;padding:0 8px 8px 24px}
-.searchwrap{position:relative;margin-bottom:14px}
+.searchwrap{display:flex;gap:10px;align-items:center;margin-bottom:14px}
+.search-field{position:relative;flex:1;min-width:0}
+.manual-add-btn{
+  flex:none;height:50px;padding:0 16px;border-radius:14px;border:1px solid var(--line);
+  background:var(--panel);color:var(--ink);font-size:14px;font-weight:700;white-space:nowrap;
+  box-shadow:var(--sh-sm);cursor:pointer;font-family:var(--sans);display:flex;align-items:center;gap:6px;transition:.16s;
+}
+.manual-add-btn:hover{border-color:var(--blue);color:var(--blue)}
+.manual-add-btn .mai-plus{font-size:20px;line-height:1;font-weight:800}
 .search-input{
   width:100%;height:50px;border-radius:14px;border:1px solid var(--line);background:var(--panel);
   padding:0 16px 0 46px;font-size:15px;font-weight:500;color:var(--ink);
@@ -1273,6 +1281,24 @@ button{cursor:pointer;border:0;background:none}
   </div>
 </div>
 
+<!-- Add a one-off / off-menu item to the current sale (custom name + price) -->
+<div class="ovl" id="manualOvl" role="dialog" aria-modal="true" aria-labelledby="manualTitle">
+  <div class="modal">
+    <h2 id="manualTitle">Add item manually</h2>
+    <p style="color:var(--muted);font-size:13.5px;font-weight:500;margin-bottom:14px;text-align:center">A one-off item with a custom name and price.</p>
+    <label class="field">
+      <span>Item name</span>
+      <input type="text" id="manualName" maxlength="60" placeholder="e.g. Special" autocomplete="off" />
+    </label>
+    <label class="field">
+      <span>Price (£)</span>
+      <input type="text" id="manualPrice" inputmode="decimal" placeholder="0.00" autocomplete="off" />
+    </label>
+    <div class="pin-error" id="manualErr" aria-live="polite"></div>
+    <div class="row"><button class="cancel" id="manualClose" type="button">Cancel</button><button class="confirm" id="manualAdd" type="button">Add item</button></div>
+  </div>
+</div>
+
 <!-- ============================== Dashboard -->
 <div id="dash" hidden>
   <section class="stage">
@@ -1415,8 +1441,11 @@ button{cursor:pointer;border:0;background:none}
       <!-- Stage 3: catalog + ticket -->
       <div class="catalog" id="saleCatalog" hidden>
         <div class="searchwrap">
-          <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
-          <input class="search-input" id="saleSearch" placeholder="Search the menu…" autocomplete="off" />
+          <div class="search-field">
+            <svg class="search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+            <input class="search-input" id="saleSearch" placeholder="Search the menu…" autocomplete="off" />
+          </div>
+          <button type="button" class="manual-add-btn" id="manualAddBtn" title="Add a custom off-menu item"><span class="mai-plus">+</span> Manual item</button>
         </div>
         <div class="cats" id="saleCats"></div>
         <div class="products" id="saleProducts">
@@ -2482,6 +2511,33 @@ $('#kdsExit').addEventListener('click', () => {
 $$('#routingOpts .routing-opt').forEach(b => b.addEventListener('click', () => setRouting(b.dataset.routing)));
 $('#routingClose').addEventListener('click', () => $('#routingOvl').classList.remove('open'));
 $('#routingOvl').addEventListener('click', (e) => { if (e.target.id === 'routingOvl') $('#routingOvl').classList.remove('open'); });
+
+// Manual / off-menu item: type a custom name + price, add it to the current sale.
+function openManualModal() {
+  $('#manualName').value = '';
+  $('#manualPrice').value = '';
+  $('#manualErr').textContent = '';
+  $('#manualOvl').classList.add('open');
+  setTimeout(() => $('#manualName').focus(), 50);
+}
+function closeManualModal() { $('#manualOvl').classList.remove('open'); }
+function submitManualItem() {
+  const name = $('#manualName').value.trim();
+  const raw = $('#manualPrice').value.trim().replace(/[£,\s]/g, '');
+  const err = $('#manualErr');
+  if (!name) { err.textContent = 'Enter an item name.'; $('#manualName').focus(); return; }
+  const pounds = Number(raw);
+  if (!raw || !Number.isFinite(pounds) || pounds < 0) { err.textContent = 'Enter a valid price.'; $('#manualPrice').focus(); return; }
+  const priceP = Math.round(pounds * 100);
+  if (priceP > 1000000) { err.textContent = 'Price is too high.'; return; }
+  addManualItem(name.slice(0, 60), priceP);
+  closeManualModal();
+}
+$('#manualAddBtn').addEventListener('click', openManualModal);
+$('#manualClose').addEventListener('click', closeManualModal);
+$('#manualOvl').addEventListener('click', (e) => { if (e.target.id === 'manualOvl') closeManualModal(); });
+$('#manualAdd').addEventListener('click', submitManualItem);
+$('#manualPrice').addEventListener('keydown', (e) => { if (e.key === 'Enter') submitManualItem(); });
 // Pair already? Boot straight into the display.
 if (KDS_ROLE && kdsToken) bootKds();
 
@@ -3764,6 +3820,7 @@ function itemNeedsDetail(visualItem) {
 // displayed prices match what the customer is charged. Server is still the
 // authority — this is for the on-till totals only.
 function lineUnitP(c) {
+  if (c.custom) return Math.max(0, c.priceP || 0);
   const item = sale.byId.get(c.id);
   if (!item) return 0;
   let p = item.priceP || 0;
@@ -3834,9 +3891,9 @@ function renderSaleTicket() {
     wrap.innerHTML = sale.cart.map((c, i) => {
       const v = sale.byVisualId.get(c.id);
       const canonical = sale.byId.get(c.id);
-      if (!canonical) return '';
-      const icon = categoryIcon(canonical._catId);
-      const name = v?.name || canonical.name;
+      if (!c.custom && !canonical) return '';
+      const icon = c.custom ? '✎' : categoryIcon(canonical._catId);
+      const name = c.custom ? c.name : (v?.name || canonical.name);
       const lineP = lineUnitP(c) * c.qty;
       const mods = lineModSummary(c);
       return `
@@ -3912,6 +3969,18 @@ function addToCart(id, opts = {}) {
 
 function clearCart() {
   sale.cart = [];
+  renderSaleTicket();
+}
+
+// Add a one-off / off-menu line with a staff-typed name + price (pence). Each
+// manual add is its own line (unique key) so two never merge unexpectedly. The
+// server re-prices it from priceP — trusted because the counter flow is staff-gated.
+function addManualItem(name, priceP) {
+  sale.cart.unshift({
+    id: null, custom: true, name, priceP,
+    qty: 1, spice: null, meal: false, modifiers: [], mealChoices: [], notes: null,
+    _key: `custom:${Date.now()}:${Math.random().toString(36).slice(2, 7)}`,
+  });
   renderSaleTicket();
 }
 
@@ -4592,12 +4661,14 @@ function printToText(kind, o, ctx) {
 // Collect the cart + sale context into the counter-order payload (shared by the
 // cash and card paths). `extra` carries the tender + any card capture refs.
 function buildSalePayload(extra) {
-  const items = sale.cart.map(c => ({
-    id: c.id, qty: c.qty, spice: c.spice || null, meal: !!c.meal,
-    modifiers: Array.isArray(c.modifiers) ? c.modifiers : [],
-    mealChoices: Array.isArray(c.mealChoices) ? c.mealChoices : [],
-    notes: c.notes || null,
-  }));
+  const items = sale.cart.map(c => c.custom
+    ? { custom: true, name: c.name, priceP: c.priceP, qty: c.qty }
+    : {
+        id: c.id, qty: c.qty, spice: c.spice || null, meal: !!c.meal,
+        modifiers: Array.isArray(c.modifiers) ? c.modifiers : [],
+        mealChoices: Array.isArray(c.mealChoices) ? c.mealChoices : [],
+        notes: c.notes || null,
+      });
   const payload = Object.assign({ items, mode: sale.mode }, extra || {});
   if (sale.takenBy) payload.takenBy = { id: sale.takenBy.id };
   if (sale.customer) {
