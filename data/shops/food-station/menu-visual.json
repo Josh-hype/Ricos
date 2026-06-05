@@ -9048,7 +9048,230 @@
         "id": "md-2",
         "name": "Meal Deal 2 — Burger Box",
         "price": 13.5,
-        "desc": "Cheeseburger, chips, 6 nuggets, 6 onion rings, any dip, can of drink."
+        "desc": "Cheeseburger, chips, 6 nuggets, 6 onion rings, any dip, can of drink.",
+        "options": [
+          {
+            "id": "md-burger",
+            "label": "1/4lb Burger",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "md2-cheeseburger",
+                "label": "Cheeseburger",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "salad-choice",
+            "label": "Salad",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "salad",
+                "label": "Salad",
+                "price": 0
+              },
+              {
+                "id": "no-salad",
+                "label": "No salad",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "sauce",
+            "label": "Sauce",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "no-sauce",
+                "label": "No sauce",
+                "price": 0
+              },
+              {
+                "id": "mayo",
+                "label": "Mayo",
+                "price": 0
+              },
+              {
+                "id": "garlic-mayo",
+                "label": "Garlic mayo",
+                "price": 0
+              },
+              {
+                "id": "ketchup",
+                "label": "Ketchup",
+                "price": 0
+              },
+              {
+                "id": "bbq-sauce",
+                "label": "BBQ sauce",
+                "price": 0
+              },
+              {
+                "id": "sweet-chilli-sauce",
+                "label": "Sweet chilli sauce",
+                "price": 0
+              },
+              {
+                "id": "chilli",
+                "label": "Chilli",
+                "price": 0
+              },
+              {
+                "id": "garlic-yoghurt",
+                "label": "Garlic yoghurt",
+                "price": 0
+              },
+              {
+                "id": "burger-sauce",
+                "label": "Burger sauce",
+                "price": 0
+              },
+              {
+                "id": "relish",
+                "label": "Relish",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "md-sides",
+            "label": "Sides",
+            "select": "multi",
+            "required": true,
+            "choices": [
+              {
+                "id": "md2-chips",
+                "label": "Chips",
+                "price": 0,
+                "default": true
+              },
+              {
+                "id": "md2-nuggets-6",
+                "label": "6 x Nuggets",
+                "price": 0,
+                "default": true
+              },
+              {
+                "id": "md2-onion-rings-6",
+                "label": "6 x Onion rings",
+                "price": 0,
+                "default": true
+              }
+            ]
+          },
+          {
+            "id": "dip",
+            "label": "Dip",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "dip-no-sauce",
+                "label": "No sauce",
+                "price": 0
+              },
+              {
+                "id": "dip-mayo",
+                "label": "Mayo",
+                "price": 0
+              },
+              {
+                "id": "dip-garlic-mayo",
+                "label": "Garlic mayo",
+                "price": 0
+              },
+              {
+                "id": "dip-ketchup",
+                "label": "Ketchup",
+                "price": 0
+              },
+              {
+                "id": "dip-bbq-sauce",
+                "label": "BBQ sauce",
+                "price": 0
+              },
+              {
+                "id": "dip-sweet-chilli-sauce",
+                "label": "Sweet chilli sauce",
+                "price": 0
+              },
+              {
+                "id": "dip-chilli",
+                "label": "Chilli",
+                "price": 0
+              },
+              {
+                "id": "dip-garlic-yoghurt",
+                "label": "Garlic yoghurt",
+                "price": 0
+              },
+              {
+                "id": "dip-burger-sauce",
+                "label": "Burger sauce",
+                "price": 0
+              },
+              {
+                "id": "dip-relish",
+                "label": "Relish",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "md-drink",
+            "label": "Can of drink",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "can-coke",
+                "label": "Can of Coke",
+                "price": 0
+              },
+              {
+                "id": "can-diet-coke",
+                "label": "Can of Diet Coke",
+                "price": 0
+              },
+              {
+                "id": "can-coke-zero",
+                "label": "Can of Coke Zero",
+                "price": 0
+              },
+              {
+                "id": "can-fanta",
+                "label": "Can of Fanta",
+                "price": 0
+              },
+              {
+                "id": "can-fanta-lemon",
+                "label": "Can of Fanta Lemon",
+                "price": 0
+              },
+              {
+                "id": "can-pepsi",
+                "label": "Can of Pepsi",
+                "price": 0
+              },
+              {
+                "id": "can-7up",
+                "label": "Can of 7up",
+                "price": 0
+              },
+              {
+                "id": "can-dr-pepper",
+                "label": "Can of Dr Pepper",
+                "price": 0
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "md-3",

@@ -7261,7 +7261,179 @@
       {
         "id": "md-2",
         "name": "Meal Deal 2 — Burger Box",
-        "priceP": 1350
+        "priceP": 1350,
+        "modifiers": [
+          {
+            "id": "md2-cheeseburger",
+            "label": "Cheeseburger",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "salad",
+            "label": "Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-salad",
+            "label": "No salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "no-sauce",
+            "label": "No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-mayo",
+            "label": "Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bbq-sauce",
+            "label": "BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sweet-chilli-sauce",
+            "label": "Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "chilli",
+            "label": "Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "garlic-yoghurt",
+            "label": "Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "burger-sauce",
+            "label": "Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "relish",
+            "label": "Relish",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md2-chips",
+            "label": "Chips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md2-nuggets-6",
+            "label": "6 x Nuggets",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "md2-onion-rings-6",
+            "label": "6 x Onion rings",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-no-sauce",
+            "label": "Dip — No sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-mayo",
+            "label": "Dip — Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-garlic-mayo",
+            "label": "Dip — Garlic mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-ketchup",
+            "label": "Dip — Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-bbq-sauce",
+            "label": "Dip — BBQ sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-sweet-chilli-sauce",
+            "label": "Dip — Sweet chilli sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-chilli",
+            "label": "Dip — Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-garlic-yoghurt",
+            "label": "Dip — Garlic yoghurt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-burger-sauce",
+            "label": "Dip — Burger sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip-relish",
+            "label": "Dip — Relish",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-coke",
+            "label": "Can of Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-diet-coke",
+            "label": "Can of Diet Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-coke-zero",
+            "label": "Can of Coke Zero",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-fanta",
+            "label": "Can of Fanta",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-fanta-lemon",
+            "label": "Can of Fanta Lemon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-pepsi",
+            "label": "Can of Pepsi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-7up",
+            "label": "Can of 7up",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "can-dr-pepper",
+            "label": "Can of Dr Pepper",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "md-3",
