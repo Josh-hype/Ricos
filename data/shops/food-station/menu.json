@@ -14,6 +14,16 @@
             "priceDeltaP": 180
           },
           {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
             "id": "stuffed",
             "label": "Stuffed crust",
             "priceDeltaP": 250
@@ -164,6 +174,16 @@
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 180
+          },
+          {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
           },
           {
             "id": "stuffed",
@@ -318,6 +338,16 @@
             "priceDeltaP": 150
           },
           {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
             "id": "stuffed",
             "label": "Stuffed crust",
             "priceDeltaP": 250
@@ -468,6 +498,16 @@
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 120
+          },
+          {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
           },
           {
             "id": "stuffed",
@@ -622,6 +662,16 @@
             "priceDeltaP": 200
           },
           {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
             "id": "stuffed",
             "label": "Stuffed crust",
             "priceDeltaP": 250
@@ -772,6 +822,16 @@
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 170
+          },
+          {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
           },
           {
             "id": "stuffed",
@@ -926,6 +986,16 @@
             "priceDeltaP": 170
           },
           {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
             "id": "stuffed",
             "label": "Stuffed crust",
             "priceDeltaP": 250
@@ -1076,6 +1146,16 @@
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 150
+          },
+          {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
           },
           {
             "id": "stuffed",
@@ -1230,6 +1310,16 @@
             "priceDeltaP": 200
           },
           {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
             "id": "stuffed",
             "label": "Stuffed crust",
             "priceDeltaP": 250
@@ -1380,6 +1470,16 @@
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 200
+          },
+          {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
           },
           {
             "id": "stuffed",
@@ -1534,6 +1634,16 @@
             "priceDeltaP": 200
           },
           {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
             "id": "stuffed",
             "label": "Stuffed crust",
             "priceDeltaP": 250
@@ -1684,6 +1794,16 @@
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 200
+          },
+          {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
           },
           {
             "id": "stuffed",
@@ -1838,6 +1958,16 @@
             "priceDeltaP": 200
           },
           {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
             "id": "stuffed",
             "label": "Stuffed crust",
             "priceDeltaP": 250
@@ -1988,6 +2118,16 @@
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 200
+          },
+          {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
           },
           {
             "id": "stuffed",
@@ -2142,6 +2282,16 @@
             "priceDeltaP": 200
           },
           {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
             "id": "stuffed",
             "label": "Stuffed crust",
             "priceDeltaP": 250
@@ -2292,6 +2442,16 @@
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 200
+          },
+          {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
           },
           {
             "id": "stuffed",
@@ -2446,6 +2606,16 @@
             "priceDeltaP": 200
           },
           {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
             "id": "stuffed",
             "label": "Stuffed crust",
             "priceDeltaP": 250
@@ -2596,6 +2766,16 @@
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 200
+          },
+          {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
           },
           {
             "id": "stuffed",
@@ -2750,6 +2930,16 @@
             "priceDeltaP": 200
           },
           {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
             "id": "stuffed",
             "label": "Stuffed crust",
             "priceDeltaP": 250
@@ -2900,6 +3090,16 @@
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 200
+          },
+          {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
           },
           {
             "id": "stuffed",
@@ -3054,6 +3254,16 @@
             "priceDeltaP": 200
           },
           {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
             "id": "stuffed",
             "label": "Stuffed crust",
             "priceDeltaP": 250
@@ -3204,6 +3414,16 @@
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 200
+          },
+          {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
           },
           {
             "id": "stuffed",
@@ -3358,6 +3578,16 @@
             "priceDeltaP": 180
           },
           {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
             "id": "stuffed",
             "label": "Stuffed crust",
             "priceDeltaP": 250
@@ -3508,6 +3738,16 @@
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 200
+          },
+          {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
           },
           {
             "id": "stuffed",
@@ -3662,6 +3902,16 @@
             "priceDeltaP": 110
           },
           {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
             "id": "stuffed",
             "label": "Stuffed crust",
             "priceDeltaP": 250
@@ -3812,6 +4062,16 @@
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 110
+          },
+          {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
           },
           {
             "id": "stuffed",
@@ -3966,6 +4226,16 @@
             "priceDeltaP": 200
           },
           {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
             "id": "stuffed",
             "label": "Stuffed crust",
             "priceDeltaP": 250
@@ -4116,6 +4386,16 @@
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 110
+          },
+          {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
           },
           {
             "id": "stuffed",
@@ -4270,6 +4550,16 @@
             "priceDeltaP": 110
           },
           {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
             "id": "stuffed",
             "label": "Stuffed crust",
             "priceDeltaP": 250
@@ -4420,6 +4710,16 @@
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 110
+          },
+          {
+            "id": "thin-base",
+            "label": "Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "deep-pan",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
           },
           {
             "id": "stuffed",
