@@ -3146,7 +3146,7 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
   // "Complete order" on every live order (the three-dots shortcut to mark it done).
   const liveStatuses = ['pending_accept', 'accepted', 'ready', 'out_for_delivery'];
   const menuItems = [];
-  if (isUnpaid && liveStatuses.includes(o.status)) {
+  if (isUnpaid && (liveStatuses.includes(o.status) || o.status === 'completed')) {
     menuItems.push(`<button class="menu-pay" data-id="${o.id}">Pay now</button>`);
   }
   if (canRefund && ['accepted', 'ready', 'out_for_delivery'].includes(o.status)) {
@@ -3246,7 +3246,7 @@ function renderRow(o, isNew) {
 
   // Every order action lives in the ⋮ now (no inline buttons on the row).
   const m = [];
-  if (owesMoney && ['pending_accept', 'accepted', 'ready', 'out_for_delivery'].includes(o.status)) {
+  if (owesMoney && ['pending_accept', 'accepted', 'ready', 'out_for_delivery', 'completed'].includes(o.status)) {
     m.push(`<button class="menu-pay" data-id="${o.id}">${isPartPaid ? 'Collect rest' : 'Pay now'}</button>`);
   }
   if (o.status === 'pending_accept') m.push(`<button class="menu-accept" data-id="${o.id}">Accept…</button>`);
@@ -4687,7 +4687,8 @@ function showPayDone(o, { kind, tender, tenderedP = 0, changeP = 0, split = null
 // taken on collection/delivery, e.g. handed back by the driver on return).
 function openPayForOrder(id) {
   const o = (state.orders || []).find(x => x.id === id)
-    || (state.summaryOrders || []).find(x => x.id === id);
+    || (state.summaryOrders || []).find(x => x.id === id)
+    || (state.completedOrders || []).find(x => x.id === id);
   if (!o) { alert('Order not found — refresh and try again.'); return; }
   if (!isUnpaidOrder(o)) {
     alert('This order is already paid.'); return;
