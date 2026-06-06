@@ -33,10 +33,11 @@ export const onRequestPost = async ({ request, env, params }) => {
   const id = String(params.id || '').toUpperCase();
   const order = await getOrder(id, env);
   if (!order) return err('Order not found.', 404);
-  // Accept an order awaiting payment OR partly paid (a split bill collected in
-  // parts — each person settles their share until the order is covered).
+  // Accept an order awaiting payment: an in-store saved-unpaid "pay later", an
+  // online cash-on-collection/delivery order ('cash_due' — e.g. cash collected by
+  // the driver), or a part-paid split (each person settles their share in turn).
   const pstate = order.payment?.state || '';
-  if (pstate !== 'unpaid' && pstate !== 'part_paid') {
+  if (pstate !== 'unpaid' && pstate !== 'part_paid' && pstate !== 'cash_due') {
     return err('This order is not awaiting payment.', 409);
   }
   const totalP = order.totals?.totalP || 0;

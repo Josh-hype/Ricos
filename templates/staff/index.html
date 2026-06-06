@@ -2083,11 +2083,14 @@ function renderBoard() {
 // The live "live" statuses — orders still on the board, not yet done/cancelled.
 const LIVE_STATUSES = ['pending_accept', 'accepted', 'ready', 'out_for_delivery'];
 
-// An unpaid "pay later" order — can't be completed until it's settled.
-// "Owes money" — not fully paid: a saved-unpaid order OR a split bill that's only
-// part collected. Such orders stay on Live, show "Pay now", and can't be completed.
+// "Owes money" — the shop still needs to collect. Covers an in-store saved-unpaid
+// "pay later" order, an online cash-on-collection/delivery order ('cash_due' — e.g.
+// the driver collects the cash on delivery), and a split bill only part-collected.
+// These stay on Live, show "Pay now", and can't be completed until settled — staff
+// press Pay now to take the payment (e.g. cash handed back by the driver).
 function isUnpaidOrder(o) {
-  return !!(o && ((o.payment && (o.payment.state === 'unpaid' || o.payment.state === 'part_paid')) || o.paymentMethod === 'unpaid'));
+  const s = o && o.payment && o.payment.state;
+  return !!(o && (s === 'unpaid' || s === 'part_paid' || s === 'cash_due' || o.paymentMethod === 'unpaid'));
 }
 
 // Has the shop actually GOT the money? Only a settled payment counts as Paid.
@@ -3076,7 +3079,7 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
   const fulfillmentPill = o.fulfillment === 'delivery'
     ? '<span class="pill delivery">delivery</span>'
     : '<span class="pill collection">collection</span>';
-  const isUnpaid = (pmt.state === 'unpaid') || o.paymentMethod === 'unpaid';
+  const isUnpaid = isUnpaidOrder(o);   // owes money: pay-later, online cash, or part-paid → Pay now + can't Complete
   const isCardPay = o.paymentMethod === 'card' || o.paymentMethod === 'counter_card';
   // Pill reflects whether the money is actually in. Online cash (collect on
   // collection/delivery), part-paid and pay-later show a red "not paid" pill.
@@ -3223,7 +3226,7 @@ function renderRow(o, isNew) {
   const pmt = o.payment || {};
   const isUnpaid = (pmt.state === 'unpaid') || o.paymentMethod === 'unpaid';
   const isPartPaid = pmt.state === 'part_paid';
-  const owesMoney = isUnpaid || isPartPaid;
+  const owesMoney = isUnpaidOrder(o);   // pay-later, online cash, or part-paid → Pay now + can't Complete
   const isCardPay = o.paymentMethod === 'card' || o.paymentMethod === 'counter_card';
   const method = isUnpaid ? '—' : (o.paymentMethod === 'split' ? 'Split' : (isCardPay ? 'Card' : 'Cash'));
   const paidLbl = payLabel(o);
@@ -4685,12 +4688,14 @@ function showPayDone(o, { kind, tender, tenderedP = 0, changeP = 0, split = null
   armPayAutoReturn(changeP > 0 ? PAY_RETURN_MS_CHANGE : PAY_RETURN_MS);
 }
 
-// "Pay now" from an unpaid order's ⋮ menu — open the pay modal to settle it.
+// "Pay now" from an order's ⋮ menu — open the pay modal to settle a payment-due
+// order: an in-store pay-later, a part-paid split, or an online cash order (cash
+// taken on collection/delivery, e.g. handed back by the driver on return).
 function openPayForOrder(id) {
   const o = (state.orders || []).find(x => x.id === id)
     || (state.summaryOrders || []).find(x => x.id === id);
   if (!o) { alert('Order not found — refresh and try again.'); return; }
-  if ((o.payment?.state || '') !== 'unpaid' && o.paymentMethod !== 'unpaid') {
+  if (!isUnpaidOrder(o)) {
     alert('This order is already paid.'); return;
   }
   sale.payOrder = o;

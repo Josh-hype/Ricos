@@ -62,9 +62,12 @@ export const onRequestPost = async ({ request, env, params }) => {
   if (!ALLOWED.includes(status)) return j({ error: 'Invalid status.' }, 400);
   const reason = (body.reason || '').toString().trim().slice(0, 280);
 
-  // An unpaid "pay later" order can't be completed until it's settled — it stays
-  // on the live board. (It can still be cancelled, or progressed to ready.)
-  if (status === 'completed' && ((order.payment && (order.payment.state === 'unpaid' || order.payment.state === 'part_paid')) || order.paymentMethod === 'unpaid')) {
+  // An order with money still owed can't be completed until it's settled — it stays
+  // on the live board so staff take the payment ("Pay now"). Covers in-store pay-later,
+  // part-paid splits, and online cash-on-collection/delivery ('cash_due', e.g. the
+  // driver collects the cash). (Such an order can still be cancelled, or set to ready /
+  // out for delivery.)
+  if (status === 'completed' && ((order.payment && (order.payment.state === 'unpaid' || order.payment.state === 'part_paid' || order.payment.state === 'cash_due')) || order.paymentMethod === 'unpaid')) {
     return j({ error: 'Order is not fully paid — take payment before completing it.' }, 409);
   }
 
