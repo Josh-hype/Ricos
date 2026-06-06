@@ -48,6 +48,8 @@ export const onRequestPost = async ({ request, env, params }) => {
   try { body = await request.json(); } catch { return err('Invalid JSON', 400); }
   const tender = body.tender === 'card' ? 'card' : 'cash';
   const config = getConfig();
+  // Shop with its own card machine: a card collection is booked immediately (no reader).
+  const externalCard = !!(config.pos && config.pos.externalCardMachine);
   const operator = ctx.operator?.name || sess?.name || null;
   const operatorId = ctx.operator?.id || sess?.op || null;
 
@@ -60,11 +62,13 @@ export const onRequestPost = async ({ request, env, params }) => {
     if (partP > remaining) partP = remaining;
   }
 
-  // ── Cash: record the cash part immediately ─────────────────────────────────
-  if (tender === 'cash') {
-    applyPart(order, { tender: 'cash', amountP: partP, by: operator });
+  // ── Cash, or card on the shop's own machine: record the part immediately ────
+  // External card = the customer paid on a third-party terminal; there's no
+  // LumiPOS reader to drive, so we book it like cash but record it as card.
+  if (tender === 'cash' || (tender === 'card' && externalCard)) {
+    applyPart(order, { tender, amountP: partP, by: operator, external: tender === 'card' });
     await putOrder(order, env);
-    await audit(env, operatorId, operator, id, { tender: 'cash', amountP: partP });
+    await audit(env, operatorId, operator, id, { tender, amountP: partP, ...(tender === 'card' ? { external: true } : {}) });
     return Response.json({ order });
   }
 
@@ -132,11 +136,11 @@ export const onRequestPost = async ({ request, env, params }) => {
 // payment ⇒ one part, state 'paid', a plain cash/card method (unchanged from the
 // old behaviour). Multiple parts (a split bill) ⇒ the balance fills to 'paid' and
 // the method becomes 'split'.
-function applyPart(order, { tender, amountP, by, intentId, connectedAccountId }) {
+function applyPart(order, { tender, amountP, by, intentId, connectedAccountId, external }) {
   const at = new Date().toISOString();
   order.payment = order.payment || {};
   const parts = Array.isArray(order.payment.parts) ? order.payment.parts.slice() : [];
-  parts.push({ tender, amountP, at, ...(intentId ? { intentId } : {}), ...(connectedAccountId ? { connectedAccountId } : {}) });
+  parts.push({ tender, amountP, at, ...(external ? { external: true } : {}), ...(intentId ? { intentId } : {}), ...(connectedAccountId ? { connectedAccountId } : {}) });
   const paidP = parts.reduce((a, p) => a + (p.amountP || 0), 0);
   const total = order.totals?.totalP || 0;
   const fullyPaid = paidP >= total;

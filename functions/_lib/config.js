@@ -17,6 +17,7 @@ export function getPublicConfig() {
   const collection = fulfillment.collection || {};
   const delivery = fulfillment.delivery || {};
   const payments = config.payments || {};
+  const pos = config.pos || {};
   return {
     business: {
       tradingName: business.tradingName,
@@ -48,6 +49,9 @@ export function getPublicConfig() {
       cashOnDeliveryEnabled: payments.cashOnDeliveryEnabled,
       savedCardCvcThresholdPence: Number(payments.savedCardCvcThresholdPence) || 0,
     },
+    // Till behaviour: when externalCardMachine is true the staff Card button records
+    // a card sale immediately (the shop uses its own terminal; no LumiPOS reader).
+    pos: { externalCardMachine: !!pos.externalCardMachine },
     allergens: config.allergens,
     marketing: config.marketing,
   };

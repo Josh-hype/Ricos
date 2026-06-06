@@ -66,6 +66,9 @@
     "connectedAccountId": "acct_1Tey3sJlWcdyhDMU"
   },
 
+  "_comment_pos": "Till behaviour. externalCardMachine:true makes the staff till's Card button record the sale as paid by card immediately — Food Station takes the actual payment on its own third-party card machine, so there is no LumiPOS Stripe reader to drive. The website still takes online card payments via Stripe normally.",
+  "pos": { "externalCardMachine": true },
+
   "hours": {
     "_comment": "24-hour format. Source: printed menu — Sun-Thu 4pm-10pm, Fri-Sat 4pm-11pm.",
     "monday":    { "closed": false, "windows": [{ "open": "16:00", "close": "22:00" }] },

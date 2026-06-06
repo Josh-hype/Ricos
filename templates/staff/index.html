@@ -4667,7 +4667,9 @@ function setTender(tender) {
   $('#payCardHint').hidden = isCash || isSplit;
   $('#payCardHint').textContent = isLater
     ? 'The order is saved unpaid and sent to the kitchen. Collect payment later from the order’s ⋮ menu.'
-    : 'The card reader will prompt the customer to tap, insert or swipe.';
+    : externalCardMode()
+      ? 'Take the payment on your card machine, then press Confirm to record it.'
+      : 'The card reader will prompt the customer to tap, insert or swipe.';
   if (isCash || isSplit) syncPayAmount(); else updatePayConfirm();
 }
 
@@ -4719,7 +4721,7 @@ function updatePayConfirm() {
   }
   if (sale.pay.tender === 'card') {
     btn.disabled = false;
-    lbl.textContent = `Take card payment · £${(totalP / 100).toFixed(2)}`;
+    lbl.textContent = `${externalCardMode() ? 'Record' : 'Take'} card payment · £${(totalP / 100).toFixed(2)}`;
     return;
   }
   if (sale.pay.tender === 'split') {
@@ -4727,7 +4729,7 @@ function updatePayConfirm() {
     const cardP = totalP - cashP;
     if (cashP <= 0) { btn.disabled = true; lbl.textContent = 'Enter the cash amount'; }
     else if (cardP <= 0) { btn.disabled = true; lbl.textContent = 'Cash covers it — use Cash'; }
-    else { btn.disabled = false; lbl.textContent = `Take £${(cardP / 100).toFixed(2)} on card`; }
+    else { btn.disabled = false; lbl.textContent = `${externalCardMode() ? 'Record' : 'Take'} £${(cardP / 100).toFixed(2)} on card`; }
     return;
   }
   const t = sale.pay.tenderedP;
@@ -5077,6 +5079,44 @@ async function payExistingCash(tenderedP) {
   return true;
 }
 
+// Whether this shop uses its own (third-party) card machine — pressing Card
+// records the sale as paid by card immediately (no LumiPOS reader to drive).
+// Server-gated by config.pos.externalCardMachine; the till just skips the overlay.
+function externalCardMode() {
+  return !!(sale.config && sale.config.pos && sale.config.pos.externalCardMachine);
+}
+
+// Record a card sale taken on the shop's own machine (nothing to poll). Mirrors
+// the cash money paths: new sale → counter-order; existing unpaid order → /pay.
+async function recordExternalCard(split, payingExisting) {
+  const setBtn = (txt) => { const b = $('#payConfirm'); if (b) { b.disabled = true; const s = b.querySelector('span'); if (s) s.textContent = txt; } };
+  if (payingExisting) {
+    const o = sale.payOrder; if (!o) return;
+    const collecting = !!(sale.split && sale.collectP != null);
+    sale.submitting = true; setBtn('Saving…');
+    let data;
+    try {
+      const res = await fetch(`/api/staff/orders/${o.id}/pay`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tender: 'card', ...(collecting ? { amountP: sale.collectP } : {}) }),
+      });
+      data = await res.json().catch(() => ({}));
+      if (res.status === 401) { $('#logoutBtn').click(); return; }
+      if (!res.ok || !data.order) { alert(data.error || `Couldn't take the payment (${res.status}).`); return; }
+    } catch (e) { alert('Network error — try again.'); return; }
+    finally { sale.submitting = false; updatePayConfirm(); }
+    if (collecting) { advanceSplitCollect(data.order); poll(); return; }
+    showPayDone(data.order, { kind: 'existing', tender: 'card' });
+    poll();
+    return;
+  }
+  sale.submitting = true; setBtn('Saving…');
+  try {
+    if (split) await finalizeOrder({ tender: 'split', cashP: split.cashP }, { isCash: false, tenderedP: 0, split });
+    else await finalizeOrder({ tender: 'card' }, { isCash: false, tenderedP: 0 });
+  } finally { sale.submitting = false; updatePayConfirm(); }
+}
+
 // Card payment via the counter reader (server-driven Stripe Terminal): start the
 // charge, show the "present card" overlay, poll the reader, then finalise — which
 // re-verifies the amount and captures server-side.
@@ -5084,6 +5124,8 @@ let cardPoll = null;
 async function runCardPayment(split) {
   if (sale.card) return; // a card flow is already running
   const payingExisting = !!sale.payOrder;
+  // Shops with their own card machine don't use a LumiPOS reader — record now.
+  if (externalCardMode()) { await recordExternalCard(split, payingExisting); return; }
   // For a split, only the card PORTION is charged on the reader (the rest is cash).
   const chargeP = split ? split.cardP : payCtxTotalP();
   showCardOverlay('Starting…', true);
