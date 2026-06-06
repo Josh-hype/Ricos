@@ -77,6 +77,9 @@
     "connectedAccountId": "acct_1TbeYBJXCn3TpBE3"
   },
 
+  "_comment_pos": "Till behaviour. selfServeDrinks:true hides the drink picker on the staff till — in-store the customer takes their own drink from the fridge, so staff don't choose one (meal/combo prices are unchanged; the drink is still included). The website keeps drink choices for online orders.",
+  "pos": { "selfServeDrinks": true },
+
   "hours": {
     "_comment": "24-hour format. Closes after midnight are written as 25:00 = 01:00 next day. lastOrderBeforeCloseMinutes is subtracted automatically for the cut-off.",
     "monday":    { "closed": false, "windows": [{ "open": "13:00", "close": "23:00" }] },

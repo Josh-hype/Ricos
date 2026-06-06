@@ -4310,6 +4310,10 @@ function choiceDeltaP(c, canonical) {
   return mod ? (mod.priceDeltaP || 0) : Math.round((Number(c.price) || 0) * 100);
 }
 function optionGroupHTML(g, canonical) {
+  // Self-serve drinks: hide drink option groups on the till too (platters, kids
+  // meals — the customer takes their own from the fridge). These are £0 included
+  // picks, so dropping the group leaves the price unchanged. Website still shows them.
+  if (selfServeDrinks() && /drink/i.test(g.label || '')) return '';
   const required = !!g.required;
   const choices = g.choices || [];
   const legend = `<div class="opt-legend">${escapeHtml(g.label || '')}${required ? '' : ' <em>(optional)</em>'}</div>`;
@@ -4346,10 +4350,18 @@ function optionGroupHTML(g, canonical) {
 
 // Meal choice pickers: each slot draws from a menu category, optionally narrowed
 // by include/exclude lists, rendered as tappable chips (one selectable per slot).
+// Self-serve drinks: in-store the customer takes a drink from the fridge, so the
+// till skips every drink picker (the website still asks). Gated per-shop by
+// config.pos.selfServeDrinks.
+function selfServeDrinks() {
+  return !!(sale.config && sale.config.pos && sale.config.pos.selfServeDrinks);
+}
 function mealChooseHTML(choose) {
   const groups = Array.isArray(choose) ? choose : [];
   const blocks = [];
   for (const g of groups) {
+    // Drop the drink slot on a self-serve till (the customer grabs their own).
+    if (selfServeDrinks() && g.category === 'drinks') continue;
     const items = mealChoiceItems(g);
     const optHTML = items.map(o => `<option value="${escapeHtml(o.id)}">${escapeHtml(o.name)}</option>`).join('');
     const count = g.count || 1;

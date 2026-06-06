@@ -51,7 +51,7 @@ export function getPublicConfig() {
     },
     // Till behaviour: when externalCardMachine is true the staff Card button records
     // a card sale immediately (the shop uses its own terminal; no LumiPOS reader).
-    pos: { externalCardMachine: !!pos.externalCardMachine },
+    pos: { externalCardMachine: !!pos.externalCardMachine, selfServeDrinks: !!pos.selfServeDrinks },
     allergens: config.allergens,
     marketing: config.marketing,
   };
