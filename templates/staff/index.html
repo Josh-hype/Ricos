@@ -2090,6 +2090,39 @@ function isUnpaidOrder(o) {
   return !!(o && ((o.payment && (o.payment.state === 'unpaid' || o.payment.state === 'part_paid')) || o.paymentMethod === 'unpaid'));
 }
 
+// Has the shop actually GOT the money? Only a settled payment counts as Paid.
+// Online cash-on-collection/delivery ('cash_due'), a saved-unpaid "pay later"
+// ('unpaid'), a half-collected split ('part_paid') and an awaiting card all read
+// as Not paid — so staff/driver know to collect. Refund states were paid, so they
+// stay Paid. This is display-only; it never gates completion (cash-on-delivery is
+// collected at the door, then the order completes as normal).
+function orderPaid(o) {
+  const s = (o && o.payment && o.payment.state) || '';
+  return s === 'paid' || s === 'partly_refunded' || s === 'refunded';
+}
+// Short payment status for on-screen badges/rows.
+function payLabel(o) {
+  if (orderPaid(o)) return 'Paid';
+  if (o && o.payment && o.payment.state === 'part_paid') return 'Part paid';
+  if (o && o.paymentMethod === 'cash_delivery') return 'Not paid · cash on delivery';
+  if (o && o.paymentMethod === 'cash_collection') return 'Not paid · cash on collection';
+  return 'Not paid';
+}
+// Order-derived payment line for printed tickets (ASCII; works with no ctx, so
+// online tickets show it too). Tells the driver/shop whether to collect money.
+function paymentStatusLine(o) {
+  const pm = (o && o.paymentMethod) || '';
+  const st = (o && o.payment && o.payment.state) || '';
+  if (st === 'part_paid') return 'PART PAID - BALANCE DUE';
+  if (pm === 'split') return 'PAID - SPLIT (CASH + CARD)';
+  if (pm === 'cash_delivery') return 'NOT PAID - CASH ON DELIVERY';
+  if (pm === 'cash_collection') return 'NOT PAID - CASH ON COLLECTION';
+  if (pm === 'unpaid' || st === 'unpaid') return 'NOT PAID';
+  if (orderPaid(o)) return (pm === 'card' || pm === 'counter_card') ? 'PAID BY CARD'
+    : (pm === 'counter_cash') ? 'PAID BY CASH' : 'PAID';
+  return 'NOT PAID';
+}
+
 // Show the "Complete all" button only on the Live tab when there's something to
 // complete. Hidden on the Completed tab and everywhere off the live board.
 function updateBoardActions() {
@@ -2529,9 +2562,9 @@ function renderKds(orders, routing) {
     const isNew = !kdsSeen.has(o.id);
     const isDelivery = o.fulfillment === 'delivery';
     const type = isDelivery ? 'Delivery' : (o.source === 'counter-walkin' ? 'Walk-in' : 'Collection');
-    // Unpaid is the flag the kitchen cares about (e.g. pay-later / cash-on-delivery);
-    // anything not explicitly unpaid reads as Paid.
-    const paid = !((o.payment && o.payment.state === 'unpaid') || o.paymentMethod === 'unpaid');
+    // Paid only when the money is actually in. Online cash-on-collection/delivery,
+    // pay-later and part-paid all read as Not paid so the kitchen/driver knows.
+    const paid = orderPaid(o);
     const who = (o.customer && o.customer.name && o.customer.name !== 'Walk-in') ? `<div class="kc-who">${escapeHtml(o.customer.name)}</div>` : '';
     return `<article class="kds-card${isNew ? ' new' : ''}" data-id="${o.id}">
       <div class="kds-card-head">
@@ -3045,11 +3078,14 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
     : '<span class="pill collection">collection</span>';
   const isUnpaid = (pmt.state === 'unpaid') || o.paymentMethod === 'unpaid';
   const isCardPay = o.paymentMethod === 'card' || o.paymentMethod === 'counter_card';
-  const cashPill = isUnpaid
-    ? '<span class="pill unpaid">unpaid</span>'
-    : (isCardPay
-      ? '<span class="pill paid-card">card</span>'
-      : '<span class="pill cash">cash</span>');
+  // Pill reflects whether the money is actually in. Online cash (collect on
+  // collection/delivery), part-paid and pay-later show a red "not paid" pill.
+  const cashPill = orderPaid(o)
+    ? (isCardPay ? '<span class="pill paid-card">card</span>' : '<span class="pill cash">cash</span>')
+    : (o.paymentMethod === 'cash_delivery' ? '<span class="pill unpaid">cash on delivery</span>'
+      : o.paymentMethod === 'cash_collection' ? '<span class="pill unpaid">cash on collection</span>'
+      : pmt.state === 'part_paid' ? '<span class="pill unpaid">part paid</span>'
+      : '<span class="pill unpaid">not paid</span>');
   const schedPill = o.schedule && o.schedule !== 'asap'
     ? `<span class="pill scheduled">${formatTime(o.schedule)}</span>`
     : '';
@@ -3190,8 +3226,8 @@ function renderRow(o, isNew) {
   const owesMoney = isUnpaid || isPartPaid;
   const isCardPay = o.paymentMethod === 'card' || o.paymentMethod === 'counter_card';
   const method = isUnpaid ? '—' : (o.paymentMethod === 'split' ? 'Split' : (isCardPay ? 'Card' : 'Cash'));
-  const paidLbl = isUnpaid ? 'Not paid' : (isPartPaid ? 'Part paid' : 'Paid');
-  const paidCls = owesMoney ? 'np' : 'pd';
+  const paidLbl = payLabel(o);
+  const paidCls = orderPaid(o) ? 'pd' : 'np';
 
   const stLabel = { pending_accept: 'new', accepted: 'accepted', ready: 'ready', out_for_delivery: 'out', completed: 'completed', cancelled: 'cancelled' };
   const fulf = o.fulfillment === 'delivery' ? 'Delivery' : (o.source === 'counter-walkin' ? 'Walk-in' : 'Collection');
@@ -3325,9 +3361,11 @@ function renderAlarm(o, qlen) {
   $('#alarmQueue').textContent = qlen > 1 ? `${qlen} waiting` : 'new';
 
   const fulfillment = o.fulfillment === 'delivery' ? 'Delivery' : 'Collection';
-  const pay = o.paymentMethod === 'split' ? 'Paid — split (cash + card)'
-    : o.paymentMethod === 'card' ? 'Paid by card'
-    : (o.paymentMethod === 'cash_collection' ? 'CASH on collection' : 'CASH on delivery');
+  const pay = orderPaid(o)
+    ? (o.paymentMethod === 'split' ? 'Paid — split (cash + card)' : 'Paid by card')
+    : (o.paymentMethod === 'cash_collection' ? 'NOT PAID · cash on collection'
+      : o.paymentMethod === 'cash_delivery' ? 'NOT PAID · cash on delivery'
+      : 'NOT PAID');
   const sched = o.schedule && o.schedule !== 'asap' ? ` · for ${formatTime(o.schedule)}` : ' · ASAP';
   const addr = o.address
     ? `<div style="font-size:0.88rem;color:var(--muted);margin-top:4px">${escapeHtml(o.address.line1)}${o.address.line2 ? ', ' + escapeHtml(o.address.line2) : ''}, ${escapeHtml(o.address.postcode)}${o.address.notes ? `<br><em>${escapeHtml(o.address.notes)}</em>` : ''}</div>`
@@ -4844,12 +4882,14 @@ function buildReceiptText(o, ctx) {
     out.push(center('PAID — SPLIT'));
     out.push(row('Cash', money(ctx.split.cashP)));
     out.push(row('Card', money(ctx.split.cardP)));
-  } else {
+  } else if (ctx && ctx.tender) {
     out.push(center('PAID BY ' + tender));
-    if (tender === 'CASH' && ctx && ctx.tenderedP > 0) {
+    if (tender === 'CASH' && ctx.tenderedP > 0) {
       out.push(row('Cash', money(ctx.tenderedP)));
       if (ctx.changeP > 0) out.push(row('Change', money(ctx.changeP)));
     }
+  } else {
+    out.push(center(paymentStatusLine(o)));
   }
   out.push(light);
   if (o.createdBy && o.createdBy.name) out.push(center('Served by ' + o.createdBy.name));
@@ -4937,11 +4977,13 @@ function buildReceiptDoc(o, ctx) {
   const who = (o.customer && o.customer.name && o.customer.name !== 'Walk-in') ? o.customer.name : '';
   let when = '';
   try { when = new Date(o.createdAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) {}
-  // Payment line only when we actually know it (counter sales pass ctx.tender; an online
-  // kitchen copy passes none, so we don't claim a tender we don't have).
+  // Payment line. Counter sales pass ctx.tender (PAID BY CASH/CARD + change/split);
+  // online orders carry no ctx, so derive it from the order itself — crucially
+  // "NOT PAID - CASH ON DELIVERY/COLLECTION" so the driver knows to collect.
   const isSplitPay = !!(ctx && ctx.tender === 'split' && ctx.split);
   const paid = isSplitPay ? 'PAID — SPLIT'
-    : (ctx && ctx.tender) ? ('PAID BY ' + (ctx.tender === 'card' ? 'CARD' : 'CASH')) : '';
+    : (ctx && ctx.tender) ? ('PAID BY ' + (ctx.tender === 'card' ? 'CARD' : 'CASH'))
+    : paymentStatusLine(o);
 
   const ops = [];
   // No logo — a big bold wordmark reads better on thermal than the dithered badge.
