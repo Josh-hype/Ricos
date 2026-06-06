@@ -156,6 +156,13 @@ export function computeTotals(input, config, opts = {}) {
   // the service charge (card-terminal processing is absorbed instead). Web orders
   // still pay it.
   const serviceFeeP = opts.suppressServiceFee ? 0 : (config.serviceFeePence || 0);
+  // Split the service charge so tickets/records show who gets what: serviceFeePlatformPence
+  // is Lumin Labs' cut (taken as the Stripe application_fee); the rest stays with the shop.
+  // Defaults to the whole fee → platform when unset (legacy behaviour).
+  const serviceFeePlatformP = config.serviceFeePlatformPence != null
+    ? Math.max(0, Math.min(serviceFeeP, Number(config.serviceFeePlatformPence) || 0))
+    : serviceFeeP;
+  const serviceFeeShopP = serviceFeeP - serviceFeePlatformP;
 
   // Minimum order check (applied to subtotal less discount).
   const netSubtotalP = subtotalP - discountP;
@@ -184,6 +191,8 @@ export function computeTotals(input, config, opts = {}) {
     discountLabel,
     deliveryFeeP,
     serviceFeeP,
+    serviceFeePlatformP,
+    serviceFeeShopP,
     totalP,
     fulfillment,
   };
