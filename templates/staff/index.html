@@ -4878,7 +4878,7 @@ function buildReceiptText(o, ctx) {
   if (t.deliveryFeeP || t.serviceFeeP) out.push(row('Subtotal', money(t.subtotalP)));
   if (t.deliveryFeeP) out.push(row('Delivery', money(t.deliveryFeeP)));
   if (t.serviceFeeP) {
-    out.push(row('Service fee (shop)', money(t.serviceFeeShopP != null ? t.serviceFeeShopP : 0)));
+    out.push(row('Service fee', money(t.serviceFeeShopP != null ? t.serviceFeeShopP : 0)));
     out.push(row('Lumin Labs fee', money(t.serviceFeePlatformP != null ? t.serviceFeePlatformP : t.serviceFeeP)));
   }
   out.push(row('TOTAL', money(t.totalP)));
@@ -5017,7 +5017,7 @@ function buildReceiptDoc(o, ctx) {
   if (t.deliveryFeeP || t.serviceFeeP) ops.push(rowOp('Subtotal', money(t.subtotalP), SZ.body, true));
   if (t.deliveryFeeP) ops.push(rowOp('Delivery', money(t.deliveryFeeP), SZ.body, true));
   if (t.serviceFeeP) {
-    ops.push(rowOp('Service fee (shop)', money(t.serviceFeeShopP != null ? t.serviceFeeShopP : 0), SZ.body, true));
+    ops.push(rowOp('Service fee', money(t.serviceFeeShopP != null ? t.serviceFeeShopP : 0), SZ.body, true));
     ops.push(rowOp('Lumin Labs fee', money(t.serviceFeePlatformP != null ? t.serviceFeePlatformP : t.serviceFeeP), SZ.body, true));
   }
   ops.push(rowOp('TOTAL', '£' + money(t.totalP), SZ.body, true));
