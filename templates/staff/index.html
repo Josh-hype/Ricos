@@ -4859,8 +4859,10 @@ function buildReceiptText(o, ctx) {
   out.push(row('Ref ' + o.id, when));
   out.push(light);
   out.push(mode + (who ? ' · ' + who : '') + ' · ASAP');
+  if (o.customer && o.customer.phone) out.push('Tel ' + o.customer.phone);
   if (o.fulfillment === 'delivery' && o.address) {
     if (o.address.line1) out.push(o.address.line1);
+    if (o.address.line2) out.push(o.address.line2);
     if (o.address.postcode) out.push(o.address.postcode);
   }
   out.push(light);
@@ -4888,17 +4890,18 @@ function buildReceiptText(o, ctx) {
   out.push(row('TOTAL', money(t.totalP)));
   out.push(light);
   if (ctx && ctx.tender === 'split' && ctx.split) {
-    out.push(center('PAID — SPLIT'));
+    out.push(center('✓ PAID — SPLIT'));
     out.push(row('Cash', money(ctx.split.cashP)));
     out.push(row('Card', money(ctx.split.cardP)));
   } else if (ctx && ctx.tender) {
-    out.push(center('PAID BY ' + tender));
+    out.push(center('✓ PAID BY ' + tender));
     if (tender === 'CASH' && ctx.tenderedP > 0) {
       out.push(row('Cash', money(ctx.tenderedP)));
       if (ctx.changeP > 0) out.push(row('Change', money(ctx.changeP)));
     }
   } else {
-    out.push(center(paymentStatusLine(o)));
+    const ps = paymentStatusLine(o);
+    out.push(center((/^PAID/.test(ps) ? '✓ ' : 'X ') + ps));
   }
   out.push(light);
   if (o.createdBy && o.createdBy.name) out.push(center('Served by ' + o.createdBy.name));
@@ -4957,7 +4960,7 @@ function buildKitchenTicket(o) {
 // The Sunmi T2 head is 80mm ≈ 576 dots. Char width ≈ fontSize/2, so a line holds
 // ≈ 1152/fontSize chars. We pad rows + draw rules to that width so every line fills the
 // FULL paper at whatever font size it uses (no empty right margin). Tune SZ to taste.
-const SZ = { sm: 24, body: 30, name: 52 };
+const SZ = { sm: 24, body: 30, pay: 36, food: 40, name: 52 };
 function colsFor(size) { return Math.max(8, Math.floor(1152 / (size || 24))); }
 function padRow(left, right, size) {
   const cols = colsFor(size);
@@ -4977,7 +4980,7 @@ function lineExtras(li) {
     .map((ex) => (typeof ex === 'string') ? ex : (ex && (ex.label || ex.name)) || '')
     .filter(Boolean);
 }
-function buildReceiptDoc(o, ctx) {
+function buildReceiptDoc(o, ctx, kind) {
   const t = o.totals || {};
   const biz = (sale.config && sale.config.business) || {};
   const addr = biz.address || {};
@@ -4994,6 +4997,10 @@ function buildReceiptDoc(o, ctx) {
     : (ctx && ctx.tender) ? ('PAID BY ' + (ctx.tender === 'card' ? 'CARD' : 'CASH'))
     : paymentStatusLine(o);
 
+  const kitchen = kind === 'kitchen';
+  const phone = (o.customer && o.customer.phone) ? String(o.customer.phone) : '';
+  const settled = /^PAID/.test(paid); // ✓ when actually paid, X when money is owed
+
   const ops = [];
   // No logo — a big bold wordmark reads better on thermal than the dithered badge.
   ops.push({ t: 'feed', n: 1 });
@@ -5007,15 +5014,28 @@ function buildReceiptDoc(o, ctx) {
   ops.push(ruleOp());
   ops.push(rowOp('Ref ' + o.id, when, SZ.body, true));
   ops.push({ t: 'text', s: mode + (who ? ' · ' + who : '') + ' · ASAP', size: SZ.body, bold: true });
+  // Customer phone — essential for deliveries (the kitchen/driver calls the customer).
+  if (phone) ops.push({ t: 'text', s: 'Tel ' + phone, size: SZ.body, bold: true });
   if (o.fulfillment === 'delivery' && o.address) {
-    if (o.address.line1) ops.push({ t: 'text', s: o.address.line1, size: SZ.sm, bold: true });
-    if (o.address.postcode) ops.push({ t: 'text', s: o.address.postcode, size: SZ.sm, bold: true });
+    if (o.address.line1) ops.push({ t: 'text', s: o.address.line1, size: SZ.body, bold: true });
+    if (o.address.line2) ops.push({ t: 'text', s: o.address.line2, size: SZ.body, bold: true });
+    if (o.address.postcode) ops.push({ t: 'text', s: o.address.postcode, size: SZ.body, bold: true });
+    if (o.address.notes) ops.push({ t: 'text', s: o.address.notes, size: SZ.sm, bold: true });
   }
   ops.push(ruleOp());
+  // The food. Kitchen copy: BIG, uppercase and price-free so it reads at a glance,
+  // with options/notes a step down but still large. Customer receipt: the usual
+  // priced line. Either way the options (no salad, ¼lb, 11", …) print under the item.
   for (const li of (t.lines || [])) {
-    ops.push(rowOp((li.qty || 1) + 'x ' + li.name, money(li.lineTotalP), SZ.body, true));
-    for (const ex of lineExtras(li)) ops.push({ t: 'text', s: '   ' + ex, size: SZ.sm, bold: true });
-    if (li.notes) ops.push({ t: 'text', s: '   >> ' + li.notes, size: SZ.sm, bold: true });
+    if (kitchen) {
+      ops.push({ t: 'text', s: (li.qty || 1) + 'x ' + String(li.name || '').toUpperCase(), size: SZ.food, bold: true });
+      for (const ex of lineExtras(li)) ops.push({ t: 'text', s: '   ' + ex, size: SZ.body, bold: true });
+      if (li.notes) ops.push({ t: 'text', s: '   >> ' + li.notes, size: SZ.body, bold: true });
+    } else {
+      ops.push(rowOp((li.qty || 1) + 'x ' + li.name, money(li.lineTotalP), SZ.body, true));
+      for (const ex of lineExtras(li)) ops.push({ t: 'text', s: '   ' + ex, size: SZ.sm, bold: true });
+      if (li.notes) ops.push({ t: 'text', s: '   >> ' + li.notes, size: SZ.sm, bold: true });
+    }
   }
   ops.push(ruleOp());
   if (t.deliveryFeeP || t.serviceFeeP) ops.push(rowOp('Subtotal', money(t.subtotalP), SZ.body, true));
@@ -5026,7 +5046,10 @@ function buildReceiptDoc(o, ctx) {
   }
   ops.push(rowOp('TOTAL', '£' + money(t.totalP), SZ.body, true));
   ops.push(ruleOp());
-  if (paid) ops.push({ t: 'text', s: paid, align: 'center', size: SZ.body, bold: true });
+  // Payment status — BIG with a ✓ (paid) or X (still owed) so the driver knows
+  // instantly whether to collect. The word carries it even if the printer's font
+  // lacks the tick glyph.
+  if (paid) ops.push({ t: 'text', s: (settled ? '✓ ' : 'X ') + paid, align: 'center', size: SZ.pay, bold: true });
   if (isSplitPay) {
     ops.push(rowOp('Cash', money(ctx.split.cashP), SZ.body, true));
     ops.push(rowOp('Card', money(ctx.split.cardP), SZ.body, true));
@@ -5044,7 +5067,7 @@ function buildReceiptDoc(o, ctx) {
   return ops;
 }
 // Kitchen now prints the same receipt layout (per request) — one design to maintain.
-function buildKitchenDoc(o, ctx) { return buildReceiptDoc(o, ctx); }
+function buildKitchenDoc(o, ctx) { return buildReceiptDoc(o, ctx, 'kitchen'); }
 
 // Print a kitchen ticket or customer receipt. Prefer the rich printDoc (native font
 // sizes + logo); fall back to the plain-text builders on older APKs without printDoc.
@@ -5052,7 +5075,7 @@ function printTo(kind, o, pctx) {
   const ctx = { tender: (pctx && pctx.tender) || null, tenderedP: (pctx && pctx.tenderedP) || 0, changeP: (pctx && pctx.changeP) || 0, split: (pctx && pctx.split) || null };
   if (window.EPOSNative && window.EPOSNative.printDoc) {
     try {
-      const ops = buildReceiptDoc(o, ctx); // kitchen + customer copies share the receipt layout
+      const ops = buildReceiptDoc(o, ctx, kind); // kitchen copy = big food; customer copy = priced
       Promise.resolve(window.EPOSNative.printDoc({ ops }))
         .then((r) => {
           try { console.log('[print] ' + kind + (r && r.ok ? ' ok' : ' ' + JSON.stringify(r))); } catch (e) {}
