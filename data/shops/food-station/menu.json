@@ -9,6 +9,11 @@
         "priceP": 800,
         "modifiers": [
           {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 180
@@ -254,6 +259,11 @@
         "name": "BBQ Margherita",
         "priceP": 800,
         "modifiers": [
+          {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
           {
             "id": "sz13",
             "label": "13\"",
@@ -501,6 +511,11 @@
         "priceP": 850,
         "modifiers": [
           {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 150
@@ -746,6 +761,11 @@
         "name": "London",
         "priceP": 880,
         "modifiers": [
+          {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
           {
             "id": "sz13",
             "label": "13\"",
@@ -993,6 +1013,11 @@
         "priceP": 900,
         "modifiers": [
           {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 200
@@ -1238,6 +1263,11 @@
         "name": "Veg Supreme",
         "priceP": 880,
         "modifiers": [
+          {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
           {
             "id": "sz13",
             "label": "13\"",
@@ -1485,6 +1515,11 @@
         "priceP": 880,
         "modifiers": [
           {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 170
@@ -1730,6 +1765,11 @@
         "name": "Alfunghi",
         "priceP": 850,
         "modifiers": [
+          {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
           {
             "id": "sz13",
             "label": "13\"",
@@ -1977,6 +2017,11 @@
         "priceP": 900,
         "modifiers": [
           {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 200
@@ -2222,6 +2267,11 @@
         "name": "Farmhouse",
         "priceP": 900,
         "modifiers": [
+          {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
           {
             "id": "sz13",
             "label": "13\"",
@@ -2469,6 +2519,11 @@
         "priceP": 900,
         "modifiers": [
           {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 200
@@ -2714,6 +2769,11 @@
         "name": "Chicken Sweetcorn",
         "priceP": 900,
         "modifiers": [
+          {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
           {
             "id": "sz13",
             "label": "13\"",
@@ -2961,6 +3021,11 @@
         "priceP": 900,
         "modifiers": [
           {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 200
@@ -3206,6 +3271,11 @@
         "name": "Chicken Supreme",
         "priceP": 1000,
         "modifiers": [
+          {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
           {
             "id": "sz13",
             "label": "13\"",
@@ -3453,6 +3523,11 @@
         "priceP": 900,
         "modifiers": [
           {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 200
@@ -3698,6 +3773,11 @@
         "name": "Pepperoni",
         "priceP": 900,
         "modifiers": [
+          {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
           {
             "id": "sz13",
             "label": "13\"",
@@ -3945,6 +4025,11 @@
         "priceP": 1050,
         "modifiers": [
           {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 200
@@ -4190,6 +4275,11 @@
         "name": "Hot Shot",
         "priceP": 1000,
         "modifiers": [
+          {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
           {
             "id": "sz13",
             "label": "13\"",
@@ -4437,6 +4527,11 @@
         "priceP": 950,
         "modifiers": [
           {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 200
@@ -4682,6 +4777,11 @@
         "name": "Mexicano",
         "priceP": 1000,
         "modifiers": [
+          {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
           {
             "id": "sz13",
             "label": "13\"",
@@ -4929,6 +5029,11 @@
         "priceP": 1000,
         "modifiers": [
           {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 180
@@ -5174,6 +5279,11 @@
         "name": "Tuna Sweetcorn",
         "priceP": 990,
         "modifiers": [
+          {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
           {
             "id": "sz13",
             "label": "13\"",
@@ -5421,6 +5531,11 @@
         "priceP": 990,
         "modifiers": [
           {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 110
@@ -5666,6 +5781,11 @@
         "name": "Seafood",
         "priceP": 1000,
         "modifiers": [
+          {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
           {
             "id": "sz13",
             "label": "13\"",
@@ -5913,6 +6033,11 @@
         "priceP": 1090,
         "modifiers": [
           {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 110
@@ -6159,6 +6284,11 @@
         "priceP": 1090,
         "modifiers": [
           {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 110
@@ -6404,6 +6534,11 @@
         "name": "Hotdog",
         "priceP": 990,
         "modifiers": [
+          {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
           {
             "id": "sz13",
             "label": "13\"",
@@ -6657,6 +6792,11 @@
         "priceP": 500,
         "modifiers": [
           {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 150
@@ -6668,6 +6808,11 @@
         "name": "Garlic Bread Tomato",
         "priceP": 600,
         "modifiers": [
+          {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
           {
             "id": "sz13",
             "label": "13\"",
@@ -6681,6 +6826,11 @@
         "priceP": 700,
         "modifiers": [
           {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 100
@@ -6692,6 +6842,11 @@
         "name": "Garlic Bread Cheese & Tomato",
         "priceP": 780,
         "modifiers": [
+          {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
           {
             "id": "sz13",
             "label": "13\"",
@@ -6705,6 +6860,11 @@
         "priceP": 850,
         "modifiers": [
           {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 130
@@ -6716,6 +6876,11 @@
         "name": "Garlic Bread Pepperoni Cheese",
         "priceP": 850,
         "modifiers": [
+          {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
           {
             "id": "sz13",
             "label": "13\"",
@@ -6729,6 +6894,11 @@
         "priceP": 850,
         "modifiers": [
           {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
             "id": "sz13",
             "label": "13\"",
             "priceDeltaP": 130
@@ -6740,6 +6910,11 @@
         "name": "Garlic Bread Feta & Mozzarella",
         "priceP": 800,
         "modifiers": [
+          {
+            "id": "sz11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
           {
             "id": "sz13",
             "label": "13\"",
@@ -8215,6 +8390,11 @@
         "priceP": 550,
         "modifiers": [
           {
+            "id": "q",
+            "label": "¼lb",
+            "priceDeltaP": 0
+          },
+          {
             "id": "h",
             "label": "½lb",
             "priceDeltaP": 100
@@ -8296,6 +8476,11 @@
         "name": "Cheeseburger & Chips",
         "priceP": 650,
         "modifiers": [
+          {
+            "id": "q",
+            "label": "¼lb",
+            "priceDeltaP": 0
+          },
           {
             "id": "h",
             "label": "½lb",
@@ -8379,6 +8564,11 @@
         "priceP": 650,
         "modifiers": [
           {
+            "id": "q",
+            "label": "¼lb",
+            "priceDeltaP": 0
+          },
+          {
             "id": "h",
             "label": "½lb",
             "priceDeltaP": 100
@@ -8460,6 +8650,11 @@
         "name": "Hawaiian Burger & Chips",
         "priceP": 690,
         "modifiers": [
+          {
+            "id": "q",
+            "label": "¼lb",
+            "priceDeltaP": 0
+          },
           {
             "id": "h",
             "label": "½lb",
@@ -8543,6 +8738,11 @@
         "priceP": 650,
         "modifiers": [
           {
+            "id": "q",
+            "label": "¼lb",
+            "priceDeltaP": 0
+          },
+          {
             "id": "h",
             "label": "½lb",
             "priceDeltaP": 100
@@ -8625,6 +8825,11 @@
         "priceP": 650,
         "modifiers": [
           {
+            "id": "q",
+            "label": "¼lb",
+            "priceDeltaP": 0
+          },
+          {
             "id": "h",
             "label": "½lb",
             "priceDeltaP": 100
@@ -8706,6 +8911,11 @@
         "name": "Bacon Burger & Chips",
         "priceP": 650,
         "modifiers": [
+          {
+            "id": "q",
+            "label": "¼lb",
+            "priceDeltaP": 0
+          },
           {
             "id": "h",
             "label": "½lb",

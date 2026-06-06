@@ -2107,9 +2107,7 @@ function orderPaid(o) {
 function payLabel(o) {
   if (orderPaid(o)) return 'Paid';
   if (o && o.payment && o.payment.state === 'part_paid') return 'Part paid';
-  if (o && o.paymentMethod === 'cash_delivery') return 'Not paid · cash on delivery';
-  if (o && o.paymentMethod === 'cash_collection') return 'Not paid · cash on collection';
-  return 'Not paid';
+  return 'Not paid';   // the cash-on-delivery/collection detail is on the printed ticket
 }
 // Order-derived payment line for printed tickets (ASCII; works with no ctx, so
 // online tickets show it too). Tells the driver/shop whether to collect money.
@@ -3085,9 +3083,7 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
   // collection/delivery), part-paid and pay-later show a red "not paid" pill.
   const cashPill = orderPaid(o)
     ? (isCardPay ? '<span class="pill paid-card">card</span>' : '<span class="pill cash">cash</span>')
-    : (o.paymentMethod === 'cash_delivery' ? '<span class="pill unpaid">cash on delivery</span>'
-      : o.paymentMethod === 'cash_collection' ? '<span class="pill unpaid">cash on collection</span>'
-      : pmt.state === 'part_paid' ? '<span class="pill unpaid">part paid</span>'
+    : (pmt.state === 'part_paid' ? '<span class="pill unpaid">part paid</span>'
       : '<span class="pill unpaid">not paid</span>');
   const schedPill = o.schedule && o.schedule !== 'asap'
     ? `<span class="pill scheduled">${formatTime(o.schedule)}</span>`
@@ -3366,9 +3362,7 @@ function renderAlarm(o, qlen) {
   const fulfillment = o.fulfillment === 'delivery' ? 'Delivery' : 'Collection';
   const pay = orderPaid(o)
     ? (o.paymentMethod === 'split' ? 'Paid — split (cash + card)' : 'Paid by card')
-    : (o.paymentMethod === 'cash_collection' ? 'NOT PAID · cash on collection'
-      : o.paymentMethod === 'cash_delivery' ? 'NOT PAID · cash on delivery'
-      : 'NOT PAID');
+    : 'NOT PAID';
   const sched = o.schedule && o.schedule !== 'asap' ? ` · for ${formatTime(o.schedule)}` : ' · ASAP';
   const addr = o.address
     ? `<div style="font-size:0.88rem;color:var(--muted);margin-top:4px">${escapeHtml(o.address.line1)}${o.address.line2 ? ', ' + escapeHtml(o.address.line2) : ''}, ${escapeHtml(o.address.postcode)}${o.address.notes ? `<br><em>${escapeHtml(o.address.notes)}</em>` : ''}</div>`
