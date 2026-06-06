@@ -1151,6 +1151,7 @@ button{cursor:pointer;border:0;background:none}
 .opt-choice{
   display:flex;align-items:center;gap:10px;padding:13px 14px;min-height:48px;border:1.5px solid var(--line);
   border-radius:12px;cursor:pointer;transition:var(--motion-fast) var(--ease-out);background:var(--panel);position:relative;
+  user-select:none;-webkit-user-select:none;touch-action:manipulation;
 }
 .opt-choice:hover{border-color:var(--blue);background:var(--blue-tint-2)}
 .opt-choice:active{transform:scale(.99)}
@@ -4177,6 +4178,27 @@ function openItemDetail(id) {
     if (addLbl && !addEl.classList.contains('added')) addLbl.textContent = `Add to order · £${(p / 100).toFixed(2)}`;
   }
   body.querySelectorAll('.opt-group input, .opt-group select').forEach(el => el.addEventListener('change', recalc));
+  // Touch-robust multi-select toppings. The EPOS WebView mishandles
+  // <label>→checkbox toggling and can synthesise a tap at the end of a scroll —
+  // so toppings wouldn't tick, and scrolling selected random ones. Each choice
+  // is now a plain div: we own the checkbox state and toggle only on a genuine
+  // tap (the pointer barely moved). A scroll/drag (moved, or cancelled for a
+  // pan) never selects anything. Works for mouse and touch alike.
+  body.querySelectorAll('.opt-choice').forEach(box => {
+    const inp = box.querySelector('input[type="checkbox"]');
+    if (!inp) return;
+    let sx = 0, sy = 0, moved = false;
+    box.addEventListener('pointerdown', (e) => { sx = e.clientX; sy = e.clientY; moved = false; });
+    box.addEventListener('pointermove', (e) => {
+      if (Math.abs(e.clientX - sx) > 10 || Math.abs(e.clientY - sy) > 10) moved = true;
+    });
+    box.addEventListener('pointercancel', () => { moved = true; });
+    box.addEventListener('pointerup', () => {
+      if (moved) return;
+      inp.checked = !inp.checked;   // we drive state; no native label forwarding
+      recalc();                     // selected highlight (.sel) + live price
+    });
+  });
   if (mealInput) {
     mealInput.addEventListener('change', () => {
       mealInput.closest('.meal-toggle').classList.toggle('active', mealInput.checked);
@@ -4313,11 +4335,11 @@ function optionGroupHTML(g, canonical) {
     const checked = c.default === true ? 'checked' : '';
     const d = choiceDeltaP(c, canonical);
     const delta = `<span class="opt-delta">${d ? '+£' + (d / 100).toFixed(2) : ''}</span>`;
-    return `<label class="opt-choice">
-      <input type="checkbox" name="${gid}" value="${escapeHtml(c.id)}" ${checked} />
+    return `<div class="opt-choice">
+      <input type="checkbox" name="${gid}" value="${escapeHtml(c.id)}" aria-label="${escapeHtml(c.label)}" ${checked} />
       <span>${escapeHtml(c.label)}</span>
       ${delta}
-    </label>`;
+    </div>`;
   }).join('');
   return `${open}${rows}${errEl}</fieldset>`;
 }
