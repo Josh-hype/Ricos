@@ -79,7 +79,11 @@ export const onRequestGet = async ({ request, env }) => {
     if (!o.payment?.intentId) return 0;
     if (o.paymentMethod === 'counter_card') return cardFeeP(totalOf(o), config);
     if (o.paymentMethod === 'split') return cardFeeP(splitPartP(o, 'card'), config);
-    return o.totals?.serviceFeePlatformP || 0; // online card
+    // online card — the service-charge platform share. New orders carry
+    // serviceFeePlatformP (the 50p split); orders from BEFORE the split deploy took
+    // the WHOLE service fee as the application_fee, so fall back to serviceFeeP for
+    // those (else they'd wrongly read £0 and undercount the day's Lumin Labs fee).
+    return o.totals?.serviceFeePlatformP != null ? o.totals.serviceFeePlatformP : (o.totals?.serviceFeeP || 0);
   };
   // Stripe processing fee — an ESTIMATE on Stripe-charged orders (on direct charges
   // the venue pays this). Default UK rate 1.5% + 20p; override per shop with
