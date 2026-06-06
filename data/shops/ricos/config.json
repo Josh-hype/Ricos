@@ -69,8 +69,10 @@
     }
   },
 
-  "_comment_serviceFee": "Per-order developer/platform fee in pence. Charged to the customer at checkout, included in the Stripe charge or cash total. With Stripe Connect this is the application_fee_amount that flows to the platform; for cash orders the platform reconciles separately with the venue per the platform agreement.",
-  "serviceFeePence": 50,
+  "_comment_serviceFee": "Per-order service charge in pence, shown to the customer at checkout and added to the total. SPLIT: serviceFeePlatformPence is taken as the Stripe Connect application_fee (Lumin Labs' cut); the rest stays with the venue. On card orders the split is automatic; on cash orders the venue collects the whole charge and the platform reconciles its share separately.",
+  "serviceFeePence": 100,
+  "_comment_serviceFeePlatform": "Of serviceFeePence, the portion taken as the platform application_fee (Lumin Labs). The remainder stays with the shop — here a £1.00 charge = 50p platform + 50p shop.",
+  "serviceFeePlatformPence": 50,
 
   "_comment_stripe": "Stripe Connect: this site's PaymentIntents are direct charges on the venue's connected account, with the platform service fee taken as the application fee. connectedAccountId is RICOS's LIVE Stripe Connect account. Requires the matching LIVE Stripe secrets in Cloudflare (STRIPE_SECRET_KEY / STRIPE_PUBLISHABLE_KEY / STRIPE_WEBHOOK_SECRET).",
   "stripe": {

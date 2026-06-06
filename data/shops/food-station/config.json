@@ -58,8 +58,10 @@
     }
   },
 
-  "_comment_serviceFee": "Per-order platform fee in pence. Charged to the customer and kept by the platform.",
-  "serviceFeePence": 50,
+  "_comment_serviceFee": "Per-order service charge in pence, shown to the customer at checkout and added to the total. SPLIT: serviceFeePlatformPence is taken as the Stripe Connect application_fee (Lumin Labs' cut); the rest stays with the venue. On card orders the split is automatic; on cash orders the venue collects the whole charge and the platform reconciles its share separately.",
+  "serviceFeePence": 100,
+  "_comment_serviceFeePlatform": "Of serviceFeePence, the portion taken as the platform application_fee (Lumin Labs). The remainder stays with the shop — here a £1.00 charge = 50p platform + 50p shop.",
+  "serviceFeePlatformPence": 50,
 
   "_comment_stripe": "Stripe Connect: this site's PaymentIntents are created on the venue's connected account. connectedAccountId is the venue's acct_xxx string from Stripe Connect.",
   "stripe": {

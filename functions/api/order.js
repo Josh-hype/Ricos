@@ -183,13 +183,21 @@ export const onRequestPost = async ({ request, env }) => {
     // paying with a saved one. A plain new-card payment must NOT carry a
     // customer — a stale/test-mode cus_ id would otherwise break the live
     // PaymentIntent — so a signed-in new-card order behaves like a guest one.
+    // Platform's cut of the service charge, taken as the Connect application fee;
+    // the remainder of the charge stays with the venue. serviceFeePlatformPence
+    // defaults to the whole service fee when unset (legacy: platform took it all).
+    const serviceFeeP = totals.serviceFeeP || 0;
+    const platformFeeP = config.serviceFeePlatformPence != null
+      ? Math.max(0, Math.min(serviceFeeP, Number(config.serviceFeePlatformPence) || 0))
+      : serviceFeeP;
+
     const piParamsFor = (custId) => ({
       amountP: totals.totalP,
       currency: 'gbp',
       orderId: id,
       customerEmail: email,
       connectedAccountId,
-      applicationFeeP: totals.serviceFeeP || 0,
+      applicationFeeP: platformFeeP,
       customerId: (saveCard || paymentMethodIdInput) ? (custId || undefined) : undefined,
       setupFutureUsage: saveCard && custId ? 'off_session' : undefined,
       paymentMethodId: paymentMethodIdInput || undefined,
