@@ -25,8 +25,9 @@ Second shop on the platform. Brand sourced from the client's
   - Burgers — "Smashed, seared, double-stacked. American cheese, soft
     brioche, no rubber-lettuce nonsense."
   - Wraps — "Loaded, rolled, foil-tucked. Built to eat one-handed."
-- **Signature item:** "The Indecision Box". **Signature offer:** "The
-  Station Stack" (any 2 mains + chips + drink; loyalty = 10 stacks free).
+- **Signature item:** "The Goodie Box" (Meal Deal 1 — 11" margherita, doner,
+  chips, nuggets, onion rings, can). **Signature offer:** "The Burger Box"
+  (Meal Deal 2 — cheeseburger, chips, nuggets, onion rings, dip, can).
 
 ## Still needed before this builds / deploys
 - [ ] **logo.png** — the Food Station logo (real tomato + bell-pepper
