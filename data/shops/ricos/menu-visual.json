@@ -1994,13 +1994,15 @@
         "id": "sd-ricebox",
         "name": "Chicken Rice Box + Drink",
         "price": 4.95,
-        "desc": "Student deal — valid student ID required. Served 12–4pm."
+        "desc": "Student deal — valid student ID required. Served 12–4pm.",
+        "spicy": true
       },
       {
         "id": "sd-wings",
         "name": "3 Piri Wings, Chips + Drink",
         "price": 4.95,
-        "desc": "Student deal — valid student ID required. Served 12–4pm."
+        "desc": "Student deal — valid student ID required. Served 12–4pm.",
+        "spicy": true
       },
       {
         "id": "sd-chips",
@@ -2018,13 +2020,15 @@
         "id": "sd-wrap",
         "name": "Chicken Wrap + Drink",
         "price": 4.95,
-        "desc": "Student deal — valid student ID required."
+        "desc": "Student deal — valid student ID required.",
+        "spicy": true
       },
       {
         "id": "sd-burger",
         "name": "Chicken Burger + Drink",
         "price": 4.95,
-        "desc": "Student deal — valid student ID required."
+        "desc": "Student deal — valid student ID required.",
+        "spicy": true
       }
     ]
   }
