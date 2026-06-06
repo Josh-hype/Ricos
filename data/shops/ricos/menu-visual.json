@@ -2029,6 +2029,18 @@
         "price": 4.95,
         "desc": "Student deal — valid student ID required.",
         "spicy": true
+      },
+      {
+        "id": "sd-chips-reg",
+        "name": "Student Chips Regular",
+        "price": 2.5,
+        "desc": "Student deal — valid student ID required."
+      },
+      {
+        "id": "sd-chips-lrg",
+        "name": "Student Chips Large",
+        "price": 3,
+        "desc": "Student deal — valid student ID required."
       }
     ]
   }

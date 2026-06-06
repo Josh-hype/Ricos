@@ -1181,6 +1181,18 @@
         "name": "Chicken Burger + Drink",
         "priceP": 495,
         "posOnly": true
+      },
+      {
+        "id": "sd-chips-reg",
+        "name": "Student Chips Regular",
+        "priceP": 250,
+        "posOnly": true
+      },
+      {
+        "id": "sd-chips-lrg",
+        "name": "Student Chips Large",
+        "priceP": 300,
+        "posOnly": true
       }
     ]
   }
