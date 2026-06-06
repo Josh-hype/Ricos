@@ -3542,6 +3542,7 @@ let refundCtx = null;
 function findOrder(id) {
   return (state.orders || []).find(o => o.id === id)
     || (state.summaryOrders || []).find(o => o.id === id)
+    || (state.completedOrders || []).find(o => o.id === id)
     || null;
 }
 
@@ -3739,7 +3740,8 @@ function printOrder(id) {
 // the browser print of the card if one exists.
 function printOrderTicket(id) {
   const o = (state.orders || []).find(x => x.id === id)
-    || (state.summaryOrders || []).find(x => x.id === id);
+    || (state.summaryOrders || []).find(x => x.id === id)
+    || (state.completedOrders || []).find(x => x.id === id);
   if (o && window.EPOSNative && (window.EPOSNative.printDoc || window.EPOSNative.printReceipt)) {
     printTo('kitchen', o);
     return;
