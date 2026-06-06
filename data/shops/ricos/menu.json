@@ -1134,5 +1134,418 @@
         "priceP": 725
       }
     ]
+  },
+  {
+    "id": "student-deals",
+    "name": "Student Deals",
+    "posOnly": true,
+    "items": [
+      {
+        "id": "sd-chicken",
+        "name": "Popcorn Chicken, Chips + Drink",
+        "priceP": 495,
+        "posOnly": true,
+        "modifiers": [
+          {
+            "id": "drink-coke",
+            "label": "Can of Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-coke-zero",
+            "label": "Can of Coke Zero",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-diet",
+            "label": "Can of Diet Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-drpepper",
+            "label": "Can of Dr Pepper",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-pepsi",
+            "label": "Can of Pepsi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-fanta",
+            "label": "Can of Fanta Orange",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-fanta-lemon",
+            "label": "Can of Fanta Lemon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-sprite",
+            "label": "Can of Sprite",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-7up",
+            "label": "Can of 7Up",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-water",
+            "label": "Bottle of Water",
+            "priceDeltaP": 0
+          }
+        ]
+      },
+      {
+        "id": "sd-ricebox",
+        "name": "Chicken Rice Box + Drink",
+        "priceP": 495,
+        "posOnly": true,
+        "modifiers": [
+          {
+            "id": "drink-coke",
+            "label": "Can of Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-coke-zero",
+            "label": "Can of Coke Zero",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-diet",
+            "label": "Can of Diet Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-drpepper",
+            "label": "Can of Dr Pepper",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-pepsi",
+            "label": "Can of Pepsi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-fanta",
+            "label": "Can of Fanta Orange",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-fanta-lemon",
+            "label": "Can of Fanta Lemon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-sprite",
+            "label": "Can of Sprite",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-7up",
+            "label": "Can of 7Up",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-water",
+            "label": "Bottle of Water",
+            "priceDeltaP": 0
+          }
+        ]
+      },
+      {
+        "id": "sd-wings",
+        "name": "3 Piri Wings, Chips + Drink",
+        "priceP": 495,
+        "posOnly": true,
+        "modifiers": [
+          {
+            "id": "drink-coke",
+            "label": "Can of Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-coke-zero",
+            "label": "Can of Coke Zero",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-diet",
+            "label": "Can of Diet Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-drpepper",
+            "label": "Can of Dr Pepper",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-pepsi",
+            "label": "Can of Pepsi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-fanta",
+            "label": "Can of Fanta Orange",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-fanta-lemon",
+            "label": "Can of Fanta Lemon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-sprite",
+            "label": "Can of Sprite",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-7up",
+            "label": "Can of 7Up",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-water",
+            "label": "Bottle of Water",
+            "priceDeltaP": 0
+          }
+        ]
+      },
+      {
+        "id": "sd-chips",
+        "name": "Cheesy Chips + Drink",
+        "priceP": 495,
+        "posOnly": true,
+        "modifiers": [
+          {
+            "id": "drink-coke",
+            "label": "Can of Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-coke-zero",
+            "label": "Can of Coke Zero",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-diet",
+            "label": "Can of Diet Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-drpepper",
+            "label": "Can of Dr Pepper",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-pepsi",
+            "label": "Can of Pepsi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-fanta",
+            "label": "Can of Fanta Orange",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-fanta-lemon",
+            "label": "Can of Fanta Lemon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-sprite",
+            "label": "Can of Sprite",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-7up",
+            "label": "Can of 7Up",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-water",
+            "label": "Bottle of Water",
+            "priceDeltaP": 0
+          }
+        ]
+      },
+      {
+        "id": "sd-dippers",
+        "name": "3 Chicken Dippers + Drink",
+        "priceP": 495,
+        "posOnly": true,
+        "modifiers": [
+          {
+            "id": "drink-coke",
+            "label": "Can of Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-coke-zero",
+            "label": "Can of Coke Zero",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-diet",
+            "label": "Can of Diet Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-drpepper",
+            "label": "Can of Dr Pepper",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-pepsi",
+            "label": "Can of Pepsi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-fanta",
+            "label": "Can of Fanta Orange",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-fanta-lemon",
+            "label": "Can of Fanta Lemon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-sprite",
+            "label": "Can of Sprite",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-7up",
+            "label": "Can of 7Up",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-water",
+            "label": "Bottle of Water",
+            "priceDeltaP": 0
+          }
+        ]
+      },
+      {
+        "id": "sd-wrap",
+        "name": "Chicken Wrap + Drink",
+        "priceP": 495,
+        "posOnly": true,
+        "modifiers": [
+          {
+            "id": "drink-coke",
+            "label": "Can of Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-coke-zero",
+            "label": "Can of Coke Zero",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-diet",
+            "label": "Can of Diet Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-drpepper",
+            "label": "Can of Dr Pepper",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-pepsi",
+            "label": "Can of Pepsi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-fanta",
+            "label": "Can of Fanta Orange",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-fanta-lemon",
+            "label": "Can of Fanta Lemon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-sprite",
+            "label": "Can of Sprite",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-7up",
+            "label": "Can of 7Up",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-water",
+            "label": "Bottle of Water",
+            "priceDeltaP": 0
+          }
+        ]
+      },
+      {
+        "id": "sd-burger",
+        "name": "Chicken Burger + Drink",
+        "priceP": 495,
+        "posOnly": true,
+        "modifiers": [
+          {
+            "id": "drink-coke",
+            "label": "Can of Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-coke-zero",
+            "label": "Can of Coke Zero",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-diet",
+            "label": "Can of Diet Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-drpepper",
+            "label": "Can of Dr Pepper",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-pepsi",
+            "label": "Can of Pepsi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-fanta",
+            "label": "Can of Fanta Orange",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-fanta-lemon",
+            "label": "Can of Fanta Lemon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-sprite",
+            "label": "Can of Sprite",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-7up",
+            "label": "Can of 7Up",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "drink-water",
+            "label": "Bottle of Water",
+            "priceDeltaP": 0
+          }
+        ]
+      }
+    ]
   }
 ]

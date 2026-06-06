@@ -35,6 +35,12 @@ export function computeTotals(input, config, opts = {}) {
     if (!item) {
       return { ok: false, reason: `Unknown item: ${line.id}` };
     }
+    // POS-only items (e.g. in-store student deals) exist in the menu for the till
+    // but must never be orderable on the website. The staff counter flow opts in
+    // via allowPosOnly; the customer web checkout never does.
+    if (item.posOnly && !opts.allowPosOnly) {
+      return { ok: false, reason: `Item not available online: ${line.id}` };
+    }
     const qty = Math.max(1, Math.min(20, Math.floor(Number(line.qty)) || 1));
     let lineP = item.priceP;
 

@@ -3698,7 +3698,11 @@ function renderCheckout() {
 const menuRootEl = document.getElementById('menuRoot');
 if (menuRootEl) menuRootEl.innerHTML = '<div class="menu-loading" style="text-align:center;padding:40px 20px;color:#6b5e58">Loading menu…</div>';
 fetch('/menu-visual.json').then(r => r.ok ? r.json() : Promise.reject()).then(data => {
-  MENU_DATA = data;
+  // Hide POS-only sections/items (e.g. in-store student deals) from the website —
+  // they exist in the menu for the till, but customers must not see or order them.
+  MENU_DATA = (Array.isArray(data) ? data : [])
+    .filter(c => !c.posOnly)
+    .map(c => ({ ...c, items: (c.items || []).filter(it => !it.posOnly) }));
   renderMenu();
 }).catch(() => {
   if (menuRootEl) menuRootEl.innerHTML = '<div style="text-align:center;padding:40px 20px;color:#a8331a">Sorry, the menu didn\'t load. Refresh to try again.</div>';

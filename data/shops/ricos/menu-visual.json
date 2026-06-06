@@ -1977,5 +1977,475 @@
         "spicy": false
       }
     ]
+  },
+  {
+    "id": "student-deals",
+    "name": "Student Deals",
+    "icon": "🎓",
+    "posOnly": true,
+    "items": [
+      {
+        "id": "sd-chicken",
+        "name": "Popcorn Chicken, Chips + Drink",
+        "price": 4.95,
+        "desc": "Student deal — valid student ID required.",
+        "options": [
+          {
+            "id": "sd-drink",
+            "label": "Choose drink",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "drink-coke",
+                "label": "Can of Coke",
+                "price": 0
+              },
+              {
+                "id": "drink-coke-zero",
+                "label": "Can of Coke Zero",
+                "price": 0
+              },
+              {
+                "id": "drink-diet",
+                "label": "Can of Diet Coke",
+                "price": 0
+              },
+              {
+                "id": "drink-drpepper",
+                "label": "Can of Dr Pepper",
+                "price": 0
+              },
+              {
+                "id": "drink-pepsi",
+                "label": "Can of Pepsi",
+                "price": 0
+              },
+              {
+                "id": "drink-fanta",
+                "label": "Can of Fanta Orange",
+                "price": 0
+              },
+              {
+                "id": "drink-fanta-lemon",
+                "label": "Can of Fanta Lemon",
+                "price": 0
+              },
+              {
+                "id": "drink-sprite",
+                "label": "Can of Sprite",
+                "price": 0
+              },
+              {
+                "id": "drink-7up",
+                "label": "Can of 7Up",
+                "price": 0
+              },
+              {
+                "id": "drink-water",
+                "label": "Bottle of Water",
+                "price": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sd-ricebox",
+        "name": "Chicken Rice Box + Drink",
+        "price": 4.95,
+        "desc": "Student deal — valid student ID required. Served 12–4pm.",
+        "options": [
+          {
+            "id": "sd-drink",
+            "label": "Choose drink",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "drink-coke",
+                "label": "Can of Coke",
+                "price": 0
+              },
+              {
+                "id": "drink-coke-zero",
+                "label": "Can of Coke Zero",
+                "price": 0
+              },
+              {
+                "id": "drink-diet",
+                "label": "Can of Diet Coke",
+                "price": 0
+              },
+              {
+                "id": "drink-drpepper",
+                "label": "Can of Dr Pepper",
+                "price": 0
+              },
+              {
+                "id": "drink-pepsi",
+                "label": "Can of Pepsi",
+                "price": 0
+              },
+              {
+                "id": "drink-fanta",
+                "label": "Can of Fanta Orange",
+                "price": 0
+              },
+              {
+                "id": "drink-fanta-lemon",
+                "label": "Can of Fanta Lemon",
+                "price": 0
+              },
+              {
+                "id": "drink-sprite",
+                "label": "Can of Sprite",
+                "price": 0
+              },
+              {
+                "id": "drink-7up",
+                "label": "Can of 7Up",
+                "price": 0
+              },
+              {
+                "id": "drink-water",
+                "label": "Bottle of Water",
+                "price": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sd-wings",
+        "name": "3 Piri Wings, Chips + Drink",
+        "price": 4.95,
+        "desc": "Student deal — valid student ID required. Served 12–4pm.",
+        "options": [
+          {
+            "id": "sd-drink",
+            "label": "Choose drink",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "drink-coke",
+                "label": "Can of Coke",
+                "price": 0
+              },
+              {
+                "id": "drink-coke-zero",
+                "label": "Can of Coke Zero",
+                "price": 0
+              },
+              {
+                "id": "drink-diet",
+                "label": "Can of Diet Coke",
+                "price": 0
+              },
+              {
+                "id": "drink-drpepper",
+                "label": "Can of Dr Pepper",
+                "price": 0
+              },
+              {
+                "id": "drink-pepsi",
+                "label": "Can of Pepsi",
+                "price": 0
+              },
+              {
+                "id": "drink-fanta",
+                "label": "Can of Fanta Orange",
+                "price": 0
+              },
+              {
+                "id": "drink-fanta-lemon",
+                "label": "Can of Fanta Lemon",
+                "price": 0
+              },
+              {
+                "id": "drink-sprite",
+                "label": "Can of Sprite",
+                "price": 0
+              },
+              {
+                "id": "drink-7up",
+                "label": "Can of 7Up",
+                "price": 0
+              },
+              {
+                "id": "drink-water",
+                "label": "Bottle of Water",
+                "price": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sd-chips",
+        "name": "Cheesy Chips + Drink",
+        "price": 4.95,
+        "desc": "Student deal — valid student ID required. Served 12–4pm.",
+        "options": [
+          {
+            "id": "sd-drink",
+            "label": "Choose drink",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "drink-coke",
+                "label": "Can of Coke",
+                "price": 0
+              },
+              {
+                "id": "drink-coke-zero",
+                "label": "Can of Coke Zero",
+                "price": 0
+              },
+              {
+                "id": "drink-diet",
+                "label": "Can of Diet Coke",
+                "price": 0
+              },
+              {
+                "id": "drink-drpepper",
+                "label": "Can of Dr Pepper",
+                "price": 0
+              },
+              {
+                "id": "drink-pepsi",
+                "label": "Can of Pepsi",
+                "price": 0
+              },
+              {
+                "id": "drink-fanta",
+                "label": "Can of Fanta Orange",
+                "price": 0
+              },
+              {
+                "id": "drink-fanta-lemon",
+                "label": "Can of Fanta Lemon",
+                "price": 0
+              },
+              {
+                "id": "drink-sprite",
+                "label": "Can of Sprite",
+                "price": 0
+              },
+              {
+                "id": "drink-7up",
+                "label": "Can of 7Up",
+                "price": 0
+              },
+              {
+                "id": "drink-water",
+                "label": "Bottle of Water",
+                "price": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sd-dippers",
+        "name": "3 Chicken Dippers + Drink",
+        "price": 4.95,
+        "desc": "Student deal — valid student ID required. Served 12–4pm.",
+        "options": [
+          {
+            "id": "sd-drink",
+            "label": "Choose drink",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "drink-coke",
+                "label": "Can of Coke",
+                "price": 0
+              },
+              {
+                "id": "drink-coke-zero",
+                "label": "Can of Coke Zero",
+                "price": 0
+              },
+              {
+                "id": "drink-diet",
+                "label": "Can of Diet Coke",
+                "price": 0
+              },
+              {
+                "id": "drink-drpepper",
+                "label": "Can of Dr Pepper",
+                "price": 0
+              },
+              {
+                "id": "drink-pepsi",
+                "label": "Can of Pepsi",
+                "price": 0
+              },
+              {
+                "id": "drink-fanta",
+                "label": "Can of Fanta Orange",
+                "price": 0
+              },
+              {
+                "id": "drink-fanta-lemon",
+                "label": "Can of Fanta Lemon",
+                "price": 0
+              },
+              {
+                "id": "drink-sprite",
+                "label": "Can of Sprite",
+                "price": 0
+              },
+              {
+                "id": "drink-7up",
+                "label": "Can of 7Up",
+                "price": 0
+              },
+              {
+                "id": "drink-water",
+                "label": "Bottle of Water",
+                "price": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sd-wrap",
+        "name": "Chicken Wrap + Drink",
+        "price": 4.95,
+        "desc": "Student deal — valid student ID required.",
+        "options": [
+          {
+            "id": "sd-drink",
+            "label": "Choose drink",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "drink-coke",
+                "label": "Can of Coke",
+                "price": 0
+              },
+              {
+                "id": "drink-coke-zero",
+                "label": "Can of Coke Zero",
+                "price": 0
+              },
+              {
+                "id": "drink-diet",
+                "label": "Can of Diet Coke",
+                "price": 0
+              },
+              {
+                "id": "drink-drpepper",
+                "label": "Can of Dr Pepper",
+                "price": 0
+              },
+              {
+                "id": "drink-pepsi",
+                "label": "Can of Pepsi",
+                "price": 0
+              },
+              {
+                "id": "drink-fanta",
+                "label": "Can of Fanta Orange",
+                "price": 0
+              },
+              {
+                "id": "drink-fanta-lemon",
+                "label": "Can of Fanta Lemon",
+                "price": 0
+              },
+              {
+                "id": "drink-sprite",
+                "label": "Can of Sprite",
+                "price": 0
+              },
+              {
+                "id": "drink-7up",
+                "label": "Can of 7Up",
+                "price": 0
+              },
+              {
+                "id": "drink-water",
+                "label": "Bottle of Water",
+                "price": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sd-burger",
+        "name": "Chicken Burger + Drink",
+        "price": 4.95,
+        "desc": "Student deal — valid student ID required.",
+        "options": [
+          {
+            "id": "sd-drink",
+            "label": "Choose drink",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "drink-coke",
+                "label": "Can of Coke",
+                "price": 0
+              },
+              {
+                "id": "drink-coke-zero",
+                "label": "Can of Coke Zero",
+                "price": 0
+              },
+              {
+                "id": "drink-diet",
+                "label": "Can of Diet Coke",
+                "price": 0
+              },
+              {
+                "id": "drink-drpepper",
+                "label": "Can of Dr Pepper",
+                "price": 0
+              },
+              {
+                "id": "drink-pepsi",
+                "label": "Can of Pepsi",
+                "price": 0
+              },
+              {
+                "id": "drink-fanta",
+                "label": "Can of Fanta Orange",
+                "price": 0
+              },
+              {
+                "id": "drink-fanta-lemon",
+                "label": "Can of Fanta Lemon",
+                "price": 0
+              },
+              {
+                "id": "drink-sprite",
+                "label": "Can of Sprite",
+                "price": 0
+              },
+              {
+                "id": "drink-7up",
+                "label": "Can of 7Up",
+                "price": 0
+              },
+              {
+                "id": "drink-water",
+                "label": "Bottle of Water",
+                "price": 0
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
