@@ -3012,7 +3012,7 @@ function renderReport(s, orders) {
     ? `<div class="zorders">${orders.map(o => renderCard(o, false, true, true)).join('')}</div>`
     : '<div class="empty">No orders in this range.</div>';
   $('#grid').innerHTML = '<button class="bo-back" id="boBack">← Back office</button>' + figures + cards;
-  $('#zprint').addEventListener('click', () => window.print());
+  $('#zprint').addEventListener('click', () => printZReport(s, rangeLabel));
   const bb = $('#boBack'); if (bb) bb.addEventListener('click', () => setView('backoffice'));
   wireCardButtons();   // wires the collapse/expand toggles on the report's cards
 }
@@ -5106,6 +5106,68 @@ function buildReceiptDoc(o, ctx, kind) {
 }
 // Kitchen now prints the same receipt layout (per request) — one design to maintain.
 function buildKitchenDoc(o, ctx) { return buildReceiptDoc(o, ctx, 'kitchen'); }
+
+// ---- Z report end-of-day print. Same thermal doc style as the receipts (SZ font
+// sizes, padded rows + rules) so every figure from the on-screen Z card fills the
+// 80mm paper. `s` is the summary object from /api/staff/summary; `rangeLabel` the
+// human date range. Mirrors renderReport's figures exactly so paper == screen.
+function buildZReportDoc(s, rangeLabel) {
+  const money = (p) => ((p || 0) / 100).toFixed(2);
+  const biz = (sale.config && sale.config.business) || {};
+  const card = s.card || { grossP: 0, count: 0 };
+  const cash = s.cash || { grossP: 0, count: 0 };
+  let printedAt = '';
+  try { printedAt = new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) {}
+
+  const ops = [];
+  ops.push({ t: 'feed', n: 1 });
+  if (biz.tradingName) ops.push({ t: 'text', s: biz.tradingName, align: 'center', size: SZ.name, bold: true });
+  ops.push({ t: 'feed', n: 1 });
+  ops.push({ t: 'text', s: 'Z REPORT', align: 'center', size: SZ.pay, bold: true });
+  ops.push({ t: 'text', s: rangeLabel, align: 'center', size: SZ.body, bold: true });
+  ops.push(ruleOp());
+  // Headline: money taken + order count, big like the on-screen zbig figure.
+  ops.push({ t: 'text', s: '£' + money(s.grossP), align: 'center', size: SZ.name, bold: true });
+  ops.push({ t: 'text', s: 'taken · ' + (s.orderCount || 0) + ' order' + (s.orderCount === 1 ? '' : 's'), align: 'center', size: SZ.sm, bold: true });
+  ops.push(ruleOp());
+  ops.push(rowOp('Avg order', '£' + money(s.avgP), SZ.body, true));
+  ops.push(rowOp('Card (' + (card.count || 0) + ')', '£' + money(card.grossP), SZ.body, true));
+  ops.push(rowOp('Cash (' + (cash.count || 0) + ')', '£' + money(cash.grossP), SZ.body, true));
+  ops.push(ruleOp());
+  ops.push(rowOp('Collection', String(s.collection || 0), SZ.body, true));
+  ops.push(rowOp('Delivery', String(s.delivery || 0), SZ.body, true));
+  ops.push(rowOp('Completed', String(s.completed || 0), SZ.body, true));
+  ops.push(rowOp('Cancelled', String(s.cancelled || 0), SZ.body, true));
+  ops.push(ruleOp());
+  ops.push(rowOp('Refunded', '£' + money(s.refundedP), SZ.body, true));
+  ops.push(rowOp('Lumin Labs fee', '£' + money(s.platformFeeP), SZ.body, true));
+  ops.push(rowOp('Stripe fees (est.)', '£' + money(s.stripeFeeP), SZ.body, true));
+  ops.push(rowOp('Delivery fees', '£' + money(s.deliveryFeeP), SZ.body, true));
+  ops.push(ruleOp());
+  ops.push({ t: 'text', s: 'Printed ' + printedAt, align: 'center', size: SZ.sm, bold: true });
+  ops.push({ t: 'feed', n: 3 });
+  ops.push({ t: 'cut' });
+  return ops;
+}
+
+// Print the Z report to the thermal printer (prefer the rich printDoc); fall back to
+// the browser print — the back office on a desktop has no native printer — exactly as
+// it behaved before, so nothing regresses off the till.
+function printZReport(s, rangeLabel) {
+  if (window.EPOSNative && window.EPOSNative.printDoc) {
+    try {
+      const ops = buildZReportDoc(s, rangeLabel);
+      Promise.resolve(window.EPOSNative.printDoc({ ops }))
+        .then((r) => {
+          try { console.log('[print] zreport' + (r && r.ok ? ' ok' : ' ' + JSON.stringify(r))); } catch (e) {}
+          if (!(r && r.ok) && r && r.reason === 'not-in-app') window.print();
+        })
+        .catch(() => window.print());
+    } catch (e) { window.print(); }
+  } else {
+    window.print();
+  }
+}
 
 // Print a kitchen ticket or customer receipt. Prefer the rich printDoc (native font
 // sizes + logo); fall back to the plain-text builders on older APKs without printDoc.
