@@ -44,8 +44,20 @@ export const onRequestGet = async ({ request, env }) => {
   // takings = paid sales that weren't fully refunded — these carry the day's money
   //           and the card/cash counts. A fully-refunded order nets to £0 and drops
   //           out of the counts (its refund still shows on the refunds line).
+  // Genuinely PAID = the money was actually collected. A strict whitelist on
+  // payment.state so nothing else can leak into takings: this excludes cash_due
+  // (online cash not settled), unpaid / part_paid (pay-later / half-collected
+  // split), 'awaiting' (card never completed) and — the leak we just hit —
+  // 'failed' (card declined; the order sits at status 'failed'). Refund states
+  // WERE paid, so they stay in and net off below.
+  const isPaidState = (o) => {
+    const st = o.payment?.state;
+    return st === 'paid' || st === 'partly_refunded' || st === 'refunded';
+  };
+  // live = still-active orders (drives the in-progress + outstanding counts).
   const live = orders.filter(o => o.status !== 'pending_payment' && o.status !== 'cancelled');
-  const paid = live.filter(o => !owesMoney(o));
+  // paid = takings base — collected money only, and never a cancelled order.
+  const paid = orders.filter(o => o.status !== 'cancelled' && isPaidState(o));
   const takings = paid.filter(o => !fullyRefunded(o));
   const sum = (arr, f) => arr.reduce((a, o) => a + (f(o) || 0), 0);
 
