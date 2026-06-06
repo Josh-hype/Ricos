@@ -400,8 +400,8 @@ button{cursor:pointer;border:0;background:none}
 .chead{cursor:pointer}
 .chead-top{display:flex;align-items:center;gap:8px}
 .chead-sub{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:8px}
-.card.collapsible .chev{color:var(--muted-2);font-size:12px;transition:transform .12s;display:inline-block}
-.card.collapsible.open .chev{transform:rotate(90deg)}
+.collapsible .chev{color:var(--muted-2);font-size:12px;transition:transform .12s;display:inline-block;margin-right:4px}
+.collapsible.open .chev{transform:rotate(90deg)}
 .head-total{margin-left:auto;font-family:var(--mono);font-size:18px;font-weight:500}
 .head-date{color:var(--muted);font-size:12px}
 .card-body{display:flex;flex-direction:column;gap:10px;margin-top:10px}
@@ -525,6 +525,8 @@ button{cursor:pointer;border:0;background:none}
 .orow .r-paid.pd{background:var(--green-tint);color:var(--green)}
 .orow .r-paid.np{background:var(--red-tint);color:var(--red)}
 .orow .card-menu{position:relative;top:auto;right:auto;justify-self:center}
+.orow.collapsible{cursor:pointer}
+.orow .card-body{grid-column:1/-1;border-top:1px solid var(--bd);padding-top:10px}
 
 /* Lumin Labs brand lockup — top-left of the topbar, next to the title */
 .brandmark{display:flex;align-items:center;flex:none}
@@ -2843,6 +2845,18 @@ function wireCardButtons() {
       card.classList.toggle('open', willOpen);
     });
   });
+  // Live / Completed rows expand the same way — tap the row (not the ⋮, a button,
+  // a link, or the open body) to reveal the full order.
+  $$('.orow.collapsible').forEach(row => {
+    row.addEventListener('click', (e) => {
+      if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.card-menu') || e.target.closest('.card-body')) return;
+      const body = row.querySelector('.card-body');
+      if (!body) return;
+      const willOpen = body.hasAttribute('hidden');
+      body.toggleAttribute('hidden', !willOpen);
+      row.classList.toggle('open', willOpen);
+    });
+  });
 }
 
 // Signature for the Today view — same idea as liveSignature, so the background
@@ -3215,7 +3229,7 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
 // shows a summary — full order detail goes to the printer / KDS — so it's: ref +
 // type/status, total, tender, paid-state, and a ⋮ holding every order action.
 function renderRow(o, isNew) {
-  const cls = ['orow'];
+  const cls = ['orow', 'collapsible'];
   if (isNew) cls.push('new');
   const am = agingMins(o);
   if (am !== null) { if (am < 0) cls.push('aging-over'); else if (am <= 5) cls.push('aging-soon'); }
@@ -3274,16 +3288,38 @@ function renderRow(o, isNew) {
       <div class="menu" hidden>${m.join('')}</div>
     </div>`;
 
+  // Tap the row to expand the full order (items, customer + phone, address, totals)
+  // — same idea as the back-office cards. Actions stay in the ⋮ on the row.
+  const addrHtml = o.address
+    ? `<div style="font-size:0.85rem;color:var(--muted);margin-top:4px">${escapeHtml(o.address.line1)}${o.address.line2 ? ', ' + escapeHtml(o.address.line2) : ''}, ${escapeHtml(o.address.postcode)}${o.address.notes ? `<br><em>${escapeHtml(o.address.notes)}</em>` : ''}</div>`
+    : '';
+  const body = `
+    <div class="card-body" hidden>
+      <ul class="lines">${lineItemsHtml(o)}</ul>
+      <div class="who">
+        <strong>${escapeHtml(o.customer.name)}</strong>
+        ${o.customer.phone ? `<a href="tel:${escapeHtml(o.customer.phone)}">${escapeHtml(o.customer.phone)}</a>` : ''}
+        ${addrHtml}
+      </div>
+      <div class="totals">
+        <div>${o.totals.lines.length} item${o.totals.lines.length === 1 ? '' : 's'} · subtotal £${(o.totals.subtotalP / 100).toFixed(2)}</div>
+        ${o.totals.discountP ? `<div>${escapeHtml(o.totals.discountLabel || 'Discount')}: −£${(o.totals.discountP / 100).toFixed(2)}</div>` : ''}
+        ${o.totals.deliveryFeeP ? `<div>Delivery: £${(o.totals.deliveryFeeP / 100).toFixed(2)}</div>` : ''}
+        <div class="total"><span>Total</span><span>£${(o.totals.totalP / 100).toFixed(2)}</span></div>
+      </div>
+    </div>`;
+
   return `
     <article class="${cls.join(' ')}" data-id="${o.id}">
       <div class="r-id">
-        <span class="r-ref">#${escapeHtml(orderNo(o))}</span>
+        <span class="r-ref"><span class="chev">▸</span>#${escapeHtml(orderNo(o))}</span>
         <span class="r-meta">${escapeHtml(meta)}</span>
       </div>
       <span class="r-total">£${(o.totals.totalP / 100).toFixed(2)}</span>
       <span class="r-method">${method}</span>
       <span class="r-paid ${paidCls}">${paidLbl}</span>
       ${menuHtml}
+      ${body}
     </article>`;
 }
 
