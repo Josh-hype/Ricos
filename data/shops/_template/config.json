@@ -90,6 +90,9 @@
     }
   },
 
+  "_comment_pos": "Till behaviour flags (all optional, default off). requireOrderPin:true makes staff enter their operator code to START every order (walk-in/collection/delivery) — leave it false so staff take orders with no per-order PIN. NOTE: the manager/owner PIN on voids, refunds and cancellations is a SEPARATE gate and is ALWAYS required regardless of this flag. selfServeDrinks:true hides the till's drink picker; externalCardMachine:true marks the Card button as paid immediately for a shop using its own card terminal.",
+  "pos": { "requireOrderPin": false },
+
   "payments": {
     "stripeEnabled": true,
     "cashOnCollectionEnabled": true,

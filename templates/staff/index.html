@@ -5762,7 +5762,13 @@ $('#authzConfirm').addEventListener('click', async () => {
    {id,name}, {skip:true} in legacy mode, or null if cancelled. */
 function askStaffCode() {
   return new Promise((resolve) => {
-    if (!state.operatorsEnabled) { resolve({ skip: true }); return; }
+    // The order-start staff code is OPT-IN per shop (config.pos.requireOrderPin).
+    // Skip it unless the shop turned it on (and has operators) — Rico's / Food Station
+    // take orders with no per-order PIN. The forced manager/owner PIN on voids,
+    // refunds and cancellations is a separate gate (requirePerm) and is unaffected.
+    const needCode = state.operatorsEnabled
+      && !!(sale.config && sale.config.pos && sale.config.pos.requireOrderPin);
+    if (!needCode) { resolve({ skip: true }); return; }
     state.pendingStaffCode = resolve;
     $('#staffCodePin').value = '';
     $('#staffCodeError').textContent = '';

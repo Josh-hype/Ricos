@@ -49,9 +49,15 @@ export function getPublicConfig() {
       cashOnDeliveryEnabled: payments.cashOnDeliveryEnabled,
       savedCardCvcThresholdPence: Number(payments.savedCardCvcThresholdPence) || 0,
     },
-    // Till behaviour: when externalCardMachine is true the staff Card button records
-    // a card sale immediately (the shop uses its own terminal; no LumiPOS reader).
-    pos: { externalCardMachine: !!pos.externalCardMachine, selfServeDrinks: !!pos.selfServeDrinks },
+    // Till behaviour: externalCardMachine → the Card button records a card sale
+    // immediately (shop uses its own terminal); selfServeDrinks → hide the drink
+    // picker; requireOrderPin → staff must enter their operator code to start each
+    // order (opt-in; the manager PIN on voids/refunds is separate and always on).
+    pos: {
+      externalCardMachine: !!pos.externalCardMachine,
+      selfServeDrinks: !!pos.selfServeDrinks,
+      requireOrderPin: !!pos.requireOrderPin,
+    },
     allergens: config.allergens,
     marketing: config.marketing,
   };
