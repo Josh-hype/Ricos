@@ -35,9 +35,12 @@ export const onRequestGet = async ({ request, env }) => {
     return Response.json({ ok: false, enabled: true, addresses: [], reason: 'Enter a full UK postcode.' }, { headers });
   }
 
-  // Per-postcode cache so a paid lookup is never repeated. Reuse an existing KV
-  // binding (a dedicated ADDRESS_KV if added, else CUSTOMERS_KV); skip silently
-  // if neither is bound (the feature still works, just without the saving).
+  // Per-postcode cache so a paid lookup is never repeated — not even across shops.
+  // The key is the postcode ALONE (no shop prefix), so binding ONE shared KV
+  // namespace as ADDRESS_KV on every shop's Pages project means a postcode resolved
+  // by any shop (Rico's, Food Station, …) is then free for all of them. Falls back
+  // to the per-shop CUSTOMERS_KV when ADDRESS_KV isn't bound (still caches within a
+  // shop, but bills once per shop), or skips caching if neither is bound.
   const cache = env.ADDRESS_KV || env.CUSTOMERS_KV || null;
   const cacheKey = `addr:${p.formatted}`;
   if (cache) {
