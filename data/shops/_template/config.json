@@ -71,6 +71,8 @@
 
   "ordering": {
     "timezone": "Europe/London",
+    "_comment_businessDayStartHour": "Trading-day rollover hour (0–23, shop local time). 4 = the day's orders / takings / Z-report run 4am-to-4am, so a late-night shop's orders taken after midnight still count toward the day it opened. Set 0 for a plain midnight-to-midnight day. Safe to leave at 4 even for daytime shops (if you close before midnight there's nothing in the 0–4am window to reclassify).",
+    "businessDayStartHour": 4,
     "asapMinPrepMinutes": 25,
     "scheduling": {
       "enabled": true,

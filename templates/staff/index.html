@@ -2028,8 +2028,22 @@ $('#soundToggle').addEventListener('click', () => {
   if (state.soundOn) audio.chime(); // unlock audio context
 });
 
-/* ============================== Date range (London calendar days) */
-function ymdToday() { return new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/London' }); }
+/* ============================== Date range (trading days) */
+// Today's TRADING day — mirrors the server's businessDay rollover
+// (config.ordering.businessDayStartHour). Before that hour, "today" is still the
+// previous date so after-midnight orders stay on the day the shop opened. The
+// config is loaded before this runs (loadShopConfig sets the default range).
+// 0 / unset = plain London calendar date.
+function ymdToday() {
+  const now = new Date();
+  const date = now.toLocaleDateString('en-CA', { timeZone: 'Europe/London' });
+  const startHour = Number(sale.config && sale.config.ordering && sale.config.ordering.businessDayStartHour) || 0;
+  if (startHour <= 0) return date;
+  const hour = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', hour: '2-digit', hour12: false }).format(now)) % 24;
+  if (hour >= startHour) return date;
+  const t = new Date(date + 'T12:00:00Z'); t.setUTCDate(t.getUTCDate() - 1);
+  return t.toISOString().slice(0, 10);
+}
 function ymdShift(ymd, days) {
   const d = new Date(ymd + 'T00:00:00Z');
   d.setUTCDate(d.getUTCDate() + days);
@@ -2415,7 +2429,8 @@ $('#logoutBtn').addEventListener('click', () => {
 function enterDashboard() {
   state.authed = true;
   state.switching = false;
-  if (!state.from) { state.from = state.to = ymdToday(); }
+  // The default date range is the current TRADING day — set in loadShopConfig once
+  // config (the 4am rollover hour) has loaded, so the 12am–4am window resolves right.
   $('#pinScreen').style.display = 'none';
   $('#dash').hidden = false;
   loadMe();
@@ -2436,11 +2451,15 @@ function enterDashboard() {
 // board "Print ticket" happens before any sale is opened. Sets sale.config so the
 // rich receipt's "Rico's Peri Peri" wordmark + address aren't blank.
 async function loadShopConfig() {
-  if (sale.config) return;
-  try {
-    const res = await fetch('/api/config', { cache: 'no-store' });
-    if (res.ok) sale.config = await res.json();
-  } catch (e) { /* receipts still print, just without the header */ }
+  if (!sale.config) {
+    try {
+      const res = await fetch('/api/config', { cache: 'no-store' });
+      if (res.ok) sale.config = await res.json();
+    } catch (e) { /* receipts still print, just without the header */ }
+  }
+  // Default the report range to the current TRADING day now that config (hence the
+  // businessDayStartHour rollover) is available. Guarded so a user-picked range stays.
+  if (!state.from) { state.from = state.to = ymdToday(); }
 }
 
 // The app's shop name is baked at build time (one shop), but a single APK serves

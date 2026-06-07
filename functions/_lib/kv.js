@@ -3,6 +3,8 @@
    - MARKETING_KV      keyed email:<addr> / sms:<phone> for opt-in records
    - SLOTS_KV          keyed slot:<isoTimestamp>:count for capacity tracking */
 
+import { getConfig } from './config.js';
+
 export async function putOrder(order, env) {
   const key = `orders:${order.id}`;
   await env.ORDERS_KV.put(key, JSON.stringify(order), {
@@ -131,9 +133,29 @@ export async function listActiveOrders(env) {
 
 export const DONE_STATUSES = new Set(['completed', 'cancelled']);
 
-// London calendar date (YYYY-MM-DD) — the shop's local day, DST-safe.
+// The shop's TRADING day (YYYY-MM-DD), DST-safe. Normally the London calendar
+// date, but a venue can set ordering.businessDayStartHour (e.g. 4 = 4am) so that
+// a late-night shop's after-midnight orders still count toward the day it opened:
+// anything before the rollover hour belongs to the PREVIOUS date. 0 / unset = a
+// plain midnight-to-midnight calendar day (unchanged behaviour). Used everywhere
+// "what day is this" matters — Today's takings, Z-report, completed orders, audit.
+function londonHour(d) {
+  // London wall-clock hour 0–23 (%24 guards the "24:00" some engines emit at midnight).
+  return Number(new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/London', hour: '2-digit', hour12: false,
+  }).format(d)) % 24;
+}
+function prevYmd(ymd) {
+  const t = new Date(ymd + 'T12:00:00Z'); // noon UTC — clear of any TZ/DST edge
+  t.setUTCDate(t.getUTCDate() - 1);
+  return t.toISOString().slice(0, 10);
+}
 export function londonDay(iso = new Date().toISOString()) {
-  return new Date(iso).toLocaleDateString('en-CA', { timeZone: 'Europe/London' });
+  const d = new Date(iso);
+  const date = d.toLocaleDateString('en-CA', { timeZone: 'Europe/London' });
+  const startHour = Number(getConfig().ordering?.businessDayStartHour) || 0;
+  if (startHour <= 0) return date;
+  return londonHour(d) >= startHour ? date : prevYmd(date);
 }
 
 // All orders created within an inclusive London-day range (YYYY-MM-DD strings),
