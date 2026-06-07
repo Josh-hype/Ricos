@@ -1450,6 +1450,11 @@ button{cursor:pointer;border:0;background:none}
               <span>Postcode</span>
               <input type="text" id="cfPc" maxlength="10" autocapitalize="characters" />
             </label>
+            <div class="field" id="cfFinderField" hidden>
+              <span>Find address</span>
+              <button type="button" id="cfFindBtn" style="display:block;width:100%;padding:0.65rem;border-radius:10px;border:1px solid currentColor;background:transparent;color:inherit;font-weight:600;cursor:pointer;font-size:0.9rem;opacity:0.85">Look up from postcode</button>
+              <select id="cfFinderSelect" hidden style="display:block;width:100%;margin-top:0.5rem;padding:0.6rem;border-radius:10px;border:1px solid currentColor;background:transparent;color:inherit;font-size:0.95rem"></select>
+            </div>
             <label class="field" id="cfNotesField" hidden>
               <span>Driver notes <em>(optional)</em></span>
               <input type="text" id="cfNotes" maxlength="280" />
@@ -3847,6 +3852,10 @@ async function pickSaleMode(mode) {
   $('#cfL2Field').hidden = !isDelivery;
   $('#cfPcField').hidden = !isDelivery;
   $('#cfNotesField').hidden = !isDelivery;
+  // Address finder: delivery only, and only where an Ideal Postcodes key is set.
+  const finderOn = isDelivery && !!(sale.config && sale.config.addressLookup && sale.config.addressLookup.enabled);
+  $('#cfFinderField').hidden = !finderOn;
+  const fsel = $('#cfFinderSelect'); if (fsel) { fsel.hidden = true; fsel.innerHTML = ''; }
   $('#saleFormTitle').textContent = isDelivery ? 'Delivery details' : 'Collection details';
   $('#cfContinue').textContent = 'Continue to menu →';
   setSaleStage('form');
@@ -3884,6 +3893,47 @@ $('#saleForm').addEventListener('submit', (e) => {
   sale.customer = customer;
   setSaleStage('menu');
 });
+
+// Address finder (till): type a postcode, tap Look up, pick from the list → it
+// fills line 1 / line 2. Fails soft to manual entry. Wired once; shown per-mode
+// (delivery + key configured) by pickSaleMode.
+(function wireTillAddressFinder() {
+  const btn = $('#cfFindBtn');
+  const sel = $('#cfFinderSelect');
+  if (!btn || !sel) return;
+  let list = [];
+  btn.addEventListener('click', async () => {
+    const pc = ($('#cfPc').value || '').trim();
+    if (pc.length < 5) { formError('Enter the postcode first, then look up.'); return; }
+    const label = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Searching…';
+    try {
+      const res = await fetch('/api/address-lookup?postcode=' + encodeURIComponent(pc), { cache: 'no-store' });
+      const d = await res.json().catch(() => null);
+      if (!d || !d.ok || !Array.isArray(d.addresses) || !d.addresses.length) {
+        sel.hidden = true; sel.innerHTML = '';
+        formError((d && d.reason) ? d.reason : 'No addresses found — type it in.');
+      } else {
+        list = d.addresses;
+        sel.innerHTML = '<option value="">' + d.addresses.length + ' found — pick one…</option>' +
+          d.addresses.map((a, i) => '<option value="' + i + '">' + escapeHtml(a.label) + '</option>').join('');
+        sel.hidden = false;
+        $('#cfError').textContent = '';
+      }
+    } catch (e) {
+      sel.hidden = true; sel.innerHTML = '';
+      formError('Lookup failed — type it in.');
+    }
+    btn.disabled = false; btn.textContent = label;
+  });
+  sel.addEventListener('change', () => {
+    const a = list[Number(sel.value)];
+    if (!a) return;
+    $('#cfL1').value = a.line1 || '';
+    $('#cfL2').value = a.line2 || '';
+    if (a.postcode) $('#cfPc').value = a.postcode;
+  });
+})();
 
 function formError(msg) {
   $('#cfError').textContent = msg;

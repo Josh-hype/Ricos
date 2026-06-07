@@ -3182,6 +3182,11 @@ function renderCheckout() {
       ${checkoutProgressHTML('address')}
       <h4 style="font-family:var(--display);font-size:1.1rem;margin:0 0 1rem">Delivery address</h4>
       <div class="notice ok">Delivering to <strong>${state.postcode}</strong></div>
+      ${(window.SHOP_CONFIG && window.SHOP_CONFIG.addressLookup && window.SHOP_CONFIG.addressLookup.enabled) ? `
+      <div class="field" id="coFinderField">
+        <label for="coAddrFinder">Find your address</label>
+        <select id="coAddrFinder"><option value="">Looking up ${escapeHTML(state.postcode)}…</option></select>
+      </div>` : ''}
       <div class="field">
         <label for="coLine1">Address line 1</label>
         <input id="coLine1" type="text" value="${escapeHTML(checkoutData.line1 || '')}" autocomplete="address-line1" placeholder="House number and street" />
@@ -3211,6 +3216,38 @@ function renderCheckout() {
     `;
 
     document.getElementById('coBack').addEventListener('click', () => { checkoutStep = 'contact'; renderCheckout(); });
+
+    // Address finder — auto-looks up the already-validated postcode and lets the
+    // customer pick. Purely additive: any miss/error just leaves the manual fields.
+    if (window.SHOP_CONFIG && window.SHOP_CONFIG.addressLookup && window.SHOP_CONFIG.addressLookup.enabled) {
+      const sel = document.getElementById('coAddrFinder');
+      if (sel) {
+        let list = [];
+        fetch('/api/address-lookup?postcode=' + encodeURIComponent(state.postcode))
+          .then(r => r.ok ? r.json() : null)
+          .then(d => {
+            if (!d || !d.ok || !Array.isArray(d.addresses) || !d.addresses.length) {
+              sel.innerHTML = '<option value="">No matches — please type your address below</option>';
+              return;
+            }
+            list = d.addresses;
+            sel.innerHTML = '<option value="">' + d.addresses.length + ' address' + (d.addresses.length === 1 ? '' : 'es') + ' found — pick yours…</option>' +
+              d.addresses.map((a, i) => '<option value="' + i + '">' + escapeHTML(a.label) + '</option>').join('');
+          })
+          .catch(() => { sel.innerHTML = '<option value="">Type your address below</option>'; });
+        sel.addEventListener('change', () => {
+          const a = list[Number(sel.value)];
+          if (!a) return;
+          const l1 = document.getElementById('coLine1');
+          const l2 = document.getElementById('coLine2');
+          const ci = document.getElementById('coCity');
+          if (l1) l1.value = a.line1 || '';
+          if (l2) l2.value = a.line2 || '';
+          if (ci && a.city) ci.value = a.city;
+        });
+      }
+    }
+
     document.getElementById('coNext').addEventListener('click', () => {
       const line1 = document.getElementById('coLine1').value.trim();
       if (!line1) { alert('Please enter your address.'); return; }

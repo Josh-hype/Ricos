@@ -12,6 +12,9 @@ export const onRequestGet = async ({ env }) => {
       publishableKey: env.STRIPE_PUBLISHABLE_KEY || null,
       connectedAccountId: fullCfg.stripe?.connectedAccountId || null,
     },
+    // Address finder lights up only where an Ideal Postcodes key is configured;
+    // otherwise the order page + till fall back to manual address entry.
+    addressLookup: { enabled: !!(env.IDEALPOSTCODES_API_KEY || env.ADDRESS_LOOKUP_API_KEY) },
     isOpenNow: isOpenNow(fullCfg),
     slots: listSlots(fullCfg),
   }, {
