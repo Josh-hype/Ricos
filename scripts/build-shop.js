@@ -447,4 +447,17 @@ for (const [tplRel, outRel] of templatedFiles) {
   }
 }
 
+// Sitemap with ABSOLUTE per-shop URLs. A relative <loc> ("/") is invalid per the
+// sitemap protocol and Google may ignore it, so we generate it from the shop's
+// own domain on each build (overwriting any committed copy).
+{
+  const origin = `https://${config.business.domain || ''}`;
+  const urls = [['/', '1.0'], ['/order', '0.9'], ['/privacy', '0.3'], ['/terms', '0.3']];
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${
+    urls.map(([p, pr]) => `  <url><loc>${origin}${p}</loc><priority>${pr}</priority></url>`).join('\n')
+  }\n</urlset>\n`;
+  fs.writeFileSync(path.join(repoRoot, 'public', 'sitemap.xml'), xml);
+  console.log('build-shop: generated public/sitemap.xml (absolute URLs)');
+}
+
 console.log(`build-shop: active shop is "${slug}".`);
