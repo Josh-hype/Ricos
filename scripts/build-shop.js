@@ -229,6 +229,67 @@ const promoSection = (promo && promo.enabled)
   ? `<h2>Promotional discounts</h2>\n    <p>The ${promo.percent}% online discount is applied automatically to the subtotal of qualifying online orders. We may change or end this offer at any time.</p>`
   : '';
 
+// SEO <head> block for the landing page: a JSON-LD Restaurant schema (so Google
+// can confidently tie this domain to the business — name, address, hours, phone,
+// menu, cuisine) plus a canonical link and Open Graph / Twitter tags. Built from
+// config so every shop gets correct structured data; injected via {{seoHead}}.
+function buildSeoHead() {
+  const b = config.business || {};
+  const seo = config.seo || {};
+  const domain = b.domain || '';
+  const url = `https://${domain}/`;
+  const img = `${url}logo.png`;
+  const name = b.tradingName || '';
+  const desc = seo.description || `${name} — order online for collection or delivery in ${a.city || ''}.`;
+  const DAYS = { monday: 'Monday', tuesday: 'Tuesday', wednesday: 'Wednesday', thursday: 'Thursday', friday: 'Friday', saturday: 'Saturday', sunday: 'Sunday' };
+  // "25:00" (after-midnight close) → "01:00"; everything else stays HH:MM.
+  const fixTime = (t) => { const [h, m] = String(t).split(':').map(Number); return String(((h % 24) + 24) % 24).padStart(2, '0') + ':' + String(m || 0).padStart(2, '0'); };
+  const openingHoursSpecification = [];
+  const hours = config.hours || {};
+  for (const k of Object.keys(DAYS)) {
+    const d = hours[k];
+    if (!d || d.closed || !Array.isArray(d.windows)) continue;
+    for (const w of d.windows) openingHoursSpecification.push({ '@type': 'OpeningHoursSpecification', dayOfWeek: DAYS[k], opens: fixTime(w.open), closes: fixTime(w.close) });
+  }
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Restaurant',
+    name, url, image: img,
+    ...(phone ? { telephone: phone } : {}),
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: a.line1 || '',
+      addressLocality: a.city || '',
+      ...(seo.addressRegion ? { addressRegion: seo.addressRegion } : {}),
+      postalCode: a.postcode || '',
+      addressCountry: 'GB',
+    },
+    ...(Array.isArray(seo.cuisine) && seo.cuisine.length ? { servesCuisine: seo.cuisine } : {}),
+    ...(seo.priceRange ? { priceRange: seo.priceRange } : {}),
+    menu: `${url}order`,
+    acceptsReservations: false,
+    ...(openingHoursSpecification.length ? { openingHoursSpecification } : {}),
+    ...(Array.isArray(seo.sameAs) && seo.sameAs.length ? { sameAs: seo.sameAs } : {}),
+  };
+  // Escape "<" so the JSON can never break out of the <script> tag.
+  const jsonLd = JSON.stringify(schema).replace(/</g, '\\u003c');
+  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return [
+    `<link rel="canonical" href="${url}" />`,
+    `<meta property="og:type" content="website" />`,
+    `<meta property="og:site_name" content="${esc(name)}" />`,
+    `<meta property="og:title" content="${esc(name)}" />`,
+    `<meta property="og:description" content="${esc(desc)}" />`,
+    `<meta property="og:url" content="${url}" />`,
+    `<meta property="og:image" content="${img}" />`,
+    `<meta name="twitter:card" content="summary" />`,
+    `<meta name="twitter:title" content="${esc(name)}" />`,
+    `<meta name="twitter:description" content="${esc(desc)}" />`,
+    `<meta name="twitter:image" content="${img}" />`,
+    `<script type="application/ld+json">${jsonLd}</script>`,
+  ].join('\n');
+}
+
 const tokens = {
   shopName:                config.business.tradingName || '',
   shopShortName:           config.business.shortName || config.business.tradingName || '',
@@ -280,6 +341,8 @@ const tokens = {
   promoSection,
   // SEO meta sentence — only advertises the discount for shops that run it.
   promoTagline:            (promo && promo.enabled) ? ` ${promo.percent}% off all online orders.` : '',
+  // Landing-page SEO <head>: JSON-LD Restaurant schema + canonical + OG/Twitter.
+  seoHead:                 buildSeoHead(),
 };
 
 // Source HTML / manifest files with {{tokens}}. The build reads each from

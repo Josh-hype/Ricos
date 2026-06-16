@@ -19,6 +19,15 @@
     "domain": "www.foodstationyork.uk"
   },
 
+  "_comment_seo": "Search-engine extras used to build the landing page's JSON-LD Restaurant schema + social meta. cuisine + priceRange feed the structured data; addressRegion sharpens the location; sameAs links your social profiles to the business in Google (paste your Facebook / Instagram / TikTok URLs); description overrides the default meta/OG text. None of this changes the page visually — it's purely for search engines.",
+  "seo": {
+    "cuisine": ["Pizza", "Kebab", "Burgers", "Parmo", "Wraps"],
+    "priceRange": "££",
+    "addressRegion": "North Yorkshire",
+    "description": "Food Station — pizza, parmos, kebabs, burgers and loaded wraps in Easingwold, near York. Order online for collection or delivery.",
+    "sameAs": []
+  },
+
   "_comment_theme": "Food Station palette (Brand Identity Guide vol.01). Tomato Red #D72C26 = primary (headlines, buttons). Mustard #F2B91D = accent. Cream #FBF5E9 = background (never pure white). Brand also uses Leaf Green #4FAE3F (secondary) and Charcoal #1A1A1A (text/outlines) — no theme slot, applied in the custom landing/CSS. Type: Poppins Bold (display) / Poppins Regular (body).",
   "theme": {
     "primary":     "#D72C26",
