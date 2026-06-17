@@ -77,6 +77,21 @@ export async function checkManagerPin(pin, env) {
   return verifyPinHash(String(pin), env.MANAGER_PIN_HASH, env);
 }
 
+// Username + password login (per shop), configured in Cloudflare as STAFF_USERNAME
+// + STAFF_PASSWORD_HASH. A far stronger credential than a numeric PIN: the password
+// can be long and mixed, and is stored as the same keyed HMAC hash (so a leaked hash
+// can't be cracked offline). Opt-in — absent env vars ⇒ disabled, PIN login unchanged.
+export function staffPasswordEnabled(env) {
+  return !!(env.STAFF_USERNAME && env.STAFF_PASSWORD_HASH);
+}
+export async function checkStaffPassword(username, password, env) {
+  if (!staffPasswordEnabled(env)) return false;
+  // Case-insensitive username (constant-time compare) + the keyed-hash password check.
+  const userOk = timingSafeEqual(String(username || '').toLowerCase(), String(env.STAFF_USERNAME).toLowerCase());
+  const passOk = await verifyPinHash(String(password || ''), env.STAFF_PASSWORD_HASH, env);
+  return userOk && passOk;
+}
+
 // Manager protection is opt-in: a shop that hasn't configured a manager PIN
 // keeps the existing behaviour (any staff PIN can view the figures).
 export function managerEnabled(env) {

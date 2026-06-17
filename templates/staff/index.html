@@ -1248,6 +1248,12 @@ button{cursor:pointer;border:0;background:none}
     <div class="sub" id="pinSub">Enter your PIN to continue</div>
     <input type="number" inputmode="numeric" pattern="[0-9]*" class="pin-input"
            id="pinInput" maxlength="8" placeholder="••••" autofocus required />
+    <!-- Username + password mode — shown only when the shop has STAFF_USERNAME /
+         STAFF_PASSWORD_HASH set (toggled by applyShopBranding from /api/config). -->
+    <input type="text" class="pin-input" id="staffUser" placeholder="Username"
+           autocomplete="username" autocapitalize="none" spellcheck="false" hidden />
+    <input type="password" class="pin-input" id="staffPass" placeholder="Password"
+           autocomplete="current-password" hidden />
     <div class="pin-error" id="pinError" aria-live="polite"></div>
     <button class="pin-btn" type="submit" id="pinSubmit">Unlock</button>
     <button class="pin-kds-link" type="button" id="kdsSetupLink">Use this device as a Kitchen Display →</button>
@@ -2374,11 +2380,19 @@ $('#pinForm').addEventListener('submit', async (e) => {
   $('#pinError').textContent = '';
   $('#pinSubmit').disabled = true;
   try {
-    const pin = $('#pinInput').value.trim();
+    let payload;
+    if (state.passwordMode) {
+      const username = $('#staffUser').value.trim();
+      const password = $('#staffPass').value;
+      if (!username || !password) { $('#pinError').textContent = 'Enter your username and password.'; return; }
+      payload = { username, password };
+    } else {
+      payload = { pin: $('#pinInput').value.trim() };
+    }
     const res = await fetch('/api/staff/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pin }),
+      body: JSON.stringify(payload),
     });
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
@@ -2478,6 +2492,17 @@ async function applyShopBranding() {
     const res = await fetch('/api/config', { cache: 'no-store' });
     if (!res.ok) return;
     const cfg = await res.json();
+    // Username + password mode: swap the numeric PIN pad for username/password fields.
+    if (cfg.staffLogin && cfg.staffLogin.passwordMode) {
+      state.passwordMode = true;
+      const pin = document.getElementById('pinInput');
+      if (pin) { pin.hidden = true; pin.required = false; }
+      const pad = document.querySelector('#pinScreen .pinpad');
+      if (pad) pad.hidden = true;
+      const u = document.getElementById('staffUser'); if (u) u.hidden = false;
+      const p = document.getElementById('staffPass'); if (p) p.hidden = false;
+      const sub = document.getElementById('pinSub'); if (sub) sub.textContent = 'Sign in to continue';
+    }
     const name = (cfg.business && (cfg.business.shortName || cfg.business.tradingName) || '').trim();
     if (!name) return;
     const h1 = document.getElementById('pinTitle'); if (h1) h1.textContent = `${name} — staff orders`;

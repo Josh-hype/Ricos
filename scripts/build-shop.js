@@ -405,7 +405,16 @@ function externalizeInlineScripts(html, outRel) {
   });
 }
 
-for (const [tplRel, outRel] of templatedFiles) {
+// The back office can be served at a non-obvious path (STAFF_PATH env, per shop,
+// set in Cloudflare — NOT in git) so it isn't sitting at the guessable /staff/.
+// We rewrite ONLY the web output: templates/staff/* and the bundled Sunmi app
+// keep /staff/ internally, so the tills are untouched. Default 'staff' = no change.
+const STAFF_PATH = (process.env.STAFF_PATH || 'staff').replace(/[^a-z0-9-]/gi, '').toLowerCase() || 'staff';
+const moveStaff = STAFF_PATH !== 'staff';
+
+for (const [tplRel, outRelRaw] of templatedFiles) {
+  const isStaff = tplRel.startsWith('staff/');
+  const outRel = (isStaff && moveStaff) ? outRelRaw.replace('public/staff/', `public/${STAFF_PATH}/`) : outRelRaw;
   const tplFile = path.join(repoRoot, 'templates', tplRel);
   const outFile = path.join(repoRoot, outRel);
   if (!fs.existsSync(tplFile)) {
@@ -414,6 +423,10 @@ for (const [tplRel, outRel] of templatedFiles) {
   }
   const src = fs.readFileSync(tplFile, 'utf8');
   let { out, replaced } = substitute(src, `templates/${tplRel}`, { json: outRel.endsWith('.json') });
+  // Rewrite page-path refs (/staff/manifest.json, manifest start_url/scope/icons)
+  // to the new path. The (?<!\/api) lookbehind leaves every /api/staff/ API call
+  // alone, so the till's backend calls keep working.
+  if (isStaff && moveStaff) out = out.replace(/(?<!\/api)\/staff\//g, `/${STAFF_PATH}/`);
   if (outRel.endsWith('.html')) out = externalizeInlineScripts(out, outRel);
   fs.mkdirSync(path.dirname(outFile), { recursive: true });
   fs.writeFileSync(outFile, out);
