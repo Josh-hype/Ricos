@@ -2008,6 +2008,7 @@ const state = {
   operatorsEnabled: false, // per-operator mode (from /api/staff/me)
   operator: null,          // { id, name, role, colour } when signed in per-operator
   perms: new Set(),        // permissions the signed-in operator holds
+  fullAccess: false,       // owner/master session (username-password or pre-operators) — full perms, bypasses forced manager-override prompts
   pendingAuth: null,       // in-flight manager-approval request { perm, resolve }
   editingOpId: null,       // operator being edited in the staff modal
   switching: false,        // soft re-auth (switch operator) in progress
@@ -5679,6 +5680,11 @@ async function loadMe() {
       state.operatorsEnabled = !!d.operatorsEnabled;
       state.operator = d.operator || null;
       state.perms = new Set(d.permissions || []);
+      // The owner/master login (username+password, or a pre-operators session) has
+      // NO named operator yet holds full permissions — it's the authority, so the
+      // forced manager-override prompts shouldn't block it (the server already lets
+      // it through). Named operators still get the override (fullAccess stays false).
+      state.fullAccess = state.operatorsEnabled && !state.operator && state.perms.has('operators.manage');
     }
   } catch {}
   renderOperator();
@@ -5762,6 +5768,11 @@ const PERM_LABELS = {
 function requirePerm(perm, orderId, force) {
   return new Promise((resolve) => {
     if (!force && can(perm)) { resolve(null); return; }
+    // The owner/master session is the authority — it bypasses the forced override
+    // too. Resolve a truthy sentinel (not null) so callers that check `!ok` AND
+    // those that check `=== false` both treat it as allowed; the server already
+    // lets the owner session through, so this is never used as a real auth token.
+    if (force && state.fullAccess && can(perm)) { resolve('owner'); return; }
     state.pendingAuth = { perm, orderId: orderId || null, resolve };
     $('#authzSub').innerHTML = `A manager PIN is needed to <b>${PERM_LABELS[perm] || perm}</b>.`;
     $('#authzPin').value = '';
