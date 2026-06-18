@@ -26,7 +26,7 @@
 (function () {
   'use strict';
 
-  var BUILD = 'failsafe-86'; // bump on each app-layer change so the device log confirms freshness
+  var BUILD = 'failsafe-87'; // bump on each app-layer change so the device log confirms freshness
 
   var BASE = '';
   var TOKEN = '';
@@ -54,11 +54,9 @@
       el.textContent = 'LumiPOS diag — ' + msg;
     } catch (e) {}
   }
-  try {
-    window.addEventListener('error', function (e) {
-      diag('error: ' + ((e && e.message) || e) + '  @' + ((e && e.filename) || '?') + ':' + ((e && e.lineno) || '?'));
-    });
-  } catch (e) {}
+  // (Removed the auto-popup on every JS error — it surfaced during normal use on the
+  // till. diag() is still used for the deliberate "set up this till" / "not running as
+  // the app" fail-safes below, which only appear in genuine setup situations.)
 
   function prefs() {
     return (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Preferences) || null;

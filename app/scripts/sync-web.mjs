@@ -26,7 +26,6 @@ mkdirSync(resolve(wwwDir, 'plugins'), { recursive: true });
 
 // Copy the shim/provisioning/plugin web files into www/.
 const webFiles = [
-  ['web/debug-console.js', 'debug-console.js'],
   ['web/plugins/epos-hardware.js', 'plugins/epos-hardware.js'],
   ['web/native.js', 'native.js'],
   ['web/provision.js', 'provision.js'],
@@ -39,7 +38,6 @@ for (const [from, to] of webFiles) {
 // script (which is at the end of <body>). Order matters: plugin proxy → shim →
 // provisioning.
 const inject =
-  '\n  <script src="./debug-console.js"></script>' +
   '\n  <script src="./plugins/epos-hardware.js"></script>' +
   '\n  <script src="./native.js"></script>' +
   '\n  <script src="./provision.js"></script>\n';
