@@ -1030,6 +1030,11 @@ button{cursor:pointer;border:0;background:none}
 .pinpad-key.fn{background:var(--canvas);color:var(--ink-2);font-size:22px}
 .pinpad-key.ok{background:var(--blue);color:#fff;border-color:var(--blue)}
 .pay-card-hint{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--muted);font-size:14px;font-weight:600;padding:18px;line-height:1.5}
+.pay-link-box{flex:1;display:flex;flex-direction:column;justify-content:center;gap:10px;padding:8px 4px}
+.pay-link-box .pll-lab{font-size:13px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.pay-link-box .pll-input{width:100%;box-sizing:border-box;height:56px;border-radius:14px;border:1.5px solid var(--line);background:var(--canvas);color:var(--ink);font-size:24px;font-weight:700;letter-spacing:.04em;padding:0 16px;text-align:center}
+.pay-link-box .pll-input:focus{outline:none;border-color:var(--blue)}
+.pay-link-box .pll-hint{font-size:13px;font-weight:600;color:var(--muted);line-height:1.5;text-align:center}
 .pay-done{
   height:54px;border-radius:14px;background:linear-gradient(135deg,#0E9F6E,#0B8A5E);color:#fff;
   font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:9px;
@@ -1780,6 +1785,10 @@ button{cursor:pointer;border:0;background:none}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>
           Pay later
         </button>
+        <button class="tender" data-tender="link" id="tenderLink" type="button" title="Text the customer a secure card payment link to pay on their phone">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 13a5 5 0 007.07 0l2.83-2.83a5 5 0 00-7.07-7.07L11.5 4.5"/><path d="M14 11a5 5 0 00-7.07 0L4.1 13.83a5 5 0 007.07 7.07L12.5 19.5"/></svg>
+          Pay by link
+        </button>
       </div>
       <div class="pay-summary">
         <div class="p-srow"><span id="paySubLab">Items</span><span class="mono" id="paySub">£0.00</span></div>
@@ -1799,6 +1808,11 @@ button{cursor:pointer;border:0;background:none}
       <div class="quick-cash" id="payQuickCash" hidden></div>
       <div class="pad-grid" id="payPad" hidden></div>
       <div class="pay-card-hint" id="payCardHint" hidden>The card reader will prompt the customer to tap, insert or swipe.</div>
+      <div class="pay-link-box" id="payLinkBox" hidden>
+        <label class="pll-lab" for="payLinkPhone">Customer mobile</label>
+        <input id="payLinkPhone" class="pll-input mono" type="tel" inputmode="tel" autocomplete="tel" placeholder="07…" maxlength="20" />
+        <div class="pll-hint">We’ll text a secure card payment link. The order reaches the kitchen once they pay.</div>
+      </div>
       <button class="pay-done" id="payConfirm" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg>
         <span>Take cash payment</span>
@@ -1810,6 +1824,7 @@ button{cursor:pointer;border:0;background:none}
       <p id="payDoneSub">£0.00 · Order #—</p>
       <div class="pdc-actions">
         <button class="pdc-receipt" id="payReceipt" type="button">🧾 Receipt</button>
+        <button class="pdc-receipt" id="payCopyLink" type="button" hidden>📋 Copy link</button>
         <button class="pdc-new" id="payNewSale" type="button">New sale</button>
       </div>
     </div>
@@ -4737,6 +4752,9 @@ function openPayModal() {
   sale.pay.tenderedP = 0;
   sale.pay.tender = 'cash';
   sale.card = null;
+  // Fresh pay session: clear any pay-by-link number so it can't carry over to the
+  // next customer (setTender('link') re-prefills from this order's customer).
+  const plp = $('#payLinkPhone'); if (plp) plp.value = '';
   const existing = sale.payOrder;
   const collecting = !!(sale.split && sale.collectP != null);
   const t = existing ? (existing.totals || {}) : null;
@@ -4758,7 +4776,10 @@ function openPayModal() {
   // Split / By-item / Pay-later only on a fresh sale (not when settling an existing
   // order, and not while collecting one person's share of a split bill).
   const newSaleOnly = !!existing || collecting;
-  ['#tenderLater', '#tenderSplit', '#tenderByItem'].forEach(id => { const b = $(id); if (b) b.hidden = newSaleOnly; });
+  ['#tenderLater', '#tenderSplit', '#tenderByItem', '#tenderLink'].forEach(id => { const b = $(id); if (b) b.hidden = newSaleOnly; });
+  // Pay-by-link also needs Stripe configured for this shop (it's a real card charge).
+  const linkBtn = $('#tenderLink');
+  if (linkBtn && !newSaleOnly) linkBtn.hidden = !(sale.config && sale.config.payments && sale.config.payments.stripeEnabled);
   $('#payReceipt').style.display = '';
   // During a split-bill collection, label whose share is being collected.
   const lab = $('#payOvl .p-lab');
@@ -4816,6 +4837,7 @@ function showPayDone(o, { kind, tender, tenderedP = 0, changeP = 0, split = null
   // A customer receipt needs the loaded shop config + cart context, so only the
   // fresh-sale path offers it (the unpaid order already printed a kitchen copy).
   $('#payReceipt').style.display = (kind === 'new') ? '' : 'none';
+  const cb = $('#payCopyLink'); if (cb) cb.hidden = true; // copy-link is for pay-by-link only
   $('#payNewSale').textContent = (kind === 'new') ? 'New sale' : 'Done';
   $('#payDone').classList.add('show');
   armPayAutoReturn(changeP > 0 ? PAY_RETURN_MS_CHANGE : PAY_RETURN_MS);
@@ -4844,16 +4866,29 @@ function setTender(tender) {
   const isCash = tender === 'cash';
   const isSplit = tender === 'split';
   const isLater = tender === 'later';
+  const isLink = tender === 'link';
   $('#payTitle').textContent = isLater ? 'Save — pay later'
     : isSplit ? 'Split · cash + card'
+    : isLink ? 'Pay by link'
     : (isCash ? 'Cash payment' : 'Card payment');
   // Keypad + amount + change show for plain cash AND split (split uses the keypad
   // to enter the CASH part; the remainder goes on the card). Quick-cash notes only
   // make sense for a plain cash payment.
   ['#payAmount', '#payChange', '#payPad'].forEach(s => { $(s).hidden = !(isCash || isSplit); });
   $('#payQuickCash').hidden = !isCash;
-  // The hint panel covers the card and pay-later cases (no keypad).
-  $('#payCardHint').hidden = isCash || isSplit;
+  // Pay-by-link swaps the keypad for a phone field; prefill it from the order's
+  // customer (collection / delivery already captured it) and focus for a walk-in.
+  const linkBox = $('#payLinkBox');
+  if (linkBox) {
+    linkBox.hidden = !isLink;
+    if (isLink) {
+      const ph = $('#payLinkPhone');
+      if (ph && !ph.value) ph.value = (sale.customer && sale.customer.phone) || '';
+      setTimeout(() => { try { if (ph) ph.focus(); } catch (e) {} }, 60);
+    }
+  }
+  // The hint panel covers the card and pay-later cases (no keypad, no link box).
+  $('#payCardHint').hidden = isCash || isSplit || isLink;
   $('#payCardHint').textContent = isLater
     ? 'The order is saved unpaid and sent to the kitchen. Collect payment later from the order’s ⋮ menu.'
     : externalCardMode()
@@ -4906,6 +4941,11 @@ function updatePayConfirm() {
   if (sale.pay.tender === 'later') {
     btn.disabled = false;
     lbl.textContent = 'Save order · pay later';
+    return;
+  }
+  if (sale.pay.tender === 'link') {
+    btn.disabled = false;
+    lbl.textContent = `Send payment link · £${(totalP / 100).toFixed(2)}`;
     return;
   }
   if (sale.pay.tender === 'card') {
@@ -5367,6 +5407,57 @@ async function payExistingCash(tenderedP) {
   return true;
 }
 
+// Pay by link: create the order (status pending_payment) + a Stripe Checkout
+// session server-side, which texts the customer the pay URL. The order only
+// reaches the kitchen once they pay (the Stripe webhook promotes it), exactly
+// like a web card order — so there's nothing to print or count here yet.
+async function sendPaymentLink() {
+  const phoneRaw = ($('#payLinkPhone').value || '').trim();
+  // Light UK-mobile sanity check; the server normalises + validates authoritatively.
+  const digits = phoneRaw.replace(/[^\d+]/g, '');
+  if (!/^(\+44\d{10}|44\d{10}|07\d{9})$/.test(digits)) {
+    alert('Enter a valid UK mobile number (e.g. 07…) to text the link.');
+    return;
+  }
+  sale.submitting = true;
+  $('#payConfirm').disabled = true;
+  $('#payConfirm').querySelector('span').textContent = 'Sending link…';
+  let data;
+  try {
+    const payload = buildSalePayload({});
+    payload.customer = Object.assign({ name: '' }, payload.customer || {}, { phone: phoneRaw });
+    const res = await fetch('/api/staff/pay-link', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    data = await res.json().catch(() => ({}));
+    if (res.status === 401) { $('#logoutBtn').click(); return; }
+    if (!res.ok || !data.ok || !data.order) { alert(data.error || `Couldn't create the link (${res.status}).`); return; }
+  } catch (e) { alert('Network error — try again.'); return; }
+  finally { sale.submitting = false; updatePayConfirm(); }
+  state.seenIds.add(data.order.id);
+  showLinkSent(data.order, (data.order.customer && data.order.customer.phone) || phoneRaw, data.link, data.smsSent);
+  poll();
+}
+
+// Confirmation card for a sent pay link. The order isn't paid yet, so we show a
+// "waiting for payment" message + a Copy-link fallback when the SMS didn't send.
+function showLinkSent(o, phone, link, smsSent) {
+  state.lastLink = link || '';
+  $('#payDone h2').textContent = smsSent ? 'Payment link sent' : 'Payment link ready';
+  $('#payDoneSub').textContent = smsSent
+    ? `Texted to ${phone} · Order #${orderNo(o)} appears once paid`
+    : `Couldn’t text it — tap Copy link to share · Order #${orderNo(o)}`;
+  $('#payReceipt').style.display = 'none';
+  const copyBtn = $('#payCopyLink');
+  if (copyBtn) copyBtn.hidden = !link;
+  $('#payNewSale').textContent = 'Done';
+  $('#payDone').classList.add('show');
+  // If it texted, auto-return after a beat; if it didn't, stay put so staff can
+  // copy the link (they leave via Done / Copy).
+  if (smsSent) armPayAutoReturn(6000);
+}
+
 // Whether this shop uses its own (third-party) card machine — pressing Card
 // records the sale as paid by card immediately (no LumiPOS reader to drive).
 // Server-gated by config.pos.externalCardMachine; the till just skips the overlay.
@@ -5548,6 +5639,13 @@ $('#payConfirm').addEventListener('click', async () => {
     return;
   }
 
+  // Pay by link: text the customer a Stripe Checkout URL. New sales only.
+  if (tender === 'link') {
+    if (payingExisting || !sale.cart.length) return;
+    await sendPaymentLink();
+    return;
+  }
+
   if (!payingExisting && !sale.cart.length) return;
   const isCash = tender !== 'card';
   const totalP = payCtxTotalP();
@@ -5571,6 +5669,18 @@ $('#payNewSale').addEventListener('click', goHomeAfterSale);
 $('#payReceipt').addEventListener('click', () => {
   clearPayAutoReturn();
   if (state.lastSale) printTo('receipt', state.lastSale.o, state.lastSale);
+});
+// Copy the pay-by-link URL (fallback when the SMS didn't send, or to share another way).
+$('#payCopyLink').addEventListener('click', async () => {
+  clearPayAutoReturn();
+  const link = state.lastLink || '';
+  if (!link) return;
+  const flash = (txt) => { const b = $('#payCopyLink'); if (!b) return; const old = b.textContent; b.textContent = txt; setTimeout(() => { b.textContent = old; }, 1500); };
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(link);
+    else { const ta = document.createElement('textarea'); ta.value = link; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+    flash('✓ Copied');
+  } catch (e) { prompt('Copy this payment link:', link); }
 });
 
 /* ============================== Manager PIN (Today + Z report)

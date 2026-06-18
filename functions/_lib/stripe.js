@@ -112,6 +112,57 @@ export async function createPaymentIntent({
   return call('/payment_intents', body, env, opts);
 }
 
+/* Create a hosted Stripe Checkout Session for "pay by link".
+   Staff start an order on the till and we text the customer this session's URL;
+   the customer pays on Stripe's hosted page on their own phone. Like the rest of
+   the payment flow this is a Connect DIRECT charge — the session (and the
+   PaymentIntent it creates) live on the venue's connected account, money settles
+   to the venue, and the platform keeps application_fee_amount.
+
+   The single line item is the already-computed order total (server-authoritative).
+   metadata.orderId is set on BOTH the session and the PaymentIntent (via
+   payment_intent_data) so the existing payment_intent.succeeded webhook promotes
+   the order to the kitchen the moment the customer pays — no new webhook handler. */
+export async function createCheckoutSession({
+  amountP,
+  currency,
+  orderId,
+  description,
+  customerEmail,
+  connectedAccountId,
+  applicationFeeP,
+  successUrl,
+  cancelUrl,
+  expiresAt,
+  idempotencyKey,
+}, env) {
+  const body = {
+    mode: 'payment',
+    line_items: [{
+      price_data: {
+        currency,
+        product_data: { name: description || 'Order' },
+        unit_amount: amountP,
+      },
+      quantity: 1,
+    }],
+    success_url: successUrl,
+    cancel_url: cancelUrl,
+    metadata: { orderId },
+    // Stamp the orderId onto the PaymentIntent the session creates, so the
+    // payment_intent.succeeded webhook can find this order by metadata.orderId.
+    payment_intent_data: { metadata: { orderId } },
+  };
+  if (customerEmail) body.customer_email = customerEmail;
+  if (expiresAt) body.expires_at = expiresAt;
+  if (connectedAccountId && applicationFeeP) {
+    body.payment_intent_data.application_fee_amount = applicationFeeP;
+  }
+  const opts = { idempotencyKey: idempotencyKey || `cs_${orderId}` };
+  if (connectedAccountId) opts.stripeAccount = connectedAccountId;
+  return call('/checkout/sessions', body, env, opts);
+}
+
 /* Stripe Terminal — server-driven readers (e.g. BBPOS WisePOS E). All calls run on
    the shop's connected account (direct charges), like the rest of the payment flow.
    The till never touches the Terminal SDK: the backend tells the reader to collect,
