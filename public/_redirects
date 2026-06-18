@@ -16,6 +16,13 @@
 # autocomplete token (registered against the apex) matches every request.
 https://www.ricosyork.co.uk/*  https://ricosyork.co.uk/:splat  301
 
+# Rico's .com is a redirect-only domain — send it (and its www) to the canonical
+# .co.uk so there's ONE address for SEO. Matches only ricosyork.com, so it's a
+# no-op on the Food Station deploy. (Needs ricosyork.com + www.ricosyork.com added
+# as custom domains on the Rico's Pages project for these to take effect.)
+https://ricosyork.com/*      https://ricosyork.co.uk/:splat  301
+https://www.ricosyork.com/*  https://ricosyork.co.uk/:splat  301
+
 # Friendly URLs.
 /menu     /order   302
 /book     /order   302
