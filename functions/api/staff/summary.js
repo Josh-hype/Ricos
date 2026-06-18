@@ -86,11 +86,25 @@ export const onRequestGet = async ({ request, env }) => {
     return o.totals?.serviceFeePlatformP != null ? o.totals.serviceFeePlatformP : (o.totals?.serviceFeeP || 0);
   };
   // Stripe processing fee — an ESTIMATE on Stripe-charged orders (on direct charges
-  // the venue pays this). Default UK rate 1.5% + 20p; override per shop with
-  // config.stripe.feePercent / feeFixedPence. Exact figures live in Stripe.
-  const feePct = Number(config.stripe?.feePercent ?? 1.5);
-  const feeFixedP = Math.round(Number(config.stripe?.feeFixedPence ?? 20));
-  const stripeFeeOf = (o) => o.payment?.intentId ? Math.round(totalOf(o) * feePct / 100) + feeFixedP : 0;
+  // the venue pays this). Card-PRESENT sales taken on a LumiPOS reader (counter card,
+  // and the card part of a split) are charged Stripe's cheaper in-person rate; online
+  // web card and pay-by-link (card-NOT-present) take the online rate. Defaults match UK
+  // Stripe pricing — online 1.5% + 20p, in-person 1.4% + 10p — and are overridable per
+  // shop via config.stripe.feePercent/feeFixedPence (online) and
+  // config.stripe.terminalFeePercent/terminalFeeFixedPence (in person). Exact figures
+  // live in Stripe.
+  const onPct = Number(config.stripe?.feePercent ?? 1.5);
+  const onFixedP = Math.round(Number(config.stripe?.feeFixedPence ?? 20));
+  const tpPct = Number(config.stripe?.terminalFeePercent ?? 1.4);
+  const tpFixedP = Math.round(Number(config.stripe?.terminalFeeFixedPence ?? 10));
+  const stripeFeeOf = (o) => {
+    if (!o.payment?.intentId) return 0;          // cash / external machine — no Stripe charge
+    if (o.paymentMethod === 'counter_card')      // in person on a LumiPOS reader (card present)
+      return Math.round(totalOf(o) * tpPct / 100) + tpFixedP;
+    if (o.paymentMethod === 'split')             // only the card part runs on the reader
+      return Math.round(splitPartP(o, 'card') * tpPct / 100) + tpFixedP;
+    return Math.round(totalOf(o) * onPct / 100) + onFixedP;  // online web card + pay-by-link
+  };
 
   const cardGrossP = sum(takings, cardNetP);
   const cashGrossP = sum(takings, cashNetP);
