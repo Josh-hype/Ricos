@@ -8,11 +8,12 @@ import { logAudit } from '../../_lib/audit.js';
 export const onRequestPost = async ({ request, env }) => {
   let body;
   try { body = await request.json(); } catch { return j({ error: 'Invalid JSON' }, 400); }
-  // The native app sends "X-Client: app" and stores the returned token to send
-  // as a Bearer header (it can't use the cross-origin cookie). The web omits the
-  // header, so the token is never put in the body there — the HttpOnly cookie
-  // stays the only credential on the web.
-  const wantsToken = request.headers.get('X-Client') === 'app';
+  // The native app (the TILL) sends "X-Client: app" and stores the returned token
+  // to send as a Bearer header (it can't use the cross-origin cookie). The web
+  // omits the header, so the token is never put in the body there — the HttpOnly
+  // cookie stays the only credential on the web.
+  const isApp = request.headers.get('X-Client') === 'app';
+  const wantsToken = isApp;
 
   // Rate-limit FIRST so it covers the PIN and the username/password alike, per IP.
   const ip = request.headers.get('cf-connecting-ip') || 'unknown';
@@ -27,11 +28,12 @@ export const onRequestPost = async ({ request, env }) => {
   // fat-fingers a few times can't lock out the next legitimate operator.
   const clearAttempts = () => env.STAFF_LOGIN_KV?.delete(attemptsKey);
 
-  // Username + password mode (per shop: STAFF_USERNAME + STAFF_PASSWORD_HASH). When
-  // configured it REPLACES the numeric PIN for the shop — a much stronger credential
-  // a competitor can't guess. Dormant until those env vars are set (so deploying this
-  // changes nothing until you switch it on in Cloudflare).
-  if (staffPasswordEnabled(env)) {
+  // Username + password mode — the WEB back office only (special URL in a browser).
+  // The TILL app always uses operator codes (fast per-staff login), so password mode
+  // never applies to it: web gets the strong username/password, the till keeps its
+  // codes with the manager-PIN gate on cancellations. Set per shop via
+  // STAFF_USERNAME + STAFF_PASSWORD_HASH; dormant until those env vars exist.
+  if (staffPasswordEnabled(env) && !isApp) {
     if (!(await checkStaffPassword(body.username, body.password, env))) {
       return j({ error: 'Wrong username or password.' }, 401);
     }

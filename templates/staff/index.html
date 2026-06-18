@@ -2493,8 +2493,10 @@ async function applyShopBranding() {
     const res = await fetch('/api/config', { cache: 'no-store' });
     if (!res.ok) return;
     const cfg = await res.json();
-    // Username + password mode: swap the numeric PIN pad for username/password fields.
-    if (cfg.staffLogin && cfg.staffLogin.passwordMode) {
+    // Username + password mode: WEB only. The till app (EPOS_IS_APP) always keeps the
+    // numeric PIN pad for fast per-staff operator-code login; only the browser back
+    // office swaps to username/password.
+    if (cfg.staffLogin && cfg.staffLogin.passwordMode && !window.EPOS_IS_APP) {
       state.passwordMode = true;
       const pin = document.getElementById('pinInput');
       if (pin) { pin.hidden = true; pin.required = false; }
