@@ -49,6 +49,16 @@
     "collection": { "enabled": true },
     "delivery": {
       "enabled": true,
+      "_comment_mode": "Delivery pricing model: 'outcode' (postcode allow-list) or 'radius' (distance bands from the shop). RICO'S USES RADIUS — the areaDescription/allowedOutcodes/feeByOutcode/blockedPrefixes below are kept for reference but IGNORED while mode is 'radius'.",
+      "mode": "radius",
+      "_comment_radius": "Distance-based delivery: STRAIGHT-LINE (crow-flies) miles from the shop postcode YO24 1AZ, geocoded free via postcodes.io. Bands are checked smallest-first; a postcode gets the first band whose maxMiles it falls within; anything past the largest band = no delivery. NOTE: straight-line distance runs ~20-30% shorter than road/driving distance, so test real postcodes and adjust maxMiles if a village lands in the wrong band.",
+      "radius": {
+        "maxMiles": 4.3,
+        "bands": [
+          { "maxMiles": 3, "feePence": 200 },
+          { "maxMiles": 4.3, "feePence": 300 }
+        ]
+      },
       "_comment_feePence": "Default delivery fee in pence, used for any allowed outcode not given its own price in feeByOutcode below.",
       "feePence": 200,
       "_comment_minimumOrderPence": "Minimum FOOD subtotal (after discount) for delivery, in pence. Set to £12.50 so the all-in minimum a delivery customer pays is £15.00 (£12.50 food + £2.00 delivery + £0.50 service).",
