@@ -1549,6 +1549,20 @@
   </div>
 </div>
 
+<!-- Closed-now notice: warns the customer the shop is shut so they know they're pre-ordering -->
+<div class="modal-overlay" id="closedOverlay" role="dialog" aria-modal="true" aria-labelledby="closedTitle">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-head">
+      <h3 id="closedTitle">We're closed right now</h3>
+      <button class="modal-close" data-close-modal aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <p id="closedMsg" style="font-size:15px;line-height:1.6;margin:4px 0 18px"></p>
+      <button type="button" data-close-modal style="width:100%;padding:15px;border:0;border-radius:12px;background:#15171c;color:#fff;font-size:15.5px;font-weight:800;cursor:pointer">Got it — order ahead</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ============================================================
    SHOP — Order page logic
@@ -3749,6 +3763,34 @@ applyMode(state.mode);
 refreshPCMessage();
 updateAccountButton();
 
+/* Closed-now notice — pops once per visit so a customer can't place an order
+   without realising the shop is shut; they're pre-ordering for the next opening. */
+function maybeShowClosedNotice(cfg) {
+  try {
+    if (!cfg || cfg.isOpenNow) return;
+    if (sessionStorage.getItem('closedNoticeSeen')) return;
+    const msgEl = document.getElementById('closedMsg');
+    if (!msgEl) return;
+    const slots = Array.isArray(cfg.slots) ? cfg.slots : [];
+    const tz = (cfg.ordering && cfg.ordering.timezone) || 'Europe/London';
+    const nm = (x) => x.toLocaleDateString('en-GB', { weekday: 'long', timeZone: tz });
+    let msg;
+    if (slots.length > 0) {
+      const d = new Date(slots[0]), now = new Date();
+      const day = nm(d);
+      const when = day === nm(now) ? 'today'
+        : day === nm(new Date(now.getTime() + 86400000)) ? 'tomorrow' : day;
+      const time = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: tz });
+      msg = `You can still place your order — we'll have it ready for our next opening, <b>${when} at ${time}</b>.`;
+    } else {
+      msg = `We're not taking orders right now. Please check back during our opening hours, or give us a call.`;
+    }
+    msgEl.innerHTML = msg;
+    sessionStorage.setItem('closedNoticeSeen', '1');
+    openModal('closedOverlay');
+  } catch (e) {}
+}
+
 /* Pull live config (Stripe publishable key, opening hours, contact info,
    allowed postcodes) so the checkout flow is data-driven. Cached for 30s
    on the edge; safe to call on every page load. */
@@ -3758,6 +3800,7 @@ fetch('/api/config').then(r => r.ok ? r.json() : null).then(cfg => {
     // Re-render the cart so the service fee (and any other config-driven
     // figures) reflect the loaded config rather than the boot-time fallback.
     renderCart();
+    maybeShowClosedNotice(cfg);
   }
 }).catch(() => { /* fall back to defaults baked into the page */ });
 
