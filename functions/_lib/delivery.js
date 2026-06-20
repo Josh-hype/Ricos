@@ -3,8 +3,11 @@
    - "outcode" (default): the existing model — postcode outcode must be in
      allowedOutcodes; fee is feeByOutcode[outcode] or the default feePence.
    - "radius": distance bands from the shop. The customer postcode is geocoded
-     (postcodes.io, free) and the straight-line distance from the shop origin
-     selects a band fee. Beyond the largest band = no delivery.
+     (postcodes.io, free) and the distance from the shop origin selects a band
+     fee. By default that's straight-line (crow-flies) miles, but a per-shop
+     radius.roadFactor (e.g. 1.3) scales it up to approximate real driving
+     distance, since a road route is rarely a straight line. Beyond the largest
+     band = no delivery.
 
    Async because radius mode geocodes. Returns:
      { ok:true, postcode, feePence, distanceMiles? }
@@ -38,7 +41,14 @@ export async function resolveDelivery(rawPostcode, config) {
       return { ok: false, reason: "Delivery isn't available right now — please choose collection or call the shop." };
     }
 
-    const miles = milesBetween(origin, dest);
+    // Estimate driving distance: straight-line × a road/circuity factor (a real
+    // route between two points is rarely a straight line). roadFactor defaults to
+    // 1 (pure straight-line, so other shops are unaffected); set it per shop
+    // (~1.3 for typical UK roads) to approximate actual driving miles. The bands'
+    // maxMiles are then read as driving miles, matching what a customer sees on
+    // a sat-nav rather than crow-flies.
+    const factor = Number(r.roadFactor) > 0 ? Number(r.roadFactor) : 1;
+    const miles = milesBetween(origin, dest) * factor;
     const bands = (r.bands || [])
       .filter((b) => Number.isFinite(Number(b.maxMiles)) && Number.isFinite(Number(b.feePence)))
       .sort((a, b) => Number(a.maxMiles) - Number(b.maxMiles));
