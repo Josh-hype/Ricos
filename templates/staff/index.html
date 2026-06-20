@@ -2982,7 +2982,10 @@ async function loadReport(silent) {
     if (!silent) grid.innerHTML = '<div class="empty">Couldn\'t load the report. Tap ↻ to retry.</div>';
     return;
   }
-  if (state.view === 'zreport' && data?.summary) renderReport(data.summary, data.orders || []);
+  if (state.view === 'zreport' && data?.summary) {
+    state.reportOrders = data.orders || [];   // so a refund issued from the report can find the order
+    renderReport(data.summary, data.orders || []);
+  }
 }
 
 function renderBackOffice() {
@@ -3197,7 +3200,10 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
     actions = `<button class="btn-print" data-id="${o.id}">Print</button>`
       + (o.status === 'completed' && canRefund ? `<button class="btn-refund" data-id="${o.id}">Refund…</button>` : '');
   }
-  if (readOnly) actions = '';   // Z report cards are view-only
+  // Report cards are view-only — except a refund. A customer can want their money
+  // back a day or two later, so a paid card order stays refundable from the report
+  // (still owner/manager-PIN-gated and audited; Stripe allows refunds for ~180 days).
+  if (readOnly) actions = canRefund ? `<button class="btn-refund" data-id="${o.id}">Refund…</button>` : '';
 
   const dateLabel = formatDate(o.createdAt);
   let readyTxt;
@@ -3606,6 +3612,7 @@ function findOrder(id) {
   return (state.orders || []).find(o => o.id === id)
     || (state.summaryOrders || []).find(o => o.id === id)
     || (state.completedOrders || []).find(o => o.id === id)
+    || (state.reportOrders || []).find(o => o.id === id)
     || null;
 }
 
