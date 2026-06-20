@@ -59,8 +59,8 @@ export async function resolveDelivery(rawPostcode, config) {
     };
   }
 
-  // Default: outcode allow-list.
-  const v = validateDeliveryPostcode(rawPostcode, d.allowedOutcodes, d.areaDescription);
+  // Default: outcode allow-list, minus any blocked too-far prefixes.
+  const v = validateDeliveryPostcode(rawPostcode, d.allowedOutcodes, d.areaDescription, d.blockedPrefixes);
   if (!v.ok) return v;
   const override = d.feeByOutcode?.[v.outcode];
   const feePence = Number.isFinite(override) ? override : d.feePence;

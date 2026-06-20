@@ -14,7 +14,7 @@ export function isOutcodeAllowed(outcode, allowed) {
   return allowed.includes(outcode.toUpperCase());
 }
 
-export function validateDeliveryPostcode(raw, allowedOutcodes, areaDescription = 'in our delivery area') {
+export function validateDeliveryPostcode(raw, allowedOutcodes, areaDescription = 'in our delivery area', blockedPrefixes = []) {
   const p = normalisePostcode(raw);
   if (!p) return { ok: false, reason: 'Please enter a valid UK postcode.' };
   if (!isOutcodeAllowed(p.outcode, allowedOutcodes)) {
@@ -22,6 +22,21 @@ export function validateDeliveryPostcode(raw, allowedOutcodes, areaDescription =
       ok: false,
       reason: `Sorry, we don't deliver to ${p.formatted}. We deliver ${areaDescription} only.`,
     };
+  }
+  // Block-list: specific too-far addresses that sit INSIDE an otherwise-allowed
+  // outcode (e.g. Bilbrough/Askham Richard share YO23 with Copmanthorpe). A blocked
+  // entry matches by the start of the space-free postcode, so it can be an outcode
+  // (YO23), a sector (YO233) or a full postcode (YO233PS) — as precise as you need.
+  if (Array.isArray(blockedPrefixes) && blockedPrefixes.length) {
+    const compact = `${p.outcode}${p.incode}`;
+    const hit = blockedPrefixes.some(b => b && compact.startsWith(String(b).toUpperCase().replace(/\s+/g, '')));
+    if (hit) {
+      return {
+        ok: false,
+        reason: `Sorry, ${p.formatted} is just outside our delivery range. You can still collect.`,
+        suggestCollection: true,
+      };
+    }
   }
   return { ok: true, postcode: p.formatted, outcode: p.outcode };
 }

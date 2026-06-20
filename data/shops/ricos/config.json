@@ -76,7 +76,9 @@
         "YO26": 300,
         "YO30": 200,
         "YO31": 200
-      }
+      },
+      "_comment_blockedPrefixes": "Block-list of too-far addresses that sit INSIDE an allowed outcode (e.g. Bilbrough/Askham Richard share YO23 with Copmanthorpe). Each entry matches the START of the space-free postcode, so it can be an outcode (YO23), a sector (YO233) or a full postcode (YO233PS) — as precise as you need. An address is delivered to only if its outcode is allowed AND it does NOT start with any of these. IMPORTANT: verify exact prefixes on crystalroof.co.uk before adding, so you don't accidentally block a real customer (Copmanthorpe & Askham Bryan also live in YO23 3).",
+      "blockedPrefixes": []
     }
   },
 
