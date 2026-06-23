@@ -3,43 +3,298 @@
     "id": "breakfasts",
     "name": "Breakfasts",
     "items": [
-      { "id": "eng-brk",   "name": "English Breakfast",          "priceP": 795 },
-      { "id": "lrg-brk",   "name": "Large Breakfast",            "priceP": 995 },
-      { "id": "brk-bacon", "name": "Bacon Roll",                 "priceP": 450 },
-      { "id": "brk-saus",  "name": "Sausage Roll",               "priceP": 450 },
-      { "id": "brk-bs",    "name": "Bacon & Sausage Roll",       "priceP": 550 },
-      { "id": "brk-bse",   "name": "Bacon, Sausage & Egg Roll",  "priceP": 650 },
-      { "id": "brk-wrap",  "name": "Breakfast Wrap",             "priceP": 795 }
+      {
+        "id": "eng-brk",
+        "name": "English Breakfast",
+        "priceP": 995
+      },
+      {
+        "id": "lrg-brk",
+        "name": "Large Breakfast",
+        "priceP": 1295
+      },
+      {
+        "id": "brk-sand",
+        "name": "Breakfast Sandwich",
+        "priceP": 450
+      },
+      {
+        "id": "brk-wrap",
+        "name": "Breakfast Wrap",
+        "priceP": 995
+      }
     ]
   },
   {
     "id": "baguette-boxes",
     "name": "Baguette Box Meals",
     "items": [
-      { "id": "bag-beef", "name": "Hot Beef Melt",                "priceP": 995 },
-      { "id": "bag-pork", "name": "Hot Pork & Stuffing",          "priceP": 995 },
-      { "id": "bag-bbq",  "name": "BBQ Chicken Melt",             "priceP": 995 },
-      { "id": "bag-tuna", "name": "Tuna Melt",                    "priceP": 995 },
-      { "id": "bag-sp",   "name": "Salt & Pepper Chicken Melt",   "priceP": 995 },
-      { "id": "bag-hc",   "name": "Honey Chilli Chicken Melt",    "priceP": 995 }
+      {
+        "id": "bag-bbq",
+        "name": "BBQ Chicken Melt",
+        "priceP": 1495
+      },
+      {
+        "id": "bag-tuna",
+        "name": "Tuna Melt",
+        "priceP": 1495
+      },
+      {
+        "id": "bag-sp",
+        "name": "Salt & Pepper Chicken Melt",
+        "priceP": 1495
+      },
+      {
+        "id": "bag-hc",
+        "name": "Honey Chilli Chicken Melt",
+        "priceP": 1495
+      },
+      {
+        "id": "bag-beef",
+        "name": "Hot Beef Melt",
+        "priceP": 1495
+      }
     ]
   },
   {
     "id": "big-flavour",
     "name": "Big Flavour",
     "items": [
-      { "id": "spice-bag", "name": "Irish Spice Bag",        "priceP": 895 },
-      { "id": "curry",     "name": "Classic Chicken Curry",  "priceP": 695 },
-      { "id": "sp-chick",  "name": "Salt & Pepper Chicken",  "priceP": 850 },
-      { "id": "hc-chick",  "name": "Honey Chilli Chicken",   "priceP": 850 }
+      {
+        "id": "spice-bag",
+        "name": "Irish Spice Bag",
+        "priceP": 1000
+      },
+      {
+        "id": "curry",
+        "name": "Classic Chicken Curry",
+        "priceP": 895
+      },
+      {
+        "id": "hc-chick",
+        "name": "Honey Chilli Chicken",
+        "priceP": 1000
+      },
+      {
+        "id": "sp-chick",
+        "name": "Salt & Pepper Chicken",
+        "priceP": 1000
+      },
+      {
+        "id": "wrap-box",
+        "name": "Wrap Boxes",
+        "priceP": 1295
+      },
+      {
+        "id": "cant-decide",
+        "name": "Can't Decide Box",
+        "priceP": 1495
+      },
+      {
+        "id": "thai-veg",
+        "name": "Thai Green Curry (v)",
+        "priceP": 1495
+      }
     ]
   },
   {
-    "id": "wrap-boxes",
-    "name": "Wrap Boxes",
+    "id": "gyros",
+    "name": "Gyros & Box Meals",
     "items": [
-      { "id": "wrap-sp", "name": "Salt & Pepper Wrap Box", "priceP": 950 },
-      { "id": "wrap-hc", "name": "Honey Chilli Wrap Box",  "priceP": 950 }
+      {
+        "id": "gyro-chick",
+        "name": "Chicken Gyro Wrap",
+        "priceP": 995
+      },
+      {
+        "id": "gyro-hall",
+        "name": "Halloumi Gyro Wrap",
+        "priceP": 995
+      },
+      {
+        "id": "gyro-sp",
+        "name": "Crispy Salt & Pepper Chicken Gyro Wrap",
+        "priceP": 995
+      },
+      {
+        "id": "gyro-hc",
+        "name": "Honey Chilli Chicken Gyro Wrap",
+        "priceP": 995
+      },
+      {
+        "id": "gyrobox-shaw",
+        "name": "Shawarma Chicken Gyro Box Meal",
+        "priceP": 1495
+      },
+      {
+        "id": "gyrobox-hall",
+        "name": "Halloumi Gyro Box Meal",
+        "priceP": 1495
+      },
+      {
+        "id": "gyrobox-sp",
+        "name": "Salt & Pepper Chicken Gyro Box Meal",
+        "priceP": 1495
+      },
+      {
+        "id": "gyrobox-hc",
+        "name": "Honey Chilli Chicken Gyro Box Meal",
+        "priceP": 1495
+      }
+    ]
+  },
+  {
+    "id": "burgers",
+    "name": "Burgers",
+    "items": [
+      {
+        "id": "bur-crispy",
+        "name": "Crispy Chicken Burger",
+        "priceP": 1395
+      },
+      {
+        "id": "bur-hc",
+        "name": "Crispy Honey Chilli Chicken Burger",
+        "priceP": 1495
+      },
+      {
+        "id": "bur-steak",
+        "name": "Double Steak Cheese Burger",
+        "priceP": 1495
+      },
+      {
+        "id": "bur-dirty",
+        "name": "Dirty Steak Burger",
+        "priceP": 1595
+      }
+    ]
+  },
+  {
+    "id": "sides",
+    "name": "Sides & Dips",
+    "items": [
+      {
+        "id": "side-fries",
+        "name": "Fries",
+        "priceP": 400
+      },
+      {
+        "id": "side-cheesy",
+        "name": "Cheesy Chips",
+        "priceP": 600
+      },
+      {
+        "id": "side-chipsgravy",
+        "name": "Chips & Gravy",
+        "priceP": 500
+      },
+      {
+        "id": "side-chipsgarlic",
+        "name": "Chips & Garlic",
+        "priceP": 500
+      },
+      {
+        "id": "side-chipscurry",
+        "name": "Chips & Curry Sauce",
+        "priceP": 600
+      },
+      {
+        "id": "side-slaw",
+        "name": "Homemade Slaw",
+        "priceP": 400
+      },
+      {
+        "id": "dip-garlic",
+        "name": "Garlic Sauce",
+        "priceP": 200
+      },
+      {
+        "id": "dip-sweetchilli",
+        "name": "Sweet Chilli",
+        "priceP": 200
+      },
+      {
+        "id": "dip-bbq",
+        "name": "BBQ Sauce",
+        "priceP": 200
+      },
+      {
+        "id": "dip-curry",
+        "name": "Curry Sauce",
+        "priceP": 250
+      }
+    ]
+  },
+  {
+    "id": "drinks",
+    "name": "Drinks",
+    "items": [
+      {
+        "id": "drk-dietcoke",
+        "name": "Diet Coke",
+        "priceP": 200
+      },
+      {
+        "id": "drk-coke",
+        "name": "Coca-Cola",
+        "priceP": 200
+      },
+      {
+        "id": "drk-cherry",
+        "name": "Cherry Coke",
+        "priceP": 200
+      },
+      {
+        "id": "drk-fantaorange",
+        "name": "Fanta Orange",
+        "priceP": 200
+      },
+      {
+        "id": "drk-fantalemon",
+        "name": "Fanta Lemon",
+        "priceP": 200
+      },
+      {
+        "id": "drk-fantatwist",
+        "name": "Fanta Fruit Twist",
+        "priceP": 200
+      },
+      {
+        "id": "drk-sprite",
+        "name": "Sprite",
+        "priceP": 200
+      },
+      {
+        "id": "drk-drpepper",
+        "name": "Dr Pepper",
+        "priceP": 200
+      }
+    ]
+  },
+  {
+    "id": "desserts",
+    "name": "Desserts",
+    "items": [
+      {
+        "id": "des-oldschool",
+        "name": "Old School Cake",
+        "priceP": 395
+      },
+      {
+        "id": "des-brownie",
+        "name": "Chocolate Brownie",
+        "priceP": 395
+      },
+      {
+        "id": "des-cheesecake",
+        "name": "Homemade Cheesecake",
+        "priceP": 395
+      },
+      {
+        "id": "des-choccake",
+        "name": "Chocolate Cake",
+        "priceP": 395
+      }
     ]
   }
 ]

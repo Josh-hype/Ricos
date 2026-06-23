@@ -4,13 +4,30 @@
     "name": "Breakfasts",
     "icon": "🍳",
     "items": [
-      { "id": "eng-brk",   "name": "English Breakfast",         "price": 7.95, "desc": "Bacon, sausage, hash brown, fried egg, beans, tomatoes & mushrooms. With 2 slices of toast." },
-      { "id": "lrg-brk",   "name": "Large Breakfast",           "price": 9.95, "desc": "2 bacon, 2 sausages, 2 hash browns, 2 fried eggs, beans, tomatoes, mushrooms & black pudding. With 2 slices of toast." },
-      { "id": "brk-bacon", "name": "Bacon Roll",                "price": 4.50, "desc": "Served in a soft roll." },
-      { "id": "brk-saus",  "name": "Sausage Roll",              "price": 4.50, "desc": "Served in a soft roll." },
-      { "id": "brk-bs",    "name": "Bacon & Sausage Roll",      "price": 5.50, "desc": "Served in a soft roll." },
-      { "id": "brk-bse",   "name": "Bacon, Sausage & Egg Roll", "price": 6.50, "desc": "Served in a soft roll." },
-      { "id": "brk-wrap",  "name": "Breakfast Wrap",            "price": 7.95, "desc": "Bacon, sausage, egg & cheesy beans in a toasted wrap, with a hash brown on the side." }
+      {
+        "id": "eng-brk",
+        "name": "English Breakfast",
+        "price": 9.95,
+        "desc": "1 bacon, 1 sausage, 1 hash brown, fried egg, beans, tinned tomatoes & mushrooms. Served with 2 slices of toast."
+      },
+      {
+        "id": "lrg-brk",
+        "name": "Large Breakfast",
+        "price": 12.95,
+        "desc": "2 bacon, 2 sausages, 2 hash browns, 2 fried eggs, beans, tinned tomatoes, mushrooms & black pudding. Served with 2 slices of toast."
+      },
+      {
+        "id": "brk-sand",
+        "name": "Breakfast Sandwich",
+        "price": 4.5,
+        "desc": "Bacon and/or sausage in a soft roll. From £4.50."
+      },
+      {
+        "id": "brk-wrap",
+        "name": "Breakfast Wrap",
+        "price": 9.95,
+        "desc": "Bacon, sausage, egg & cheesy beans in a toasted wrap, with a hash brown on the side."
+      }
     ]
   },
   {
@@ -18,12 +35,36 @@
     "name": "Baguette Box Meals",
     "icon": "🥖",
     "items": [
-      { "id": "bag-beef", "name": "Hot Beef Melt",              "price": 9.95, "desc": "Tender hot beef with melted cheese. With fries, salad, slaw & a tub of sauce or gravy." },
-      { "id": "bag-pork", "name": "Hot Pork & Stuffing",        "price": 9.95, "desc": "Roast pork with sage & onion stuffing. With fries, salad, slaw & a tub of sauce or gravy." },
-      { "id": "bag-bbq",  "name": "BBQ Chicken Melt",           "price": 9.95, "desc": "Grilled chicken, BBQ sauce & melted cheese. With fries, salad, slaw & a tub of sauce or gravy." },
-      { "id": "bag-tuna", "name": "Tuna Melt",                  "price": 9.95, "desc": "Tuna mayo with melted cheese. With fries, salad, slaw & a tub of sauce or gravy." },
-      { "id": "bag-sp",   "name": "Salt & Pepper Chicken Melt", "price": 9.95, "desc": "Salt & pepper seasoned chicken. With fries, salad, slaw & a tub of sauce or gravy." },
-      { "id": "bag-hc",   "name": "Honey Chilli Chicken Melt",  "price": 9.95, "desc": "Honey chilli chicken with melted cheese. With fries, salad, slaw & a tub of sauce or gravy." }
+      {
+        "id": "bag-bbq",
+        "name": "BBQ Chicken Melt",
+        "price": 14.95,
+        "desc": "Grilled chicken, BBQ sauce & melted cheese. With fries, salad, slaw & a tub of sauce or gravy."
+      },
+      {
+        "id": "bag-tuna",
+        "name": "Tuna Melt",
+        "price": 14.95,
+        "desc": "Tuna mayo with melted cheese. With fries, salad, slaw & a tub of sauce or gravy."
+      },
+      {
+        "id": "bag-sp",
+        "name": "Salt & Pepper Chicken Melt",
+        "price": 14.95,
+        "desc": "Salt & pepper seasoned chicken. With fries, salad, slaw & a tub of sauce or gravy."
+      },
+      {
+        "id": "bag-hc",
+        "name": "Honey Chilli Chicken Melt",
+        "price": 14.95,
+        "desc": "Honey chilli chicken with melted cheese. With fries, salad, slaw & a tub of sauce or gravy."
+      },
+      {
+        "id": "bag-beef",
+        "name": "Hot Beef Melt",
+        "price": 14.95,
+        "desc": "Tender hot beef with melted cheese. With fries, salad, slaw & a tub of gravy."
+      }
     ]
   },
   {
@@ -31,19 +72,273 @@
     "name": "Big Flavour",
     "icon": "🌶️",
     "items": [
-      { "id": "spice-bag", "name": "Irish Spice Bag",       "price": 8.95, "desc": "Crispy chicken strips, golden fries, onions & peppers, secret spice mix & Irish curry sauce." },
-      { "id": "curry",     "name": "Classic Chicken Curry", "price": 6.95, "desc": "Tender chicken in our signature curry sauce. Served with rice, fries or half & half." },
-      { "id": "sp-chick",  "name": "Salt & Pepper Chicken", "price": 8.50, "desc": "Crispy seasoned chicken with chillies, garlic & peppers. Served with rice & fries." },
-      { "id": "hc-chick",  "name": "Honey Chilli Chicken",  "price": 8.50, "desc": "Sweet, spicy & crispy. Served with rice & fries." }
+      {
+        "id": "spice-bag",
+        "name": "Irish Spice Bag",
+        "price": 10.0,
+        "desc": "Crispy chicken strips, golden fries, onions & peppers, secret spice mix & Irish curry sauce."
+      },
+      {
+        "id": "curry",
+        "name": "Classic Chicken Curry",
+        "price": 8.95,
+        "desc": "Tender chicken in our signature curry sauce. Served with rice or fries."
+      },
+      {
+        "id": "hc-chick",
+        "name": "Honey Chilli Chicken",
+        "price": 10.0,
+        "desc": "Sweet, spicy & crispy. Served with rice & fries."
+      },
+      {
+        "id": "sp-chick",
+        "name": "Salt & Pepper Chicken",
+        "price": 10.0,
+        "desc": "Crispy seasoned chicken with chillies, garlic & peppers. Served with rice & fries."
+      },
+      {
+        "id": "wrap-box",
+        "name": "Wrap Boxes",
+        "price": 12.95,
+        "desc": "Salt & pepper or honey chilli chicken — with fries, salad, slaw & a tub of garlic mayo."
+      },
+      {
+        "id": "cant-decide",
+        "name": "Can't Decide Box",
+        "price": 14.95,
+        "desc": "Salt & pepper chicken, salt & pepper chips, chicken curry & rice — with salad, homemade slaw & a tub of homemade garlic sauce."
+      },
+      {
+        "id": "thai-veg",
+        "name": "Thai Green Curry (v)",
+        "price": 14.95,
+        "desc": "Vegetarian. Served with rice, fries & prawn crackers."
+      }
     ]
   },
   {
-    "id": "wrap-boxes",
-    "name": "Wrap Boxes",
+    "id": "gyros",
+    "name": "Gyros & Box Meals",
     "icon": "🌯",
     "items": [
-      { "id": "wrap-sp", "name": "Salt & Pepper Wrap Box", "price": 9.50, "desc": "Crispy salt & pepper chicken wrap, with fries, salad, slaw & a tub of garlic mayo." },
-      { "id": "wrap-hc", "name": "Honey Chilli Wrap Box",  "price": 9.50, "desc": "Sweet & spicy honey chilli chicken wrap, with fries, salad, slaw & a tub of garlic mayo." }
+      {
+        "id": "gyro-chick",
+        "name": "Chicken Gyro Wrap",
+        "price": 9.95,
+        "desc": "Shawarma chicken in a warm flatbread with lettuce, onion, tomato, tzatziki & fries."
+      },
+      {
+        "id": "gyro-hall",
+        "name": "Halloumi Gyro Wrap",
+        "price": 9.95,
+        "desc": "Halloumi in a warm flatbread with lettuce, onion, tomato, tzatziki & fries."
+      },
+      {
+        "id": "gyro-sp",
+        "name": "Crispy Salt & Pepper Chicken Gyro Wrap",
+        "price": 9.95,
+        "desc": "Crispy chicken in a warm flatbread with lettuce, onion, tomato, tzatziki & fries."
+      },
+      {
+        "id": "gyro-hc",
+        "name": "Honey Chilli Chicken Gyro Wrap",
+        "price": 9.95,
+        "desc": "Honey chilli chicken in a warm flatbread with lettuce, onion, tomato, tzatziki & fries."
+      },
+      {
+        "id": "gyrobox-shaw",
+        "name": "Shawarma Chicken Gyro Box Meal",
+        "price": 14.95,
+        "desc": "In a pizza box with warm flatbread, lettuce, onion, tomato, tzatziki, fries & a tub of garlic sauce."
+      },
+      {
+        "id": "gyrobox-hall",
+        "name": "Halloumi Gyro Box Meal",
+        "price": 14.95,
+        "desc": "In a pizza box with warm flatbread, lettuce, onion, tomato, tzatziki, fries & a tub of garlic sauce."
+      },
+      {
+        "id": "gyrobox-sp",
+        "name": "Salt & Pepper Chicken Gyro Box Meal",
+        "price": 14.95,
+        "desc": "In a pizza box with warm flatbread, lettuce, onion, tomato, tzatziki, fries & a tub of garlic sauce."
+      },
+      {
+        "id": "gyrobox-hc",
+        "name": "Honey Chilli Chicken Gyro Box Meal",
+        "price": 14.95,
+        "desc": "In a pizza box with warm flatbread, lettuce, onion, tomato, tzatziki, fries & a tub of garlic sauce."
+      }
+    ]
+  },
+  {
+    "id": "burgers",
+    "name": "Burgers",
+    "icon": "🍔",
+    "items": [
+      {
+        "id": "bur-crispy",
+        "name": "Crispy Chicken Burger",
+        "price": 13.95,
+        "desc": "In a brioche bun with fries, salad & slaw."
+      },
+      {
+        "id": "bur-hc",
+        "name": "Crispy Honey Chilli Chicken Burger",
+        "price": 14.95,
+        "desc": "Crispy chicken topped with peppers, onions & cheese, tossed in our special sauce. With fries & slaw."
+      },
+      {
+        "id": "bur-steak",
+        "name": "Double Steak Cheese Burger",
+        "price": 14.95,
+        "desc": "In a brioche bun with fries, salad & slaw."
+      },
+      {
+        "id": "bur-dirty",
+        "name": "Dirty Steak Burger",
+        "price": 15.95,
+        "desc": "Double bacon cheese burger topped with peppers & onions, on lettuce in a brioche bun. With fries, onion rings & slaw."
+      }
+    ]
+  },
+  {
+    "id": "sides",
+    "name": "Sides & Dips",
+    "icon": "🍟",
+    "items": [
+      {
+        "id": "side-fries",
+        "name": "Fries",
+        "price": 4.0
+      },
+      {
+        "id": "side-cheesy",
+        "name": "Cheesy Chips",
+        "price": 6.0
+      },
+      {
+        "id": "side-chipsgravy",
+        "name": "Chips & Gravy",
+        "price": 5.0
+      },
+      {
+        "id": "side-chipsgarlic",
+        "name": "Chips & Garlic",
+        "price": 5.0
+      },
+      {
+        "id": "side-chipscurry",
+        "name": "Chips & Curry Sauce",
+        "price": 6.0
+      },
+      {
+        "id": "side-slaw",
+        "name": "Homemade Slaw",
+        "price": 4.0
+      },
+      {
+        "id": "dip-garlic",
+        "name": "Garlic Sauce",
+        "price": 2.0
+      },
+      {
+        "id": "dip-sweetchilli",
+        "name": "Sweet Chilli",
+        "price": 2.0
+      },
+      {
+        "id": "dip-bbq",
+        "name": "BBQ Sauce",
+        "price": 2.0
+      },
+      {
+        "id": "dip-curry",
+        "name": "Curry Sauce",
+        "price": 2.5
+      }
+    ]
+  },
+  {
+    "id": "drinks",
+    "name": "Drinks",
+    "icon": "🥤",
+    "items": [
+      {
+        "id": "drk-dietcoke",
+        "name": "Diet Coke",
+        "price": 2.0,
+        "desc": "330ml"
+      },
+      {
+        "id": "drk-coke",
+        "name": "Coca-Cola",
+        "price": 2.0,
+        "desc": "330ml"
+      },
+      {
+        "id": "drk-cherry",
+        "name": "Cherry Coke",
+        "price": 2.0,
+        "desc": "330ml"
+      },
+      {
+        "id": "drk-fantaorange",
+        "name": "Fanta Orange",
+        "price": 2.0,
+        "desc": "330ml"
+      },
+      {
+        "id": "drk-fantalemon",
+        "name": "Fanta Lemon",
+        "price": 2.0,
+        "desc": "330ml"
+      },
+      {
+        "id": "drk-fantatwist",
+        "name": "Fanta Fruit Twist",
+        "price": 2.0,
+        "desc": "330ml"
+      },
+      {
+        "id": "drk-sprite",
+        "name": "Sprite",
+        "price": 2.0,
+        "desc": "330ml"
+      },
+      {
+        "id": "drk-drpepper",
+        "name": "Dr Pepper",
+        "price": 2.0,
+        "desc": "330ml"
+      }
+    ]
+  },
+  {
+    "id": "desserts",
+    "name": "Desserts",
+    "icon": "🍰",
+    "items": [
+      {
+        "id": "des-oldschool",
+        "name": "Old School Cake",
+        "price": 3.95
+      },
+      {
+        "id": "des-brownie",
+        "name": "Chocolate Brownie",
+        "price": 3.95
+      },
+      {
+        "id": "des-cheesecake",
+        "name": "Homemade Cheesecake",
+        "price": 3.95
+      },
+      {
+        "id": "des-choccake",
+        "name": "Chocolate Cake",
+        "price": 3.95
+      }
     ]
   }
 ]
