@@ -133,6 +133,40 @@ footer .by{font-family:var(--grotesk);font-weight:700;letter-spacing:.22em;font-
   section{padding:60px 0}
   .brand span{display:none}
 }
+
+/* ===== energy pass ===== */
+.hero h1{font-size:clamp(40px,7.2vw,70px)}
+.hero-logo{width:min(300px,70vw)}
+.hero .btn-gold{animation:gh-pulse 2.8s ease-in-out infinite}
+@keyframes gh-pulse{0%,100%{box-shadow:0 6px 22px -10px rgba(226,166,74,.40)}50%{box-shadow:0 12px 38px -8px rgba(226,166,74,.70)}}
+
+.marquee{background:var(--char2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;padding:15px 0}
+.marquee-track{display:inline-flex;align-items:center;white-space:nowrap;animation:gh-scroll 28s linear infinite;will-change:transform}
+.marquee:hover .marquee-track{animation-play-state:paused}
+.marquee b{font-family:var(--grotesk);font-weight:800;letter-spacing:.16em;font-size:18px;color:var(--gold);text-transform:uppercase;padding:0 4px}
+.marquee i{color:var(--chilli);font-style:normal;padding:0 26px;font-size:13px}
+@keyframes gh-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+#menu .grid .card:nth-child(2){transition-delay:.06s}
+#menu .grid .card:nth-child(3){transition-delay:.12s}
+#menu .grid .card:nth-child(4){transition-delay:.18s}
+#menu .grid .card:nth-child(5){transition-delay:.24s}
+#menu .grid .card:nth-child(6){transition-delay:.30s}
+
+/* chilli-red pop */
+.badge{background:var(--chilli);color:#fff}
+
+/* lighter section to break up the dark run */
+#menu{background:var(--cream)}
+#menu .eyebrow,#menu .eyebrow .d{color:var(--gold-d)}
+#menu h2.title{color:#1a1410}
+#menu .lead{color:#6e6253}
+#menu .btn-out{color:#1a1410;border-color:var(--gold-d)}
+#menu .btn-out:hover{background:rgba(181,129,46,.14)}
+
+@media (prefers-reduced-motion: reduce){.marquee-track{animation:none}.hero .btn-gold{animation:none}.reveal{opacity:1;transform:none;transition:none}}
 </style>
 </head>
 <body>
@@ -163,6 +197,13 @@ footer .by{font-family:var(--grotesk);font-weight:700;letter-spacing:.22em;font-
     </div>
   </div>
 </section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <b>Big Flavour</b><i>◆</i><b>Big Portions</b><i>◆</i><b>Big Value</b><i>◆</i><b>Honey Chilli Chicken</b><i>◆</i><b>Baguette Boxes</b><i>◆</i><b>Irish Spice Bag</b><i>◆</i>
+    <b>Big Flavour</b><i>◆</i><b>Big Portions</b><i>◆</i><b>Big Value</b><i>◆</i><b>Honey Chilli Chicken</b><i>◆</i><b>Baguette Boxes</b><i>◆</i><b>Irish Spice Bag</b><i>◆</i>
+  </div>
+</div>
 
 <div class="promise"><span>&ldquo;Not a takeaway. A craving worth the trip.&rdquo;</span></div>
 
@@ -251,5 +292,16 @@ footer .by{font-family:var(--grotesk);font-weight:700;letter-spacing:.22em;font-
   </div>
 </footer>
 
+<script>
+(function(){
+  if(!('IntersectionObserver' in window)) return;
+  var els = document.querySelectorAll('#menu .card, .sec-head, #story .wrap > *, .honey .wrap, .visit-grid, .promise span');
+  els.forEach(function(el){ el.classList.add('reveal'); });
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+  els.forEach(function(el){ io.observe(el); });
+})();
+</script>
 </body>
 </html>
