@@ -8,10 +8,10 @@
     "legalName": "TODO_REGISTERED_COMPANY_NAME",
     "companyNumber": "TODO",
     "address": {
-      "line1": "Osbaldwick Sports Club",
+      "line1": "Osbaldwick Sports Club, The Leyes",
       "city": "York",
       "_comment_postcode": "Need the venue's exact postcode — it's the delivery radius origin and feeds maps/SEO. Left blank for now (collection-only).",
-      "postcode": "",
+      "postcode": "YO10 3PR",
       "country": "United Kingdom"
     },
     "phone": "07873 926637",

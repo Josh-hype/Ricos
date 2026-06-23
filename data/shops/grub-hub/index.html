@@ -167,6 +167,15 @@ footer .by{font-family:var(--grotesk);font-weight:700;letter-spacing:.22em;font-
 #menu .btn-out:hover{background:rgba(181,129,46,.14)}
 
 @media (prefers-reduced-motion: reduce){.marquee-track{animation:none}.hero .btn-gold{animation:none}.reveal{opacity:1;transform:none;transition:none}}
+/* tighter hero so the marquee shows sooner */
+.hero{padding:58px 0 49px}
+.hero-logo{margin-top:15px}
+.hero h1{margin-top:21px}
+.hero .cta{margin-top:24px}
+.promise{padding:32px 28px}
+.promise-sub{font-family:var(--sans);font-style:normal;font-weight:400;color:var(--ink);font-size:clamp(15px,2vw,18px);max-width:720px;margin:14px auto 0;line-height:1.6}
+.promise-sub strong{color:var(--cream)}
+.story-logo{height:150px;width:auto;display:block;margin:0 auto 12px;filter:drop-shadow(0 10px 26px rgba(0,0,0,.5))}
 </style>
 </head>
 <body>
@@ -190,7 +199,6 @@ footer .by{font-family:var(--grotesk);font-weight:700;letter-spacing:.22em;font-
     <img class="hero-logo" src="/assets/logo-on-dark.png" alt="The Grub Hub, York">
     <h1>Good grub, done properly.</h1>
     <svg class="swoosh" viewBox="0 0 230 14"><path d="M2 9 C70 1, 165 1, 228 5 C165 7, 70 9, 2 9 Z" fill="#E2A64A"/></svg>
-    <p class="sub">Breakfasts, loaded baguette box meals, the Irish spice bag, curries and our signature <strong style="color:var(--cream)">honey chilli chicken</strong> — big flavour, big portions, big value.</p>
     <div class="cta">
       <a href="/order" class="btn btn-gold">Order Online</a>
       <a href="/order" class="btn btn-out">View the Menu</a>
@@ -205,7 +213,7 @@ footer .by{font-family:var(--grotesk);font-weight:700;letter-spacing:.22em;font-
   </div>
 </div>
 
-<div class="promise"><span>&ldquo;Not a takeaway. A craving worth the trip.&rdquo;</span></div>
+<div class="promise"><span>&ldquo;Not a takeaway. A craving worth the trip.&rdquo;</span><p class="promise-sub">Breakfasts, loaded baguette box meals, the Irish spice bag, curries and our signature <strong>honey chilli chicken</strong> — big flavour, big portions, big value.</p></div>
 
 <section id="menu">
   <div class="wrap">
@@ -228,14 +236,7 @@ footer .by{font-family:var(--grotesk);font-weight:700;letter-spacing:.22em;font-
 
 <section id="story" class="story">
   <div class="wrap">
-    <svg class="seal" viewBox="0 0 120 120" aria-hidden="true">
-      <circle cx="60" cy="60" r="56" fill="none" stroke="#E2A64A" stroke-width="2.4"/>
-      <circle cx="60" cy="60" r="50" fill="none" stroke="#E2A64A" stroke-width="1"/>
-      <circle cx="60" cy="60" r="33" fill="none" stroke="#E2A64A" stroke-width="1"/>
-      <text x="60" y="74" text-anchor="middle" font-family="Fraunces,serif" font-weight="700" font-size="34" fill="#F4ECDC">GH</text>
-      <text x="60" y="20" text-anchor="middle" font-family="Archivo,sans-serif" font-weight="700" font-size="7.5" letter-spacing="2" fill="#E2A64A">THE GRUB HUB</text>
-      <text x="60" y="106" text-anchor="middle" font-family="Archivo,sans-serif" font-weight="700" font-size="7.5" letter-spacing="2" fill="#E2A64A">EST · YORK</text>
-    </svg>
+    <img class="story-logo" src="/assets/logo-on-dark.png" alt="The Grub Hub">
     <div class="eyebrow"><span class="d">·</span>Our Story<span class="d">·</span></div>
     <h2>Comfort food shouldn&rsquo;t mean cutting corners.</h2>
     <p>So we took the dishes people actually crave — the loaded baguette, the big breakfast, the spice bag, the curry that hugs you back — and made them properly. Fresh ingredients, real craft, and our own twist of honey and chilli heat. This isn&rsquo;t grab-and-go. It&rsquo;s grab-and-glad-you-did.</p>
@@ -260,7 +261,7 @@ footer .by{font-family:var(--grotesk);font-weight:700;letter-spacing:.22em;font-
       <div>
         <div class="vblock">
           <div class="vlabel">Where</div>
-          <div class="addr">Inside Osbaldwick Sports Club<br>York<br><a href="tel:+447873926637" style="color:var(--gold)">07873 926637</a></div>
+          <div class="addr">Inside Osbaldwick Sports Club<br>The Leyes, York YO10 3PR<br><a href="tel:+447873926637" style="color:var(--gold)">07873 926637</a></div>
         </div>
         <div class="vblock">
           <div class="vlabel">Opening Hours</div>
