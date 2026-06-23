@@ -1,0 +1,98 @@
+{
+  "_comment": "The Grub Hub, Osbaldwick (York) — rebrand of Ozzo Grub. Scaffolded from the printed menu. PLACEHOLDERS to fill before go-live: business.legalName / companyNumber / email / domain, address.postcode, stripe.connectedAccountId, and delivery (collection-only for now — needs the exact postcode + areas/fees). Orders cannot be taken until the real Stripe Connect account + platform Stripe secrets are configured in Cloudflare.",
+
+  "business": {
+    "tradingName": "The Grub Hub",
+    "shortName": "The Grub Hub",
+    "_comment_todo": "Registered company + contact email + domain not supplied yet. Left as placeholders so the legal pages fall back gracefully (they use the trading name + phone until these are filled).",
+    "legalName": "TODO_REGISTERED_COMPANY_NAME",
+    "companyNumber": "TODO",
+    "address": {
+      "line1": "Osbaldwick Sports Club",
+      "city": "York",
+      "_comment_postcode": "Need the venue's exact postcode — it's the delivery radius origin and feeds maps/SEO. Left blank for now (collection-only).",
+      "postcode": "",
+      "country": "United Kingdom"
+    },
+    "phone": "07873 926637",
+    "email": "",
+    "domain": ""
+  },
+
+  "seo": {
+    "cuisine": ["Breakfast", "Baguettes", "Chicken", "Curry", "Wraps"],
+    "priceRange": "££",
+    "addressRegion": "North Yorkshire",
+    "description": "The Grub Hub, Osbaldwick (York) — breakfasts, loaded baguette box meals, Irish spice bag, curries, salt & pepper and honey chilli chicken, and wrap boxes. Big flavour, big portions, big value.",
+    "sameAs": ["https://facebook.com/OzzoGrub", "https://instagram.com/OzzoGrub"]
+  },
+
+  "_comment_theme": "Grub Hub brand on the shared (light) order template: cream background, CHARCOAL primary (the template puts light text on the primary colour, so it must be dark) and honey-gold accent. Fonts left as the platform default (Archivo Black display / DM Sans body), which match the brand's recommended type.",
+  "theme": {
+    "primary":     "#1A1611",
+    "primaryDark":  "#100D0A",
+    "primaryDeep":  "#060504",
+    "accent":       "#E2A64A",
+    "accentDeep":   "#B5812E",
+    "background":   "#F4ECDC",
+    "surface":      "#FFFDF6",
+    "chrome":       "#1A1611"
+  },
+
+  "fulfillment": {
+    "collection": { "enabled": true },
+    "delivery": {
+      "_comment": "Collection-only for now. The printed menu offers delivery — to switch it on I need the shop's exact postcode (the radius origin) and the delivery areas/fees, then set enabled:true with a radius or outcode block (see data/shops/_template/config.json).",
+      "enabled": false
+    }
+  },
+
+  "_comment_serviceFee": "Per-order service charge in pence (shown at checkout). serviceFeePlatformPence is the platform's (Lumin Labs') cut taken as the Stripe application_fee; the rest stays with the shop. £1.00 charge = 50p platform + 50p shop. Adjust to taste.",
+  "serviceFeePence": 100,
+  "serviceFeePlatformPence": 50,
+
+  "_comment_stripe": "PLACEHOLDER — card payments WILL FAIL until the venue's real Stripe Connect acct_… is set here AND the platform Stripe secrets + this shop's Connect webhook are configured in Cloudflare. Orders stay off until then (the build prints a loud warning).",
+  "stripe": {
+    "connectedAccountId": "acct_REPLACE_WITH_STRIPE_CONNECT_ID"
+  },
+
+  "pos": { "requireOrderPin": false },
+
+  "hours": {
+    "_comment": "Source: printed menu — Mon & Tue closed; Wed 9am-9pm; Thu 4pm-9pm; Fri & Sat 9am-9pm; Sun 9am-3pm.",
+    "monday":    { "closed": true,  "windows": [] },
+    "tuesday":   { "closed": true,  "windows": [] },
+    "wednesday": { "closed": false, "windows": [{ "open": "09:00", "close": "21:00" }] },
+    "thursday":  { "closed": false, "windows": [{ "open": "16:00", "close": "21:00" }] },
+    "friday":    { "closed": false, "windows": [{ "open": "09:00", "close": "21:00" }] },
+    "saturday":  { "closed": false, "windows": [{ "open": "09:00", "close": "21:00" }] },
+    "sunday":    { "closed": false, "windows": [{ "open": "09:00", "close": "15:00" }] }
+  },
+
+  "ordering": {
+    "timezone": "Europe/London",
+    "businessDayStartHour": 4,
+    "asapMinPrepMinutes": 20,
+    "scheduling": { "enabled": true, "slotMinutes": 15, "maxOrdersPerSlot": 6, "horizonDays": 2 },
+    "lastOrderBeforeCloseMinutes": 20,
+    "itemNotes": true
+  },
+
+  "promo": {
+    "autoOnlineDiscount": { "enabled": false, "label": "10% off online orders", "percent": 10 }
+  },
+
+  "_comment_payments": "stripeEnabled true but cash options OFF, so the ONLY checkout path is online card — which can't complete until Stripe is wired up. This enforces 'no orders until we accept online payments'. Flip cashOnCollectionEnabled true later if you want to also take cash on collection.",
+  "payments": {
+    "stripeEnabled": true,
+    "cashOnCollectionEnabled": false,
+    "cashOnDeliveryEnabled": false,
+    "savedCardCvcThresholdPence": 5000
+  },
+
+  "allergens": {
+    "noticeAtCheckout": "For allergens please contact us before ordering."
+  },
+
+  "marketing": { "emailOptIn": true, "smsOptIn": true }
+}

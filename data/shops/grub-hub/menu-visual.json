@@ -1,0 +1,49 @@
+[
+  {
+    "id": "breakfasts",
+    "name": "Breakfasts",
+    "icon": "🍳",
+    "items": [
+      { "id": "eng-brk",   "name": "English Breakfast",         "price": 7.95, "desc": "Bacon, sausage, hash brown, fried egg, beans, tomatoes & mushrooms. With 2 slices of toast." },
+      { "id": "lrg-brk",   "name": "Large Breakfast",           "price": 9.95, "desc": "2 bacon, 2 sausages, 2 hash browns, 2 fried eggs, beans, tomatoes, mushrooms & black pudding. With 2 slices of toast." },
+      { "id": "brk-bacon", "name": "Bacon Roll",                "price": 4.50, "desc": "Served in a soft roll." },
+      { "id": "brk-saus",  "name": "Sausage Roll",              "price": 4.50, "desc": "Served in a soft roll." },
+      { "id": "brk-bs",    "name": "Bacon & Sausage Roll",      "price": 5.50, "desc": "Served in a soft roll." },
+      { "id": "brk-bse",   "name": "Bacon, Sausage & Egg Roll", "price": 6.50, "desc": "Served in a soft roll." },
+      { "id": "brk-wrap",  "name": "Breakfast Wrap",            "price": 7.95, "desc": "Bacon, sausage, egg & cheesy beans in a toasted wrap, with a hash brown on the side." }
+    ]
+  },
+  {
+    "id": "baguette-boxes",
+    "name": "Baguette Box Meals",
+    "icon": "🥖",
+    "items": [
+      { "id": "bag-beef", "name": "Hot Beef Melt",              "price": 9.95, "desc": "Tender hot beef with melted cheese. With fries, salad, slaw & a tub of sauce or gravy." },
+      { "id": "bag-pork", "name": "Hot Pork & Stuffing",        "price": 9.95, "desc": "Roast pork with sage & onion stuffing. With fries, salad, slaw & a tub of sauce or gravy." },
+      { "id": "bag-bbq",  "name": "BBQ Chicken Melt",           "price": 9.95, "desc": "Grilled chicken, BBQ sauce & melted cheese. With fries, salad, slaw & a tub of sauce or gravy." },
+      { "id": "bag-tuna", "name": "Tuna Melt",                  "price": 9.95, "desc": "Tuna mayo with melted cheese. With fries, salad, slaw & a tub of sauce or gravy." },
+      { "id": "bag-sp",   "name": "Salt & Pepper Chicken Melt", "price": 9.95, "desc": "Salt & pepper seasoned chicken. With fries, salad, slaw & a tub of sauce or gravy." },
+      { "id": "bag-hc",   "name": "Honey Chilli Chicken Melt",  "price": 9.95, "desc": "Honey chilli chicken with melted cheese. With fries, salad, slaw & a tub of sauce or gravy." }
+    ]
+  },
+  {
+    "id": "big-flavour",
+    "name": "Big Flavour",
+    "icon": "🌶️",
+    "items": [
+      { "id": "spice-bag", "name": "Irish Spice Bag",       "price": 8.95, "desc": "Crispy chicken strips, golden fries, onions & peppers, secret spice mix & Irish curry sauce." },
+      { "id": "curry",     "name": "Classic Chicken Curry", "price": 6.95, "desc": "Tender chicken in our signature curry sauce. Served with rice, fries or half & half." },
+      { "id": "sp-chick",  "name": "Salt & Pepper Chicken", "price": 8.50, "desc": "Crispy seasoned chicken with chillies, garlic & peppers. Served with rice & fries." },
+      { "id": "hc-chick",  "name": "Honey Chilli Chicken",  "price": 8.50, "desc": "Sweet, spicy & crispy. Served with rice & fries." }
+    ]
+  },
+  {
+    "id": "wrap-boxes",
+    "name": "Wrap Boxes",
+    "icon": "🌯",
+    "items": [
+      { "id": "wrap-sp", "name": "Salt & Pepper Wrap Box", "price": 9.50, "desc": "Crispy salt & pepper chicken wrap, with fries, salad, slaw & a tub of garlic mayo." },
+      { "id": "wrap-hc", "name": "Honey Chilli Wrap Box",  "price": 9.50, "desc": "Sweet & spicy honey chilli chicken wrap, with fries, salad, slaw & a tub of garlic mayo." }
+    ]
+  }
+]
