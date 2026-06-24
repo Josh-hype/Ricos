@@ -45,7 +45,8 @@
       "connectedAccountId": "acct_1Tey3sJlWcdyhDMU",
       "onlineProcessor": "stripe",
       "live": true,
-      "subscription": { "status": "active", "perWeekPence": 3500, "via": "stripe", "since": "2026-04-01" }
+      "_subscription_note": "Operating + taking orders (so per-order fees still accrue to Lumin), but the £35/wk subscription has NOT started — it won't bill until the Google Business page is under our control. When billing begins, set status:\"active\" and add a \"since\" date.",
+      "subscription": { "status": "pending", "perWeekPence": 3500, "via": "stripe" }
     },
     {
       "slug": "grub-hub",

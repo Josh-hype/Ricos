@@ -107,7 +107,7 @@
 <script>
 const $ = (sel, root=document) => root.querySelector(sel);
 const app = document.getElementById('app');
-let RANGE = 'today';
+let RANGE = '30d';
 let TAB = 'revenue';
 let cache = { overview:null, clients:null };
 
@@ -221,7 +221,7 @@ async function loadRevenue(){
   const cards = [
     {cls:'hero', k:'<span class="dot a"></span>Lumin Labs revenue', v:gbp(t.luminRevenueP), s:'Subscriptions + per-order fees · '+esc(d.range?.label||'')},
     {cls:'', k:'Per-order fees', v:gbp(t.perOrderCollectedP), s:(t.orderCount||0)+' orders'+gapNote},
-    {cls:'', k:'Subscriptions', v:gbp(t.subscriptionAccruedP), s:gbp(t.subscriptionWeeklyRunRateP)+'/wk run-rate · '+(t.liveShops||0)+' live'},
+    {cls:'', k:'Subscriptions', v:gbp(t.subscriptionAccruedP), s:gbp(t.subscriptionWeeklyRunRateP)+'/wk run-rate · '+(t.payingShops||0)+' paying'},
     {cls:'', k:'Volume processed', v:gbp(t.grossP), s:'GMV across '+(t.shops||0)+' shops'},
     {cls:'cost', k:'Card-processing cost', v:gbp(t.processingP), s:'Est. — priced per shop’s processor (Stripe today)'},
   ];
@@ -240,7 +240,7 @@ async function loadRevenue(){
       '<td>'+status+'</td>'+
       '<td>'+esc(s.processor)+'</td>'+
       '<td class="num">'+(s.orderCount||0)+'</td>'+
-      '<td class="num">'+gbp(s.grossP)+'</td>'+
+      '<td class="num">'+gbp(s.grossP)+(s.volumeError?'<div style="color:var(--redc);font-size:10.5px;white-space:normal">⚠ '+esc(s.volumeError)+'</div>':'')+'</td>'+
       '<td class="num">'+perOrder+'</td>'+
       '<td class="num">'+gbp(s.subscriptionAccruedP)+'</td>'+
       '<td class="num"><b>'+gbp(s.luminRevenueP)+'</b></td>'+
@@ -257,6 +257,9 @@ async function loadRevenue(){
         '<th>Shop</th><th>Status</th><th>Online processor</th><th class="num">Orders</th>'+
         '<th class="num">Volume</th><th class="num">Per-order fee</th><th class="num">Subscription</th><th class="num">Lumin rev.</th>'+
       '</tr></thead><tbody>'+ (rows||'<tr><td colspan="8" style="color:var(--mut)">No shops.</td></tr>') +'</tbody></table></div></div>'+
+    '<div class="foot" style="text-align:left;margin-top:12px;color:var(--mut2)">Diagnostics — '+
+      ((d.shops||[]).map(s => esc(s.name)+': '+(s.chargeCount==null?'charges n/a':s.chargeCount+' charges')+', '+(s.feeCount||0)+' fees'+(s.volumeError?' ⚠ '+esc(s.volumeError):'')).join('  ·  ') || 'none')+
+    '</div>'+
     '<div class="banner info" style="margin-top:16px">The <b>card-processing cost</b> is the acquirer’s cut (Stripe ~1.5% + 20p online today) and is priced per shop from the platform registry — switch a shop to <b>Elavon</b> there and this line re-prices itself. Lumin Labs’ own revenue (subscription + per-order fee) is independent of the processor.</div>'+
     '<div class="foot">Generated '+esc((d.generatedAt||'').replace('T',' ').slice(0,16))+' · live from the Stripe platform API</div>';
 }

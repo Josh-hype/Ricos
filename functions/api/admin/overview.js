@@ -108,7 +108,14 @@ export const onRequestGet = async ({ request, env }) => {
     // Order count: prefer real charge count; fall back to the application-fee count.
     const orderCount = vol ? (vol.online.count + vol.inPerson.count) : fee.count;
     const grossP = vol ? (vol.online.grossP + vol.inPerson.grossP) : 0;
-    return { shop, orderCount, grossP, applicationFeesP: fee.amountP, channelSplit };
+    return {
+      shop, orderCount, grossP, applicationFeesP: fee.amountP, channelSplit,
+      // Diagnostics: how many fees/charges Stripe actually returned for this shop,
+      // and any per-shop charge-list error — so a £0 row is explainable.
+      feeCount: fee.count,
+      chargeCount: vol ? (vol.online.count + vol.inPerson.count) : null,
+      volumeError: (volumeByAccount[acct] && volumeByAccount[acct].error) || null,
+    };
   });
 
   const { shops, totals } = rollUp(shopStats, { fromYmd: range.fromYmd, toYmd: range.toYmd });

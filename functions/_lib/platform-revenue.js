@@ -84,15 +84,24 @@ export function rollUp(shopStats, { fromYmd, toYmd } = {}) {
     const perOrderExpectedP = feeP * orderCount;
     const perOrderCollectedP = Number(s.applicationFeesP) || 0;
 
-    // Subscription accrued across the window for a live shop.
+    // Subscription accrues ONLY while the shop is actively subscribed (paying).
+    // A shop can be operating + earning Lumin per-order fees yet NOT on the weekly
+    // fee yet (onboarding, or — like Food Station — held until a condition is met).
+    // So `live` (operating, takes orders) and `subscribed` (paying the weekly fee)
+    // are independent: the per-order fees above are earned on every order either
+    // way; only the subscription line waits for `status: "active"`.
+    const subStatus = shop.subscription?.status || (shop.live ? 'active' : 'pending');
+    const subscribed = subStatus === 'active';
     const subWeeklyP = subscriptionWeeklyP(shop);
-    const subscriptionAccruedP = shop.live ? Math.round(subWeeklyP * weeks) : 0;
+    const subscriptionAccruedP = subscribed ? Math.round(subWeeklyP * weeks) : 0;
 
     return {
       slug: shop.slug,
       name: shop.name,
       city: shop.city || '',
       live: !!shop.live,
+      subscribed,
+      subscriptionStatus: subStatus,
       pending: !/^acct_/.test(String(shop.connectedAccountId || '')),
       processor: getProcessorRates(procKey, 'online').label,
       orderCount,
@@ -106,23 +115,29 @@ export function rollUp(shopStats, { fromYmd, toYmd } = {}) {
       // Lumin Labs revenue FROM THIS SHOP in the window: subscription accrued +
       // per-order fees actually collected via the processor.
       luminRevenueP: subscriptionAccruedP + perOrderCollectedP,
+      // Diagnostics (so a silently-zero shop is explainable, not a mystery).
+      feeCount: Number(s.feeCount) || 0,
+      chargeCount: s.chargeCount == null ? null : Number(s.chargeCount),
+      volumeError: s.volumeError || null,
     };
   });
 
   const sum = (f) => shops.reduce((a, s) => a + (f(s) || 0), 0);
-  const liveShops = shops.filter(s => s.live).length;
+  const liveShops = shops.filter(s => s.live).length;          // operating (taking orders)
+  const payingShops = shops.filter(s => s.subscribed).length;  // actively on the weekly fee
   const totals = {
     shops: shops.length,
     liveShops,
+    payingShops,
     orderCount: sum(s => s.orderCount),
     grossP: sum(s => s.grossP),
     processingP: sum(s => s.processingP),
     perOrderExpectedP: sum(s => s.perOrderExpectedP),
     perOrderCollectedP: sum(s => s.perOrderCollectedP),
     subscriptionAccruedP: sum(s => s.subscriptionAccruedP),
-    // Current weekly subscription run-rate across LIVE shops (a forward figure,
+    // Current weekly subscription run-rate across PAYING shops (a forward figure,
     // independent of the selected window).
-    subscriptionWeeklyRunRateP: shops.filter(s => s.live).reduce((a, s) => a + s.subscriptionWeeklyP, 0),
+    subscriptionWeeklyRunRateP: shops.filter(s => s.subscribed).reduce((a, s) => a + s.subscriptionWeeklyP, 0),
     luminRevenueP: sum(s => s.luminRevenueP),
   };
 
