@@ -1,0 +1,60 @@
+{
+  "_comment": "LUMIN LABS PLATFORM REGISTRY — the owner back-office reads this (NOT served to shops). It is the source of truth for which venues exist, their Stripe Connect accounts, who processes their online card payments, and what each one pays Lumin Labs. Committed to git: it holds acct_… ids (already public-ish, also in each shop config) but NEVER secrets — the platform Stripe key lives in Cloudflare env. When you onboard a shop, add it here AND set its connectedAccountId once Stripe Connect is live.",
+
+  "platform": {
+    "name": "Lumin Labs",
+    "legalName": "LUMIN LABS",
+    "owner": "Coskun Cetin",
+    "currency": "gbp",
+    "_comment_sub": "Default subscription a live shop pays Lumin Labs, in pence per week (£35.00). A shop can override with its own subscription.perWeekPence below.",
+    "subscriptionPerWeekPence": 3500,
+    "_comment_perOrder": "Default platform margin taken on every order, in pence (50p). Today this is collected as the Stripe Connect application_fee on each card order (it mirrors each shop's serviceFeePlatformPence). A shop can override with perOrderFeePence below.",
+    "perOrderFeePence": 50
+  },
+
+  "_comment_processors": "CARD PROCESSORS and their fees — the processor-AWARE seam. Lumin Labs' own revenue (subscription + per-order fee) does NOT depend on who processes the card; the card-PROCESSING COST does, and it's in flux (Stripe today, moving to Elavon/MWBS for cheaper online rates). Each shop names its online processor below; the dashboard prices the processing-cost line from THESE numbers, so swapping a processor re-prices the cost without touching Lumin Labs' revenue. Rates: percent of amount + fixed pence per transaction. Fill Elavon's real numbers once the MWBS ISO deal is signed.",
+  "processors": {
+    "stripe": {
+      "label": "Stripe",
+      "online":   { "percent": 1.5, "fixedPence": 20 },
+      "inPerson": { "percent": 1.4, "fixedPence": 10 }
+    },
+    "elavon": {
+      "label": "Elavon (via MWBS ISO)",
+      "_status": "PENDING — in talks. Replace these placeholders with the agreed MWBS/Elavon rates before switching any shop to it.",
+      "online":   { "percent": 0.0, "fixedPence": 0 },
+      "inPerson": { "percent": 0.0, "fixedPence": 0 }
+    }
+  },
+
+  "_comment_shops": "Every venue on the platform. connectedAccountId = the venue's Stripe Connect acct_… (empty until Connect is live — that shop then shows as 'pending' and is skipped in Stripe aggregation). onlineProcessor keys into processors{} above. live:false keeps a not-yet-launched shop out of the subscription run-rate.",
+  "shops": [
+    {
+      "slug": "ricos",
+      "name": "Rico's Peri Peri",
+      "city": "York",
+      "connectedAccountId": "acct_1TbeYBJXCn3TpBE3",
+      "onlineProcessor": "stripe",
+      "live": true,
+      "subscription": { "status": "active", "perWeekPence": 3500, "via": "stripe", "since": "2026-01-01" }
+    },
+    {
+      "slug": "food-station",
+      "name": "Food Station",
+      "city": "Easingwold",
+      "connectedAccountId": "acct_1Tey3sJlWcdyhDMU",
+      "onlineProcessor": "stripe",
+      "live": true,
+      "subscription": { "status": "active", "perWeekPence": 3500, "via": "stripe", "since": "2026-04-01" }
+    },
+    {
+      "slug": "grub-hub",
+      "name": "The Grub Hub",
+      "city": "York",
+      "connectedAccountId": "",
+      "onlineProcessor": "stripe",
+      "live": false,
+      "subscription": { "status": "pending", "perWeekPence": 3500, "via": "stripe" }
+    }
+  ]
+}

@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex,nofollow" />
+<title>Lumin Labs — Owner Console</title>
+<style>
+  :root{
+    --bg:#0b0d12; --panel:#141821; --panel2:#1b2130; --line:#262d3b;
+    --ink:#eef1f6; --mut:#8b93a7; --mut2:#5d6577;
+    --gold:#e2b659; --gold2:#caa043; --green:#46c98b; --redc:#f0795a; --blue:#5aa7f0;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--bg); color:var(--ink); min-height:100vh;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--blue);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1180px;margin:0 auto;padding:20px 18px 64px}
+
+  /* Brand */
+  .brand{display:flex;align-items:center;gap:11px}
+  .mark{width:30px;height:30px;flex:0 0 auto}
+  .brand b{font-size:18px;letter-spacing:.2px;font-weight:800}
+  .brand .sub{color:var(--mut);font-size:12.5px;margin-top:1px}
+
+  /* Login */
+  .login{max-width:380px;margin:11vh auto 0;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px 24px}
+  .login h1{font-size:17px;margin:16px 0 3px}
+  .login p{color:var(--mut);font-size:13px;margin:0 0 18px}
+  label{display:block;font-size:12px;color:var(--mut);margin:12px 0 5px;font-weight:600}
+  input{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--ink);
+    border-radius:10px;padding:11px 12px;font-size:15px;outline:none}
+  input:focus{border-color:var(--gold)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;
+    background:var(--gold);color:#1c1606;border:0;border-radius:10px;padding:11px 16px;font-size:14px;font-weight:700}
+  .btn:hover{background:var(--gold2)}
+  .btn.ghost{background:transparent;color:var(--mut);border:1px solid var(--line);font-weight:600}
+  .btn.ghost:hover{color:var(--ink);background:var(--panel2)}
+  .btn[disabled]{opacity:.55;cursor:default}
+  .full{width:100%;margin-top:18px}
+  .err{color:var(--redc);font-size:13px;margin-top:12px;min-height:17px}
+
+  /* Top bar */
+  .top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+  .ranges{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{cursor:pointer;background:var(--panel);border:1px solid var(--line);color:var(--mut);
+    border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:600}
+  .chip:hover{color:var(--ink)}
+  .chip.on{background:var(--gold);border-color:var(--gold);color:#1c1606}
+  .tabs{display:flex;gap:4px;margin:6px 0 18px;border-bottom:1px solid var(--line)}
+  .tab{cursor:pointer;padding:10px 14px;font-size:13.5px;font-weight:700;color:var(--mut);
+    border-bottom:2px solid transparent;margin-bottom:-1px}
+  .tab.on{color:var(--ink);border-bottom-color:var(--gold)}
+
+  /* Cards */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:13px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 17px}
+  .card .k{color:var(--mut);font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;display:flex;align-items:center;gap:7px}
+  .card .v{font-size:26px;font-weight:800;margin-top:9px;letter-spacing:-.3px}
+  .card .s{color:var(--mut);font-size:12px;margin-top:6px;line-height:1.45}
+  .card.hero{background:linear-gradient(160deg,#1d2332,#141821);border-color:#33405b}
+  .card.hero .v{color:var(--gold)}
+  .card.cost .v{color:var(--redc)}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .dot.g{background:var(--green)} .dot.a{background:var(--gold)} .dot.r{background:var(--redc)} .dot.m{background:var(--mut2)}
+
+  /* Tables */
+  .sect{margin-top:24px}
+  .sect h2{font-size:14px;margin:0 0 11px;font-weight:800;letter-spacing:.2px}
+  .sect h2 .muted{color:var(--mut);font-weight:600;font-size:12.5px}
+  .tbl{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .tbl th,.tbl td{padding:11px 13px;text-align:left;font-size:13px;border-bottom:1px solid var(--line);white-space:nowrap}
+  .tbl th{color:var(--mut);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px;background:var(--panel2)}
+  .tbl td.num,.tbl th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .tbl tr:last-child td{border-bottom:0}
+  .tbl tr:hover td{background:rgba(255,255,255,.015)}
+  .tag{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--mut)}
+  .tag.live{color:var(--green);border-color:#21503c;background:#10261c}
+  .tag.pend{color:var(--gold);border-color:#4a3c18;background:#241d0c}
+  .gap{color:var(--gold)}
+  .scroll{overflow-x:auto}
+
+  .banner{border-radius:12px;padding:12px 14px;font-size:13px;margin-bottom:16px;border:1px solid}
+  .banner.warn{background:#241d0c;border-color:#4a3c18;color:#e9c877}
+  .banner.info{background:#0f1a26;border-color:#23435f;color:#9cc7ec}
+  .foot{color:var(--mut2);font-size:11.5px;margin-top:26px;text-align:center}
+  .hide{display:none}
+  .spin{color:var(--mut);font-size:13px;padding:24px 4px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="spin">Loading…</div>
+</div>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#e9c877"/><stop offset="1" stop-color="#caa043"/>
+  </linearGradient>
+</defs></svg>
+
+<script>
+const $ = (sel, root=document) => root.querySelector(sel);
+const app = document.getElementById('app');
+let RANGE = 'today';
+let TAB = 'revenue';
+let cache = { overview:null, clients:null };
+
+const MARK = '<svg class="mark" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+  + '<circle cx="50" cy="50" r="44" stroke="url(#lg)" stroke-width="6"/>'
+  + '<path d="M35 30 V70 H66" stroke="url(#lg)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>'
+  + '<circle cx="64" cy="36" r="7" fill="url(#lg)"/></svg>';
+
+const gbp = (p) => '£' + (Math.round(Number(p)||0)/100).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc = (s) => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const dateShort = (iso) => { if(!iso) return '—'; try{ return new Date(iso).toLocaleDateString('en-GB',{day:'numeric',month:'short'});}catch{return '—';} };
+
+async function api(path, opts={}){
+  const res = await fetch(path, { credentials:'same-origin', headers:{'Content-Type':'application/json'}, ...opts });
+  let body = null; try{ body = await res.json(); }catch{}
+  return { ok:res.ok, status:res.status, body:body||{} };
+}
+
+async function boot(){
+  const me = (await api('/api/admin/me')).body;
+  if(!me.configured){ return renderNotConfigured(); }
+  if(!me.authed){ return renderLogin(me); }
+  return renderDashboard(me);
+}
+
+function renderNotConfigured(){
+  app.innerHTML =
+    '<div class="login">'+ MARK +
+    '<h1>Owner console not configured</h1>'+
+    '<p>Set <code>OWNER_PASSWORD_HASH</code> and <code>SESSION_SECRET</code> in this Cloudflare project, then reload.</p>'+
+    '</div>';
+}
+
+function renderLogin(me){
+  app.innerHTML =
+    '<div class="login">'+ MARK +
+    '<h1>'+esc(me.platform?.name||'Lumin Labs')+'</h1>'+
+    '<p>Owner console — sign in to continue.</p>'+
+    (me.usernameRequired ? '<label>Username</label><input id="u" autocomplete="username" autocapitalize="none" />' : '')+
+    '<label>Password</label><input id="p" type="password" autocomplete="current-password" />'+
+    '<button class="btn full" id="go">Sign in</button>'+
+    '<div class="err" id="e"></div>'+
+    '</div>';
+  const go = $('#go'), pw = $('#p'), un = $('#u');
+  const submit = async () => {
+    go.disabled = true; $('#e').textContent = '';
+    const payload = { password: pw.value };
+    if(un) payload.username = un.value;
+    const r = await api('/api/admin/login', { method:'POST', body: JSON.stringify(payload) });
+    if(r.ok){ boot(); } else { $('#e').textContent = r.body.error || 'Sign-in failed.'; go.disabled = false; pw.value=''; pw.focus(); }
+  };
+  go.addEventListener('click', submit);
+  [pw, un].filter(Boolean).forEach(i => i.addEventListener('keydown', e => { if(e.key==='Enter') submit(); }));
+  (un||pw).focus();
+}
+
+function shell(me){
+  app.innerHTML =
+    '<div class="top">'+
+      '<div class="brand">'+ MARK +'<div><b>'+esc(me.platform?.name||'Lumin Labs')+'</b>'+
+        '<div class="sub">Owner console'+(me.platform?.owner?' · '+esc(me.platform.owner):'')+'</div></div></div>'+
+      '<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">'+
+        '<div class="ranges" id="ranges"></div>'+
+        '<button class="btn ghost" id="logout">Log out</button>'+
+      '</div>'+
+    '</div>'+
+    '<div class="tabs" id="tabs">'+
+      '<div class="tab" data-tab="revenue">Revenue</div>'+
+      '<div class="tab" data-tab="clients">Clients &amp; billing</div>'+
+    '</div>'+
+    '<div id="view"><div class="spin">Loading…</div></div>';
+
+  const ranges = [['today','Today'],['7d','7 days'],['30d','30 days'],['90d','90 days'],['all','All time']];
+  $('#ranges').innerHTML = ranges.map(([k,l]) => '<span class="chip'+(k===RANGE?' on':'')+'" data-r="'+k+'">'+l+'</span>').join('');
+  $('#ranges').querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+    RANGE = c.dataset.r; cache.overview = null;
+    $('#ranges').querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x.dataset.r===RANGE));
+    if(TAB==='revenue') loadRevenue();
+  }));
+  $('#tabs').querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => setTab(t.dataset.tab)));
+  $('#logout').addEventListener('click', async () => { await api('/api/admin/logout',{method:'POST'}); boot(); });
+}
+
+function setTab(tab){
+  TAB = tab;
+  $('#tabs').querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.tab===tab));
+  if(tab==='revenue') loadRevenue(); else loadClients();
+}
+
+async function renderDashboard(me){
+  shell(me);
+  setTab('revenue');
+}
+
+function bannerStripe(err, truncated){
+  let h = '';
+  if(err) h += '<div class="banner warn"><b>Stripe:</b> '+esc(err)+' — figures below may be incomplete.</div>';
+  if(truncated) h += '<div class="banner warn">Some lists hit the page cap for this range — totals may undercount. Narrow the range for exact figures.</div>';
+  return h;
+}
+
+async function loadRevenue(){
+  const view = $('#view'); view.innerHTML = '<div class="spin">Crunching Stripe…</div>';
+  if(!cache.overview){ cache.overview = (await api('/api/admin/overview?range='+encodeURIComponent(RANGE))).body; }
+  const d = cache.overview;
+  if(d.error==='unauthorized'){ return boot(); }
+  const t = d.totals || {};
+  const gapNote = (t.perOrderCollectedP < t.perOrderExpectedP)
+    ? ' · <span class="gap">'+gbp(t.perOrderExpectedP - t.perOrderCollectedP)+' owed off-Stripe</span>' : '';
+
+  const cards = [
+    {cls:'hero', k:'<span class="dot a"></span>Lumin Labs revenue', v:gbp(t.luminRevenueP), s:'Subscriptions + per-order fees · '+esc(d.range?.label||'')},
+    {cls:'', k:'Per-order fees', v:gbp(t.perOrderCollectedP), s:(t.orderCount||0)+' orders'+gapNote},
+    {cls:'', k:'Subscriptions', v:gbp(t.subscriptionAccruedP), s:gbp(t.subscriptionWeeklyRunRateP)+'/wk run-rate · '+(t.liveShops||0)+' live'},
+    {cls:'', k:'Volume processed', v:gbp(t.grossP), s:'GMV across '+(t.shops||0)+' shops'},
+    {cls:'cost', k:'Card-processing cost', v:gbp(t.processingP), s:'Est. — priced per shop’s processor (Stripe today)'},
+  ];
+  if(d.platformBalance){
+    cards.push({cls:'', k:'Stripe balance', v:gbp(d.platformBalance.availableP), s:gbp(d.platformBalance.pendingP)+' pending'});
+  }
+
+  const rows = (d.shops||[]).map(s => {
+    const status = s.pending ? '<span class="tag pend"><span class="dot a"></span>Pending</span>'
+                 : s.live ? '<span class="tag live"><span class="dot g"></span>Live</span>'
+                 : '<span class="tag"><span class="dot m"></span>Off</span>';
+    const perOrder = gbp(s.perOrderCollectedP) + (s.perOrderCollectedP < s.perOrderExpectedP
+        ? ' <span class="gap" title="expected '+gbp(s.perOrderExpectedP)+'">/ '+gbp(s.perOrderExpectedP)+'</span>' : '');
+    return '<tr>'+
+      '<td><b>'+esc(s.name)+'</b><div style="color:var(--mut);font-size:11.5px">'+esc(s.city||'')+'</div></td>'+
+      '<td>'+status+'</td>'+
+      '<td>'+esc(s.processor)+'</td>'+
+      '<td class="num">'+(s.orderCount||0)+'</td>'+
+      '<td class="num">'+gbp(s.grossP)+'</td>'+
+      '<td class="num">'+perOrder+'</td>'+
+      '<td class="num">'+gbp(s.subscriptionAccruedP)+'</td>'+
+      '<td class="num"><b>'+gbp(s.luminRevenueP)+'</b></td>'+
+    '</tr>';
+  }).join('');
+
+  view.innerHTML =
+    bannerStripe(d.stripeError, d.truncated)+
+    '<div class="grid">'+ cards.map(c =>
+      '<div class="card '+c.cls+'"><div class="k">'+c.k+'</div><div class="v">'+c.v+'</div><div class="s">'+c.s+'</div></div>'
+    ).join('') +'</div>'+
+    '<div class="sect"><h2>By shop <span class="muted">— '+esc(d.range?.label||'')+'</span></h2>'+
+      '<div class="scroll"><table class="tbl"><thead><tr>'+
+        '<th>Shop</th><th>Status</th><th>Online processor</th><th class="num">Orders</th>'+
+        '<th class="num">Volume</th><th class="num">Per-order fee</th><th class="num">Subscription</th><th class="num">Lumin rev.</th>'+
+      '</tr></thead><tbody>'+ (rows||'<tr><td colspan="8" style="color:var(--mut)">No shops.</td></tr>') +'</tbody></table></div></div>'+
+    '<div class="banner info" style="margin-top:16px">The <b>card-processing cost</b> is the acquirer’s cut (Stripe ~1.5% + 20p online today) and is priced per shop from the platform registry — switch a shop to <b>Elavon</b> there and this line re-prices itself. Lumin Labs’ own revenue (subscription + per-order fee) is independent of the processor.</div>'+
+    '<div class="foot">Generated '+esc((d.generatedAt||'').replace('T',' ').slice(0,16))+' · live from the Stripe platform API</div>';
+}
+
+async function loadClients(){
+  const view = $('#view'); view.innerHTML = '<div class="spin">Loading clients…</div>';
+  if(!cache.clients){ cache.clients = (await api('/api/admin/clients')).body; }
+  const d = cache.clients;
+  if(d.error==='unauthorized'){ return boot(); }
+
+  const shopRows = (d.shops||[]).map(s => {
+    const st = s.subscriptionStatus==='active' ? '<span class="tag live"><span class="dot g"></span>Active</span>'
+             : s.subscriptionStatus==='pending' ? '<span class="tag pend"><span class="dot a"></span>Pending</span>'
+             : '<span class="tag"><span class="dot m"></span>'+esc(s.subscriptionStatus)+'</span>';
+    return '<tr>'+
+      '<td><b>'+esc(s.name)+'</b><div style="color:var(--mut);font-size:11.5px">'+esc(s.city||'')+'</div></td>'+
+      '<td>'+st+'</td>'+
+      '<td class="num">'+gbp(s.perWeekP)+'/wk</td>'+
+      '<td class="num">'+gbp(s.perOrderFeeP)+'</td>'+
+      '<td>'+esc(s.onlineProcessor)+'</td>'+
+      '<td>'+(s.connected?'<span style="color:var(--mut)">'+esc(s.accountMasked)+'</span>':'<span class="gap">not connected</span>')+'</td>'+
+      '<td>'+esc(s.since||'—')+'</td>'+
+    '</tr>';
+  }).join('');
+
+  const subRows = (d.subscriptions||[]).map(s => {
+    const per = s.interval ? gbp(s.amountP)+' / '+(s.intervalCount>1?s.intervalCount+' ':'')+esc(s.interval) : gbp(s.amountP);
+    return '<tr><td>'+esc(s.customer||s.id)+'</td><td class="num">'+per+'</td><td>'+esc(s.status)+
+      (s.cancelAtPeriodEnd?' <span class="gap">(ending)</span>':'')+'</td><td>'+dateShort(s.currentPeriodEnd)+'</td></tr>';
+  }).join('');
+
+  const invRows = (d.invoices||[]).map(i =>
+    '<tr><td>'+dateShort(i.created)+'</td><td>'+esc(i.customer||'—')+'</td>'+
+    '<td class="num">'+gbp(i.amountPaidP||i.amountDueP)+'</td><td>'+esc(i.status)+'</td>'+
+    '<td>'+(i.url?'<a href="'+esc(i.url)+'" target="_blank" rel="noopener">view</a>':'—')+'</td></tr>'
+  ).join('');
+
+  view.innerHTML =
+    bannerStripe(d.stripeError, false)+
+    '<div class="sect"><h2>Shops <span class="muted">— what each pays Lumin Labs</span></h2>'+
+      '<div class="scroll"><table class="tbl"><thead><tr>'+
+        '<th>Shop</th><th>Subscription</th><th class="num">Weekly</th><th class="num">Per-order</th>'+
+        '<th>Online processor</th><th>Stripe Connect</th><th>Since</th>'+
+      '</tr></thead><tbody>'+ (shopRows||'<tr><td colspan="7" style="color:var(--mut)">No shops.</td></tr>') +'</tbody></table></div></div>'+
+    '<div class="sect"><h2>Stripe subscriptions <span class="muted">— live from Stripe Billing</span></h2>'+
+      '<div class="scroll"><table class="tbl"><thead><tr><th>Customer</th><th class="num">Amount</th><th>Status</th><th>Renews</th></tr></thead>'+
+      '<tbody>'+ (subRows||'<tr><td colspan="4" style="color:var(--mut)">No Stripe subscriptions found — subs may be billed by payment link / invoice rather than Stripe Billing.</td></tr>') +'</tbody></table></div></div>'+
+    '<div class="sect"><h2>Recent invoices</h2>'+
+      '<div class="scroll"><table class="tbl"><thead><tr><th>Date</th><th>Customer</th><th class="num">Amount</th><th>Status</th><th></th></tr></thead>'+
+      '<tbody>'+ (invRows||'<tr><td colspan="5" style="color:var(--mut)">No invoices.</td></tr>') +'</tbody></table></div></div>';
+}
+
+boot();
+</script>
+</body>
+</html>

@@ -37,6 +37,58 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(__filename), '..');
 
+/* ---------- Lumin Labs platform admin build ----------
+   The owner back-office is its OWN Cloudflare Pages project off this same repo,
+   selected by PLATFORM_BUILD=1 (NOT a SHOP_SLUG). It is not a shop — no menu, no
+   storefront, no order page. We still write minimal data/_active stubs so the
+   shared functions bundle (which statically imports data/_active/{config,menu}.json)
+   compiles, then publish ONLY the admin dashboard as public/index.html and stop.
+   Runs before any shop logic so the slug rules never apply to it. */
+if (/^(1|true|yes)$/i.test((process.env.PLATFORM_BUILD || '').trim())) {
+  const activeDir = path.join(repoRoot, 'data', '_active');
+  const publicDir = path.join(repoRoot, 'public');
+  fs.mkdirSync(activeDir, { recursive: true });
+  fs.mkdirSync(publicDir, { recursive: true });
+
+  // Inert stub config + empty menu so config.js / menu.js resolve on the admin
+  // project (it never serves a storefront; stripeEnabled:false makes that explicit).
+  fs.writeFileSync(path.join(activeDir, 'config.json'), JSON.stringify({
+    _platformAdmin: true,
+    business: { tradingName: 'Lumin Labs', shortName: 'Lumin Labs', address: {} },
+    theme: {}, fulfillment: { collection: {}, delivery: {} },
+    payments: { stripeEnabled: false }, pos: {}, ordering: {}, promo: {},
+  }, null, 2) + '\n');
+  fs.writeFileSync(path.join(activeDir, 'menu.json'), '[]\n');
+
+  const tpl = path.join(repoRoot, 'templates', 'admin', 'index.html');
+  if (!fs.existsSync(tpl)) {
+    console.error('build-shop: PLATFORM_BUILD set but templates/admin/index.html is missing.');
+    process.exit(1);
+  }
+  // Externalise the page's inline <script> so it runs under the strict CSP
+  // (script-src 'self') from _middleware.js — same technique as the shop build.
+  let html = fs.readFileSync(tpl, 'utf8');
+  let n = 0;
+  html = html.replace(/<script>([\s\S]*?)<\/script>/g, (_m, body) => {
+    const rel = `admin.inline${n}.js`;
+    fs.writeFileSync(path.join(publicDir, rel), body);
+    n++;
+    return `<script src="/${rel}"></script>`;
+  });
+  fs.writeFileSync(path.join(publicDir, 'index.html'), html);
+
+  // Hidden console: keep it out of search engines (overrides the shop /* header).
+  fs.writeFileSync(path.join(publicDir, '_headers'),
+    '/*\n  X-Robots-Tag: noindex, nofollow, noarchive\n  Cache-Control: no-store, must-revalidate\n\n/api/*\n  Cache-Control: no-store\n  X-Robots-Tag: noindex, nofollow\n');
+  fs.writeFileSync(path.join(publicDir, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
+  fs.writeFileSync(path.join(publicDir, 'sitemap.xml'),
+    '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>\n');
+
+  console.log(`build-shop: PLATFORM_BUILD -> public/index.html (Lumin Labs owner console, ${n} script(s) externalised)`);
+  console.log('build-shop: active shop is "_platform" (Lumin Labs admin).');
+  process.exit(0);
+}
+
 // Shop selection: each Cloudflare Pages project sets its own SHOP_SLUG env
 // var (for both Production and Preview). "ricos" is only a local-dev fallback
 // so `npm run build` works without env setup.
