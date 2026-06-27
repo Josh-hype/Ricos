@@ -37,6 +37,7 @@ export function getPublicConfig() {
         minimumIncludesFees: !!delivery.minimumIncludesFees,
         allowedOutcodes: delivery.allowedOutcodes,
         radius: delivery.radius || null,
+        lateStart: delivery.lateStart || null,
       },
     },
     hours: config.hours,

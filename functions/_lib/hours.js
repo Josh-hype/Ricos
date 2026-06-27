@@ -121,3 +121,45 @@ export function isSlotValid(slotIso, config) {
   const all = listSlots(config);
   return all.includes(slotIso);
 }
+
+const WEEKDAY = { Sun: 'sunday', Mon: 'monday', Tue: 'tuesday', Wed: 'wednesday', Thu: 'thursday', Fri: 'friday', Sat: 'saturday' };
+
+// Shop-local calendar date (YYYY-MM-DD), weekday key and minutes-into-day for any Date.
+function localParts(when, tz) {
+  const fmt = new Intl.DateTimeFormat('en-GB', {
+    timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', hour12: false, weekday: 'short',
+  });
+  const p = Object.fromEntries(fmt.formatToParts(when).map(x => [x.type, x.value]));
+  return {
+    ymd: `${p.year}-${p.month}-${p.day}`,
+    dayKey: WEEKDAY[p.weekday],
+    minutesOfDay: (Number(p.hour) % 24) * 60 + Number(p.minute),
+  };
+}
+
+/* TEMPORARY, date-bounded delivery late-start.
+   config.fulfillment.delivery.lateStart maps shop-local dates "YYYY-MM-DD" -> "HH:MM".
+   On a listed date, online DELIVERY is only offered from that time (it blocks only that
+   date's own daytime trading BEFORE the time — never collection, never other dates,
+   never other shops). `when` is the fulfillment moment: now for ASAP, or the chosen
+   slot. It deliberately does NOT block the post-midnight spillover of the previous
+   day's late session (e.g. 00:00-01:00 belongs to Saturday's window, not Sunday's
+   daytime), by only blocking at/after that day's own opening time. Self-expiring: once
+   the dates pass, every lookup misses and it's a no-op. Returns { ok:false, from } when
+   delivery is too early, else { ok:true }. */
+export function deliveryLateStart(config, when = new Date()) {
+  const map = config?.fulfillment?.delivery?.lateStart;
+  if (!map || typeof map !== 'object') return { ok: true };
+  const tz = config.ordering?.timezone || 'Europe/London';
+  const { ymd, dayKey, minutesOfDay } = localParts(when, tz);
+  const from = map[ymd];
+  if (!from || typeof from !== 'string') return { ok: true };
+  const fromMin = hhmmToMin(from);
+  const day = config.hours?.[dayKey];
+  const openMin = (day && !day.closed && Array.isArray(day.windows) && day.windows.length)
+    ? Math.min(...day.windows.map(w => hhmmToMin(w.open)))
+    : (Number(config.ordering?.businessDayStartHour) || 0) * 60;
+  if (minutesOfDay >= openMin && minutesOfDay < fromMin) return { ok: false, from };
+  return { ok: true };
+}

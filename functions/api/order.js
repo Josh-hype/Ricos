@@ -10,7 +10,7 @@
 import { getConfig } from '../_lib/config.js';
 import { computeTotals } from '../_lib/totals.js';
 import { resolveDelivery } from '../_lib/delivery.js';
-import { isOpenNow, isSlotValid, listSlots } from '../_lib/hours.js';
+import { isOpenNow, isSlotValid, listSlots, deliveryLateStart } from '../_lib/hours.js';
 import { createPaymentIntent, createCustomer } from '../_lib/stripe.js';
 import { putOrder, newOrderId, nextOrderNumber, recordOptIn, incrSlotCount, getSlotCount } from '../_lib/kv.js';
 import { normalisePhoneE164UK } from '../_lib/sms.js';
@@ -79,6 +79,18 @@ export const onRequestPost = async ({ request, env }) => {
     const cap = Number(config.ordering?.scheduling?.maxOrdersPerSlot) || 0;
     if (cap > 0 && (await getSlotCount(schedule, env)) >= cap) {
       return errJson('Sorry, that time slot is fully booked — please pick another time.', 400);
+    }
+  }
+
+  // TEMPORARY date-bounded delivery late-start (config fulfillment.delivery.lateStart):
+  // on listed dates, delivery is only offered from a set time. Enforced on the ACTUAL
+  // fulfillment moment — now for ASAP, else the chosen slot — so an early slot can't slip
+  // through. Collection is never affected; a no-op for every other date/shop.
+  if (fulfillment === 'delivery') {
+    const when = schedule === 'asap' ? new Date() : new Date(schedule);
+    const ls = deliveryLateStart(config, when);
+    if (!ls.ok) {
+      return errJson(`Delivery isn't available before ${to12h(ls.from)} on the day you've selected. Please pick a delivery time from ${to12h(ls.from)}, or switch to collection.`, 400);
     }
   }
 
@@ -291,6 +303,14 @@ async function recordIfOptedIn(order, env) {
   if (order.marketing.sms) {
     await recordOptIn({ kind: 'sms', value: order.customer.phone, source: 'checkout' }, env);
   }
+}
+
+// "16:30" -> "4:30pm" for customer-facing messages.
+function to12h(hhmm) {
+  const [h, m] = String(hhmm).split(':').map(Number);
+  const ap = h < 12 ? 'am' : 'pm';
+  const hr = ((h + 11) % 12) + 1;
+  return `${hr}:${String(m || 0).padStart(2, '0')}${ap}`;
 }
 
 function errJson(error, status) {
