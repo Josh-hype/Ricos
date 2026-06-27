@@ -1346,6 +1346,12 @@
   .notice.error { background: #fdecea; border: 1.5px solid var(--error); color: var(--red-dark); }
   .notice.ok    { background: #e9f7ee; border: 1.5px solid var(--success); color: #155c2a; }
 
+  /* Temporary delivery late-start strip under the header (gated by config). */
+  .ls-banner { background: var(--yellow); color: var(--ink); border-bottom: 1.5px solid var(--yellow-deep); }
+  .ls-banner .wrap { display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 9px 16px; font-size: 14px; font-weight: 600; line-height: 1.35; text-align: center; }
+  .ls-banner .ls-ic { font-size: 16px; flex: 0 0 auto; }
+
   /* Prominent checkout error (e.g. "Minimum delivery order is £15"). Hidden
      while empty so it reserves no space; shows as a bold red banner with a
      warning mark when there's a message. */
@@ -1426,6 +1432,10 @@
     </nav>
   </div>
 </header>
+
+<!-- Temporary delivery late-start notice. Hidden unless config.fulfillment.delivery
+     .lateStart applies to today/tomorrow (populated by maybeShowDeliveryLateStart). -->
+<div class="ls-banner" id="lateStartBanner" hidden></div>
 
 <!-- ======== SERVICE BAR ======== -->
 <div class="service-bar" id="serviceBar">
@@ -3791,6 +3801,55 @@ function maybeShowClosedNotice(cfg) {
   } catch (e) {}
 }
 
+/* Slim banner for a temporary date-bounded delivery late start
+   (config.fulfillment.delivery.lateStart maps "YYYY-MM-DD" -> "HH:MM", shop-local).
+   Shows TODAY's restriction only while it's still before that time (after it,
+   delivery is already open, so we point at tomorrow), and TOMORROW's whenever set.
+   No-op for any shop/date without the rule, so it self-expires. */
+function maybeShowDeliveryLateStart(cfg) {
+  try {
+    const ls = cfg && cfg.fulfillment && cfg.fulfillment.delivery && cfg.fulfillment.delivery.lateStart;
+    if (!ls || typeof ls !== 'object') return;
+    const tz = (cfg.ordering && cfg.ordering.timezone) || 'Europe/London';
+    const ymd = (off) => new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(Date.now() + off * 86400000));
+    const toMin = (s) => { const [h, m] = String(s).split(':').map(Number); return h * 60 + (m || 0); };
+    const fmt = (s) => { const [h, m] = String(s).split(':').map(Number); const ap = h < 12 ? 'am' : 'pm'; const hr = ((h + 11) % 12) + 1; return `${hr}:${String(m || 0).padStart(2, '0')}${ap}`; };
+    const nowP = new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(new Date());
+    const nowMin = (Number(nowP.find(x => x.type === 'hour').value) % 24) * 60 + Number(nowP.find(x => x.type === 'minute').value);
+
+    const tToday = ls[ymd(0)];
+    const tTom = ls[ymd(1)];
+    const showToday = tToday && nowMin < toMin(tToday);
+    if (!showToday && !tTom) return;
+
+    let msg;
+    if (showToday && tTom) {
+      msg = (tToday === tTom)
+        ? `Delivery is from ${fmt(tToday)} today and tomorrow — collection available as usual.`
+        : `Delivery is from ${fmt(tToday)} today and ${fmt(tTom)} tomorrow — collection available as usual.`;
+    } else if (showToday) {
+      msg = `Delivery today is from ${fmt(tToday)} — collection available as usual.`;
+    } else {
+      msg = `Delivery tomorrow is from ${fmt(tTom)} — collection available as usual.`;
+    }
+
+    const el = document.getElementById('lateStartBanner');
+    if (!el) return;
+    el.textContent = '';
+    const wrap = document.createElement('div');
+    wrap.className = 'wrap';
+    const ic = document.createElement('span');
+    ic.className = 'ls-ic';
+    ic.textContent = '🛵';
+    const txt = document.createElement('span');
+    txt.textContent = msg;
+    wrap.appendChild(ic);
+    wrap.appendChild(txt);
+    el.appendChild(wrap);
+    el.hidden = false;
+  } catch (e) {}
+}
+
 /* Pull live config (Stripe publishable key, opening hours, contact info,
    allowed postcodes) so the checkout flow is data-driven. Cached for 30s
    on the edge; safe to call on every page load. */
@@ -3801,6 +3860,7 @@ fetch('/api/config').then(r => r.ok ? r.json() : null).then(cfg => {
     // figures) reflect the loaded config rather than the boot-time fallback.
     renderCart();
     maybeShowClosedNotice(cfg);
+    maybeShowDeliveryLateStart(cfg);
   }
 }).catch(() => { /* fall back to defaults baked into the page */ });
 
