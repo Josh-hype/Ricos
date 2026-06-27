@@ -1354,6 +1354,13 @@
   .ls-banner .ls-head { font-size: clamp(19px, 5.4vw, 25px); font-weight: 800; line-height: 1.2; }
   .ls-banner .ls-sub { font-size: clamp(13px, 3.3vw, 15px); font-weight: 600; opacity: .82; margin-top: 3px; }
 
+  /* Sold-out (staff-86'd) menu items. */
+  .item-row.soldout { opacity: .5; }
+  .item-row.soldout .item-row-price { text-decoration: line-through; opacity: .65; }
+  .item-row.soldout .item-row-view { display: none; }
+  .item-row-tag.soldout { background: #fdecea; color: var(--error); border: 1px solid var(--error);
+    font-weight: 700; text-transform: uppercase; letter-spacing: .3px; }
+
   /* Prominent checkout error (e.g. "Minimum delivery order is £15"). Hidden
      while empty so it reserves no space; shows as a bold red banner with a
      warning mark when there's a message. */
@@ -1662,6 +1669,9 @@ const fmt = (n) => '£' + n.toFixed(2);
    Two views, swapped in place:
    - activeCategory === null  -> grid of category cards
    - activeCategory === id    -> items in that one category, with a Back button */
+// Item ids staff have marked sold out (loaded from /api/availability at boot).
+let OFF_ITEMS = new Set();
+
 function renderMenu() {
   const root = document.getElementById('menuRoot');
   const notice = document.getElementById('menuNotice');
@@ -1720,7 +1730,10 @@ function renderMenu() {
   `;
   root.appendChild(section);
   section.querySelectorAll('.item-row').forEach(row => {
-    row.addEventListener('click', () => openItemDetail(row.dataset.id));
+    row.addEventListener('click', () => {
+      if (row.classList.contains('soldout')) return; // 86'd — not orderable
+      openItemDetail(row.dataset.id);
+    });
   });
 }
 
@@ -1729,16 +1742,19 @@ function escapeHTML(s) {
 }
 
 function itemRowHTML(item) {
+  const soldOut = OFF_ITEMS.has(item.id);
   // `spicy` items let you pick a heat level (badge + dropdown in the modal);
   // `spicyTag` items are a fixed spicy recipe — badge only, no picker.
   let tag = '';
-  if (item.spicy) {
+  if (soldOut) {
+    tag = `<span class="item-row-tag soldout">Sold out</span>`;
+  } else if (item.spicy) {
     tag = `<span class="item-row-tag"><span class="fire" aria-hidden="true">🔥</span>Pick your heat</span>`;
   } else if (item.spicyTag) {
     tag = `<span class="item-row-tag"><span class="fire" aria-hidden="true">🔥</span>Spicy</span>`;
   }
   return `
-    <button class="item-row" type="button" data-id="${item.id}" aria-label="View ${escapeHTML(item.name)}">
+    <button class="item-row${soldOut ? ' soldout' : ''}" type="button" data-id="${item.id}"${soldOut ? ' aria-disabled="true"' : ''} aria-label="${soldOut ? 'Sold out — ' : 'View '}${escapeHTML(item.name)}">
       <div class="item-row-main">
         <h3 class="item-row-name">${escapeHTML(item.name)}${tag}</h3>
         <p class="item-row-desc">${escapeHTML(item.desc)}</p>
@@ -1819,6 +1835,7 @@ function readSelectedOptions(body, item) {
 function openItemDetail(itemId) {
   const item = findItem(itemId);
   if (!item) return;
+  if (OFF_ITEMS.has(itemId)) return; // sold out — don't open the add sheet
   const body = document.getElementById('itemDetailBody');
   document.getElementById('itemDetailTitle').textContent = item.name;
   body.innerHTML = itemDetailHTML(item);
@@ -3849,6 +3866,15 @@ function maybeShowDeliveryLateStart(cfg) {
     el.hidden = false;
   } catch (e) {}
 }
+
+/* Sold-out items (staff "86" them when out of stock). Grey them on the menu;
+   /api/order still enforces it server-side. */
+fetch('/api/availability').then(r => r.ok ? r.json() : null).then(d => {
+  if (d && Array.isArray(d.off)) {
+    OFF_ITEMS = new Set(d.off);
+    renderMenu();
+  }
+}).catch(() => {});
 
 /* Pull live config (Stripe publishable key, opening hours, contact info,
    allowed postcodes) so the checkout flow is data-driven. Cached for 30s

@@ -13,6 +13,7 @@ import { resolveDelivery } from '../_lib/delivery.js';
 import { isOpenNow, isSlotValid, listSlots, deliveryLateStart } from '../_lib/hours.js';
 import { createPaymentIntent, createCustomer } from '../_lib/stripe.js';
 import { putOrder, newOrderId, nextOrderNumber, recordOptIn, incrSlotCount, getSlotCount } from '../_lib/kv.js';
+import { getOffMap } from '../_lib/availability.js';
 import { normalisePhoneE164UK } from '../_lib/sms.js';
 import { readCustomerSession } from '../_lib/customer-auth.js';
 import { getCustomer, putCustomer, upsertAddress, updateContactDetails } from '../_lib/customer.js';
@@ -91,6 +92,18 @@ export const onRequestPost = async ({ request, env }) => {
     const ls = deliveryLateStart(config, when);
     if (!ls.ok) {
       return errJson(`Delivery isn't available before ${to12h(ls.from)} on the day you've selected. Please pick a delivery time from ${to12h(ls.from)}, or switch to collection.`, 400);
+    }
+  }
+
+  // Sold-out enforcement: reject any line a staff member has "86'd" (turned off
+  // when out of stock). Authoritative — the order page also greys these out, but
+  // the client is never trusted. A no-op when nothing is off.
+  {
+    const offMap = await getOffMap(env);
+    const offLine = (input.items || []).find((l) => l && l.id && offMap[l.id]);
+    if (offLine) {
+      const nm = offMap[offLine.id]?.name || 'An item in your cart';
+      return errJson(`Sorry, ${nm} has just sold out. Please remove it from your cart and try again.`, 400);
     }
   }
 
