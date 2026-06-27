@@ -1347,10 +1347,11 @@
   .notice.ok    { background: #e9f7ee; border: 1.5px solid var(--success); color: #155c2a; }
 
   /* Temporary delivery late-start strip under the header (gated by config). */
-  .ls-banner { background: var(--yellow); color: var(--ink); border-bottom: 1.5px solid var(--yellow-deep); }
-  .ls-banner .wrap { display: flex; align-items: center; justify-content: center; gap: 8px;
-    padding: 9px 16px; font-size: 14px; font-weight: 600; line-height: 1.35; text-align: center; }
-  .ls-banner .ls-ic { font-size: 16px; flex: 0 0 auto; }
+  .ls-banner { background: var(--yellow); color: var(--ink); border-bottom: 3px solid var(--yellow-deep); box-shadow: var(--shadow-md); }
+  .ls-banner .wrap { display: flex; align-items: center; justify-content: center; gap: 10px;
+    padding: clamp(14px, 3.5vw, 20px) 18px; font-size: clamp(16px, 4vw, 20px); font-weight: 700;
+    line-height: 1.4; text-align: center; }
+  .ls-banner .ls-ic { font-size: clamp(20px, 5vw, 26px); flex: 0 0 auto; }
 
   /* Prominent checkout error (e.g. "Minimum delivery order is £15"). Hidden
      while empty so it reserves no space; shows as a bold red banner with a
