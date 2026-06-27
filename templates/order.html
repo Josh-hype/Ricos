@@ -1347,11 +1347,12 @@
   .notice.ok    { background: #e9f7ee; border: 1.5px solid var(--success); color: #155c2a; }
 
   /* Temporary delivery late-start strip under the header (gated by config). */
-  .ls-banner { background: var(--yellow); color: var(--ink); border-bottom: 3px solid var(--yellow-deep); box-shadow: var(--shadow-md); }
-  .ls-banner .wrap { display: flex; align-items: center; justify-content: center; gap: 10px;
-    padding: clamp(14px, 3.5vw, 20px) 18px; font-size: clamp(16px, 4vw, 20px); font-weight: 700;
-    line-height: 1.4; text-align: center; }
-  .ls-banner .ls-ic { font-size: clamp(20px, 5vw, 26px); flex: 0 0 auto; }
+  .ls-banner { background: var(--yellow); color: var(--ink); border-bottom: 4px solid var(--yellow-deep); box-shadow: var(--shadow-md); }
+  .ls-banner .wrap { display: flex; align-items: center; justify-content: center; gap: 13px;
+    padding: clamp(16px, 4.5vw, 26px) 16px; text-align: left; }
+  .ls-banner .ls-ic { font-size: clamp(30px, 8.5vw, 42px); flex: 0 0 auto; line-height: 1; }
+  .ls-banner .ls-head { font-size: clamp(19px, 5.4vw, 25px); font-weight: 800; line-height: 1.2; }
+  .ls-banner .ls-sub { font-size: clamp(13px, 3.3vw, 15px); font-weight: 600; opacity: .82; margin-top: 3px; }
 
   /* Prominent checkout error (e.g. "Minimum delivery order is £15"). Hidden
      while empty so it reserves no space; shows as a bold red banner with a
@@ -3823,29 +3824,27 @@ function maybeShowDeliveryLateStart(cfg) {
     const showToday = tToday && nowMin < toMin(tToday);
     if (!showToday && !tTom) return;
 
-    let msg;
+    let head;
     if (showToday && tTom) {
-      msg = (tToday === tTom)
-        ? `Delivery is from ${fmt(tToday)} today and tomorrow — collection available as usual.`
-        : `Delivery is from ${fmt(tToday)} today and ${fmt(tTom)} tomorrow — collection available as usual.`;
+      head = (tToday === tTom)
+        ? `Delivery is from ${fmt(tToday)} today & tomorrow`
+        : `Delivery: ${fmt(tToday)} today, ${fmt(tTom)} tomorrow`;
     } else if (showToday) {
-      msg = `Delivery today is from ${fmt(tToday)} — collection available as usual.`;
+      head = `Delivery today is from ${fmt(tToday)}`;
     } else {
-      msg = `Delivery tomorrow is from ${fmt(tTom)} — collection available as usual.`;
+      head = `Delivery tomorrow is from ${fmt(tTom)}`;
     }
 
     const el = document.getElementById('lateStartBanner');
     if (!el) return;
     el.textContent = '';
-    const wrap = document.createElement('div');
-    wrap.className = 'wrap';
-    const ic = document.createElement('span');
-    ic.className = 'ls-ic';
-    ic.textContent = '🛵';
-    const txt = document.createElement('span');
-    txt.textContent = msg;
-    wrap.appendChild(ic);
-    wrap.appendChild(txt);
+    const wrap = document.createElement('div'); wrap.className = 'wrap';
+    const ic = document.createElement('span'); ic.className = 'ls-ic'; ic.textContent = '🛵';
+    const col = document.createElement('div'); col.className = 'ls-text';
+    const h = document.createElement('div'); h.className = 'ls-head'; h.textContent = head;
+    const s = document.createElement('div'); s.className = 'ls-sub'; s.textContent = 'Collection available as usual.';
+    col.appendChild(h); col.appendChild(s);
+    wrap.appendChild(ic); wrap.appendChild(col);
     el.appendChild(wrap);
     el.hidden = false;
   } catch (e) {}
