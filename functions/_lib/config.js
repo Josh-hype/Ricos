@@ -3,6 +3,7 @@
    picked from data/shops/<SHOP_SLUG>/config.json. Each Pages project sets
    its own SHOP_SLUG env var. */
 import config from '../../data/_active/config.json';
+import { activeClosure } from './hours.js';
 
 export function getConfig() {
   return config;
@@ -41,6 +42,8 @@ export function getPublicConfig() {
       },
     },
     hours: config.hours,
+    // Today's one-off closure (emergency "we're closed today"), or null.
+    closure: activeClosure(config),
     ordering: config.ordering,
     promo: config.promo,
     serviceFeePence: Number(config.serviceFeePence) || 0,

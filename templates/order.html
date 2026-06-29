@@ -1361,6 +1361,11 @@
   .item-row-tag.soldout { background: #fdecea; color: var(--error); border: 1px solid var(--error);
     font-weight: 700; text-transform: uppercase; letter-spacing: .3px; }
 
+  /* Emergency closure strip ("we're closed today"). */
+  .closed-banner { background: var(--red, var(--error)); color: #fff; text-align: center;
+    font-weight: 700; line-height: 1.4; padding: clamp(14px, 4vw, 20px) 18px;
+    font-size: clamp(15px, 3.8vw, 18px); box-shadow: var(--shadow-md); }
+
   /* Prominent checkout error (e.g. "Minimum delivery order is £15"). Hidden
      while empty so it reserves no space; shows as a bold red banner with a
      warning mark when there's a message. */
@@ -1445,6 +1450,8 @@
 <!-- Temporary delivery late-start notice. Hidden unless config.fulfillment.delivery
      .lateStart applies to today/tomorrow (populated by maybeShowDeliveryLateStart). -->
 <div class="ls-banner" id="lateStartBanner" hidden></div>
+<!-- Emergency one-off closure notice (shown only when config.closure is set today). -->
+<div class="closed-banner" id="closureBanner" hidden></div>
 
 <!-- ======== SERVICE BAR ======== -->
 <div class="service-bar" id="serviceBar">
@@ -3083,6 +3090,7 @@ document.getElementById('mCheckoutBtn').addEventListener('click', () => {
 });
 
 function startCheckout() {
+  if (CLOSURE) { openModal('closedOverlay'); return; } // closed today — no ordering
   if (state.cart.length === 0) {
     alert('Your cart is empty.');
     return;
@@ -3867,6 +3875,29 @@ function maybeShowDeliveryLateStart(cfg) {
   } catch (e) {}
 }
 
+/* Emergency one-off closure ("we're closed today"): show the popup + a persistent
+   banner, and disable checkout. /api/order also rejects orders server-side. */
+let CLOSURE = null;
+function applyClosure(c) {
+  CLOSURE = c;
+  try {
+    const t = document.getElementById('closedTitle'); if (t) t.textContent = c.title;
+    const m = document.getElementById('closedMsg'); if (m) m.textContent = c.message;
+    const ov = document.getElementById('closedOverlay');
+    if (ov) {
+      const btn = ov.querySelector('.modal-body button[data-close-modal]');
+      if (btn) btn.textContent = 'Got it';
+      openModal('closedOverlay');
+    }
+    const b = document.getElementById('closureBanner');
+    if (b) { b.textContent = c.message; b.hidden = false; }
+    ['checkoutBtn', 'mCheckoutBtn'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.disabled = true; el.textContent = 'Closed today'; el.style.opacity = '.55'; el.style.cursor = 'not-allowed'; }
+    });
+  } catch (e) {}
+}
+
 /* Sold-out items (staff "86" them when out of stock). Grey them on the menu;
    /api/order still enforces it server-side. */
 fetch('/api/availability').then(r => r.ok ? r.json() : null).then(d => {
@@ -3885,7 +3916,9 @@ fetch('/api/config').then(r => r.ok ? r.json() : null).then(cfg => {
     // Re-render the cart so the service fee (and any other config-driven
     // figures) reflect the loaded config rather than the boot-time fallback.
     renderCart();
-    maybeShowClosedNotice(cfg);
+    // A full-day closure takes precedence over the normal "closed now" notice.
+    if (cfg.closure) applyClosure(cfg.closure);
+    else maybeShowClosedNotice(cfg);
     maybeShowDeliveryLateStart(cfg);
   }
 }).catch(() => { /* fall back to defaults baked into the page */ });

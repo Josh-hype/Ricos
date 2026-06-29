@@ -10,7 +10,7 @@
 import { getConfig } from '../_lib/config.js';
 import { computeTotals } from '../_lib/totals.js';
 import { resolveDelivery } from '../_lib/delivery.js';
-import { isOpenNow, isSlotValid, listSlots, deliveryLateStart } from '../_lib/hours.js';
+import { isOpenNow, isSlotValid, listSlots, deliveryLateStart, activeClosure } from '../_lib/hours.js';
 import { createPaymentIntent, createCustomer } from '../_lib/stripe.js';
 import { putOrder, newOrderId, nextOrderNumber, recordOptIn, incrSlotCount, getSlotCount } from '../_lib/kv.js';
 import { getOffMap } from '../_lib/availability.js';
@@ -24,6 +24,13 @@ export const onRequestPost = async ({ request, env }) => {
   catch { return errJson('Invalid JSON', 400); }
 
   const config = getConfig();
+
+  // Emergency one-off closure ("we're closed today") — takes online ordering fully
+  // offline for the day. Authoritative; the order page also shows it + disables checkout.
+  {
+    const closure = activeClosure(config);
+    if (closure) return errJson(closure.message, 503);
+  }
 
   // Customer fields.
   const name = (input.customer?.name || '').trim();

@@ -163,3 +163,21 @@ export function deliveryLateStart(config, when = new Date()) {
   if (minutesOfDay >= openMin && minutesOfDay < fromMin) return { ok: false, from };
   return { ok: true };
 }
+
+/* One-off full-day closure. config.closures maps shop-local "YYYY-MM-DD" -> { title,
+   message }. On a listed date the shop is fully closed for online ordering (enforced
+   in /api/order) and the order page shows the message + disables checkout. Self-
+   expiring: a past date never matches, so it's a no-op afterwards. Returns
+   { title, message } for today, else null. */
+export function activeClosure(config, when = new Date()) {
+  const closures = config?.closures;
+  if (!closures || typeof closures !== 'object') return null;
+  const tz = config.ordering?.timezone || 'Europe/London';
+  const { ymd } = localParts(when, tz);
+  const rec = closures[ymd];
+  if (!rec || typeof rec !== 'object') return null;
+  return {
+    title: (rec.title && String(rec.title)) || 'We’re closed today',
+    message: String(rec.message || 'We’re closed today. Apologies for any inconvenience.'),
+  };
+}
