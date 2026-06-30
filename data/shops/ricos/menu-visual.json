@@ -358,6 +358,25 @@
                 "price": 3
               }
             ]
+          },
+          {
+            "id": "chips-cheese",
+            "label": "Add cheese to your chips",
+            "select": "multi",
+            "required": false,
+            "whenMeal": true,
+            "choices": [
+              {
+                "id": "chips-mozz",
+                "label": "Mozzarella cheese",
+                "price": 2
+              },
+              {
+                "id": "chips-nacho",
+                "label": "Nacho cheese",
+                "price": 2
+              }
+            ]
           }
         ]
       }

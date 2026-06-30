@@ -278,6 +278,18 @@
             "id": "extra-chicken",
             "label": "Extra chicken",
             "priceDeltaP": 300
+          },
+          {
+            "id": "chips-mozz",
+            "label": "Mozzarella on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
+          },
+          {
+            "id": "chips-nacho",
+            "label": "Nacho cheese on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
           }
         ]
       }
