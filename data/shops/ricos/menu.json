@@ -29,7 +29,27 @@
             "label": "Drink",
             "count": 1,
             "category": "drinks",
-            "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+            "exclude": [
+              "btl-pepsi",
+              "btl-coke",
+              "btl-diet",
+              "btl-tango",
+              "btl-7up"
+            ]
+          }
+        ],
+        "modifiers": [
+          {
+            "id": "chips-mozz",
+            "label": "Mozzarella on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
+          },
+          {
+            "id": "chips-nacho",
+            "label": "Nacho cheese on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
           }
         ]
       },
@@ -56,7 +76,27 @@
             "label": "Drink",
             "count": 1,
             "category": "drinks",
-            "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+            "exclude": [
+              "btl-pepsi",
+              "btl-coke",
+              "btl-diet",
+              "btl-tango",
+              "btl-7up"
+            ]
+          }
+        ],
+        "modifiers": [
+          {
+            "id": "chips-mozz",
+            "label": "Mozzarella on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
+          },
+          {
+            "id": "chips-nacho",
+            "label": "Nacho cheese on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
           }
         ]
       },
@@ -83,7 +123,27 @@
             "label": "Drink",
             "count": 1,
             "category": "drinks",
-            "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+            "exclude": [
+              "btl-pepsi",
+              "btl-coke",
+              "btl-diet",
+              "btl-tango",
+              "btl-7up"
+            ]
+          }
+        ],
+        "modifiers": [
+          {
+            "id": "chips-mozz",
+            "label": "Mozzarella on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
+          },
+          {
+            "id": "chips-nacho",
+            "label": "Nacho cheese on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
           }
         ]
       },
@@ -110,7 +170,27 @@
             "label": "Drink",
             "count": 1,
             "category": "drinks",
-            "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+            "exclude": [
+              "btl-pepsi",
+              "btl-coke",
+              "btl-diet",
+              "btl-tango",
+              "btl-7up"
+            ]
+          }
+        ],
+        "modifiers": [
+          {
+            "id": "chips-mozz",
+            "label": "Mozzarella on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
+          },
+          {
+            "id": "chips-nacho",
+            "label": "Nacho cheese on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
           }
         ]
       },
@@ -137,7 +217,27 @@
             "label": "Drink",
             "count": 1,
             "category": "drinks",
-            "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+            "exclude": [
+              "btl-pepsi",
+              "btl-coke",
+              "btl-diet",
+              "btl-tango",
+              "btl-7up"
+            ]
+          }
+        ],
+        "modifiers": [
+          {
+            "id": "chips-mozz",
+            "label": "Mozzarella on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
+          },
+          {
+            "id": "chips-nacho",
+            "label": "Nacho cheese on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
           }
         ]
       },
@@ -164,7 +264,13 @@
             "label": "Drink",
             "count": 1,
             "category": "drinks",
-            "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+            "exclude": [
+              "btl-pepsi",
+              "btl-coke",
+              "btl-diet",
+              "btl-tango",
+              "btl-7up"
+            ]
           }
         ],
         "modifiers": [
@@ -204,7 +310,27 @@
             "label": "Drink",
             "count": 1,
             "category": "drinks",
-            "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+            "exclude": [
+              "btl-pepsi",
+              "btl-coke",
+              "btl-diet",
+              "btl-tango",
+              "btl-7up"
+            ]
+          }
+        ],
+        "modifiers": [
+          {
+            "id": "chips-mozz",
+            "label": "Mozzarella on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
+          },
+          {
+            "id": "chips-nacho",
+            "label": "Nacho cheese on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
           }
         ]
       },
@@ -247,7 +373,27 @@
             "label": "Drink",
             "count": 1,
             "category": "drinks",
-            "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+            "exclude": [
+              "btl-pepsi",
+              "btl-coke",
+              "btl-diet",
+              "btl-tango",
+              "btl-7up"
+            ]
+          }
+        ],
+        "modifiers": [
+          {
+            "id": "chips-mozz",
+            "label": "Mozzarella on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
+          },
+          {
+            "id": "chips-nacho",
+            "label": "Nacho cheese on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
           }
         ]
       },
@@ -274,7 +420,27 @@
             "label": "Drink",
             "count": 1,
             "category": "drinks",
-            "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+            "exclude": [
+              "btl-pepsi",
+              "btl-coke",
+              "btl-diet",
+              "btl-tango",
+              "btl-7up"
+            ]
+          }
+        ],
+        "modifiers": [
+          {
+            "id": "chips-mozz",
+            "label": "Mozzarella on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
+          },
+          {
+            "id": "chips-nacho",
+            "label": "Nacho cheese on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
           }
         ]
       },
@@ -301,7 +467,27 @@
             "label": "Drink",
             "count": 1,
             "category": "drinks",
-            "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+            "exclude": [
+              "btl-pepsi",
+              "btl-coke",
+              "btl-diet",
+              "btl-tango",
+              "btl-7up"
+            ]
+          }
+        ],
+        "modifiers": [
+          {
+            "id": "chips-mozz",
+            "label": "Mozzarella on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
+          },
+          {
+            "id": "chips-nacho",
+            "label": "Nacho cheese on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
           }
         ]
       }
@@ -334,7 +520,13 @@
             "label": "Drink",
             "count": 1,
             "category": "drinks",
-            "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+            "exclude": [
+              "btl-pepsi",
+              "btl-coke",
+              "btl-diet",
+              "btl-tango",
+              "btl-7up"
+            ]
           }
         ],
         "modifiers": [
@@ -352,6 +544,18 @@
             "id": "extra-thigh",
             "label": "Extra thigh",
             "priceDeltaP": 300
+          },
+          {
+            "id": "chips-mozz",
+            "label": "Mozzarella on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
+          },
+          {
+            "id": "chips-nacho",
+            "label": "Nacho cheese on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
           }
         ]
       },
@@ -378,7 +582,13 @@
             "label": "Drink",
             "count": 1,
             "category": "drinks",
-            "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+            "exclude": [
+              "btl-pepsi",
+              "btl-coke",
+              "btl-diet",
+              "btl-tango",
+              "btl-7up"
+            ]
           }
         ],
         "modifiers": [
@@ -391,6 +601,18 @@
             "id": "no-sauce",
             "label": "No sauce",
             "priceDeltaP": 0
+          },
+          {
+            "id": "chips-mozz",
+            "label": "Mozzarella on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
+          },
+          {
+            "id": "chips-nacho",
+            "label": "Nacho cheese on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
           }
         ]
       },
@@ -417,7 +639,13 @@
             "label": "Drink",
             "count": 1,
             "category": "drinks",
-            "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+            "exclude": [
+              "btl-pepsi",
+              "btl-coke",
+              "btl-diet",
+              "btl-tango",
+              "btl-7up"
+            ]
           }
         ],
         "modifiers": [
@@ -430,6 +658,18 @@
             "id": "no-sauce",
             "label": "No sauce",
             "priceDeltaP": 0
+          },
+          {
+            "id": "chips-mozz",
+            "label": "Mozzarella on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
+          },
+          {
+            "id": "chips-nacho",
+            "label": "Nacho cheese on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
           }
         ]
       },
@@ -456,7 +696,13 @@
             "label": "Drink",
             "count": 1,
             "category": "drinks",
-            "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+            "exclude": [
+              "btl-pepsi",
+              "btl-coke",
+              "btl-diet",
+              "btl-tango",
+              "btl-7up"
+            ]
           }
         ],
         "modifiers": [
@@ -469,6 +715,18 @@
             "id": "no-sauce",
             "label": "No sauce",
             "priceDeltaP": 0
+          },
+          {
+            "id": "chips-mozz",
+            "label": "Mozzarella on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
+          },
+          {
+            "id": "chips-nacho",
+            "label": "Nacho cheese on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
           }
         ]
       },
@@ -495,7 +753,13 @@
             "label": "Drink",
             "count": 1,
             "category": "drinks",
-            "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+            "exclude": [
+              "btl-pepsi",
+              "btl-coke",
+              "btl-diet",
+              "btl-tango",
+              "btl-7up"
+            ]
           }
         ],
         "modifiers": [
@@ -508,6 +772,18 @@
             "id": "no-sauce",
             "label": "No sauce",
             "priceDeltaP": 0
+          },
+          {
+            "id": "chips-mozz",
+            "label": "Mozzarella on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
+          },
+          {
+            "id": "chips-nacho",
+            "label": "Nacho cheese on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
           }
         ]
       },
@@ -534,7 +810,13 @@
             "label": "Drink",
             "count": 1,
             "category": "drinks",
-            "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+            "exclude": [
+              "btl-pepsi",
+              "btl-coke",
+              "btl-diet",
+              "btl-tango",
+              "btl-7up"
+            ]
           }
         ],
         "modifiers": [
@@ -547,6 +829,18 @@
             "id": "no-sauce",
             "label": "No sauce",
             "priceDeltaP": 0
+          },
+          {
+            "id": "chips-mozz",
+            "label": "Mozzarella on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
+          },
+          {
+            "id": "chips-nacho",
+            "label": "Nacho cheese on chips",
+            "priceDeltaP": 200,
+            "whenMeal": true
           }
         ]
       }

@@ -1796,7 +1796,9 @@ function optionGroupsHTML(item) {
       const delta = `<span class="opt-delta">${c.price ? '+' + fmt(c.price) : ''}</span>`;
       return `<label class="opt-choice"><input type="${type}" name="${gid}" value="${escapeHTML(c.id)}" data-price="${Number(c.price) || 0}" data-label="${escapeHTML(c.label)}" ${checked}/><span>${escapeHTML(c.label)}</span>${delta}</label>`;
     }).join('');
-    return `<fieldset class="opt-group" data-select="${type === 'checkbox' ? 'multi' : 'single'}" data-required="${g.required ? '1' : '0'}"><legend>${escapeHTML(g.label)}</legend>${rows}<div class="opt-required-note" data-err></div></fieldset>`;
+    // whenMeal groups (e.g. cheese on the meal's chips) start hidden and only
+    // appear — and only count — when the meal checkbox is ticked.
+    return `<fieldset class="opt-group" data-select="${type === 'checkbox' ? 'multi' : 'single'}" data-required="${g.required ? '1' : '0'}" data-when-meal="${g.whenMeal === true ? '1' : '0'}"${g.whenMeal === true ? ' style="display:none"' : ''}><legend>${escapeHTML(g.label)}</legend>${rows}<div class="opt-required-note" data-err></div></fieldset>`;
   }).join('');
 }
 
@@ -1828,8 +1830,13 @@ function choicePrice(choice, activeSize) {
 function readSelectedOptions(body, item) {
   const byId = optionChoiceMap(item);
   const active = activeSizeId(item, body);
+  const mealInput = body.querySelector('.meal-toggle input');
+  const mealOn = !!(mealInput && mealInput.checked);
   const out = [];
   body.querySelectorAll('.opt-group input:checked').forEach(inp => {
+    // Meal-only option groups don't count unless the meal is selected.
+    const grp = inp.closest('.opt-group');
+    if (grp && grp.dataset.whenMeal === '1' && !mealOn) return;
     const choice = byId.get(inp.value);
     const price = choice ? choicePrice(choice, active) : (Number(inp.dataset.price) || 0);
     out.push({ id: inp.value, label: inp.dataset.label, price });
@@ -1876,6 +1883,8 @@ function openItemDetail(itemId) {
       mealInput.closest('.meal-toggle').classList.toggle('active', mealInput.checked);
       // Reveal the side/drink pickers only while the meal is selected.
       if (mealChoicesEl) mealChoicesEl.style.display = mealInput.checked ? '' : 'none';
+      // Reveal meal-only option groups (e.g. cheese on the chips) with the meal.
+      body.querySelectorAll('.opt-group[data-when-meal="1"]').forEach(g => { g.style.display = mealInput.checked ? '' : 'none'; });
       recalcPrice();
     });
   }

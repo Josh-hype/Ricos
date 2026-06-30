@@ -35,10 +35,37 @@
               "label": "Drink",
               "count": 1,
               "category": "drinks",
-              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+              "exclude": [
+                "btl-pepsi",
+                "btl-coke",
+                "btl-diet",
+                "btl-tango",
+                "btl-7up"
+              ]
             }
           ]
-        }
+        },
+        "options": [
+          {
+            "id": "chips-cheese",
+            "label": "Add cheese to your chips",
+            "select": "multi",
+            "required": false,
+            "whenMeal": true,
+            "choices": [
+              {
+                "id": "chips-mozz",
+                "label": "Mozzarella cheese",
+                "price": 2
+              },
+              {
+                "id": "chips-nacho",
+                "label": "Nacho cheese",
+                "price": 2
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "quarter",
@@ -68,10 +95,37 @@
               "label": "Drink",
               "count": 1,
               "category": "drinks",
-              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+              "exclude": [
+                "btl-pepsi",
+                "btl-coke",
+                "btl-diet",
+                "btl-tango",
+                "btl-7up"
+              ]
             }
           ]
-        }
+        },
+        "options": [
+          {
+            "id": "chips-cheese",
+            "label": "Add cheese to your chips",
+            "select": "multi",
+            "required": false,
+            "whenMeal": true,
+            "choices": [
+              {
+                "id": "chips-mozz",
+                "label": "Mozzarella cheese",
+                "price": 2
+              },
+              {
+                "id": "chips-nacho",
+                "label": "Nacho cheese",
+                "price": 2
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "half",
@@ -101,10 +155,37 @@
               "label": "Drink",
               "count": 1,
               "category": "drinks",
-              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+              "exclude": [
+                "btl-pepsi",
+                "btl-coke",
+                "btl-diet",
+                "btl-tango",
+                "btl-7up"
+              ]
             }
           ]
-        }
+        },
+        "options": [
+          {
+            "id": "chips-cheese",
+            "label": "Add cheese to your chips",
+            "select": "multi",
+            "required": false,
+            "whenMeal": true,
+            "choices": [
+              {
+                "id": "chips-mozz",
+                "label": "Mozzarella cheese",
+                "price": 2
+              },
+              {
+                "id": "chips-nacho",
+                "label": "Nacho cheese",
+                "price": 2
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "full",
@@ -134,10 +215,37 @@
               "label": "Drink",
               "count": 1,
               "category": "drinks",
-              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+              "exclude": [
+                "btl-pepsi",
+                "btl-coke",
+                "btl-diet",
+                "btl-tango",
+                "btl-7up"
+              ]
             }
           ]
-        }
+        },
+        "options": [
+          {
+            "id": "chips-cheese",
+            "label": "Add cheese to your chips",
+            "select": "multi",
+            "required": false,
+            "whenMeal": true,
+            "choices": [
+              {
+                "id": "chips-mozz",
+                "label": "Mozzarella cheese",
+                "price": 2
+              },
+              {
+                "id": "chips-nacho",
+                "label": "Nacho cheese",
+                "price": 2
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "dippers",
@@ -167,10 +275,37 @@
               "label": "Drink",
               "count": 1,
               "category": "drinks",
-              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+              "exclude": [
+                "btl-pepsi",
+                "btl-coke",
+                "btl-diet",
+                "btl-tango",
+                "btl-7up"
+              ]
             }
           ]
-        }
+        },
+        "options": [
+          {
+            "id": "chips-cheese",
+            "label": "Add cheese to your chips",
+            "select": "multi",
+            "required": false,
+            "whenMeal": true,
+            "choices": [
+              {
+                "id": "chips-mozz",
+                "label": "Mozzarella cheese",
+                "price": 2
+              },
+              {
+                "id": "chips-nacho",
+                "label": "Nacho cheese",
+                "price": 2
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "rice-box",
@@ -200,7 +335,13 @@
               "label": "Drink",
               "count": 1,
               "category": "drinks",
-              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+              "exclude": [
+                "btl-pepsi",
+                "btl-coke",
+                "btl-diet",
+                "btl-tango",
+                "btl-7up"
+              ]
             }
           ]
         },
@@ -255,10 +396,37 @@
               "label": "Drink",
               "count": 1,
               "category": "drinks",
-              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+              "exclude": [
+                "btl-pepsi",
+                "btl-coke",
+                "btl-diet",
+                "btl-tango",
+                "btl-7up"
+              ]
             }
           ]
-        }
+        },
+        "options": [
+          {
+            "id": "chips-cheese",
+            "label": "Add cheese to your chips",
+            "select": "multi",
+            "required": false,
+            "whenMeal": true,
+            "choices": [
+              {
+                "id": "chips-mozz",
+                "label": "Mozzarella cheese",
+                "price": 2
+              },
+              {
+                "id": "chips-nacho",
+                "label": "Nacho cheese",
+                "price": 2
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "wings-platter",
@@ -308,10 +476,37 @@
               "label": "Drink",
               "count": 1,
               "category": "drinks",
-              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+              "exclude": [
+                "btl-pepsi",
+                "btl-coke",
+                "btl-diet",
+                "btl-tango",
+                "btl-7up"
+              ]
             }
           ]
-        }
+        },
+        "options": [
+          {
+            "id": "chips-cheese",
+            "label": "Add cheese to your chips",
+            "select": "multi",
+            "required": false,
+            "whenMeal": true,
+            "choices": [
+              {
+                "id": "chips-mozz",
+                "label": "Mozzarella cheese",
+                "price": 2
+              },
+              {
+                "id": "chips-nacho",
+                "label": "Nacho cheese",
+                "price": 2
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "dipper-wrap",
@@ -341,10 +536,37 @@
               "label": "Drink",
               "count": 1,
               "category": "drinks",
-              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+              "exclude": [
+                "btl-pepsi",
+                "btl-coke",
+                "btl-diet",
+                "btl-tango",
+                "btl-7up"
+              ]
             }
           ]
-        }
+        },
+        "options": [
+          {
+            "id": "chips-cheese",
+            "label": "Add cheese to your chips",
+            "select": "multi",
+            "required": false,
+            "whenMeal": true,
+            "choices": [
+              {
+                "id": "chips-mozz",
+                "label": "Mozzarella cheese",
+                "price": 2
+              },
+              {
+                "id": "chips-nacho",
+                "label": "Nacho cheese",
+                "price": 2
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "king-burrito",
@@ -374,10 +596,37 @@
               "label": "Drink",
               "count": 1,
               "category": "drinks",
-              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+              "exclude": [
+                "btl-pepsi",
+                "btl-coke",
+                "btl-diet",
+                "btl-tango",
+                "btl-7up"
+              ]
             }
           ]
-        }
+        },
+        "options": [
+          {
+            "id": "chips-cheese",
+            "label": "Add cheese to your chips",
+            "select": "multi",
+            "required": false,
+            "whenMeal": true,
+            "choices": [
+              {
+                "id": "chips-mozz",
+                "label": "Mozzarella cheese",
+                "price": 2
+              },
+              {
+                "id": "chips-nacho",
+                "label": "Nacho cheese",
+                "price": 2
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -413,7 +662,13 @@
               "label": "Drink",
               "count": 1,
               "category": "drinks",
-              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+              "exclude": [
+                "btl-pepsi",
+                "btl-coke",
+                "btl-diet",
+                "btl-tango",
+                "btl-7up"
+              ]
             }
           ]
         },
@@ -448,6 +703,25 @@
                 "price": 3
               }
             ]
+          },
+          {
+            "id": "chips-cheese",
+            "label": "Add cheese to your chips",
+            "select": "multi",
+            "required": false,
+            "whenMeal": true,
+            "choices": [
+              {
+                "id": "chips-mozz",
+                "label": "Mozzarella cheese",
+                "price": 2
+              },
+              {
+                "id": "chips-nacho",
+                "label": "Nacho cheese",
+                "price": 2
+              }
+            ]
           }
         ]
       },
@@ -478,7 +752,13 @@
               "label": "Drink",
               "count": 1,
               "category": "drinks",
-              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+              "exclude": [
+                "btl-pepsi",
+                "btl-coke",
+                "btl-diet",
+                "btl-tango",
+                "btl-7up"
+              ]
             }
           ]
         },
@@ -498,6 +778,25 @@
                 "id": "no-sauce",
                 "label": "No sauce",
                 "price": 0
+              }
+            ]
+          },
+          {
+            "id": "chips-cheese",
+            "label": "Add cheese to your chips",
+            "select": "multi",
+            "required": false,
+            "whenMeal": true,
+            "choices": [
+              {
+                "id": "chips-mozz",
+                "label": "Mozzarella cheese",
+                "price": 2
+              },
+              {
+                "id": "chips-nacho",
+                "label": "Nacho cheese",
+                "price": 2
               }
             ]
           }
@@ -530,7 +829,13 @@
               "label": "Drink",
               "count": 1,
               "category": "drinks",
-              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+              "exclude": [
+                "btl-pepsi",
+                "btl-coke",
+                "btl-diet",
+                "btl-tango",
+                "btl-7up"
+              ]
             }
           ]
         },
@@ -551,6 +856,25 @@
                 "id": "no-sauce",
                 "label": "No sauce",
                 "price": 0
+              }
+            ]
+          },
+          {
+            "id": "chips-cheese",
+            "label": "Add cheese to your chips",
+            "select": "multi",
+            "required": false,
+            "whenMeal": true,
+            "choices": [
+              {
+                "id": "chips-mozz",
+                "label": "Mozzarella cheese",
+                "price": 2
+              },
+              {
+                "id": "chips-nacho",
+                "label": "Nacho cheese",
+                "price": 2
               }
             ]
           }
@@ -583,7 +907,13 @@
               "label": "Drink",
               "count": 1,
               "category": "drinks",
-              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+              "exclude": [
+                "btl-pepsi",
+                "btl-coke",
+                "btl-diet",
+                "btl-tango",
+                "btl-7up"
+              ]
             }
           ]
         },
@@ -603,6 +933,25 @@
                 "id": "no-sauce",
                 "label": "No sauce",
                 "price": 0
+              }
+            ]
+          },
+          {
+            "id": "chips-cheese",
+            "label": "Add cheese to your chips",
+            "select": "multi",
+            "required": false,
+            "whenMeal": true,
+            "choices": [
+              {
+                "id": "chips-mozz",
+                "label": "Mozzarella cheese",
+                "price": 2
+              },
+              {
+                "id": "chips-nacho",
+                "label": "Nacho cheese",
+                "price": 2
               }
             ]
           }
@@ -635,7 +984,13 @@
               "label": "Drink",
               "count": 1,
               "category": "drinks",
-              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+              "exclude": [
+                "btl-pepsi",
+                "btl-coke",
+                "btl-diet",
+                "btl-tango",
+                "btl-7up"
+              ]
             }
           ]
         },
@@ -655,6 +1010,25 @@
                 "id": "no-sauce",
                 "label": "No sauce",
                 "price": 0
+              }
+            ]
+          },
+          {
+            "id": "chips-cheese",
+            "label": "Add cheese to your chips",
+            "select": "multi",
+            "required": false,
+            "whenMeal": true,
+            "choices": [
+              {
+                "id": "chips-mozz",
+                "label": "Mozzarella cheese",
+                "price": 2
+              },
+              {
+                "id": "chips-nacho",
+                "label": "Nacho cheese",
+                "price": 2
               }
             ]
           }
@@ -687,7 +1061,13 @@
               "label": "Drink",
               "count": 1,
               "category": "drinks",
-              "exclude": ["btl-pepsi", "btl-coke", "btl-diet", "btl-tango", "btl-7up"]
+              "exclude": [
+                "btl-pepsi",
+                "btl-coke",
+                "btl-diet",
+                "btl-tango",
+                "btl-7up"
+              ]
             }
           ]
         },
@@ -708,6 +1088,25 @@
                 "id": "no-sauce",
                 "label": "No sauce",
                 "price": 0
+              }
+            ]
+          },
+          {
+            "id": "chips-cheese",
+            "label": "Add cheese to your chips",
+            "select": "multi",
+            "required": false,
+            "whenMeal": true,
+            "choices": [
+              {
+                "id": "chips-mozz",
+                "label": "Mozzarella cheese",
+                "price": 2
+              },
+              {
+                "id": "chips-nacho",
+                "label": "Nacho cheese",
+                "price": 2
               }
             ]
           }

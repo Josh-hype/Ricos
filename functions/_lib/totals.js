@@ -61,6 +61,9 @@ export function computeTotals(input, config, opts = {}) {
     for (const modId of modIds) {
       const mod = item.modifiers?.find(x => x.id === modId);
       if (!mod) continue; // ignore unknown modifiers silently
+      // Meal-only add-on (e.g. cheese on the meal's chips): only applies when the
+      // line is actually a meal. Ignored — no charge, not recorded — without it.
+      if (mod.whenMeal && !line.meal) continue;
       lineP += (mod.priceDeltaPBySize && activeSize && mod.priceDeltaPBySize[activeSize] != null)
         ? mod.priceDeltaPBySize[activeSize]
         : (mod.priceDeltaP || 0);
