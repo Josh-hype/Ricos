@@ -2063,6 +2063,7 @@ const state = {
   kdsRouting: false,       // (deprecated) kept for safety; see routing/printOnAccept
   routing: 'print',        // order routing mode: 'print' | 'kds' | 'both'
   printOnAccept: true,     // derived: does the till print the kitchen ticket on accept?
+  printCounter: true,      // does the till auto-print for COUNTER sales? (online always follows printOnAccept)
 };
 
 const IDLE_MS = 90 * 1000;
@@ -2568,6 +2569,7 @@ async function loadSettings() {
       const d = await res.json();
       state.routing = d.routing || 'print';
       state.printOnAccept = (d.print !== undefined) ? !!d.print : (state.routing !== 'kds');
+      state.printCounter = (d.printCounter !== undefined) ? !!d.printCounter : true;
     }
   } catch (e) { /* keep default */ }
 }
@@ -3077,6 +3079,7 @@ async function setRouting(mode) {
     if (!res.ok) { $('#routingErr').textContent = d.error || 'Could not change routing.'; return; }
     state.routing = d.routing || mode;
     state.printOnAccept = !!d.print;
+    if (d.printCounter !== undefined) state.printCounter = !!d.printCounter;
     renderRoutingOpts();
     renderBackOffice(); // refresh the tile label behind the modal
   } catch (e) { $('#routingErr').textContent = 'Network error — try again.'; }
@@ -4830,7 +4833,7 @@ async function createUnpaidForSplit() {
   if (res.status === 401) { $('#logoutBtn').click(); throw new Error('Signed out — sign in again.'); }
   if (!res.ok || !data.order) throw new Error(data.error || `Couldn't create the order (${res.status}).`);
   state.seenIds.add(data.order.id);
-  if (state.printOnAccept) { try { printTo('kitchen', data.order, null); } catch (e) {} }
+  if (state.printOnAccept && state.printCounter) { try { printTo('kitchen', data.order, null); } catch (e) {} }
   return data.order;
 }
 
@@ -5499,7 +5502,7 @@ async function finalizeOrder(extra, ctx) {
   // the counter order is 'accepted', so it shows on the display instead). Remember a
   // PAID sale so "Receipt" can print a customer receipt on request (unpaid saves don't).
   state.lastSale = isUnpaid ? null : { o, tender, tenderedP: ctx.tenderedP, changeP, split };
-  if (state.printOnAccept) printTo('kitchen', o, isUnpaid ? null : state.lastSale);
+  if (state.printOnAccept && state.printCounter) printTo('kitchen', o, isUnpaid ? null : state.lastSale);
   state.seenIds.add(o.id);
   poll();
   return true;

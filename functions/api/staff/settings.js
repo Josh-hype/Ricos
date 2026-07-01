@@ -5,12 +5,16 @@
 
 import { requireStaff } from '../../_lib/auth.js';
 import { putSetting } from '../../_lib/kv.js';
-import { getOrderRouting, routingFlags } from '../../_lib/routing.js';
+import { getConfig } from '../../_lib/config.js';
+import { getOrderRouting, routingFlags, printCounterOnAccept } from '../../_lib/routing.js';
+
+// Merge the config-derived flag (printCounter) into the routing flags the till reads.
+const withFlags = (mode) => ({ ...routingFlags(mode), printCounter: printCounterOnAccept(getConfig()) });
 
 export const onRequestGet = async ({ request, env }) => {
   const denied = await requireStaff(request, env);
   if (denied) return denied;
-  return Response.json(routingFlags(await getOrderRouting(env)), { headers: { 'Cache-Control': 'no-store' } });
+  return Response.json(withFlags(await getOrderRouting(env)), { headers: { 'Cache-Control': 'no-store' } });
 };
 
 export const onRequestPost = async ({ request, env }) => {
@@ -24,7 +28,7 @@ export const onRequestPost = async ({ request, env }) => {
     return j({ error: 'Invalid routing mode.' }, 400);
   }
   await putSetting(env, 'order-routing', mode);
-  return Response.json(routingFlags(mode));
+  return Response.json(withFlags(mode));
 };
 
 function j(obj, status = 200) {

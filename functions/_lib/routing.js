@@ -15,8 +15,18 @@ export async function getOrderRouting(env) {
   const legacy = await getSetting(env, 'kds-routing');
   if (legacy === 'on') return 'kds';
   if (legacy === 'off') return 'print';
-  const cfg = getConfig().kds || {};
-  return cfg.enabled ? 'kds' : 'print';
+  const cfg = getConfig();
+  // Per-shop default when no Back-Office override is set.
+  const dflt = cfg.pos && cfg.pos.defaultRouting;
+  if (dflt === 'print' || dflt === 'kds' || dflt === 'both') return dflt;
+  return (cfg.kds && cfg.kds.enabled) ? 'kds' : 'print';
+}
+
+// Does this shop auto-print a kitchen ticket for COUNTER/till sales? Default yes;
+// a shop can set pos.printCounterOnAccept:false to print ONLY online orders (the
+// counter sale still shows on the KDS). Online orders always follow `print` above.
+export function printCounterOnAccept(config) {
+  return !(config && config.pos && config.pos.printCounterOnAccept === false);
 }
 
 export function routingFlags(mode) {

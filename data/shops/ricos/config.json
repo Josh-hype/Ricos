@@ -106,7 +106,8 @@
   },
 
   "_comment_pos": "Till behaviour. selfServeDrinks:true hides the drink picker on the staff till — in-store the customer takes their own drink from the fridge, so staff don't choose one (meal/combo prices are unchanged; the drink is still included). The website keeps drink choices for online orders. requireOrderPin:false — staff take orders (walk-in/collection/delivery) without entering a per-order code; the manager/owner PIN on voids, refunds and cancellations is separate and still always required.",
-  "pos": { "selfServeDrinks": true, "requireOrderPin": false },
+  "_comment_pos_routing": "defaultRouting: where accepted orders go for the kitchen when no Back-Office override is set — 'both' = print a ticket AND show on the Kitchen Display. printCounterOnAccept:false = ONLY online orders auto-print; counter/till sales still show on the KDS but don't print a ticket (staff are already at the till).",
+  "pos": { "selfServeDrinks": true, "requireOrderPin": false, "defaultRouting": "both", "printCounterOnAccept": false },
 
   "hours": {
     "_comment": "24-hour format. Closes after midnight are written as 25:00 = 01:00 next day. lastOrderBeforeCloseMinutes is subtracted automatically for the cut-off.",
