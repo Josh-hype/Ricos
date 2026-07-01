@@ -622,6 +622,15 @@ button{cursor:pointer;border:0;background:none}
 .routing-opt:hover{border-color:var(--blue)}
 .routing-opt.sel{border-color:var(--blue);background:var(--blue-tint)}
 .routing-opt.sel b{color:var(--accent-strong)}
+/* Counter-print toggle (in the routing modal) */
+.pc-toggle{display:flex;align-items:center;gap:12px;margin:12px 2px 4px;cursor:pointer;text-align:left}
+.pc-toggle input{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+.pc-switch{flex:0 0 auto;width:46px;height:27px;border-radius:999px;background:var(--bd);position:relative;transition:background .15s}
+.pc-switch::after{content:'';position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:#fff;transition:transform .15s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.pc-toggle input:checked + .pc-switch{background:var(--blue)}
+.pc-toggle input:checked + .pc-switch::after{transform:translateX(19px)}
+.pc-txt b{display:block;font-size:14px;font-weight:800;color:var(--ink)}
+.pc-txt small{display:block;font-size:12px;color:var(--muted);margin-top:2px;font-weight:500;line-height:1.4}
 
 /* Sold out / item availability screen */
 .stock-wrap{max-width:680px;margin:0 auto;padding:2px 2px 28px}
@@ -1325,6 +1334,11 @@ button{cursor:pointer;border:0;background:none}
       <button class="routing-opt" data-routing="kds" type="button"><b>🖥️ Kitchen Display</b><span>Show on the KDS. No tickets printed.</span></button>
       <button class="routing-opt" data-routing="both" type="button"><b>🖨️ + 🖥️ Both</b><span>Print a ticket and show on the KDS.</span></button>
     </div>
+    <label class="pc-toggle">
+      <input type="checkbox" id="printCounterToggle" />
+      <span class="pc-switch" aria-hidden="true"></span>
+      <span class="pc-txt"><b>Also print counter sales</b><small>Off = only online orders print. Counter/till orders still show on the KDS.</small></span>
+    </label>
     <div class="pin-error" id="routingErr" aria-live="polite"></div>
     <div class="row"><button class="cancel" id="routingClose" type="button">Done</button></div>
   </div>
@@ -2755,6 +2769,7 @@ $('#kdsExit').addEventListener('click', () => {
 // Order-routing picker (Print / KDS / Both).
 $$('#routingOpts .routing-opt').forEach(b => b.addEventListener('click', () => setRouting(b.dataset.routing)));
 $('#routingClose').addEventListener('click', () => $('#routingOvl').classList.remove('open'));
+{ const t = $('#printCounterToggle'); if (t) t.addEventListener('change', (e) => setPrintCounter(e.target.checked)); }
 $('#routingOvl').addEventListener('click', (e) => { if (e.target.id === 'routingOvl') $('#routingOvl').classList.remove('open'); });
 
 // Manual / off-menu item: type a custom name + price, add it to the current sale.
@@ -3063,8 +3078,24 @@ function renderRoutingOpts() {
 }
 function openRouting() {
   renderRoutingOpts();
+  const t = $('#printCounterToggle'); if (t) t.checked = !!state.printCounter;
   $('#routingErr').textContent = '';
   $('#routingOvl').classList.add('open');
+}
+async function setPrintCounter(on) {
+  $('#routingErr').textContent = '';
+  const revert = () => { const t = $('#printCounterToggle'); if (t) t.checked = !!state.printCounter; };
+  try {
+    const res = await fetch('/api/staff/settings', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ printCounter: !!on }),
+    });
+    if (res.status === 401) { $('#logoutBtn').click(); return; }
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) { $('#routingErr').textContent = d.error || 'Could not update.'; revert(); return; }
+    state.printCounter = (d.printCounter !== undefined) ? !!d.printCounter : !!on;
+    const t = $('#printCounterToggle'); if (t) t.checked = state.printCounter;
+  } catch (e) { $('#routingErr').textContent = 'Network error — try again.'; revert(); }
 }
 async function setRouting(mode) {
   if (mode === state.routing) { $('#routingOvl').classList.remove('open'); return; }

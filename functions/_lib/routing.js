@@ -29,6 +29,15 @@ export function printCounterOnAccept(config) {
   return !(config && config.pos && config.pos.printCounterOnAccept === false);
 }
 
+// Effective counter-print setting: the Back-Office toggle (KV) over the per-shop
+// config default (pos.printCounterOnAccept). true ⇒ counter/till sales also print.
+export async function getPrintCounter(env) {
+  const v = await getSetting(env, 'print-counter');
+  if (v === 'on') return true;
+  if (v === 'off') return false;
+  return printCounterOnAccept(getConfig());
+}
+
 export function routingFlags(mode) {
   return {
     routing: mode,
