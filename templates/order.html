@@ -2174,6 +2174,54 @@ function removeFromCart(key) {
   saveState();
   renderCart();
 }
+
+// A transient message shown at the top of the cart (e.g. after a stale basket is
+// repriced). Cleared on the next cart mutation or after a few seconds.
+let cartNotice = '';
+
+// Recompute a stored cart line's price from the CURRENT menu. The basket is
+// persisted in localStorage with prices frozen at add-time, so after a menu/price
+// change a returning customer could otherwise see an old total (while the server
+// charges the new one) or carry an item that no longer exists (which /api/order
+// rejects). Returns a repriced line, or null if the item is gone.
+function repriceLine(line) {
+  const item = findItem(line.itemId);
+  if (!item) return null;
+  let price = item.price;
+  if (line.meal && item.meal) price += item.meal.addPrice;
+  const optPrice = new Map();
+  for (const g of (item.options || [])) for (const c of (g.choices || [])) optPrice.set(c.id, Number(c.price) || 0);
+  for (const id of (line.modifiers || [])) price += (optPrice.get(id) || 0);
+  return { ...line, name: item.name, basePrice: item.price, price };
+}
+
+// Revalidate the whole basket against the freshly-loaded menu. Reprices every
+// line and drops any item no longer on the menu, so the displayed total always
+// matches what the server will charge and checkout can't 400 on a stale id.
+function revalidateCart() {
+  if (!Array.isArray(state.cart) || state.cart.length === 0) return;
+  const kept = [];
+  const removed = [];
+  let changed = false;
+  for (const line of state.cart) {
+    const rp = repriceLine(line);
+    if (!rp) { removed.push(line.name); changed = true; continue; }
+    if (rp.price !== line.price || rp.name !== line.name) changed = true;
+    kept.push(rp);
+  }
+  if (!changed) return;
+  state.cart = kept;
+  saveState();
+  if (removed.length) {
+    cartNotice = removed.length === 1
+      ? `“${removed[0]}” is no longer available and was removed from your basket.`
+      : `${removed.length} items are no longer available and were removed from your basket.`;
+  } else {
+    cartNotice = 'Some prices in your basket were updated to our latest menu.';
+  }
+  renderCart();
+  setTimeout(() => { cartNotice = ''; renderCart(); }, 8000);
+}
 /* Per-order platform/service fee, in pounds, read from the shop's config
    (serviceFeePence) which the server treats as the authoritative source for
    the actual charge. Falls back to 0.50 until /api/config has loaded. */
@@ -2260,7 +2308,7 @@ function renderCart() {
       if (summary) summary.style.display = 'none';
       return;
     }
-    body.innerHTML = state.cart.map(cartLineHTML).join('');
+    body.innerHTML = (cartNotice ? `<div style="background:#fff3cd;border:1px solid #e0c060;border-radius:8px;padding:8px 10px;margin-bottom:10px;font-size:13px;color:#5a4a00">${escapeHTML(cartNotice)}</div>` : '') + state.cart.map(cartLineHTML).join('');
     if (summary) summary.style.display = 'block';
     document.getElementById(subId).textContent  = fmt(t.sub);
     document.getElementById(discId).textContent = `-${fmt(t.discount)}`;
@@ -2323,20 +2371,34 @@ function closeModal(id) {
   document.getElementById(id).classList.remove('open');
   document.body.style.overflow = '';
 }
-document.querySelectorAll('[data-close-modal]').forEach(b => {
-  b.addEventListener('click', () => {
-    document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
-    document.body.style.overflow = '';
+// While a card charge is in flight the pay button is disabled (see placeOrder).
+// Don't let Escape / a backdrop click / the ✕ close the checkout modal then —
+// re-rendering it could start a SECOND order + PaymentIntent (a double-charge
+// window). Other modals still close normally.
+function checkoutLocked() {
+  const b = document.getElementById('coPay');
+  return !!(b && b.disabled);
+}
+function closeOpenModals() {
+  let keptCheckout = false;
+  document.querySelectorAll('.modal-overlay.open').forEach(m => {
+    if (checkoutLocked() && m.id === 'checkoutOverlay') { keptCheckout = true; return; }
+    m.classList.remove('open');
   });
+  if (!keptCheckout) document.body.style.overflow = '';
+}
+document.querySelectorAll('[data-close-modal]').forEach(b => {
+  b.addEventListener('click', closeOpenModals);
 });
 document.querySelectorAll('.modal-overlay').forEach(o => {
-  o.addEventListener('click', (e) => { if (e.target === o) closeModal(o.id); });
+  o.addEventListener('click', (e) => {
+    if (e.target !== o) return;
+    if (checkoutLocked() && o.id === 'checkoutOverlay') return;
+    closeModal(o.id);
+  });
 });
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
-    document.body.style.overflow = '';
-  }
+  if (e.key === 'Escape') closeOpenModals();
 });
 
 /* ---------- Postcode + mode ---------- */
@@ -2397,6 +2459,21 @@ function applyMode(mode) {
 document.getElementById('modeCollect').addEventListener('click', () => applyMode('collect'));
 document.getElementById('modeDeliver').addEventListener('click', () => applyMode('deliver'));
 document.querySelectorAll('.cart-mode-btn').forEach(b => b.addEventListener('click', () => applyMode(b.dataset.mode)));
+
+// Collection-only shops (fulfillment.delivery.enabled === false): hide the
+// delivery toggle and force collection, so a customer can't get stuck on a
+// delivery flow the shop doesn't offer. Config-gated — no effect where delivery
+// is enabled, so it ships to every shop but only bites where it's turned off.
+function applyDeliveryAvailability(cfg) {
+  const enabled = cfg?.fulfillment?.delivery?.enabled !== false;
+  if (enabled) return;
+  document.querySelectorAll('#modeDeliver, .cart-mode-btn[data-mode="deliver"]').forEach(el => {
+    el.hidden = true;
+    el.style.display = 'none';
+  });
+  if (state.mode !== 'collect') { state.mode = 'collect'; saveState(); }
+  applyMode('collect');
+}
 
 function refreshPCMessage() {
   const msg = document.getElementById('pcMessage');
@@ -3104,6 +3181,15 @@ function startCheckout() {
     alert('Your cart is empty.');
     return;
   }
+  // Don't let a customer check out before the live config has loaded — the
+  // pre-config fallbacks (service fee, delivery fee, promo) can differ from the
+  // real values, so the displayed total could disagree with what's charged.
+  // buildOrderRequest also awaits config, but blocking here keeps the shown
+  // price honest. (Config normally loads in well under a second.)
+  if (!window.SHOP_CONFIG) {
+    alert('Just a moment — still loading the menu. Please try again in a second.');
+    return;
+  }
   if (state.mode === 'deliver' && !state.postcode) {
     alert('Please enter your postcode at the top of the page first.');
     document.getElementById('postcode').focus();
@@ -3801,6 +3887,9 @@ fetch('/menu-visual.json').then(r => r.ok ? r.json() : Promise.reject()).then(da
     .filter(c => !c.posOnly)
     .map(c => ({ ...c, items: (c.items || []).filter(it => !it.posOnly) }));
   renderMenu();
+  // Now that the current menu is loaded, reprice/prune any persisted basket so a
+  // stale localStorage cart can't show an old price or carry a removed item.
+  revalidateCart();
 }).catch(() => {
   if (menuRootEl) menuRootEl.innerHTML = '<div style="text-align:center;padding:40px 20px;color:#a8331a">Sorry, the menu didn\'t load. Refresh to try again.</div>';
 });
@@ -3922,6 +4011,8 @@ fetch('/api/availability').then(r => r.ok ? r.json() : null).then(d => {
 fetch('/api/config').then(r => r.ok ? r.json() : null).then(cfg => {
   if (cfg) {
     window.SHOP_CONFIG = cfg;
+    // Collection-only shops: hide delivery + force collect once we know the config.
+    applyDeliveryAvailability(cfg);
     // Re-render the cart so the service fee (and any other config-driven
     // figures) reflect the loaded config rather than the boot-time fallback.
     renderCart();
