@@ -1,0 +1,52 @@
+{
+  "business": {
+    "tradingName": "Test Shop",
+    "shortName": "Test",
+    "address": { "line1": "1 Test St", "city": "Testville", "postcode": "YO1 1AA" }
+  },
+  "ordering": {
+    "timezone": "Europe/London",
+    "asapMinPrepMinutes": 20,
+    "lastOrderBeforeCloseMinutes": 15,
+    "businessDayStartHour": 0,
+    "scheduling": { "enabled": true, "slotMinutes": 15, "horizonDays": 2, "maxOrdersPerSlot": 6 }
+  },
+  "hours": {
+    "sunday":    { "closed": false, "windows": [{ "open": "09:00", "close": "23:00" }] },
+    "monday":    { "closed": false, "windows": [{ "open": "09:00", "close": "23:00" }] },
+    "tuesday":   { "closed": false, "windows": [{ "open": "09:00", "close": "23:00" }] },
+    "wednesday": { "closed": false, "windows": [{ "open": "09:00", "close": "23:00" }] },
+    "thursday":  { "closed": false, "windows": [{ "open": "09:00", "close": "23:00" }] },
+    "friday":    { "closed": false, "windows": [{ "open": "09:00", "close": "25:00" }] },
+    "saturday":  { "closed": true }
+  },
+  "fulfillment": {
+    "collection": { "enabled": true },
+    "delivery": {
+      "enabled": true,
+      "mode": "outcode",
+      "feePence": 200,
+      "feeByOutcode": { "YO2": 250 },
+      "allowedOutcodes": ["YO1", "YO2"],
+      "areaDescription": "in the test area",
+      "blockedPrefixes": ["YO23"],
+      "minimumOrderPence": 1200,
+      "minimumIncludesFees": false,
+      "lateStart": { "2026-06-27": "16:30" }
+    }
+  },
+  "promo": {
+    "autoOnlineDiscount": { "enabled": true, "percent": 10, "label": "10% off online" }
+  },
+  "serviceFeePence": 100,
+  "serviceFeePlatformPence": 50,
+  "payments": {
+    "stripeEnabled": true,
+    "cashOnCollectionEnabled": true,
+    "cashOnDeliveryEnabled": true
+  },
+  "closures": {
+    "2026-06-29": { "title": "Closed", "message": "Closed today." }
+  },
+  "stripe": { "connectedAccountId": "acct_TEST" }
+}

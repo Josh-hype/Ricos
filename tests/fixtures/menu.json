@@ -1,0 +1,45 @@
+[
+  {
+    "id": "burgers",
+    "name": "Burgers",
+    "items": [
+      {
+        "id": "burger",
+        "name": "Test Burger",
+        "priceP": 800,
+        "mealAddP": 300,
+        "modifiers": [
+          { "id": "extra", "label": "Extra patty", "priceDeltaP": 200 },
+          { "id": "cheese", "label": "Cheese on chips", "whenMeal": true, "priceDeltaP": 100 },
+          { "id": "lg", "label": "Large" },
+          { "id": "topping", "label": "Topping", "priceDeltaP": 100, "priceDeltaPBySize": { "lg": 150 } }
+        ],
+        "mealChoose": [
+          { "category": "sides", "count": 1 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sides",
+    "name": "Sides",
+    "items": [
+      { "id": "fries", "name": "Fries", "priceP": 300 },
+      { "id": "salad", "name": "Salad", "priceP": 250 }
+    ]
+  },
+  {
+    "id": "drinks",
+    "name": "Drinks",
+    "items": [
+      { "id": "coke", "name": "Coke", "priceP": 150 }
+    ]
+  },
+  {
+    "id": "deals",
+    "name": "In-store deals",
+    "items": [
+      { "id": "student", "name": "Student Deal", "priceP": 500, "posOnly": true }
+    ]
+  }
+]

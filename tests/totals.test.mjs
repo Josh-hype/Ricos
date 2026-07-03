@@ -1,0 +1,118 @@
+/* Pricing authority — functions/_lib/totals.js.
+   These lock the CURRENT behaviour (the fixtures menu/config are injected by
+   tests/support/loader.mjs). Run: node --import ./tests/support/register.mjs --test tests/ */
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { getConfig } from '../functions/_lib/config.js';
+import { computeTotals } from '../functions/_lib/totals.js';
+
+const config = getConfig();
+
+test('collection order: base + meal add + flat + size-priced + whenMeal modifier, with promo + service fee', () => {
+  const t = computeTotals({
+    items: [{ id: 'burger', qty: 1, meal: true, modifiers: ['extra', 'cheese', 'lg', 'topping'], mealChoices: ['fries'] }],
+    fulfillment: 'collection',
+  }, config);
+  assert.equal(t.ok, true);
+  // 800 base + 300 meal + 200 extra + 100 cheese(whenMeal) + 0 lg + 150 topping@lg = 1550
+  assert.equal(t.subtotalP, 1550);
+  assert.equal(t.discountP, 155);                 // 10% of 1550
+  assert.equal(t.serviceFeeP, 100);
+  assert.equal(t.serviceFeePlatformP, 50);
+  assert.equal(t.serviceFeeShopP, 50);
+  assert.equal(t.deliveryFeeP, 0);
+  assert.equal(t.totalP, 1550 - 155 + 100);       // 1495
+  // Every applied modifier's label is recorded, including the zero-price size 'Large'.
+  assert.deepEqual(t.lines[0].modifiers, ['Extra patty', 'Cheese on chips', 'Large', 'Topping']);
+  assert.deepEqual(t.lines[0].mealChoices, ['Fries']);
+});
+
+test('whenMeal modifier is ignored (no charge, not recorded) on a non-meal line', () => {
+  const t = computeTotals({
+    items: [{ id: 'burger', qty: 1, meal: false, modifiers: ['cheese'] }],
+    fulfillment: 'collection',
+  }, config);
+  assert.equal(t.subtotalP, 800);                 // cheese (whenMeal) skipped
+  assert.deepEqual(t.lines[0].modifiers, []);
+});
+
+test('size-priced modifier falls back to flat priceDeltaP when no size selected', () => {
+  const t = computeTotals({
+    items: [{ id: 'burger', qty: 1, modifiers: ['topping'] }],
+    fulfillment: 'collection',
+  }, config);
+  assert.equal(t.subtotalP, 900);                 // 800 + flat topping 100 (no 'lg')
+});
+
+test('quantity is floored and clamped to 1..20', () => {
+  const frac = computeTotals({ items: [{ id: 'coke', qty: 2.9 }], fulfillment: 'collection' }, config);
+  assert.equal(frac.lines[0].qty, 2);             // floor, not round
+  assert.equal(frac.lines[0].lineTotalP, 300);    // 150 * 2 — integer pence
+  const hi = computeTotals({ items: [{ id: 'coke', qty: 999 }], fulfillment: 'collection' }, config);
+  assert.equal(hi.lines[0].qty, 20);
+  const lo = computeTotals({ items: [{ id: 'coke', qty: 0 }], fulfillment: 'collection' }, config);
+  assert.equal(lo.lines[0].qty, 1);
+});
+
+test('unknown item id is rejected', () => {
+  const t = computeTotals({ items: [{ id: 'nope', qty: 1 }], fulfillment: 'collection' }, config);
+  assert.equal(t.ok, false);
+  assert.match(t.reason, /Unknown item/);
+});
+
+test('empty cart is rejected even though the service fee is positive', () => {
+  const t = computeTotals({ items: [], fulfillment: 'collection' }, config);
+  assert.equal(t.ok, false);
+  assert.match(t.reason, /empty/i);
+});
+
+test('posOnly item is blocked online but allowed when opts.allowPosOnly', () => {
+  const blocked = computeTotals({ items: [{ id: 'student', qty: 1 }], fulfillment: 'collection' }, config);
+  assert.equal(blocked.ok, false);
+  assert.match(blocked.reason, /not available online/);
+  const allowed = computeTotals({ items: [{ id: 'student', qty: 1 }], fulfillment: 'collection' }, config, { allowPosOnly: true });
+  assert.equal(allowed.ok, true);
+  assert.equal(allowed.subtotalP, 500);
+});
+
+test('custom line rejected unless opts.allowCustom, then priced from staff-entered pence', () => {
+  const blocked = computeTotals({ items: [{ custom: true, name: 'X', priceP: 999, qty: 1 }], fulfillment: 'collection' }, config);
+  assert.equal(blocked.ok, false);
+  const allowed = computeTotals({ items: [{ custom: true, name: 'X', priceP: 999, qty: 2 }], fulfillment: 'collection' }, config, { allowCustom: true });
+  assert.equal(allowed.ok, true);
+  assert.equal(allowed.lines[0].lineTotalP, 1998);
+});
+
+test('delivery fee: passed-in fee wins; NaN/negative falls back to outcode lookup', () => {
+  const passed = computeTotals({ items: [{ id: 'burger', qty: 2 }], fulfillment: 'delivery', deliveryAddress: { postcode: 'YO2 3AB' } }, config, { deliveryFeeP: 250 });
+  assert.equal(passed.deliveryFeeP, 250);
+  const badFallback = computeTotals({ items: [{ id: 'burger', qty: 2 }], fulfillment: 'delivery', deliveryAddress: { postcode: 'YO2 3AB' } }, config, { deliveryFeeP: NaN });
+  assert.equal(badFallback.deliveryFeeP, 250);    // feeByOutcode.YO2
+  const defaultFee = computeTotals({ items: [{ id: 'burger', qty: 2 }], fulfillment: 'delivery', deliveryAddress: { postcode: 'YO1 1AA' } }, config, { deliveryFeeP: -5 });
+  assert.equal(defaultFee.deliveryFeeP, 200);     // default feePence (YO1 has no override)
+});
+
+test('delivery below minimum (net of discount) is rejected', () => {
+  const t = computeTotals({ items: [{ id: 'coke', qty: 1 }], fulfillment: 'delivery', deliveryAddress: { postcode: 'YO1 1AA' } }, config, { deliveryFeeP: 200 });
+  assert.equal(t.ok, false);                       // 150 - 15 = 135 < 1200
+  assert.match(t.reason, /[Mm]inimum/);
+});
+
+test('counter opts suppress promo and service fee', () => {
+  const t = computeTotals({ items: [{ id: 'burger', qty: 1 }], fulfillment: 'collection' }, config, { suppressPromo: true, suppressServiceFee: true });
+  assert.equal(t.discountP, 0);
+  assert.equal(t.serviceFeeP, 0);
+  assert.equal(t.totalP, 800);
+});
+
+test('meal choice outside its allowed group is not recorded', () => {
+  // 'coke' is in category 'drinks', not the meal's 'sides' group → ignored.
+  const t = computeTotals({ items: [{ id: 'burger', qty: 1, meal: true, modifiers: [], mealChoices: ['coke'] }], fulfillment: 'collection' }, config);
+  assert.deepEqual(t.lines[0].mealChoices, []);
+});
+
+test('notes and spice are captured and length-capped', () => {
+  const t = computeTotals({ items: [{ id: 'coke', qty: 1, notes: ' hi '.repeat(60), spice: 'x'.repeat(60) }], fulfillment: 'collection' }, config);
+  assert.ok(t.lines[0].notes.length <= 140);
+  assert.equal(t.lines[0].spice.length, 40);
+});
