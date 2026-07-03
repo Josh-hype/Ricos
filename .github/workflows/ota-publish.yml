@@ -27,7 +27,36 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Safety gate: the bundle that ships to physical, money-taking tills must at
+  # least (a) pass the unit tests and (b) build to a staff bundle whose emitted
+  # JS parses. A push that merely compiles is otherwise auto-shipped to the fleet.
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Unit tests (money/logic libs + auth)
+        run: |
+          node --import ./tests/support/register.mjs --test tests/*.test.mjs
+          node --test test/auth.test.mjs
+      - name: Build the staff UI and syntax-check the emitted bundle
+        run: |
+          SHOP_SLUG=ricos npm run build
+          fail=0
+          for f in public/staff/*.inline*.js; do
+            node --check "$f" || { echo "::error::syntax error in $f"; fail=1; }
+          done
+          test "$fail" = 0
+
   publish:
+    needs: verify
+    # Gate the fleet deploy behind a GitHub Environment. Add required reviewers
+    # under repo Settings ▸ Environments ▸ ota-production to require a manual
+    # approval before each publish; until you do, this runs automatically (but
+    # only after `verify` passes).
+    environment: ota-production
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
