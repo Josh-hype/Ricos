@@ -6,13 +6,16 @@
                                              `print`). Either or both may be sent.
    Reached only from the PIN-gated Back Office, so requireStaff is enough. */
 
-import { requireStaff } from '../../_lib/auth.js';
+import { requireStaff, resolveSession } from '../../_lib/auth.js';
 import { putSetting } from '../../_lib/kv.js';
+import { logAudit } from '../../_lib/audit.js';
 import { getOrderRouting, routingFlags, getPrintCounter } from '../../_lib/routing.js';
+import { getOrderingPause, setOrderingPause } from '../../_lib/ordering-pause.js';
 
 const flags = async (env) => ({
   ...routingFlags(await getOrderRouting(env)),
   printCounter: await getPrintCounter(env),
+  orderingPaused: (await getOrderingPause(env)).paused,
 });
 
 export const onRequestGet = async ({ request, env }) => {
@@ -37,6 +40,15 @@ export const onRequestPost = async ({ request, env }) => {
   }
   if (typeof body.printCounter === 'boolean') {
     await putSetting(env, 'print-counter', body.printCounter ? 'on' : 'off');
+  }
+  // Pause / resume ONLINE ordering for the rest of today (counter sales unaffected).
+  if (typeof body.pauseOrdering === 'boolean') {
+    const sess = await resolveSession(request, env);
+    await setOrderingPause(env, body.pauseOrdering, sess?.name || null);
+    await logAudit(env, {
+      op: sess?.op || null, opName: sess?.name || null,
+      action: body.pauseOrdering ? 'ordering_paused' : 'ordering_resumed', target: 'online',
+    });
   }
   return Response.json(await flags(env));
 };

@@ -2083,6 +2083,7 @@ const state = {
   routing: 'print',        // order routing mode: 'print' | 'kds' | 'both'
   printOnAccept: true,     // derived: does the till print the kitchen ticket on accept?
   printCounter: true,      // does the till auto-print for COUNTER sales? (online always follows printOnAccept)
+  orderingPaused: false,   // back-office toggle: online ordering paused for the rest of today
 };
 
 const IDLE_MS = 90 * 1000;
@@ -2593,6 +2594,9 @@ async function loadSettings() {
       state.routing = d.routing || 'print';
       state.printOnAccept = (d.print !== undefined) ? !!d.print : (state.routing !== 'kds');
       state.printCounter = (d.printCounter !== undefined) ? !!d.printCounter : true;
+      state.orderingPaused = !!d.orderingPaused;
+      // If the back office is on-screen, reflect a state change made elsewhere.
+      if (state.view === 'backoffice') renderBackOffice();
     }
   } catch (e) { /* keep default */ }
 }
@@ -3056,9 +3060,13 @@ function renderBackOffice() {
     reader: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="5" y="2" width="14" height="20" rx="2.5"/><path d="M5 7h14"/><path d="M9 17.5h6"/></svg>',
     routing: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>',
     stock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l1.2-5h15.6L21 9M3 9v10a1 1 0 001 1h16a1 1 0 001-1V9M3 9h18M9 13h6"/></svg>',
+    pause: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v9"/><path d="M18.36 6.64a9 9 0 11-12.73 0"/></svg>',
   };
   const canStaff = !state.operatorsEnabled || can('operators.manage');
+  const paused = !!state.orderingPaused;
   const tiles = [
+    { k: 'pause', ic: paused ? 'orange' : 'green', svg: ICON.pause, tl: 'Online orders',
+      ds: paused ? '<b>PAUSED for today</b> — tap to resume' : 'Taking orders — tap to pause for today' },
     { k: 'summary', ic: 'orange', svg: ICON.takings, tl: "Today's Takings", ds: 'Live daily totals — cash, card &amp; order counts' },
     { k: 'zreport', ic: 'blue', svg: ICON.z, tl: 'Z-Report', ds: 'Date-range report with end-of-day print' },
     { k: 'stock', ic: 'orange', svg: ICON.stock, tl: 'Sold out', ds: 'Turn items off when you run out of stock' },
@@ -3079,7 +3087,30 @@ function renderBackOffice() {
     else if (k === 'audit') openAuditModal();
     else if (k === 'reader') openReaderModal();
     else if (k === 'routing') openRouting();
+    else if (k === 'pause') toggleOrderingPause();
   }));
+}
+
+// Pause / resume ONLINE ordering for the rest of today (counter sales are
+// unaffected). Auto-resumes on the next trading day. Reflected to customers via
+// /api/config (banner + disabled checkout) and enforced by /api/order.
+async function toggleOrderingPause() {
+  const paused = !!state.orderingPaused;
+  const msg = paused
+    ? 'Resume taking online orders now?'
+    : 'Stop taking online orders for the rest of today?\n\nCustomers will see that online ordering is paused and can\'t check out. Counter sales are unaffected, and you can resume any time (it also reopens automatically tomorrow).';
+  if (!confirm(msg)) return;
+  try {
+    const res = await fetch('/api/staff/settings', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pauseOrdering: !paused }),
+    });
+    if (res.status === 401) { $('#logoutBtn').click(); return; }
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) { alert(d.error || 'Could not update online ordering.'); return; }
+    state.orderingPaused = !!d.orderingPaused;
+    renderBackOffice();
+  } catch (e) { alert('Network error — please try again.'); }
 }
 
 function routingLabel(mode) {

@@ -14,6 +14,7 @@ import { isOpenNow, isSlotValid, listSlots, deliveryLateStart, activeClosure } f
 import { createPaymentIntent, createCustomer } from '../_lib/stripe.js';
 import { putOrder, newOrderId, nextOrderNumber, recordOptIn, incrSlotCount, getSlotCount } from '../_lib/kv.js';
 import { getOffMap } from '../_lib/availability.js';
+import { getOrderingPause } from '../_lib/ordering-pause.js';
 import { normalisePhoneE164UK } from '../_lib/sms.js';
 import { readCustomerSession } from '../_lib/customer-auth.js';
 import { getCustomer, putCustomer, upsertAddress, updateContactDetails } from '../_lib/customer.js';
@@ -30,6 +31,16 @@ export const onRequestPost = async ({ request, env }) => {
   {
     const closure = activeClosure(config);
     if (closure) return errJson(closure.message, 503);
+  }
+
+  // Back-office "pause online ordering" toggle — staff stopped taking online orders
+  // for the rest of today. Authoritative (the order page also shows a banner +
+  // disables checkout); counter/till sales are unaffected.
+  {
+    const pause = await getOrderingPause(env);
+    if (pause.paused) {
+      return errJson("We've paused online orders for now — please check back a little later, or call the shop to order.", 503);
+    }
   }
 
   // Customer fields. Strip control characters from the free-text name — it flows

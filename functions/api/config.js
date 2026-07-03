@@ -3,12 +3,21 @@
 import { getPublicConfig, getConfig } from '../_lib/config.js';
 import { staffPasswordEnabled } from '../_lib/auth.js';
 import { listSlots, isOpenNow } from '../_lib/hours.js';
+import { getOrderingPause } from '../_lib/ordering-pause.js';
 
 export const onRequestGet = async ({ env }) => {
   const cfg = getPublicConfig();
   const fullCfg = getConfig();
+  // A back-office "pause online ordering" toggle surfaces to the customer via the
+  // same `closure` field the order page already understands (banner + disabled
+  // checkout). A real all-day config closure takes precedence over a live pause.
+  const pause = await getOrderingPause(env);
+  const closure = cfg.closure || (pause.paused
+    ? { title: 'Online orders paused', message: "We've paused online orders for now — please check back a little later, or call us to order." }
+    : null);
   return Response.json({
     ...cfg,
+    closure,
     stripe: {
       publishableKey: env.STRIPE_PUBLISHABLE_KEY || null,
       connectedAccountId: fullCfg.stripe?.connectedAccountId || null,
