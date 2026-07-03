@@ -39,7 +39,10 @@ export const onRequestPost = async ({ request, env }) => {
     }
     await clearAttempts();
     const token = await makeSession(env);
-    await logAudit(env, { action: 'login' });
+    // Web back-office (owner) login by username/password. Intentionally a
+    // full-access, op-less session (no per-order PIN friction for the owner);
+    // we tag the audit entry so it's distinguishable from a PIN login.
+    await logAudit(env, { action: 'login', opName: env.STAFF_USERNAME || 'web', details: { via: 'password' } });
     return new Response(JSON.stringify({ ok: true, ...(wantsToken ? { token } : {}) }), {
       status: 200,
       headers: { 'Content-Type': 'application/json', 'Set-Cookie': sessionCookieHeader(token) },
