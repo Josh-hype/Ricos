@@ -348,10 +348,15 @@ function timingSafeEqualHex(a, b) {
 
 export async function verifyWebhook(rawBody, sigHeader, env) {
   if (!sigHeader || !env.STRIPE_WEBHOOK_SECRET) return null;
-  const parts = Object.fromEntries(sigHeader.split(',').map(s => s.split('=')));
-  const t = parts.t;
-  const v1 = parts.v1;
-  if (!t || !v1) return null;
+  // A Stripe-Signature header can carry MORE THAN ONE v1 signature — notably
+  // during a webhook-secret roll, when Stripe signs each event with both the old
+  // and new secrets. We hold one secret at a time, so we must accept the event
+  // if our computed HMAC matches ANY of the provided v1 values (keeping only the
+  // last one silently rejected valid events across a roll).
+  const pairs = sigHeader.split(',').map(s => { const i = s.indexOf('='); return [s.slice(0, i), s.slice(i + 1)]; });
+  const t = pairs.find(([k]) => k === 't')?.[1];
+  const v1s = pairs.filter(([k]) => k === 'v1').map(([, v]) => v);
+  if (!t || v1s.length === 0) return null;
   const enc = new TextEncoder();
   const key = await crypto.subtle.importKey(
     'raw', enc.encode(env.STRIPE_WEBHOOK_SECRET),
@@ -360,7 +365,7 @@ export async function verifyWebhook(rawBody, sigHeader, env) {
   const sigBuf = await crypto.subtle.sign('HMAC', key, enc.encode(`${t}.${rawBody}`));
   const computed = [...new Uint8Array(sigBuf)]
     .map(b => b.toString(16).padStart(2, '0')).join('');
-  if (!timingSafeEqualHex(computed, v1)) return null;
+  if (!v1s.some(v => timingSafeEqualHex(computed, v))) return null;
   // Tolerance: 5 minutes.
   if (Math.abs(Date.now() / 1000 - Number(t)) > 300) return null;
   try { return JSON.parse(rawBody); } catch { return null; }

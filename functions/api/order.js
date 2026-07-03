@@ -79,6 +79,15 @@ export const onRequestPost = async ({ request, env }) => {
     schedule = slots[0];
   }
 
+  // A scheduled (advance) order must not land on a one-off closed day. The
+  // same-day closure is already enforced at the top; this covers a customer
+  // pre-ordering for a FUTURE date the shop has declared closed. ASAP can't hit
+  // a future closure, and if today were closed we'd have returned above.
+  if (schedule !== 'asap') {
+    const schedClosure = activeClosure(config, new Date(schedule));
+    if (schedClosure) return errJson(schedClosure.message, 400);
+  }
+
   // Capacity: enforce maxOrdersPerSlot so a time slot can't be over-booked.
   // Best-effort — KV has no compare-and-swap, so a rare simultaneous pair could
   // still slip through, but this closes the everyday over-booking gap that the

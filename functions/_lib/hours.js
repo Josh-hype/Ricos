@@ -76,6 +76,10 @@ export function listSlots(config) {
       Thu:'thursday', Fri:'friday', Sat:'saturday' })[weekdayShort];
     const conf = config.hours[dayKey];
     if (!conf || conf.closed || !Array.isArray(conf.windows)) continue;
+    // Skip a whole day that has a one-off closure — no slots should be offered
+    // for a day the shop has taken offline (matches activeClosure's date key).
+    const ymd = new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(day);
+    if (config.closures && config.closures[ymd]) continue;
     for (const w of conf.windows) {
       const start = hhmmToMin(w.open);
       const end = hhmmToMin(w.close) - lastBuffer;

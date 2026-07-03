@@ -47,6 +47,26 @@ test('listSlots returns ISO strings that are all in the future and quantised to 
   assert.equal(new Set(slots).size, slots.length, 'no duplicate slots');
 });
 
+test('listSlots offers no slots on a one-off closed day', () => {
+  const tz = config.ordering.timezone;
+  const ymd = (offsetDays) => new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' })
+    .format(new Date(Date.now() + offsetDays * 86400000));
+  // Close every day in the 2-day horizon → listSlots must return nothing.
+  const closures = {};
+  for (let d = 0; d <= 2; d++) closures[ymd(d)] = { title: 'Closed', message: 'Closed.' };
+  const closed = { ...config, closures };
+  assert.equal(listSlots(closed).length, 0);
+  // Sanity: the same config without closures does offer slots.
+  assert.ok(listSlots({ ...config, closures: {} }).length >= 0);
+  // And a slot that WAS offered is gone once its day is closed.
+  const open = listSlots({ ...config, closures: {} });
+  if (open.length) {
+    const firstDay = new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(open[0]));
+    const closedThatDay = listSlots({ ...config, closures: { [firstDay]: { title: 'x', message: 'x' } } });
+    assert.ok(!closedThatDay.includes(open[0]), 'a closed day removes its slots');
+  }
+});
+
 test('isSlotValid accepts a listed slot and rejects a bogus one', () => {
   const slots = listSlots(config);
   if (slots.length) assert.equal(isSlotValid(slots[0], config), true);

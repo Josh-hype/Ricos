@@ -21,6 +21,38 @@ import { priceCounterSale } from '../../_lib/counter-totals.js';
 import { retrievePaymentIntent, capturePaymentIntent } from '../../_lib/stripe.js';
 import { putOrder, newOrderId, nextOrderNumber } from '../../_lib/kv.js';
 
+// Verify a Terminal authorisation matches this sale, then capture it. Idempotent
+// and crash-safe: if a prior attempt already captured (status 'succeeded'), it
+// reports success without re-capturing (so a failed putOrder can be safely
+// retried), and a throwing capture call is re-checked against Stripe before we
+// ever tell staff "not charged" (a lost response must not trigger a second
+// charge). Returns { ok:true } or { ok:false, error, status }.
+async function verifyAndCapture(piId, acct, env, expectedAmountP, chargeOrderId) {
+  let pi;
+  try { pi = await retrievePaymentIntent(piId, acct, env); }
+  catch { return { ok: false, error: 'Could not verify the card payment.', status: 502 }; }
+  if (pi.status !== 'requires_capture' && pi.status !== 'succeeded') {
+    return { ok: false, error: `Card not authorised yet (${pi.status}).`, status: 409 };
+  }
+  if (pi.amount !== expectedAmountP) return { ok: false, error: 'Card amount mismatch — not captured.', status: 409 };
+  if (String(pi.currency || '').toLowerCase() !== 'gbp') return { ok: false, error: 'Card currency mismatch — not captured.', status: 409 };
+  if (pi.metadata?.orderId !== chargeOrderId) return { ok: false, error: 'Card/order mismatch — not captured.', status: 409 };
+  if (pi.status === 'requires_capture') {
+    try {
+      await capturePaymentIntent(piId, acct, env);
+    } catch {
+      // The capture call threw — but it may have actually succeeded (a dropped
+      // response). Re-check before telling staff nothing was charged.
+      let after = null;
+      try { after = await retrievePaymentIntent(piId, acct, env); } catch {}
+      if (!after || after.status !== 'succeeded') {
+        return { ok: false, error: 'Card capture failed — the customer was not charged.', status: 502 };
+      }
+    }
+  }
+  return { ok: true };
+}
+
 export const onRequestPost = async ({ request, env }) => {
   // A counter sale books real revenue — gate it on `sell` (a no-op in legacy mode)
   // and audit it, like refunds/voids.
@@ -73,19 +105,9 @@ export const onRequestPost = async ({ request, env }) => {
       const acct = config.stripe?.connectedAccountId;
       if (!acct || acct === 'TBD') return err('Card payments are not configured for this shop.', 400);
 
-      let pi;
-      try { pi = await retrievePaymentIntent(piId, acct, env); }
-      catch (e) { return err('Could not verify the card payment.', 502); }
-
-      // Mirror the web PI-match guard: capture only an authorisation that matches THIS
-      // sale, to the penny, in the right currency, for the right order.
-      if (pi.status !== 'requires_capture') return err(`Card not authorised yet (${pi.status}).`, 409);
-      if (pi.amount !== totals.totalP) return err('Card amount mismatch — not captured.', 409);
-      if (String(pi.currency || '').toLowerCase() !== 'gbp') return err('Card currency mismatch — not captured.', 409);
-      if (pi.metadata?.orderId !== chargeOrderId) return err('Card/order mismatch — not captured.', 409);
-
-      try { await capturePaymentIntent(piId, acct, env); }
-      catch (e) { return err('Card capture failed — the customer was not charged.', 502); }
+      // Verify + capture (idempotent, crash-safe — see verifyAndCapture).
+      const vc = await verifyAndCapture(piId, acct, env, totals.totalP, chargeOrderId);
+      if (!vc.ok) return err(vc.error, vc.status);
 
       id = chargeOrderId;
       paymentExtra = { intentId: piId, connectedAccountId: acct };
@@ -114,16 +136,9 @@ export const onRequestPost = async ({ request, env }) => {
       const acct = config.stripe?.connectedAccountId;
       if (!acct || acct === 'TBD') return err('Card payments are not configured for this shop.', 400);
 
-      let pi;
-      try { pi = await retrievePaymentIntent(piId, acct, env); }
-      catch (e) { return err('Could not verify the card payment.', 502); }
-      if (pi.status !== 'requires_capture') return err(`Card not authorised yet (${pi.status}).`, 409);
-      if (pi.amount !== cardP) return err('Card amount mismatch — not captured.', 409);
-      if (String(pi.currency || '').toLowerCase() !== 'gbp') return err('Card currency mismatch — not captured.', 409);
-      if (pi.metadata?.orderId !== chargeOrderId) return err('Card/order mismatch — not captured.', 409);
-
-      try { await capturePaymentIntent(piId, acct, env); }
-      catch (e) { return err('Card capture failed — the customer was not charged.', 502); }
+      // Verify + capture the CARD portion (idempotent, crash-safe).
+      const vc = await verifyAndCapture(piId, acct, env, cardP, chargeOrderId);
+      if (!vc.ok) return err(vc.error, vc.status);
 
       id = chargeOrderId;
       paymentExtra = { intentId: piId, connectedAccountId: acct };
