@@ -8,8 +8,10 @@
     "currency": "gbp",
     "_comment_sub": "Default subscription a live shop pays Lumin Labs, in pence per week (£35.00). A shop can override with its own subscription.perWeekPence below.",
     "subscriptionPerWeekPence": 3500,
-    "_comment_perOrder": "Default platform margin taken on every order, in pence (50p). Today this is collected as the Stripe Connect application_fee on each card order (it mirrors each shop's serviceFeePlatformPence). A shop can override with perOrderFeePence below.",
-    "perOrderFeePence": 50
+    "_comment_perOrder": "Default platform margin per ONLINE order, in pence (50p) — collected as the Stripe Connect application_fee at checkout (mirrors each shop's serviceFeePlatformPence). A shop can override with perOrderFeePence below.",
+    "perOrderFeePence": 50,
+    "_comment_perOrderInPerson": "Default platform margin per IN-PERSON card payment through the LumiPOS till, in pence (10p) — mirrors cardFeeP in counter-totals.js (config.payments.cardPlatformFeeP, default 10p flat). A shop can override with perOrderFeeInPersonPence below.",
+    "perOrderFeeInPersonPence": 10
   },
 
   "_comment_processors": "CARD PROCESSORS and their fees — the processor-AWARE seam. Lumin Labs' own revenue (subscription + per-order fee) does NOT depend on who processes the card; the card-PROCESSING COST does, and it's in flux (Stripe today, moving to Elavon/MWBS for cheaper online rates). Each shop names its online processor below; the dashboard prices the processing-cost line from THESE numbers, so swapping a processor re-prices the cost without touching Lumin Labs' revenue. Rates: percent of amount + fixed pence per transaction. Fill Elavon's real numbers once the MWBS ISO deal is signed.",

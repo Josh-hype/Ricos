@@ -3,8 +3,9 @@
 A private dashboard for the **platform owner** (you), separate from any shop's
 staff till. It answers two questions across **every** shop at once:
 
-1. **What is Lumin Labs earning?** — the £35/week subscriptions + the 50p
-   per-order platform fee, plus how much has actually landed in Stripe.
+1. **What is Lumin Labs earning?** — the £35/week subscriptions + the per-order
+   platform fees (50p per online order, 10p per in-person card payment through
+   the till), plus how much has actually landed in Stripe.
 2. **What is each client doing?** — order volume, gross takings, card-processing
    cost, and billing/subscription status.
 
@@ -108,6 +109,9 @@ Edit [`data/platform/registry.json`](../data/platform/registry.json):
 - Set `subscription.since` (`YYYY-MM-DD`) when the weekly fee starts billing —
   revenue accrual is clamped to it, so wide ranges ("All time") never count
   weeks from before the shop was actually paying.
+- Per-order margins default to 50p online / 10p till card (matching what
+  checkout and the LumiPOS till actually charge as the `application_fee`).
+  Override per shop with `perOrderFeePence` / `perOrderFeeInPersonPence`.
 - Set `onlineProcessor` (`stripe` now; `elavon` once migrated — fill the Elavon
   rates under `processors.elavon` first).
 

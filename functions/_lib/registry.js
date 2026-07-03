@@ -53,13 +53,23 @@ export function getProcessorRates(processorKey, channel = 'online') {
   };
 }
 
-// The per-order platform margin (pence) Lumin Labs takes for a shop — the shop's
-// own override, else the platform default, else 50p.
+// The per-order platform margin (pence) Lumin Labs takes on a shop's ONLINE
+// orders — the shop's own override, else the platform default, else 50p.
 export function perOrderFeeP(shop) {
   const override = shop && Number(shop.perOrderFeePence);
   if (override > 0) return Math.round(override);
   const dflt = Number(getPlatform().perOrderFeePence);
   return dflt > 0 ? Math.round(dflt) : 50;
+}
+
+// The platform margin (pence) on an IN-PERSON card payment through the till —
+// shop override, else platform default, else 10p (the cardFeeP default the
+// LumiPOS terminal flow actually charges as the application_fee).
+export function perOrderFeeInPersonP(shop) {
+  const override = shop && Number(shop.perOrderFeeInPersonPence);
+  if (override > 0) return Math.round(override);
+  const dflt = Number(getPlatform().perOrderFeeInPersonPence);
+  return dflt > 0 ? Math.round(dflt) : 10;
 }
 
 // The weekly subscription (pence) a shop pays — shop override, else platform default.

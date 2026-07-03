@@ -261,8 +261,11 @@ async function loadRevenue(){
     d = cache.overview[range] = r.body;           // only successful responses are cached
   }
   const t = d.totals || {};
-  const gapNote = (t.perOrderCollectedP < t.perOrderExpectedP)
-    ? ' · <span class="gap">'+gbp(t.perOrderExpectedP - t.perOrderCollectedP)+' owed off-Stripe</span>' : '';
+  // Expected is priced per channel (50p online, 10p till card). Penny-level
+  // residue (fee refunds, rounding) is normal — only flag a real shortfall.
+  const gapP = (t.perOrderExpectedP||0) - (t.perOrderCollectedP||0);
+  const gapNote = gapP > 100
+    ? ' · <span class="gap">'+gbp(gapP)+' owed off-Stripe</span>' : '';
 
   const cards = [
     {cls:'hero', k:'<span class="dot a"></span>Lumin Labs revenue', v:gbp(t.luminRevenueP), s:'Subscriptions + per-order fees · '+esc(d.range?.label||'')},
@@ -279,7 +282,7 @@ async function loadRevenue(){
     const status = s.pending ? '<span class="tag pend"><span class="dot a"></span>Pending</span>'
                  : s.live ? '<span class="tag live"><span class="dot g"></span>Live</span>'
                  : '<span class="tag"><span class="dot m"></span>Off</span>';
-    const perOrder = gbp(s.perOrderCollectedP) + (s.perOrderCollectedP < s.perOrderExpectedP
+    const perOrder = gbp(s.perOrderCollectedP) + ((s.perOrderExpectedP - s.perOrderCollectedP) > 100
         ? ' <span class="gap" title="expected '+gbp(s.perOrderExpectedP)+'">/ '+gbp(s.perOrderExpectedP)+'</span>' : '');
     return '<tr>'+
       '<td><b>'+esc(s.name)+'</b><div style="color:var(--mut);font-size:11.5px">'+esc(s.city||'')+'</div></td>'+
@@ -331,7 +334,7 @@ async function loadClients(){
       '<td><b>'+esc(s.name)+'</b><div style="color:var(--mut);font-size:11.5px">'+esc(s.city||'')+'</div></td>'+
       '<td>'+st+'</td>'+
       '<td class="num">'+gbp(s.perWeekP)+'/wk</td>'+
-      '<td class="num">'+gbp(s.perOrderFeeP)+'</td>'+
+      '<td class="num">'+gbp(s.perOrderFeeP)+' online<div style="color:var(--mut);font-size:11.5px">'+gbp(s.perOrderFeeInPersonP)+' till card</div></td>'+
       '<td>'+esc(s.onlineProcessor)+'</td>'+
       '<td>'+(s.connected?'<span style="color:var(--mut)">'+esc(s.accountMasked)+'</span>':'<span class="gap">not connected</span>')+'</td>'+
       '<td>'+esc(s.since||'—')+'</td>'+

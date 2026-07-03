@@ -3,9 +3,9 @@
 
    Lumin Labs earns two things, NEITHER of which depends on who processes the card:
      1. Subscription   — a flat weekly fee per live shop (£35/wk today).
-     2. Per-order fee  — a fixed platform margin per order (50p today), taken as
-                         the Stripe Connect application_fee while online card runs
-                         on Stripe.
+     2. Per-order fee  — a fixed platform margin per order, taken as the Stripe
+                         Connect application_fee: 50p on each ONLINE order, 10p on
+                         each IN-PERSON card payment through the till.
 
    The CARD-PROCESSING COST (the % + fixed the acquirer keeps) is a SEPARATE line
    and it's the one in flux: online card is on Stripe today (~1.5% + 20p) and is
@@ -17,7 +17,7 @@
    pulled from Stripe (or, after a processor migration, from another source) and
    it returns the numbers the dashboard shows. */
 
-import { getProcessorRates, perOrderFeeP, subscriptionWeeklyP } from './registry.js';
+import { getProcessorRates, perOrderFeeP, perOrderFeeInPersonP, subscriptionWeeklyP } from './registry.js';
 
 // Estimate the acquirer's processing fee on ONE charge, in pence.
 // channel: 'online' (web card / pay-by-link) or 'inPerson' (Terminal reader).
@@ -74,14 +74,17 @@ export function rollUp(shopStats, { fromYmd, toYmd } = {}) {
     const processingP = processingCostP({ online, inPerson }, procKey);
 
     // Lumin Labs PER-ORDER revenue, two readings:
-    //   expectedP  = orderCount × the configured platform fee — the truth, and
-    //                processor-independent (this is what Lumin Labs is owed).
+    //   expectedP  = what the configured margins say Lumin Labs is owed, priced
+    //                PER CHANNEL — 50p per online order + 10p per in-person card
+    //                payment (mirroring the application_fee checkout and the till
+    //                actually charge). Processor-independent.
     //   collectedP = what Stripe actually retained as application_fees in range.
-    // They match while everything's on Stripe; once online card moves to Elavon
-    // (no Stripe application_fee on those orders) `collected` drops below
-    // `expected`, and the gap is what Lumin Labs must invoice another way.
+    // They track each other while everything's on Stripe; once online card moves
+    // to Elavon (no Stripe application_fee on those orders) `collected` drops
+    // below `expected`, and the gap is what Lumin Labs must invoice another way.
     const feeP = perOrderFeeP(shop);
-    const perOrderExpectedP = feeP * orderCount;
+    const feeInPersonP = perOrderFeeInPersonP(shop);
+    const perOrderExpectedP = feeP * (online.count || 0) + feeInPersonP * (inPerson.count || 0);
     const perOrderCollectedP = Number(s.applicationFeesP) || 0;
 
     // Subscription accrues ONLY while the shop is actively subscribed (paying).
@@ -117,6 +120,7 @@ export function rollUp(shopStats, { fromYmd, toYmd } = {}) {
       grossP,
       processingP,
       perOrderFeeP: feeP,
+      perOrderFeeInPersonP: feeInPersonP,
       perOrderExpectedP,
       perOrderCollectedP,
       subscriptionWeeklyP: subWeeklyP,

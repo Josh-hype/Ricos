@@ -8,7 +8,7 @@
    We don't fake a shop↔subscription join (Stripe subs aren't reliably tagged per
    shop yet); both lists are returned and the page shows them together. */
 import { requireOwner } from '../../_lib/admin-auth.js';
-import { getShops, getPlatform, subscriptionWeeklyP, perOrderFeeP, getProcessorRates } from '../../_lib/registry.js';
+import { getShops, getPlatform, subscriptionWeeklyP, perOrderFeeP, perOrderFeeInPersonP, getProcessorRates } from '../../_lib/registry.js';
 import { listSubscriptions, listRecentInvoices } from '../../_lib/stripe-platform.js';
 
 // Mask an acct id for display: acct_1TbeYBJXCn3TpBE3 → acct_…TpBE3.
@@ -31,6 +31,7 @@ export const onRequestGet = async ({ request, env }) => {
     subscriptionVia: s.subscription?.via || 'stripe',
     perWeekP: subscriptionWeeklyP(s),
     perOrderFeeP: perOrderFeeP(s),
+    perOrderFeeInPersonP: perOrderFeeInPersonP(s),
     since: s.subscription?.since || null,
   }));
 
