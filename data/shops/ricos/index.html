@@ -1479,16 +1479,33 @@
   }, { rootMargin: '0px 0px -10% 0px', threshold: 0.08 });
   document.querySelectorAll('.reveal, .reveal-stagger').forEach(el => io.observe(el));
 
-  /* newsletter — fake submit (wire to Mailchimp/Klaviyo before launch) */
+  /* newsletter — records the opt-in via /api/marketing/subscribe (stored in
+     MARKETING_KV). Previously a fake submit that discarded the email while
+     telling the customer they'd subscribed. */
   const form = document.getElementById('newsletterForm');
   const ok = document.getElementById('newsletterOk');
   if (form) {
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const input = form.querySelector('input[type="email"]');
-      if (!input.value || !input.value.includes('@')) { input.focus(); return; }
+      const email = (input.value || '').trim();
+      if (!email || !email.includes('@')) { input.focus(); return; }
+      const btn = form.querySelector('button');
+      if (btn) btn.disabled = true;
+      try {
+        const res = await fetch('/api/marketing/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+        if (!res.ok) throw new Error('subscribe failed');
+        ok.textContent = 'Welcome to the family. Check your inbox.';
+        form.reset();
+      } catch (err) {
+        ok.textContent = "Hmm — that didn't go through. Please try again.";
+      }
       ok.classList.add('show');
-      form.reset();
+      if (btn) btn.disabled = false;
       setTimeout(() => ok.classList.remove('show'), 4500);
     });
   }

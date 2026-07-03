@@ -53,6 +53,8 @@
     font-size: 36px;
     line-height: 1;
   }
+  .tick.pending { background: #b7791f; }
+  .tick.fail { background: #c0392b; }
   h1 {
     font-family: 'Archivo Black', sans-serif;
     font-size: 1.8rem;
@@ -87,13 +89,18 @@
 </head>
 <body>
   <main class="card">
-    <div class="tick" aria-hidden="true">✓</div>
-    <h1>Order received</h1>
-    <p>Thanks — your order is in the kitchen's queue.</p>
-    <p class="muted" style="margin-bottom:0">Your order number</p>
-    <div class="ref" id="num">—</div>
-    <p class="muted" style="margin-top:0">Reference: <span id="ref">—</span></p>
-    <p>We'll email your <strong>order confirmation</strong> with the ready time as soon as the restaurant accepts your order — usually within ~5 minutes.</p>
+    <!-- Starts neutral ("confirming") and is resolved by the script below to a
+         success / failure / soft state based on the server's verification, so a
+         failed or unverifiable payment is never shown as a placed order. -->
+    <div class="tick pending" id="tick" aria-hidden="true">⏳</div>
+    <h1 id="title">Confirming your order…</h1>
+    <p id="lead">One moment while we confirm your payment.</p>
+    <div id="okBlock" hidden>
+      <p class="muted" style="margin-bottom:0">Your order number</p>
+      <div class="ref" id="num">—</div>
+      <p class="muted" style="margin-top:0">Reference: <span id="ref">—</span></p>
+      <p>We'll email your <strong>order confirmation</strong> with the ready time as soon as the restaurant accepts your order — usually within ~5 minutes.</p>
+    </div>
     <p class="muted">Allergies? Call the restaurant on <a href="tel:{{shopPhoneTel}}" style="color:inherit;font-weight:600">{{shopPhone}}</a> before collecting.</p>
     <div class="links">
       <a class="btn" href="/">Back to home</a>
@@ -104,17 +111,55 @@
 <script>
   const params = new URLSearchParams(location.search);
   const ref = (params.get('ref') || '').toUpperCase();
-  if (ref) {
+  const redirectStatus = params.get('redirect_status'); // Stripe appends this on its return_url
+  const tick = document.getElementById('tick');
+  const title = document.getElementById('title');
+  const lead = document.getElementById('lead');
+  const okBlock = document.getElementById('okBlock');
+  // Order states that mean the order is really placed (paid card, or a cash order
+  // that goes straight to pending_accept).
+  const PLACED = new Set(['pending_accept', 'accepted', 'ready', 'out_for_delivery', 'completed']);
+
+  function showSuccess(orderNumber) {
+    tick.className = 'tick'; tick.textContent = '✓';
+    title.textContent = 'Order received';
+    lead.textContent = "Thanks — your order is in the kitchen's queue.";
+    okBlock.hidden = false;
+    if (orderNumber) document.getElementById('num').textContent = '#' + orderNumber;
+  }
+  function showFailure() {
+    tick.className = 'tick fail'; tick.textContent = '!';
+    title.textContent = 'Payment not completed';
+    lead.innerHTML = "Your payment didn't go through, so <strong>no order was placed</strong>. Please try again — you won't be charged twice.";
+    okBlock.hidden = true;
+  }
+  function showSoft() {
+    tick.className = 'tick pending'; tick.textContent = '⏳';
+    title.textContent = 'Finalising your order';
+    lead.textContent = "We're confirming your payment and will email your order confirmation shortly — no need to reorder.";
+    okBlock.hidden = true;
+  }
+
+  if (redirectStatus === 'failed') {
+    showFailure();
+  } else if (!ref) {
+    showSoft();
+    title.textContent = 'Thanks';
+    lead.textContent = "If you've just placed an order, we'll email your confirmation shortly.";
+  } else {
     document.getElementById('ref').textContent = ref;
     document.getElementById('num').textContent = ref; // fallback until the number arrives
-    // Promote a just-paid card order into the kitchen queue right away (verified
-    // server-side), so staff see it within one poll instead of waiting for the
-    // Stripe webhook. Harmless no-op for cash / already-promoted orders. The
-    // response carries the short memorable order number, which we show big.
+    // Verify + promote the order server-side (idempotent). We branch the UI on the
+    // returned status so a failed/unverified payment is never shown as success.
     fetch(`/api/order/${encodeURIComponent(ref)}/confirm`, { method: 'POST' })
-      .then(r => r.json())
-      .then(d => { if (d && d.orderNumber) document.getElementById('num').textContent = '#' + d.orderNumber; })
-      .catch(() => {});
+      .then(r => r.json().then(d => ({ ok: r.ok, d })))
+      .then(({ ok, d }) => {
+        if (!ok || !d || !d.status) { showSoft(); return; }      // 404 / unexpected → soft
+        if (PLACED.has(d.status)) showSuccess(d.orderNumber);
+        else if (d.status === 'pending_payment') showFailure();  // payment didn't complete
+        else showSoft();                                         // verify_failed etc. — webhook backstops
+      })
+      .catch(() => showSoft());
   }
 </script>
 </body>
