@@ -47,8 +47,8 @@
       "connectedAccountId": "acct_1Tey3sJlWcdyhDMU",
       "onlineProcessor": "stripe",
       "live": true,
-      "_subscription_note": "Operating + taking orders (so per-order fees still accrue to Lumin), but the £35/wk subscription has NOT started — it won't bill until the Google Business page is under our control. When billing begins, set status:\"active\" and add a \"since\" date.",
-      "subscription": { "status": "pending", "perWeekPence": 3500, "via": "stripe" }
+      "_subscription_note": "Operating + taking orders (so per-order fees still accrue to Lumin), but the weekly subscription has NOT started yet. Agreed rate is £19/wk (a fresh Bacs Direct Debit link is being sent via scripts/setup-billing.mjs food-station). When Food Station signs the mandate, set status:\"active\" and add a \"since\" date.",
+      "subscription": { "status": "pending", "perWeekPence": 1900, "via": "stripe" }
     },
     {
       "slug": "grub-hub",

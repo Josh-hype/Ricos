@@ -40,12 +40,15 @@ const CATALOGUE = {
   software: { name: 'LumiPOS Software',      amountP: 1000, lookup: 'lumipos_software_weekly' },
   hardware: { name: 'LumiPOS Till Hardware', amountP: 1500, lookup: 'lumipos_till_hardware_weekly' },
   terminal: { name: 'LumiPOS Card Terminal', amountP: 1000, lookup: 'lumipos_card_terminal_weekly' },
+  // Food Station's agreed all-in weekly rate — a single combined line (£19),
+  // not the itemised software+hardware breakdown, so it needs its own Price.
+  fsWeekly: { name: 'LumiPOS Weekly (Food Station)', amountP: 1900, lookup: 'lumipos_food_station_weekly' },
 };
 
 // ── Who pays for what. Name/email/domain default from the shop's config.json. ──
 const SHOPS = [
   { slug: 'ricos',        items: ['software', 'hardware', 'terminal'] }, // £35/wk
-  { slug: 'food-station', items: ['software', 'hardware'] },             // £25/wk
+  { slug: 'food-station', items: ['fsWeekly'] },                         // £19/wk (agreed all-in rate)
 ];
 
 const STRIPE_BASE = 'https://api.stripe.com/v1';

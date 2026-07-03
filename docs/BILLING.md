@@ -11,14 +11,16 @@ and a one-time Direct Debit mandate link.
 
 | Item                | Price/wk | Rico's | Food Station |
 |---------------------|---------:|:------:|:------------:|
-| LumiPOS Software    |   £10    |   ✓    |      ✓       |
-| LumiPOS Till Hardware | £15    |   ✓    |      ✓       |
+| LumiPOS Software    |   £10    |   ✓    |      –       |
+| LumiPOS Till Hardware | £15    |   ✓    |      –       |
 | LumiPOS Card Terminal | £10    |   ✓    |      –       |
-| **Total**           |          | **£35**| **£25**      |
+| LumiPOS Weekly (Food Station, all-in) | £19 | – | ✓ |
+| **Total**           |          | **£35**| **£19**      |
 
 Amounts live in `scripts/setup-billing.mjs` (`CATALOGUE`, in pence) — the source
-of truth. Each item is its own Stripe Price, so a shop just includes the items it
-has (Food Station omits the terminal).
+of truth. Rico's is billed as three itemised Prices; **Food Station is on a single
+agreed all-in £19/wk Price** (`lumipos_food_station_weekly`), so it isn't the
+software+hardware breakdown.
 
 ## One-time prerequisite
 
