@@ -86,6 +86,16 @@ Add each as **encrypted** (the lock icon), not plaintext:
 - [ ] `SESSION_SECRET` — long random string; signs staff login sessions
 - [ ] `STAFF_PIN_HASH` — hash of the staff login PIN (staff enter the PIN
       at `/staff`; store its hash, not the raw PIN)
+- [ ] `MANAGER_PIN_HASH` — hash of a **separate** manager PIN that gates the
+      financial views (Today's takings / Z-report) and refund/void overrides.
+      **Leave this unset and any staff PIN can see the figures with no override
+      gate** — set it for every shop. Hash it the same way as `STAFF_PIN_HASH`.
+- [ ] `TILL_SETUP_PASSWORD` — per-shop password a LumiPOS till enters (with its
+      6-digit Restaurant ID) to provision to this shop via `/api/staff/device-setup`.
+      Unset ⇒ the ID-based setup is disabled and only the "site address" fallback
+      works. Make it different per shop.
+- [ ] *(optional)* `STAFF_USERNAME` + `STAFF_PASSWORD_HASH` — a stronger
+      username/password login for the web back office (dormant until both set).
 
 ## Phase 6 — Custom domain (~5 min, you + DNS propagation)
 

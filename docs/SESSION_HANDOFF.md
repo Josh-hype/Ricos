@@ -66,10 +66,17 @@ GitHub (this environment's git can't delete remote branches). `main == dev` as o
 everything below is shipped, tested, and live-buildable.
 
 
-**Shops:** Rico's (`ricos`, on `ricosyork.co.uk`) is set up and tested. **Food Station**
-(`food-station`) is **not launched** — its `config.json` still has a placeholder Stripe
-`connectedAccountId` + `TODO_` business fields (the build prints a loud warning for each).
-Stripe is in **TEST** mode (test card `4242 4242 4242 4242`).
+**Shops:** Rico's (`ricos`, on `ricosyork.co.uk`) and **Food Station**
+(`food-station`, `foodstationyork.uk`) are both **LIVE** — real `acct_…` Stripe
+Connect accounts and filled business fields. Stripe is in **LIVE** mode (real
+cards, real money — there is no test-card path on production). A third shop,
+**The Grub Hub** (`grub-hub`), is scaffolded but **not launched**: its
+`config.json` still has a placeholder `stripe.connectedAccountId` + `TODO_`
+business fields (the build warns for each), so its card payments are off.
+
+> ⚠️ Historical note: this handoff previously said Stripe was in TEST mode and
+> Food Station was unlaunched. Both are now false — corrected during the
+> 2026-07 codebase review.
 
 **Operators:** Rico's is in **per-operator mode** (named operators in `STAFF_LOGIN_KV` → `ops:index`).
 Operator PINs are `HMAC-SHA256(SESSION_SECRET, pin)` — **do not change `SESSION_SECRET`** or every

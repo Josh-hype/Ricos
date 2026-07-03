@@ -5,10 +5,14 @@ the project is set up. Don't invent a different structure — if something here
 seems wrong, ask before changing the architecture.
 
 This repo (`Josh-hype/Ricos`) is **one multi-tenant codebase** that powers
-**multiple restaurant websites** from a single source. Today it runs two:
+**multiple restaurant websites** from a single source. Today it runs two live
+shops, with a third scaffolded (pre-launch):
 
-- **Rico's Peri Peri** — York (slug `ricos`)
-- **Food Station** — Easingwold (slug `food-station`)
+- **Rico's Peri Peri** — York (slug `ricos`) — live
+- **Food Station** — Easingwold (slug `food-station`) — live
+- **The Grub Hub** — York (slug `grub-hub`) — pre-launch: collection-only, and
+  its `stripe.connectedAccountId` + `business` legal fields are still
+  placeholders (the build warns loudly; card payments are off until they're set).
 
 More shops are added the same way (see "Adding a new shop").
 
@@ -52,13 +56,25 @@ More shops are added the same way (see "Adding a new shop").
 | `data/_active/` | **Generated.** The active shop's `config.json` + `menu.json`, written by the build; imported by the API. Gitignored. |
 | `templates/` | **Shared** HTML/manifest templates with `{{token}}` placeholders. |
 | `functions/` | **Shared** Cloudflare Pages Functions (the backend API). |
-| `scripts/build-shop.js` | The build: resolves `SHOP_SLUG`, copies the shop's files, substitutes tokens. |
-| `public/` | **Generated** site output (gitignored) — *except* a few static files (below). |
+| `scripts/build-shop.js` | The build: resolves `SHOP_SLUG`, copies the shop's files, substitutes tokens, validates menu invariants. |
+| `public/` | **Generated** site output (gitignored) — *except* the three static files below. |
+| `templates/admin/` | **Shared** UI for the Lumin Labs owner console (a separate Pages project, built with `PLATFORM_BUILD=1`, not a `SHOP_SLUG`). |
+| `data/platform/registry.json` | Platform-level shop registry (revenue reporting / owner console). |
+| `app/` | The LumiPOS native till (Capacitor/Android wrapper around `templates/staff/`). Ships to real Sunmi tills **over the air** — see the OTA note below. |
+| `test/`, `tests/` | Unit tests (`test/auth.test.mjs`; `tests/` covers the money/logic libs — run `node --import ./tests/support/register.mjs --test tests/*.test.mjs`). |
+| `demos/`, `prototypes/` | Static mock-ups. **Not** part of any build; never served. Reference/scratch only. |
 | `docs/` | `ADDING_A_SHOP.md`, `SHOP_CHECKLIST.md`, etc. |
 
 **Static files in `public/` that ARE committed** (served as-is, not generated):
-`_headers`, `_redirects`, `robots.txt`, `sitemap.xml`, `privacy.html`,
-`terms.html`.
+just `_headers`, `_redirects`, `robots.txt`. Everything else under `public/` —
+including `privacy.html`, `terms.html`, `allergy-info.html`, `sitemap.xml`, and
+the `*.inline*.js` files — is **generated** by the build and gitignored.
+
+**Note — pushing to `main` also updates the physical tills.** A push to `main`
+that touches `templates/staff/**`, `app/web/**`, `app/scripts/sync-web.mjs`, or
+`scripts/build-shop.js` triggers `.github/workflows/ota-publish.yml`, which
+publishes a new LumiPOS bundle to Capgo's `production` channel; every live Sunmi
+till auto-updates on its next launch. Treat staff-UI pushes as fleet deploys.
 
 ---
 
@@ -78,9 +94,10 @@ More shops are added the same way (see "Adding a new shop").
   — if it shows the wrong slug, `SHOP_SLUG` is wrong.
 - **Generated files (gitignored, rebuilt every deploy):** `public/index.html`,
   `public/logo.png`, `public/menu-visual.json`, `public/order.html`,
-  `public/thank-you.html`, `public/reset-password.html`,
+  `public/thank-you.html`, `public/reset-password.html`, `public/privacy.html`,
+  `public/terms.html`, `public/allergy-info.html`, `public/sitemap.xml`,
   `public/staff/index.html`, `public/staff/manifest.json`, `public/assets/`,
-  `data/_active/`.
+  every `public/**/*.inline*.js`, `public/reader-bg.*`, and `data/_active/`.
 
 ---
 
@@ -97,9 +114,10 @@ More shops are added the same way (see "Adding a new shop").
 `data/shops/<slug>/`:
 - `config.json` — business info, theme colours + fonts, opening hours,
   delivery, `stripe.connectedAccountId` **(required)**. Delivery has two modes
-  via `fulfillment.delivery.mode`: **`outcode`** (charge by postcode area —
-  Rico's) or **`radius`** (charge by straight-line distance bands from the
-  shop, geocoded free via postcodes.io — Food Station). Default is `outcode`.
+  via `fulfillment.delivery.mode`: **`outcode`** (charge by postcode area) or
+  **`radius`** (charge by straight-line distance bands from the shop, geocoded
+  free via postcodes.io). Default is `outcode` — but **both live shops (Rico's
+  and Food Station) now use `radius`**. (Grub Hub has delivery disabled.)
 - `menu.json` — server source of truth, prices in **pence** **(required)**
 - `menu-visual.json` — customer-facing menu (names, photos, options) **(required)**
 - `logo.png` — the logo **(required — build fails without it)**
@@ -141,7 +159,15 @@ Each project (`ricos`, the Food Station project, and any future shop):
   - Email (Resend): `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_FROM_NAME`
   - SMS (Twilio): `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`
   - Sessions/staff: `SESSION_SECRET`, `STAFF_PIN_HASH` (staff log in with a
-    PIN; store its hash, never the raw PIN)
+    PIN; store its hash, never the raw PIN). Optional: `MANAGER_PIN_HASH` (a
+    second PIN gating the financial views — Today/Z-report — and manager
+    overrides; **unset ⇒ any staff PIN can see the figures and no override gate**,
+    so set it per shop). Optional web back-office login: `STAFF_USERNAME` +
+    `STAFF_PASSWORD_HASH` (a stronger username/password than the numeric PIN;
+    dormant until both are set).
+  - Address finder (optional): `IDEALPOSTCODES_API_KEY` (or legacy alias
+    `ADDRESS_LOOKUP_API_KEY`) lights up the address lookup; bind one shared
+    `ADDRESS_KV` namespace across shops to cache paid lookups platform-wide.
   - Till app setup: `TILL_SETUP_PASSWORD` (optional, per shop — the password a device
     enters alongside its 6-digit Restaurant ID to provision the LumiPOS app to this
     shop, verified by `/api/staff/device-setup`; unset ⇒ the app's "site address"
@@ -194,8 +220,9 @@ Brief shape:
 
 ## Starting a session
 
-The user will say which brand we're working on (Rico's or Food Station). That
-tells you which `data/shops/<slug>/` folder to edit and which `SHOP_SLUG` /
-Cloudflare project it maps to — but **both shops share the one `main`
-codebase**, so before assuming a change is isolated, check whether you're
-touching per-shop data or shared code.
+The user will say which brand we're working on (Rico's, Food Station, or the
+Grub Hub). That tells you which `data/shops/<slug>/` folder to edit and which
+`SHOP_SLUG` / Cloudflare project it maps to — but **all shops share the one
+`main` codebase**, so before assuming a change is isolated, check whether you're
+touching per-shop data or shared code. Remember shared changes under
+`templates/staff/**` or `app/web/**` also OTA-deploy to the live tills.

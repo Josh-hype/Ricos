@@ -20,34 +20,39 @@ For this initial launch we'll build everything once, then merge.
 2. **Workers & Pages → Create → Pages → Connect to Git** → pick the GitHub repo `Josh-hype/Ricos`.
 3. Build settings:
    - **Framework preset:** None
-   - **Build command:** *(leave empty)*
+   - **Build command:** `npm run build` — **required.** Build outputs are
+     gitignored, so a project with a blank build command ships an empty/broken
+     site. (Also set the env var `SHOP_SLUG` for this project — see step 4.)
    - **Build output directory:** `public`
    - **Root directory:** `/`
 4. Click **Save and Deploy**. The first deploy will produce a `*.pages.dev` URL that *partially* works — the API endpoints will 500 until the KV bindings and secrets are in place (next steps).
 
 ## 2. KV namespaces
 
-Pages Functions need four KV namespaces. Create them once:
+Pages Functions need **five** KV namespaces. Create them once:
 
 ```sh
 npx wrangler login
 npx wrangler kv namespace create ORDERS_KV
+npx wrangler kv namespace create CUSTOMERS_KV
 npx wrangler kv namespace create MARKETING_KV
 npx wrangler kv namespace create SLOTS_KV
 npx wrangler kv namespace create STAFF_LOGIN_KV
 ```
 
-Each command prints an `id`. In the Cloudflare dashboard, go to **your Pages project → Settings → Functions → KV namespace bindings** and add four bindings, matching the names above to the ids you just created. (Or paste them into `wrangler.toml` and let CI deploy from there.)
+Each command prints an `id`. In the Cloudflare dashboard, go to **your Pages project → Settings → Functions → KV namespace bindings** and add five bindings, matching the names above to the ids you just created. (Or paste them into `wrangler.toml` and let CI deploy from there.) `CUSTOMERS_KV` is required for accounts/saved cards — omitting it breaks sign-in and saved payment methods. (Optional: a shared `ADDRESS_KV` for the address finder's lookup cache.)
 
 ## 3. Stripe (Connect)
 
-This site charges customers a £0.35 platform service fee on top of every order. That fee flows to a **platform Stripe account** (your developer entity) via Stripe Connect, with the rest going to the **venue's connected account** (RICOS CHICKEN LIMITED). Architecture:
+This site charges customers a **£1.00** service fee on top of every online order (`serviceFeePence: 100`). Of that, the platform keeps **50p** as its `application_fee_amount` (`serviceFeePlatformPence: 50`) and the remaining 50p stays with the venue. The fee flows via Stripe Connect on a direct charge on the **venue's connected account** (RICOS CHICKEN LIMITED), with the platform's cut retained automatically. Architecture (example £14.40 basket + £1.00 fee):
 
 ```
 customer card  →  PaymentIntent on venue's connected account
-                ├──  £14.86  →  RICOS CHICKEN LIMITED Stripe balance (food + delivery)
-                └──   £0.35  →  YOUR PLATFORM Stripe balance (application_fee_amount)
+                ├──  £14.90  →  RICOS CHICKEN LIMITED Stripe balance (food + delivery + 50p shop share)
+                └──   £0.50  →  YOUR PLATFORM Stripe balance (application_fee_amount)
 ```
+
+(Counter/in-person sales suppress this service fee; the platform's per-card margin there is `cardFeeP`, default 10p.)
 
 You only need this set up once — every future venue you onboard becomes another connected account under the same platform.
 
