@@ -21,12 +21,18 @@ const fixtures = {
 };
 
 export async function resolve(specifier, context, next) {
-  const r = await next(specifier, context);
-  if (r.url.startsWith('file:')) {
-    const p = fileURLToPath(r.url);
-    if (fixtures[p]) return { ...r, url: pathToFileURL(fixtures[p]).href };
+  // Redirect the generated data/_active/*.json imports to the fixtures BEFORE
+  // trying to resolve the original — the real files are built by scripts/build-shop.js,
+  // which in CI runs AFTER the tests, so the originals may not exist yet. We
+  // resolve the specifier against the importing module ourselves and, if it's a
+  // fixture target, short-circuit to the fixture (its format is set by load()).
+  if (specifier.endsWith('.json') && context.parentURL) {
+    try {
+      const abs = fileURLToPath(new URL(specifier, context.parentURL));
+      if (fixtures[abs]) return { url: pathToFileURL(fixtures[abs]).href, shortCircuit: true };
+    } catch { /* not a file specifier — fall through */ }
   }
-  return r;
+  return next(specifier, context);
 }
 
 export async function load(url, context, next) {
