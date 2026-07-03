@@ -37,6 +37,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      # Tests run BEFORE the build here, so data/_active/*.json don't exist yet —
+      # the test loader (tests/support/loader.mjs) serves fixtures for those and
+      # must not touch the un-built originals.
       - name: Unit tests (money/logic libs + auth)
         run: |
           node --import ./tests/support/register.mjs --test tests/*.test.mjs
