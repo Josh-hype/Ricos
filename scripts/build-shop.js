@@ -152,12 +152,13 @@ if (/^(1|true|yes)$/i.test((process.env.PLATFORM_BUILD || '').trim())) {
 // var (for both Production and Preview). "ricos" is only a local-dev fallback
 // so `npm run build` works without env setup.
 const rawSlug = (process.env.SHOP_SLUG || '').trim();
-// In a Cloudflare/CI build SHOP_SLUG MUST be set explicitly — silently defaulting
-// to "ricos" there would ship Rico's site + Stripe account under another shop's
-// domain. The "ricos" fallback is a local-dev convenience only.
+// "ricos" is the historical default: the original Rico's Pages project predates
+// the SHOP_SLUG env var and relies on this fallback. WARN loudly (don't fail) if
+// it's unset in a CI/Pages build — a NON-Rico's project should set SHOP_SLUG
+// (Production AND Preview) so it can't accidentally build Rico's under its own
+// domain — but failing here would break the Rico's project's deploys.
 if (!rawSlug && (process.env.CF_PAGES || process.env.CI)) {
-  console.error('build-shop: SHOP_SLUG is not set. Set it on this Pages project (Production AND Preview) — refusing to default to "ricos" in a CI build.');
-  process.exit(1);
+  console.warn('⚠️  build-shop: SHOP_SLUG is not set in a CI/Pages build — defaulting to "ricos". If this is NOT the Rico\'s project, set SHOP_SLUG on it (Production AND Preview).');
 }
 const slug = rawSlug || 'ricos';
 const shopDir = path.join(repoRoot, 'data', 'shops', slug);
