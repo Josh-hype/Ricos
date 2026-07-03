@@ -26,8 +26,11 @@ export const onRequestPost = async ({ request, env, params }) => {
   if (!order) return j({ error: 'Order not found.' }, 404);
 
   const p = order.payment || {};
-  if (order.paymentMethod !== 'card' || !p.intentId || !['paid', 'partly_refunded'].includes(p.state)) {
-    return j({ error: 'This order has no card payment to refund.' }, 400);
+  // Refundable = a single-PI card sale: an online web card OR an in-person
+  // counter-card (Terminal) sale. Split sales carry multiple PIs (one per card
+  // part) and aren't handled here yet — see docs/TODO.md.
+  if (!['card', 'counter_card'].includes(order.paymentMethod) || !p.intentId || !['paid', 'partly_refunded'].includes(p.state)) {
+    return j({ error: 'This order has no refundable card payment.' }, 400);
   }
 
   let body;
@@ -66,19 +69,24 @@ export const onRequestPost = async ({ request, env, params }) => {
     reason = (body.reason || names.join(', ') || 'partial refund').toString().trim().slice(0, 280);
   }
 
-  // Refund the platform service fee only when this refund completes the order
-  // (cumulative reaches the total) and the fee hasn't already been returned —
-  // not the fragile `amount === total`, which mis-fired on a partial that
-  // happened to equal the total and skipped the fee on a full refund made up of
-  // several partials.
-  const willBeFullyRefunded = (prior + amount) >= total;
-  const refundFee = willBeFullyRefunded && !order.payment?.feeRefunded;
-
+  // Refund the platform's application fee IN PROPORTION to this refund. Stripe
+  // prorates `refund_application_fee`, so summed across a full refund (whether in
+  // one go or several partials) it returns the whole fee, and a standalone
+  // partial returns its proportional slice.
+  //
+  // ⚠️ POLICY CHANGE — owner sign-off before this reaches production:
+  // Previously the fee was only returned on the refund that COMPLETED the order,
+  // and the code set feeRefunded=true there — but Stripe had only prorated that
+  // one refund, so a full refund made of several partials silently kept the
+  // platform fee on the earlier partials (an under-refund to the customer/venue).
+  // Refunding proportionally on every refund fixes that. If you'd rather KEEP the
+  // fee on partial refunds and only return it in full on a completing refund,
+  // that's a different (application-fee-refund API) implementation — say the word.
   try {
     const refund = await createRefund({
       paymentIntentId: p.intentId,
       amountP: amount,
-      refundApplicationFee: refundFee,
+      refundApplicationFee: true,
       // Include the amount so two different partials issued with the same prior
       // can't share one idempotency key (which made Stripe replay the first
       // refund's result and silently under-refund the customer).
@@ -89,7 +97,6 @@ export const onRequestPost = async ({ request, env, params }) => {
     // write isn't clobbered; recordRefund de-dupes by Stripe refund id.
     const fresh = (await getOrder(id, env)) || order;
     recordRefund(fresh, { amountP: amt, reason: reason || 'full refund', stripeId: refund.id });
-    if (refundFee) fresh.payment.feeRefunded = true;
     // Attribute the refund to the operator (and approver, on manager override).
     const last = fresh.history[fresh.history.length - 1];
     if (last) { last.by = auth.operator?.name || null; if (auth.approver) last.approvedBy = auth.approver.name; }

@@ -5,13 +5,15 @@
    the money is already captured — there's no order to finalise. */
 
 import { requirePermission } from '../../../_lib/permissions.js';
+import { logAudit } from '../../../_lib/audit.js';
 import { getConfig } from '../../../_lib/config.js';
 import { cardFeeP } from '../../../_lib/counter-totals.js';
 import { createPaymentIntent, listTerminalReaders, processPaymentIntentOnReader } from '../../../_lib/stripe.js';
-import { newOrderId } from '../../../_lib/kv.js';
+import { newOrderId, putOrder, nextOrderNumber } from '../../../_lib/kv.js';
 
 export const onRequestPost = async ({ request, env }) => {
-  const denied = await requirePermission(request, env, 'sell');
+  const ctx = {};
+  const denied = await requirePermission(request, env, 'sell', ctx);
   if (denied) return denied;
 
   let body;
@@ -54,7 +56,36 @@ export const onRequestPost = async ({ request, env }) => {
     return err('The reader is busy or unavailable — try again.', 502);
   }
 
+  // Record a minimal money-only order so the sale is visible in Today/Z and is
+  // refundable. It starts 'pending_payment'; the payment_intent.succeeded webhook
+  // promotes it to a paid + COMPLETED sale. It has no items, so it never enters
+  // the kitchen queue (the webhook special-cases source 'quick-charge').
+  const at = new Date().toISOString();
+  const order = {
+    id: orderId,
+    orderNumber: await nextOrderNumber(env),
+    createdAt: at,
+    status: 'pending_payment',
+    source: 'quick-charge',
+    fulfillment: 'collection',
+    schedule: 'asap',
+    customer: { name: 'Quick charge', email: '', phone: '' },
+    address: null,
+    totals: { totalP: amountP, subtotalP: amountP, discountP: 0, deliveryFeeP: 0, serviceFeeP: 0, lines: [] },
+    paymentMethod: 'counter_card',
+    payment: { state: 'awaiting', intentId: pi.id, connectedAccountId: acct },
+    marketing: { email: false, sms: false },
+    createdBy: ctx.operator ? { id: ctx.operator.id, name: ctx.operator.name } : null,
+    history: [{ at, event: 'created', source: 'quick-charge', by: ctx.operator?.name || null }],
+  };
+  try { await putOrder(order, env); } catch (e) { console.warn('quick-charge: putOrder failed', e); }
+  await logAudit(env, {
+    op: ctx.operator?.id || null, opName: ctx.operator?.name || null,
+    action: 'quick_charge', target: orderId, details: { amountP },
+  });
+
   return Response.json({
+    orderId,
     paymentIntentId: pi.id,
     amountP,
     reader: { id: reader.id, label: reader.label || reader.device_type || 'Reader' },

@@ -19,25 +19,24 @@ const REJECTABLE_FROM = new Set(['pending_payment', 'pending_accept', 'accepted'
 // cancellation, it's flagged for a manual one.
 async function refundOnReject(order, env) {
   const p = order.payment || {};
-  if (order.paymentMethod !== 'card' || !p.intentId || !['paid', 'partly_refunded'].includes(p.state)) {
+  // Auto-refund a single-PI card sale (online web card or in-person counter card).
+  if (!['card', 'counter_card'].includes(order.paymentMethod) || !p.intentId || !['paid', 'partly_refunded'].includes(p.state)) {
     return null;
   }
   const prior = refundedSoFar(order);
   const remaining = (order.totals?.totalP || 0) - prior;
   if (remaining <= 0) return { ok: true, amountP: 0 };
-  // This refund completes the order, so return the platform fee unless an
-  // earlier refund already did.
-  const refundFee = !p.feeRefunded;
   try {
     const refund = await createRefund({
       paymentIntentId: p.intentId,
       amountP: remaining,
-      refundApplicationFee: refundFee,
+      // Prorated application-fee refund on the remaining balance (see refund.js
+      // policy note). Any earlier partials already returned their own fee slice.
+      refundApplicationFee: true,
       idempotencyKey: `refund_${p.intentId}_${prior}_${remaining}`,
     }, p.connectedAccountId, env);
     const amt = refund.amount ?? remaining;
     recordRefund(order, { amountP: amt, reason: 'order cancelled', stripeId: refund.id });
-    if (refundFee) order.payment.feeRefunded = true;
     return { ok: true, amountP: amt };
   } catch (e) {
     console.error('auto-refund failed', e);

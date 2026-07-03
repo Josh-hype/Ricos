@@ -23,7 +23,20 @@ export const onRequestPost = async ({ request, env }) => {
       order.payment = order.payment || {};
       if (!order.payment.intentId) order.payment.intentId = pi.id;
       if (!order.payment.connectedAccountId && event.account) order.payment.connectedAccountId = event.account;
-      await markOrderPaid(order, env);   // no-op if already promoted
+      if (order.source === 'quick-charge') {
+        // Money-only counter charge (no items): mark paid + completed so it counts
+        // in Today/Z and is refundable, but it never enters the kitchen queue.
+        if (order.status === 'pending_payment') {
+          const at = new Date().toISOString();
+          order.status = 'completed';
+          order.payment.state = 'paid';
+          order.payment.paidAt = at;
+          order.history.push({ at, event: 'paid' }, { at, event: 'completed' });
+          await putOrder(order, env);
+        }
+      } else {
+        await markOrderPaid(order, env);   // no-op if already promoted
+      }
     } else if (order) {
       console.warn('webhook: succeeded PI does not match order', orderId, pi.id);
     }
