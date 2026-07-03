@@ -37,6 +37,65 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(__filename), '..');
 
+/* Cross-check the dual menu files. Pure (no I/O) so it's easy to reason about and
+   test. Returns { errors, warnings }; the caller fails the build on errors. */
+function validateMenus(menu, visual) {
+  const errors = [], warnings = [];
+  const index = (arr) => {
+    const first = new Map(), dupes = new Map();
+    for (const cat of arr || []) for (const it of cat.items || []) {
+      if (!first.has(it.id)) first.set(it.id, it);
+      dupes.set(it.id, [...(dupes.get(it.id) || []), it]);
+    }
+    return { first, dupes };
+  };
+  const m = index(menu), v = index(visual);
+
+  for (const id of m.first.keys()) if (!v.first.has(id)) errors.push(`item "${id}" is in menu.json but not menu-visual.json`);
+  for (const id of v.first.keys()) if (!m.first.has(id)) errors.push(`item "${id}" is in menu-visual.json but not menu.json`);
+
+  const dupeCheck = (dupes, file) => {
+    for (const [id, list] of dupes) if (list.length > 1) {
+      const identical = list.every(x => JSON.stringify(x) === JSON.stringify(list[0]));
+      (identical ? warnings : errors).push(`${file} item "${id}" appears ${list.length}× (${identical ? 'identical cross-listing' : 'DIFFERING copies — they will silently diverge'})`);
+    }
+  };
+  dupeCheck(m.dupes, 'menu.json');
+  dupeCheck(v.dupes, 'menu-visual.json');
+
+  for (const [id, vi] of v.first) {
+    const mi = m.first.get(id);
+    if (!mi) continue;
+    if (typeof vi.price === 'number' && typeof mi.priceP === 'number' && Math.round(vi.price * 100) !== mi.priceP) {
+      errors.push(`"${id}" base price: menu-visual £${vi.price} (=${Math.round(vi.price * 100)}p) != menu.json ${mi.priceP}p`);
+    }
+    const mods = new Map((mi.modifiers || []).map(x => [x.id, x]));
+    const used = new Set();
+    for (const opt of vi.options || []) {
+      for (const ch of opt.choices || []) {
+        const priceP = Math.round((Number(ch.price) || 0) * 100);
+        const mod = mods.get(ch.id);
+        if (!mod) {
+          if (priceP > 0) errors.push(`"${id}" option "${opt.id}" choice "${ch.id}" costs £${ch.price} but has NO matching modifier in menu.json (server would drop it → undercharge)`);
+          else warnings.push(`"${id}" option "${opt.id}" choice "${ch.id}" (£0) has no menu.json modifier — the order/ticket loses its label`);
+          continue;
+        }
+        used.add(ch.id);
+        // Size-priced modifiers vary by the selected size; skip the strict flat check.
+        if (mod.priceDeltaPBySize) continue;
+        const flat = Number(mod.priceDeltaP) || 0;
+        if (flat !== priceP) errors.push(`"${id}" choice "${ch.id}": menu-visual £${ch.price} (=${priceP}p) != modifier priceDeltaP ${flat}p`);
+      }
+    }
+    for (const mod of mi.modifiers || []) {
+      if (!used.has(mod.id) && !mod.whenMeal && !mod.priceDeltaPBySize) {
+        warnings.push(`"${id}" modifier "${mod.id}" is not referenced by any menu-visual choice`);
+      }
+    }
+  }
+  return { errors, warnings };
+}
+
 /* ---------- Lumin Labs platform admin build ----------
    The owner back-office is its OWN Cloudflare Pages project off this same repo,
    selected by PLATFORM_BUILD=1 (NOT a SHOP_SLUG). It is not a shop — no menu, no
@@ -92,7 +151,15 @@ if (/^(1|true|yes)$/i.test((process.env.PLATFORM_BUILD || '').trim())) {
 // Shop selection: each Cloudflare Pages project sets its own SHOP_SLUG env
 // var (for both Production and Preview). "ricos" is only a local-dev fallback
 // so `npm run build` works without env setup.
-const slug = (process.env.SHOP_SLUG || 'ricos').trim();
+const rawSlug = (process.env.SHOP_SLUG || '').trim();
+// In a Cloudflare/CI build SHOP_SLUG MUST be set explicitly — silently defaulting
+// to "ricos" there would ship Rico's site + Stripe account under another shop's
+// domain. The "ricos" fallback is a local-dev convenience only.
+if (!rawSlug && (process.env.CF_PAGES || process.env.CI)) {
+  console.error('build-shop: SHOP_SLUG is not set. Set it on this Pages project (Production AND Preview) — refusing to default to "ricos" in a CI build.');
+  process.exit(1);
+}
+const slug = rawSlug || 'ricos';
 const shopDir = path.join(repoRoot, 'data', 'shops', slug);
 
 if (slug.startsWith('_')) {
@@ -190,6 +257,31 @@ for (const bg of ['reader-bg.jpg', 'reader-bg.png']) {
   const json = JSON.stringify(rewritten);
   fs.writeFileSync(outMenu, json);
   console.log(`build-shop: ${slug}/menu-visual.json -> public/menu-visual.json (${written.size} image(s) extracted, ${(json.length / 1024).toFixed(0)}KB JSON)`);
+}
+
+/* Menu invariant check (CLAUDE.md's "dual file, linked by id"). Nothing else
+   enforces it, and drift silently mis-prices or drops options. We FAIL the build
+   on the dangerous cases and WARN on the benign ones:
+     ERROR — an item id on only one side; a base-price mismatch (visual £ vs
+             menu pence); a priced option choice with no matching modifier (the
+             client shows +£X but the server drops it → undercharge); a modifier
+             priceDeltaP that disagrees with its visual choice; a duplicate item
+             id whose copies DIFFER.
+     WARN  — a £0 choice with no modifier (only the ticket label is lost); an
+             identical duplicate id (an intentional cross-listing); a plain
+             modifier no visual choice references. */
+{
+  const menu = JSON.parse(fs.readFileSync(path.join(shopDir, 'menu.json'), 'utf8'));
+  const visual = JSON.parse(fs.readFileSync(path.join(shopDir, 'menu-visual.json'), 'utf8'));
+  const { errors, warnings } = validateMenus(menu, visual);
+  for (const w of warnings) console.warn(`build-shop: menu warning [${slug}]: ${w}`);
+  if (errors.length) {
+    console.error(`\n❌ build-shop: "${slug}" menu.json ↔ menu-visual.json invariant violations:`);
+    for (const e of errors) console.error(`     - ${e}`);
+    console.error('   Fix the shop data (prices in menu.json are pence, menu-visual.json are pounds; ids must match).\n');
+    process.exit(1);
+  }
+  console.log(`build-shop: menu invariant check passed (${warnings.length} warning(s)).`);
 }
 
 /* Per-shop static assets (food photos etc.): copy data/shops/<slug>/assets/*
