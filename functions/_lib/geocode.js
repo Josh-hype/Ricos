@@ -14,9 +14,20 @@ export async function geocodePostcode(raw) {
   if (cache.has(pc)) return cache.get(pc);
   let coords = null;
   try {
-    const res = await fetch('https://api.postcodes.io/postcodes/' + encodeURIComponent(pc), {
-      headers: { accept: 'application/json' },
-    });
+    // Bound the third-party lookup — it sits on the live checkout path (radius
+    // delivery), so a hung postcodes.io must not stall the customer's order. On
+    // timeout/abort we fall through to null and the caller shows a soft message.
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 4000);
+    let res;
+    try {
+      res = await fetch('https://api.postcodes.io/postcodes/' + encodeURIComponent(pc), {
+        headers: { accept: 'application/json' },
+        signal: ctrl.signal,
+      });
+    } finally {
+      clearTimeout(timer);
+    }
     if (res.ok) {
       const j = await res.json();
       if (j && j.status === 200 && j.result && typeof j.result.latitude === 'number') {

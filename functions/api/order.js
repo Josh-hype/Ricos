@@ -32,8 +32,10 @@ export const onRequestPost = async ({ request, env }) => {
     if (closure) return errJson(closure.message, 503);
   }
 
-  // Customer fields.
-  const name = (input.customer?.name || '').trim();
+  // Customer fields. Strip control characters from the free-text name — it flows
+  // into the kitchen receipt (ESC/POS) and confirmation emails, so a crafted name
+  // must not carry control bytes — and cap its length.
+  const name = (input.customer?.name || '').replace(/[\u0000-\u001F\u007F]/g, ' ').trim().slice(0, 60);
   const email = (input.customer?.email || '').trim().toLowerCase();
   const phoneRaw = (input.customer?.phone || '').trim();
   const phone = normalisePhoneE164UK(phoneRaw);

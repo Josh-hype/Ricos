@@ -21,7 +21,7 @@ export function computeTotals(input, config, opts = {}) {
       if (!opts.allowCustom) return { ok: false, reason: 'Custom items are not allowed here.' };
       const qty = Math.max(1, Math.min(20, Math.floor(Number(line.qty)) || 1));
       const unitP = Math.max(0, Math.min(1000000, Math.round(Number(line.priceP) || 0)));
-      const name = (typeof line.name === 'string' ? line.name.trim() : '').slice(0, 80) || 'Custom item';
+      const name = (typeof line.name === 'string' ? line.name.replace(/[\u0000-\u001F\u007F]/g, ' ').trim() : '').slice(0, 80) || 'Custom item';
       const lineTotalP = unitP * qty;
       subtotalP += lineTotalP;
       lines.push({
@@ -103,12 +103,12 @@ export function computeTotals(input, config, opts = {}) {
       name: item.name,
       qty,
       meal: !!line.meal,
-      spice: typeof line.spice === 'string' ? line.spice.slice(0, 40) : null,
+      spice: typeof line.spice === 'string' ? line.spice.replace(/[\u0000-\u001F\u007F]/g, ' ').slice(0, 40) : null,
       modifiers: modSummaries,
       mealChoices: mealChoiceNames,
       // Per-item special instructions (free text) — capped + recorded for the
       // kitchen ticket / KDS. The client can't be trusted for length.
-      notes: (typeof line.notes === 'string' && line.notes.trim()) ? line.notes.trim().slice(0, 140) : null,
+      notes: (typeof line.notes === 'string' && line.notes.trim()) ? line.notes.replace(/[\u0000-\u001F\u007F]/g, ' ').trim().slice(0, 140) : null,
       unitPriceP: lineP,
       lineTotalP,
     });

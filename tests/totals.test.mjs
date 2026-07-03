@@ -116,3 +116,19 @@ test('notes and spice are captured and length-capped', () => {
   assert.ok(t.lines[0].notes.length <= 140);
   assert.equal(t.lines[0].spice.length, 40);
 });
+
+test('control characters are stripped from notes, spice and custom names', () => {
+  const hasCtl = (s) => [...(s || '')].some(c => c.charCodeAt(0) < 0x20 || c.charCodeAt(0) === 0x7f);
+  const ctl = String.fromCharCode(0) + String.fromCharCode(27) + String.fromCharCode(29) + String.fromCharCode(127); // NUL ESC GS DEL
+  const t = computeTotals({
+    items: [{ id: 'coke', qty: 1, notes: 'no' + ctl + 'onions', spice: ctl + 'hot' }],
+    fulfillment: 'collection',
+  }, config);
+  assert.ok(!hasCtl(t.lines[0].notes), 'notes stripped');
+  assert.ok(!hasCtl(t.lines[0].spice), 'spice stripped');
+  const c = computeTotals({
+    items: [{ custom: true, name: 'Special' + ctl + 'item', priceP: 500, qty: 1 }],
+    fulfillment: 'collection',
+  }, config, { allowCustom: true });
+  assert.ok(!hasCtl(c.lines[0].name), 'custom name stripped');
+});
