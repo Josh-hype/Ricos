@@ -1188,7 +1188,12 @@ button{cursor:pointer;border:0;background:none}
 .opt-choice:hover{border-color:var(--blue);background:var(--blue-tint-2)}
 .opt-choice:active{transform:scale(.99)}
 .opt-choice input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
-.opt-choice:has(input:checked),.opt-choice.sel{border-color:var(--blue);background:var(--blue-tint);box-shadow:inset 0 0 0 1px var(--blue)}
+/* Split into two rules on purpose: the old Sunmi T2 WebView doesn't understand
+   :has(), and an unknown selector invalidates the WHOLE rule — which would take
+   the .sel fallback (added by JS for exactly this device) down with it, leaving
+   selected options with no highlight. Separate rules degrade independently. */
+.opt-choice:has(input:checked){border-color:var(--blue);background:var(--blue-tint);box-shadow:inset 0 0 0 1px var(--blue)}
+.opt-choice.sel{border-color:var(--blue);background:var(--blue-tint);box-shadow:inset 0 0 0 1px var(--blue)}
 .opt-choice span{flex:1;font-size:15px;font-weight:600}
 .opt-choice .opt-delta{font-family:var(--mono);font-weight:600;color:var(--ink-2)}
 .opt-required-err{color:var(--red);font-size:12.5px;font-weight:600;min-height:0}
@@ -2469,7 +2474,11 @@ $('#pinForm').addEventListener('submit', async (e) => {
 });
 
 $('#logoutBtn').addEventListener('click', () => {
-  document.cookie = 'rs=; Max-Age=0; Path=/; Secure; SameSite=Lax';
+  // The `rs` session cookie is HttpOnly, so a document.cookie assignment here is a
+  // no-op and the session would survive a reload. Ask the server to expire it.
+  // Fire-and-forget (no-op for the app's bearer-token session, which is cleared
+  // client-side via EPOSNative.onSignOut below).
+  fetch('/api/staff/logout', { method: 'POST', cache: 'no-store' }).catch(() => {});
   // In the native app, clear the stored Bearer token too (no-op on the web).
   if (window.EPOSNative && window.EPOSNative.onSignOut) window.EPOSNative.onSignOut();
   // Drop the manager session too so the next person at the till has to
@@ -2868,7 +2877,10 @@ function handleOrders(orders) {
 function orderIsInstore(o) { return typeof o.source === 'string' && o.source.indexOf('counter') === 0; }
 function orderMatchesFilter(o) {
   const f = state.boardFilter;
-  if (f === 'unpaid') return (o.payment && (o.payment.state === 'unpaid' || o.payment.state === 'part_paid')) || o.paymentMethod === 'unpaid';
+  // Reuse isUnpaidOrder so the "Not paid" chip matches the red pill / complete-block
+  // exactly — it must include cash_due (online cash-on-delivery), which staff most
+  // need to chase; the old inline test omitted it.
+  if (f === 'unpaid') return isUnpaidOrder(o);
   if (f === 'instore') return orderIsInstore(o);
   if (f === 'online') return !orderIsInstore(o);
   return true; // 'all'
@@ -3926,14 +3938,17 @@ async function updateStatus(id, status) {
 // first cancel prompts for the manager/owner PIN (a manager session), after which
 // several orders can be cleared without re-entering until the session times out.
 async function cancelOrder(id) {
-  // Cancelling needs the 'void' permission — an owner or manager. Force the PIN
-  // prompt EVERY time (even if the signed-in operator could void it themselves),
-  // so a cancellation always takes a deliberate owner/manager PIN. requirePerm
-  // with force returns a short-lived authorisation token to replay on the request,
-  // or false if the prompt was dismissed / the PIN wasn't an owner/manager.
-  const token = await requirePerm('void', id, true);
-  if (!token) return;
-  doCancel(id, token);
+  // Cancelling needs the 'void' permission. In per-operator mode we FORCE the
+  // manager-PIN prompt every time (even for an operator who holds 'void'), so a
+  // cancellation always takes a deliberate owner/manager PIN. In legacy
+  // (shared-PIN, no operators) mode there are no operators to authorise against
+  // and the server already permits the void on a valid staff session, so forcing
+  // the prompt would be an impossible dead-end (no PIN can satisfy /authorize) —
+  // there we proceed without a token. requirePerm resolves: a token / 'owner'
+  // sentinel / null (allowed, no token needed) → proceed; false → dismissed.
+  const token = await requirePerm('void', id, state.operatorsEnabled);
+  if (token === false) return;
+  doCancel(id, token || undefined);
 }
 async function doCancel(id, token) {
   try {
@@ -4085,7 +4100,7 @@ $$('#saleStageMode .mode-card').forEach(b =>
 
 $('#saleFormBack').addEventListener('click', () => setView('live'));
 
-$('#saleForm').addEventListener('submit', (e) => {
+$('#saleForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const name = $('#cfName').value.trim();
   const phone = $('#cfPhone').value.trim();
@@ -4103,7 +4118,26 @@ $('#saleForm').addEventListener('submit', (e) => {
       postcode,
       notes: $('#cfNotes').value.trim(),
     };
-    sale.deliveryFeeP = lookupDeliveryFeeP(postcode);
+    // Delivery fee: outcode shops compute it locally; RADIUS shops can't (distance
+    // needs geocoding), so ask the server for the authoritative band fee. Without
+    // this the radius till showed £0 delivery and the cashier collected the wrong
+    // amount while the server recorded the real (higher) total.
+    const dCfg = (sale.config && sale.config.fulfillment && sale.config.fulfillment.delivery) || {};
+    if ((dCfg.mode || 'outcode') === 'radius') {
+      formError('');
+      try {
+        const res = await fetch('/api/delivery-quote?postcode=' + encodeURIComponent(postcode), { cache: 'no-store' });
+        const dq = await res.json().catch(() => ({}));
+        if (!dq || !dq.ok || !Number.isFinite(dq.feePence)) {
+          return formError(dq && dq.reason ? dq.reason : "Couldn't check that postcode for delivery — try again.");
+        }
+        sale.deliveryFeeP = dq.feePence;
+      } catch {
+        return formError("Couldn't check delivery for that postcode — try again.");
+      }
+    } else {
+      sale.deliveryFeeP = lookupDeliveryFeeP(postcode);
+    }
   } else {
     sale.deliveryFeeP = 0;
   }
@@ -5656,6 +5690,10 @@ async function recordExternalCard(split, payingExisting) {
 let cardPoll = null;
 async function runCardPayment(split) {
   if (sale.card) return; // a card flow is already running
+  // Remember the split context so "Try again" replays the CARD portion only — the
+  // retry button calls runCardPayment() with no args, which previously re-charged
+  // the whole total and recorded a plain card sale, double-collecting the cash part.
+  sale.retrySplit = split || null;
   const payingExisting = !!sale.payOrder;
   // Shops with their own card machine don't use a LumiPOS reader — record now.
   if (externalCardMode()) { await recordExternalCard(split, payingExisting); return; }
@@ -5763,7 +5801,7 @@ async function cancelCardPayment() {
   }
 }
 $('#cardCancel').addEventListener('click', cancelCardPayment);
-$('#cardRetry').addEventListener('click', () => { hideCardOverlay(); runCardPayment(); });
+$('#cardRetry').addEventListener('click', () => { hideCardOverlay(); runCardPayment(sale.retrySplit || undefined); });
 
 $('#payConfirm').addEventListener('click', async () => {
   if (sale.submitting) return;
