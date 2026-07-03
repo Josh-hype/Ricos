@@ -49,8 +49,8 @@
     "collection": { "enabled": true },
     "delivery": {
       "enabled": true,
-      "_comment_lateStart": "TEMPORARY date-bounded delivery start. Each \"YYYY-MM-DD\":\"HH:MM\" means online DELIVERY is only offered from that time on that shop-local date, until the day's normal close; collection is unaffected. Self-expires once the dates pass (a past date is simply ignored), so it's safe to leave — tidy up when convenient. Set for the weekend of 27-28 Jun 2026: delivery from 4:30pm.",
-      "lateStart": { "2026-06-27": "16:30", "2026-06-28": "16:30" },
+      "_comment_lateStart": "TEMPORARY date-bounded delivery start. Each \"YYYY-MM-DD\":\"HH:MM\" means online DELIVERY is only offered from that time on that shop-local date, until the day's normal close; collection is unaffected. Self-expires once the dates pass (a past date is simply ignored). Empty means no late-start in effect; add dates here when needed.",
+      "lateStart": {},
       "_comment_mode": "Delivery pricing model: 'outcode' (postcode allow-list) or 'radius' (distance bands from the shop). RICO'S USES RADIUS — the areaDescription/allowedOutcodes/feeByOutcode/blockedPrefixes below are kept for reference but IGNORED while mode is 'radius'.",
       "mode": "radius",
       "_comment_radius": "Distance-based delivery measured by DRIVING distance from the shop postcode YO24 1AZ (geocoded free via postcodes.io). We estimate driving miles as straight-line miles × roadFactor, because a road route is rarely a straight line — roadFactor 1.3 is a typical UK city/suburban figure (a straight line runs ~20-30% shorter than the actual drive). Bands are checked smallest-first; a postcode gets the first band whose maxMiles (in DRIVING miles) it falls within; anything past the largest band = no delivery. If a real village still lands in the wrong band, nudge roadFactor (higher = treats everywhere as further) or a band's maxMiles and re-test on real postcodes.",

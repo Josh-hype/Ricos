@@ -62,7 +62,6 @@ More shops are added the same way (see "Adding a new shop").
 | `data/platform/registry.json` | Platform-level shop registry (revenue reporting / owner console). |
 | `app/` | The LumiPOS native till (Capacitor/Android wrapper around `templates/staff/`). Ships to real Sunmi tills **over the air** — see the OTA note below. |
 | `test/`, `tests/` | Unit tests (`test/auth.test.mjs`; `tests/` covers the money/logic libs — run `node --import ./tests/support/register.mjs --test tests/*.test.mjs`). |
-| `demos/`, `prototypes/` | Static mock-ups. **Not** part of any build; never served. Reference/scratch only. |
 | `docs/` | `ADDING_A_SHOP.md`, `SHOP_CHECKLIST.md`, etc. |
 
 **Static files in `public/` that ARE committed** (served as-is, not generated):
