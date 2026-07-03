@@ -49,12 +49,12 @@
   .top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}
   .ranges{display:flex;gap:6px;flex-wrap:wrap}
   .chip{cursor:pointer;background:var(--panel);border:1px solid var(--line);color:var(--mut);
-    border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:600}
+    border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:600;font-family:inherit}
   .chip:hover{color:var(--ink)}
   .chip.on{background:var(--gold);border-color:var(--gold);color:#1c1606}
   .tabs{display:flex;gap:4px;margin:6px 0 18px;border-bottom:1px solid var(--line)}
   .tab{cursor:pointer;padding:10px 14px;font-size:13.5px;font-weight:700;color:var(--mut);
-    border-bottom:2px solid transparent;margin-bottom:-1px}
+    background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;font-family:inherit}
   .tab.on{color:var(--ink);border-bottom-color:var(--gold)}
 
   /* Cards */
@@ -109,7 +109,9 @@ const $ = (sel, root=document) => root.querySelector(sel);
 const app = document.getElementById('app');
 let RANGE = '30d';
 let TAB = 'revenue';
-let cache = { overview:null, clients:null };
+let SEQ = 0;                                  // increments per load; stale responses are dropped
+let cache = { overview:{}, clients:null };    // overview is keyed by range
+const clearCache = () => { cache = { overview:{}, clients:null }; };
 
 const MARK = '<svg class="mark" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
   + '<circle cx="50" cy="50" r="44" stroke="url(#lg)" stroke-width="6"/>'
@@ -118,19 +120,52 @@ const MARK = '<svg class="mark" viewBox="0 0 100 100" fill="none" xmlns="http://
 
 const gbp = (p) => '£' + (Math.round(Number(p)||0)/100).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
 const esc = (s) => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const dateShort = (iso) => { if(!iso) return '—'; try{ return new Date(iso).toLocaleDateString('en-GB',{day:'numeric',month:'short'});}catch{return '—';} };
+const dateShort = (iso) => {
+  if(!iso) return '—';
+  try{
+    const d = new Date(iso);
+    const opts = { day:'numeric', month:'short', timeZone:'Europe/London' };
+    if(d.getFullYear() !== new Date().getFullYear()) opts.year = 'numeric';
+    return d.toLocaleDateString('en-GB', opts);
+  }catch{ return '—'; }
+};
+const dateTime = (iso) => {
+  if(!iso) return '';
+  try{ return new Date(iso).toLocaleString('en-GB',{timeZone:'Europe/London',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); }
+  catch{ return ''; }
+};
 
 async function api(path, opts={}){
-  const res = await fetch(path, { credentials:'same-origin', headers:{'Content-Type':'application/json'}, ...opts });
-  let body = null; try{ body = await res.json(); }catch{}
-  return { ok:res.ok, status:res.status, body:body||{} };
+  try{
+    const res = await fetch(path, { credentials:'same-origin', headers:{'Content-Type':'application/json'}, ...opts });
+    let body = null; try{ body = await res.json(); }catch{}
+    return { ok:res.ok, status:res.status, body:body||{} };
+  }catch{
+    return { ok:false, status:0, body:{ error:'Network error — check your connection.' } };
+  }
 }
 
 async function boot(){
-  const me = (await api('/api/admin/me')).body;
+  const r = await api('/api/admin/me');
+  if(!r.ok && r.status===0){
+    app.innerHTML = '<div class="login">'+ MARK +
+      '<h1>Can’t reach the console</h1><p>'+esc(r.body.error)+'</p>'+
+      '<button class="btn full" id="retry">Try again</button></div>';
+    $('#retry').addEventListener('click', boot);
+    return;
+  }
+  const me = r.body;
   if(!me.configured){ return renderNotConfigured(); }
   if(!me.authed){ return renderLogin(me); }
   return renderDashboard(me);
+}
+
+// Replace the view with a readable failure + retry, instead of zero-filled cards.
+function viewError(msg, retry){
+  $('#view').innerHTML =
+    '<div class="banner warn"><b>Couldn’t load:</b> '+esc(msg||'request failed')+'</div>'+
+    '<button class="btn ghost" id="vretry">Try again</button>';
+  $('#vretry').addEventListener('click', retry);
 }
 
 function renderNotConfigured(){
@@ -153,11 +188,12 @@ function renderLogin(me){
     '</div>';
   const go = $('#go'), pw = $('#p'), un = $('#u');
   const submit = async () => {
-    go.disabled = true; $('#e').textContent = '';
+    go.disabled = true; go.textContent = 'Signing in…'; $('#e').textContent = '';
     const payload = { password: pw.value };
     if(un) payload.username = un.value;
     const r = await api('/api/admin/login', { method:'POST', body: JSON.stringify(payload) });
-    if(r.ok){ boot(); } else { $('#e').textContent = r.body.error || 'Sign-in failed.'; go.disabled = false; pw.value=''; pw.focus(); }
+    if(r.ok){ clearCache(); boot(); }
+    else { $('#e').textContent = r.body.error || 'Sign-in failed.'; go.disabled = false; go.textContent = 'Sign in'; pw.value=''; pw.focus(); }
   };
   go.addEventListener('click', submit);
   [pw, un].filter(Boolean).forEach(i => i.addEventListener('keydown', e => { if(e.key==='Enter') submit(); }));
@@ -171,24 +207,27 @@ function shell(me){
         '<div class="sub">Owner console'+(me.platform?.owner?' · '+esc(me.platform.owner):'')+'</div></div></div>'+
       '<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">'+
         '<div class="ranges" id="ranges"></div>'+
+        '<button class="btn ghost" id="refresh" title="Refetch from Stripe">Refresh</button>'+
         '<button class="btn ghost" id="logout">Log out</button>'+
       '</div>'+
     '</div>'+
+    (me.stripeReady===false ? '<div class="banner warn"><b>Stripe key missing:</b> set <code>STRIPE_SECRET_KEY</code> on this Cloudflare project — every figure will read £0.00 until it’s set.</div>' : '')+
     '<div class="tabs" id="tabs">'+
-      '<div class="tab" data-tab="revenue">Revenue</div>'+
-      '<div class="tab" data-tab="clients">Clients &amp; billing</div>'+
+      '<button class="tab" data-tab="revenue">Revenue</button>'+
+      '<button class="tab" data-tab="clients">Clients &amp; billing</button>'+
     '</div>'+
     '<div id="view"><div class="spin">Loading…</div></div>';
 
   const ranges = [['today','Today'],['7d','7 days'],['30d','30 days'],['90d','90 days'],['all','All time']];
-  $('#ranges').innerHTML = ranges.map(([k,l]) => '<span class="chip'+(k===RANGE?' on':'')+'" data-r="'+k+'">'+l+'</span>').join('');
+  $('#ranges').innerHTML = ranges.map(([k,l]) => '<button class="chip'+(k===RANGE?' on':'')+'" data-r="'+k+'">'+l+'</button>').join('');
   $('#ranges').querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
-    RANGE = c.dataset.r; cache.overview = null;
+    RANGE = c.dataset.r;
     $('#ranges').querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x.dataset.r===RANGE));
     if(TAB==='revenue') loadRevenue();
   }));
   $('#tabs').querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => setTab(t.dataset.tab)));
-  $('#logout').addEventListener('click', async () => { await api('/api/admin/logout',{method:'POST'}); boot(); });
+  $('#refresh').addEventListener('click', () => { clearCache(); (TAB==='revenue' ? loadRevenue : loadClients)(); });
+  $('#logout').addEventListener('click', async () => { await api('/api/admin/logout',{method:'POST'}); clearCache(); boot(); });
 }
 
 function setTab(tab){
@@ -210,10 +249,17 @@ function bannerStripe(err, truncated){
 }
 
 async function loadRevenue(){
-  const view = $('#view'); view.innerHTML = '<div class="spin">Crunching Stripe…</div>';
-  if(!cache.overview){ cache.overview = (await api('/api/admin/overview?range='+encodeURIComponent(RANGE))).body; }
-  const d = cache.overview;
-  if(d.error==='unauthorized'){ return boot(); }
+  const view = $('#view');
+  const seq = ++SEQ, range = RANGE;
+  let d = cache.overview[range];
+  if(!d){
+    view.innerHTML = '<div class="spin">Crunching Stripe…</div>';
+    const r = await api('/api/admin/overview?range='+encodeURIComponent(range));
+    if(seq !== SEQ) return;                       // superseded by a newer click
+    if(r.status===401){ clearCache(); return boot(); }
+    if(!r.ok){ return viewError(r.body.error, loadRevenue); }
+    d = cache.overview[range] = r.body;           // only successful responses are cached
+  }
   const t = d.totals || {};
   const gapNote = (t.perOrderCollectedP < t.perOrderExpectedP)
     ? ' · <span class="gap">'+gbp(t.perOrderExpectedP - t.perOrderCollectedP)+' owed off-Stripe</span>' : '';
@@ -222,7 +268,7 @@ async function loadRevenue(){
     {cls:'hero', k:'<span class="dot a"></span>Lumin Labs revenue', v:gbp(t.luminRevenueP), s:'Subscriptions + per-order fees · '+esc(d.range?.label||'')},
     {cls:'', k:'Per-order fees', v:gbp(t.perOrderCollectedP), s:(t.orderCount||0)+' orders'+gapNote},
     {cls:'', k:'Subscriptions', v:gbp(t.subscriptionAccruedP), s:gbp(t.subscriptionWeeklyRunRateP)+'/wk run-rate · '+(t.payingShops||0)+' paying'},
-    {cls:'', k:'Volume processed', v:gbp(t.grossP), s:'GMV across '+(t.shops||0)+' shops'},
+    {cls:'', k:'Volume processed', v:gbp(t.grossP), s:'GMV across '+(t.liveShops||0)+' live shop'+((t.liveShops||0)===1?'':'s')},
     {cls:'cost', k:'Card-processing cost', v:gbp(t.processingP), s:'Est. — priced per shop’s processor (Stripe today)'},
   ];
   if(d.platformBalance){
@@ -261,14 +307,21 @@ async function loadRevenue(){
       ((d.shops||[]).map(s => esc(s.name)+': '+(s.chargeCount==null?'charges n/a':s.chargeCount+' charges')+', '+(s.feeCount||0)+' fees'+(s.volumeError?' ⚠ '+esc(s.volumeError):'')).join('  ·  ') || 'none')+
     '</div>'+
     '<div class="banner info" style="margin-top:16px">The <b>card-processing cost</b> is the acquirer’s cut (Stripe ~1.5% + 20p online today) and is priced per shop from the platform registry — switch a shop to <b>Elavon</b> there and this line re-prices itself. Lumin Labs’ own revenue (subscription + per-order fee) is independent of the processor.</div>'+
-    '<div class="foot">Generated '+esc((d.generatedAt||'').replace('T',' ').slice(0,16))+' · live from the Stripe platform API</div>';
+    '<div class="foot">Generated '+esc(dateTime(d.generatedAt))+' · live from the Stripe platform API</div>';
 }
 
 async function loadClients(){
-  const view = $('#view'); view.innerHTML = '<div class="spin">Loading clients…</div>';
-  if(!cache.clients){ cache.clients = (await api('/api/admin/clients')).body; }
-  const d = cache.clients;
-  if(d.error==='unauthorized'){ return boot(); }
+  const view = $('#view');
+  const seq = ++SEQ;
+  let d = cache.clients;
+  if(!d){
+    view.innerHTML = '<div class="spin">Loading clients…</div>';
+    const r = await api('/api/admin/clients');
+    if(seq !== SEQ) return;
+    if(r.status===401){ clearCache(); return boot(); }
+    if(!r.ok){ return viewError(r.body.error, loadClients); }
+    d = cache.clients = r.body;
+  }
 
   const shopRows = (d.shops||[]).map(s => {
     const st = s.subscriptionStatus==='active' ? '<span class="tag live"><span class="dot g"></span>Active</span>'

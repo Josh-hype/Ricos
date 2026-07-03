@@ -93,7 +93,16 @@ export function rollUp(shopStats, { fromYmd, toYmd } = {}) {
     const subStatus = shop.subscription?.status || (shop.live ? 'active' : 'pending');
     const subscribed = subStatus === 'active';
     const subWeeklyP = subscriptionWeeklyP(shop);
-    const subscriptionAccruedP = subscribed ? Math.round(subWeeklyP * weeks) : 0;
+    // Accrue only from the shop's own billing start (`subscription.since`), so a
+    // wide window ("All time") never invents revenue from before the shop was
+    // billing. YMD strings compare correctly as plain strings.
+    const sinceYmd = shop.subscription?.since || null;
+    let accrualWeeks = weeks;
+    if (sinceYmd && fromYmd && toYmd) {
+      const start = sinceYmd > fromYmd ? sinceYmd : fromYmd;
+      accrualWeeks = start > toYmd ? 0 : weeksInRange(start, toYmd);
+    }
+    const subscriptionAccruedP = subscribed ? Math.round(subWeeklyP * accrualWeeks) : 0;
 
     return {
       slug: shop.slug,

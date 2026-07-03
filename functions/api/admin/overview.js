@@ -13,7 +13,7 @@
    Stripe failures degrade gracefully: the shops still render (from the registry)
    with a `stripeError` flag, rather than 500-ing the whole page. */
 import { requireOwner } from '../../_lib/admin-auth.js';
-import { getShops, getConnectedShops, getShopByAccount } from '../../_lib/registry.js';
+import { getShops, getConnectedShops } from '../../_lib/registry.js';
 import { listApplicationFees, groupFeesByAccount, chargeVolumeForAccount, retrievePlatformBalance } from '../../_lib/stripe-platform.js';
 import { rollUp } from '../../_lib/platform-revenue.js';
 

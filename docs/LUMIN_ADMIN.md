@@ -105,6 +105,9 @@ Edit [`data/platform/registry.json`](../data/platform/registry.json):
   is live) its `connectedAccountId`. A blank account id shows as **pending** and
   is skipped in Stripe aggregation.
 - Set `live: true` to count it in the subscription run-rate.
+- Set `subscription.since` (`YYYY-MM-DD`) when the weekly fee starts billing —
+  revenue accrual is clamped to it, so wide ranges ("All time") never count
+  weeks from before the shop was actually paying.
 - Set `onlineProcessor` (`stripe` now; `elavon` once migrated — fill the Elavon
   rates under `processors.elavon` first).
 
