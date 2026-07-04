@@ -5,25 +5,17 @@
    With ?to=+447…      → also sends a real test SMS and returns Twilio's exact
                         HTTP status + error code/message, so a failure is visible.
 
-   Access: a valid back-office session, OR a temporary one-click ?key= token so
-   the owner can run it from a browser address bar without a session (the till app
-   authenticates with a Bearer token, not a browser cookie). REMOVE the token once
-   SMS is confirmed working.
-
-   Safe: never returns secret values — only presence, lengths, the SID prefix,
-   and the From number (which the operator already knows). */
+   Staff-gated (back-office session). Safe: never returns secret values — only
+   presence, lengths, the SID prefix, and the From number (which the operator
+   already knows). */
 
 import { requireStaff } from '../../_lib/auth.js';
 import { normalisePhoneE164UK } from '../../_lib/sms.js';
 
-const DIAG_KEY = 'diag-9f4c7a2e8b6d1350'; // temporary; remove after SMS is fixed
-
 export const onRequestGet = async ({ request, env }) => {
+  const denied = await requireStaff(request, env);
+  if (denied) return denied;
   const url = new URL(request.url);
-  if (url.searchParams.get('key') !== DIAG_KEY) {
-    const denied = await requireStaff(request, env);
-    if (denied) return denied;
-  }
 
   const sid = env.TWILIO_ACCOUNT_SID || '';
   const token = env.TWILIO_AUTH_TOKEN || '';
