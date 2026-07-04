@@ -71,9 +71,9 @@
   "serviceFeePence": 100,
   "serviceFeePlatformPence": 50,
 
-  "_comment_stripe": "PLACEHOLDER — card payments WILL FAIL until the venue's real Stripe Connect acct_… is set here AND the platform Stripe secrets + this shop's Connect webhook are configured in Cloudflare. Orders stay off until then (the build prints a loud warning).",
+  "_comment_stripe": "Live Stripe Connect account for Mega Chippy (AYAZ LARA LTD). Platform Stripe secrets + this shop's Connect webhook (whsec) are set in Cloudflare. NOTE: the connected account is created but the owner must finish Stripe onboarding (verify owners/address/phone, bank, ID, accept terms) before it is 'charges enabled' — until then live card payments are declined by Stripe even though the id is set here.",
   "stripe": {
-    "connectedAccountId": "acct_REPLACE_WITH_STRIPE_CONNECT_ID"
+    "connectedAccountId": "acct_1TpYK4JDn2SsTUNp"
   },
 
   "pos": { "requireOrderPin": false },
