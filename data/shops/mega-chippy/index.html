@@ -8,104 +8,113 @@
 {{seoHead}}
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@600;700&family=Caveat:wght@600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Rokkitt:wght@500;600;700;800&family=Pacifico&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 <style>
   :root{
     --indigo:{{themePrimary}}; --indigo-dark:{{themePrimaryDark}}; --indigo-deep:{{themePrimaryDeep}};
     --teal:{{themeAccent}}; --teal-deep:{{themeAccentDeep}};
     --cream:{{themeBackground}}; --surface:{{themeSurface}};
-    --yellow:#F1E93B; --red:#E23A2E; --ink:#241f1a; --muted:#6a6157;
+    --yellow:#E9E63C; --red:#E23A2E; --ink:#241f1a; --muted:#6a6157;
   }
   *{box-sizing:border-box;} html,body{margin:0;} html{scroll-behavior:smooth;}
   body{font-family:'Montserrat',system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.6;overflow-x:hidden;}
-  .slab{font-family:'Zilla Slab',Rockwell,Georgia,serif;font-weight:700;line-height:1.02;}
-  .script{font-family:'Caveat',cursive;font-weight:700;}
+  /* Rockwell-style slab for headings (reference brand: RockwellStdBold) */
+  .slab{font-family:'Rokkitt',Rockwell,'Roboto Slab',Georgia,serif;font-weight:800;line-height:1.02;}
+  /* Script accent (reference brand's red brush-script logo) */
+  .script{font-family:'Pacifico',cursive;font-weight:400;}
+  /* Heavitas-style heavy caps for nav / buttons / labels */
+  .caps{font-family:'Montserrat',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.09em;}
   .wrap{max-width:1080px;margin:0 auto;padding:0 22px;}
   a{color:inherit;}
-  .btn{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:1rem;text-decoration:none;letter-spacing:.02em;
-       padding:14px 30px;border-radius:40px;border:2px solid var(--indigo);background:var(--indigo);color:#fff;
+  .btn{display:inline-flex;align-items:center;gap:10px;text-decoration:none;
+       font-family:'Montserrat',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.07em;font-size:.84rem;
+       padding:15px 28px;border-radius:40px;border:2px solid var(--indigo);background:var(--indigo);color:#fff;
        transition:transform .12s ease,box-shadow .12s ease,background .12s ease;cursor:pointer;white-space:nowrap;}
   .btn:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(62,70,186,.3);}
-  .btn svg{width:20px;height:20px;flex:0 0 auto;}
+  .btn svg{width:19px;height:19px;flex:0 0 auto;}
   .btn.ghost{background:var(--cream);color:var(--teal-deep);border-color:var(--teal);}
   .btn.ghost:hover{background:var(--teal);color:#fff;border-color:var(--teal);box-shadow:0 12px 24px rgba(84,194,204,.32);}
   .btn.light{background:#fff;color:var(--indigo);border-color:#fff;}
   .btn.light:hover{background:var(--cream);border-color:var(--cream);}
 
-  /* Marquee announcement bar — Poppies' signature yellow ticker */
-  .marquee{background:var(--yellow);color:var(--ink);overflow:hidden;white-space:nowrap;border-bottom:2px solid var(--ink);}
-  .marquee .track{display:inline-block;padding:9px 0;animation:scroll 26s linear infinite;}
-  .marquee span{font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:.82rem;padding:0 6px;}
-  .marquee .star{color:var(--red);}
+  /* Yellow marquee ticker — slab-serif caps with red stars, like the reference */
+  .marquee{background:var(--yellow);color:var(--ink);overflow:hidden;white-space:nowrap;}
+  .marquee .track{display:inline-block;padding:10px 0;animation:scroll 28s linear infinite;}
+  .marquee span{font-family:'Rokkitt',Rockwell,serif;font-weight:800;text-transform:uppercase;letter-spacing:.05em;font-size:1.02rem;padding:0 10px;}
+  .marquee .star{color:var(--red);font-family:'Montserrat',sans-serif;font-size:.9rem;vertical-align:1px;}
   @keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
   @media(prefers-reduced-motion:reduce){.marquee .track{animation:none;}}
 
-  header.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 22px;
-             background:var(--cream);border-bottom:1px solid #ece1cb;position:sticky;top:0;z-index:30;}
-  header.bar .logo img{height:56px;display:block;}
-  header.bar nav{display:flex;align-items:center;gap:26px;}
-  header.bar nav a.link{font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-size:.82rem;text-decoration:none;color:var(--ink);}
+  header.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 26px;
+             background:var(--cream);position:sticky;top:0;z-index:30;border-bottom:1px solid rgba(36,31,26,.07);}
+  header.bar .logo img{height:58px;display:block;}
+  header.bar nav{display:flex;align-items:center;gap:28px;}
+  header.bar nav a.link{font-family:'Montserrat',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.1em;font-size:.78rem;text-decoration:none;color:var(--ink);}
   header.bar nav a.link:hover{color:var(--indigo);}
-  header.bar .btn{padding:11px 22px;font-size:.85rem;text-transform:uppercase;}
+  header.bar .btn{padding:13px 24px;font-size:.78rem;}
   @media(max-width:860px){header.bar nav a.link{display:none;}}
 
-  /* Hero — dark, big slab headline, cream wave at the foot */
-  .hero{position:relative;background:radial-gradient(1100px 600px at 50% -20%,var(--indigo) 0%,var(--indigo-deep) 70%);
-        color:#fff;text-align:center;padding:70px 0 130px;overflow:hidden;}
-  .hero .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);
-               border-radius:999px;padding:7px 18px;font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:22px;}
-  .hero .badge .est{color:var(--yellow);}
-  .hero h1{font-size:clamp(2.6rem,7vw,5.2rem);margin:0;text-transform:uppercase;letter-spacing:.5px;}
-  .hero h1 .teal{color:var(--teal);}
-  .hero .sub{font-size:clamp(1.05rem,2.3vw,1.3rem);max-width:600px;margin:20px auto 30px;color:#e7e9ff;font-weight:500;}
+  /* Hero — deep indigo with a soft fish-scale sheen and cream wave, like the reference's dark photo hero */
+  .hero{position:relative;background:linear-gradient(180deg,var(--indigo-dark),var(--indigo-deep));
+        color:#fff;text-align:center;padding:76px 0 138px;overflow:hidden;}
+  .hero::before{content:'';position:absolute;inset:0;pointer-events:none;
+        background:
+          radial-gradient(circle farthest-side at 50% 135%, #0000 46%, rgba(255,255,255,.045) 47% 55%, #0000 56%) 0 0/64px 32px repeat,
+          radial-gradient(circle farthest-side at 50% 135%, #0000 46%, rgba(255,255,255,.045) 47% 55%, #0000 56%) 32px 16px/64px 32px repeat;}
+  .hero .inner{position:relative;z-index:1;}
+  .hero .script-line{display:block;color:var(--yellow);font-size:clamp(1.6rem,4vw,2.4rem);transform:rotate(-2.5deg);margin-bottom:14px;text-shadow:0 2px 12px rgba(0,0,0,.25);}
+  .hero h1{font-size:clamp(2.5rem,6vw,4rem);margin:0;text-transform:uppercase;letter-spacing:.02em;line-height:1.04;}
+  .hero .sub{font-size:clamp(1rem,2.2vw,1.18rem);max-width:580px;margin:22px auto 32px;color:#e7e9ff;font-weight:500;}
   .hero-actions{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;}
-  .wave{position:absolute;left:0;right:0;bottom:-1px;width:100%;display:block;}
+  .wave{position:absolute;left:0;right:0;bottom:-1px;width:100%;display:block;z-index:2;}
 
-  .strip{background:var(--cream);padding:26px 0 4px;}
+  .strip{background:var(--cream);padding:24px 0 2px;}
   .chips{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
-  .chip{font-family:'Zilla Slab',serif;font-weight:700;font-size:1.05rem;text-transform:uppercase;letter-spacing:.4px;color:#fff;
-        background:var(--indigo);padding:8px 22px;border-radius:999px;}
+  .chip{font-family:'Rokkitt',Rockwell,serif;font-weight:800;font-size:1.05rem;text-transform:uppercase;letter-spacing:.06em;color:#fff;
+        background:var(--indigo);padding:8px 22px;border-radius:40px;}
   .chip:nth-child(2n){background:var(--teal);} .chip:nth-child(3n){background:var(--red);}
 
-  section.pad{padding:60px 0;}
+  section.pad{padding:62px 0;}
   .sec-head{text-align:center;max-width:660px;margin:0 auto 40px;}
-  .sec-head .kick{color:var(--red);font-weight:800;text-transform:uppercase;letter-spacing:.14em;font-size:.82rem;display:block;margin-bottom:8px;}
-  .sec-head h2{font-size:clamp(2rem,4.8vw,3rem);color:var(--indigo);margin:0 0 10px;text-transform:uppercase;letter-spacing:.5px;}
+  .sec-head .kick{color:var(--red);font-weight:800;text-transform:uppercase;letter-spacing:.16em;font-size:.78rem;display:block;margin-bottom:10px;}
+  .sec-head h2{font-size:clamp(2rem,4.4vw,3.1rem);color:var(--indigo);margin:0 0 10px;text-transform:uppercase;letter-spacing:.02em;}
   .sec-head p{color:var(--muted);margin:0;font-weight:500;}
 
   .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
-  .card{background:var(--surface);border:1px solid #efe4cf;border-radius:18px;padding:32px 26px;text-align:center;
-        box-shadow:0 10px 30px rgba(36,31,26,.06);transition:transform .15s ease,box-shadow .15s ease;}
-  .card:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(36,31,26,.12);}
-  .card .ic{display:grid;place-items:center;width:66px;height:66px;margin:0 auto 16px;border-radius:50%;background:var(--cream);font-size:1.9rem;}
-  .card h3{font-family:'Zilla Slab',serif;font-weight:700;font-size:1.3rem;color:var(--indigo);margin:0 0 8px;text-transform:uppercase;letter-spacing:.4px;}
-  .card p{margin:0;color:var(--muted);font-size:.98rem;}
+  .card{background:var(--surface);border-radius:10px;padding:34px 26px;text-align:center;
+        box-shadow:0 10px 30px rgba(36,31,26,.07);transition:transform .15s ease,box-shadow .15s ease;}
+  .card:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(36,31,26,.13);}
+  .card .ic{display:grid;place-items:center;width:68px;height:68px;margin:0 auto 18px;border-radius:50%;background:var(--cream);font-size:1.9rem;}
+  .card h3{font-family:'Rokkitt',Rockwell,serif;font-weight:800;font-size:1.45rem;color:var(--indigo);margin:0 0 8px;text-transform:uppercase;letter-spacing:.03em;}
+  .card p{margin:0;color:var(--muted);font-size:.97rem;}
 
   .visit{background:var(--indigo);color:#fff;}
-  .visit .wrap{padding:60px 22px;}
+  .visit .wrap{padding:62px 22px;}
+  .visit h2{font-size:clamp(2rem,4.4vw,3.1rem);margin:0 0 34px;text-align:center;text-transform:uppercase;letter-spacing:.02em;}
+  .visit h2 .script{display:block;text-transform:none;letter-spacing:0;color:var(--yellow);font-size:clamp(1.3rem,2.8vw,1.7rem);margin-bottom:8px;transform:rotate(-2deg);}
   .visit-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;}
-  .vcard{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.2);border-radius:18px;padding:30px;}
-  .vcard h3{font-family:'Zilla Slab',serif;font-weight:700;font-size:1.3rem;margin:0 0 18px;text-transform:uppercase;letter-spacing:.4px;display:flex;align-items:center;gap:10px;}
+  .vcard{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:30px;}
+  .vcard h3{font-family:'Rokkitt',Rockwell,serif;font-weight:800;font-size:1.5rem;margin:0 0 18px;text-transform:uppercase;letter-spacing:.03em;display:flex;align-items:center;gap:10px;}
   .hours{list-style:none;margin:0;padding:0;}
   .hours li{display:flex;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.16);font-weight:500;}
   .hours li:last-child{border-bottom:0;}
-  .hours li b{font-family:'Zilla Slab',serif;font-weight:700;white-space:nowrap;}
-  .addr{font-size:1.3rem;font-weight:700;margin:0 0 8px;line-height:1.4;}
+  .hours li b{font-family:'Rokkitt',Rockwell,serif;font-weight:800;font-size:1.12rem;white-space:nowrap;}
+  .addr{font-size:1.28rem;font-weight:700;margin:0 0 8px;line-height:1.4;}
   .visit .note{color:#dfe2ff;font-weight:500;margin:0 0 22px;}
   .v-actions{display:flex;flex-wrap:wrap;gap:12px;}
   .visit .btn.ghost{background:transparent;border-color:#fff;color:#fff;}
   .visit .btn.ghost:hover{background:#fff;color:var(--indigo);}
 
-  .cta{text-align:center;padding:74px 22px;background:var(--cream);}
-  .cta .fish{font-size:2.4rem;}
-  .cta h2{font-family:'Zilla Slab',serif;font-weight:700;font-size:clamp(2.2rem,5.5vw,3.6rem);color:var(--indigo);margin:6px 0 12px;text-transform:uppercase;letter-spacing:.5px;}
-  .cta p{color:var(--muted);font-weight:500;max-width:520px;margin:0 auto 28px;}
+  .cta{text-align:center;padding:76px 22px;background:var(--cream);}
+  .cta .script{display:block;color:var(--red);font-size:clamp(1.5rem,3.4vw,2.1rem);transform:rotate(-2deg);margin-bottom:6px;}
+  .cta h2{font-size:clamp(2.2rem,5vw,3.1rem);color:var(--indigo);margin:0 0 12px;text-transform:uppercase;letter-spacing:.02em;}
+  .cta p{color:var(--muted);font-weight:500;max-width:520px;margin:0 auto 30px;}
 
   footer{background:var(--indigo-deep);color:#c7cbef;}
   .foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:30px;max-width:1080px;margin:0 auto;padding:52px 22px 28px;}
-  .foot-brand img{height:56px;display:block;margin-bottom:14px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.3));}
+  .foot-brand img{height:54px;display:block;margin-bottom:14px;}
   .foot-brand p{margin:0;max-width:320px;font-size:.92rem;line-height:1.7;}
-  .foot-col h4{font-family:'Zilla Slab',serif;font-weight:700;color:#fff;font-size:1.05rem;margin:0 0 14px;text-transform:uppercase;letter-spacing:.4px;}
+  .foot-col h4{font-family:'Rokkitt',Rockwell,serif;font-weight:800;color:#fff;font-size:1.2rem;margin:0 0 14px;text-transform:uppercase;letter-spacing:.04em;}
   .foot-col p{margin:0 0 8px;font-size:.92rem;line-height:1.6;}
   .foot-col a{color:#fff;font-weight:600;text-decoration:none;}
   .foot-bottom{border-top:1px solid rgba(255,255,255,.14);display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;
@@ -135,22 +144,28 @@
     <nav>
       <a class="link" href="/order">Menu</a>
       <a class="link" href="#visit">Find us</a>
-      <a class="link" href="tel:{{shopPhoneTel}}">Call</a>
+      <a class="link" href="tel:{{shopPhoneTel}}">Call us</a>
       <a href="/order" class="btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.3 2.3a1 1 0 0 0 .7 1.7H17"/><circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.2 12c2.4-3.6 5.9-5.3 9.6-4.7 1.9.3 3.6 2 4.7 4.7-1.1 2.7-2.8 4.4-4.7 4.7-3.7.6-7.2-1.1-9.6-4.7z"/><path d="M6.2 12 2.6 15V9l3.6 3z"/><circle cx="16.6" cy="10.8" r=".6" fill="currentColor"/></svg>
         Click + Collect
       </a>
     </nav>
   </header>
 
   <section class="hero">
-    <div class="wrap">
-      <span class="badge">🐟 <span class="est">Fresh</span> · Fried to order · {{shopCity}}</span>
-      <h1 class="slab">Welcome to<br><span class="teal">{{shopName}}</span></h1>
+    <div class="wrap inner">
+      <span class="script script-line">Proper fish &amp; chips</span>
+      <h1 class="slab">Welcome to<br>{{shopName}}</h1>
       <p class="sub">Sustainable cod &amp; haddock, chunky hand-cut chips and all the chippy classics — fried the moment you order. Skip the queue: order online and collect it hot.</p>
       <div class="hero-actions">
-        <a href="/order" class="btn light">Order now →</a>
-        <a href="tel:{{shopPhoneTel}}" class="btn ghost">📞 {{shopPhone}}</a>
+        <a href="/order" class="btn light">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.2 12c2.4-3.6 5.9-5.3 9.6-4.7 1.9.3 3.6 2 4.7 4.7-1.1 2.7-2.8 4.4-4.7 4.7-3.7.6-7.2-1.1-9.6-4.7z"/><path d="M6.2 12 2.6 15V9l3.6 3z"/><circle cx="16.6" cy="10.8" r=".6" fill="currentColor"/></svg>
+          Order now
+        </a>
+        <a href="tel:{{shopPhoneTel}}" class="btn ghost">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.5 2.8.7a2 2 0 0 1 1.8 2z"/></svg>
+          {{shopPhone}}
+        </a>
       </div>
     </div>
     <svg class="wave" viewBox="0 0 1440 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path fill="{{themeBackground}}" d="M0,50 C240,90 480,90 720,60 C960,30 1200,20 1440,55 L1440,90 L0,90 Z"/></svg>
@@ -177,6 +192,7 @@
   </div></section>
 
   <section class="visit" id="visit"><div class="wrap">
+    <h2 class="slab"><span class="script">Come &amp; get it</span>Find us in {{shopCity}}</h2>
     <div class="visit-grid">
       <div class="vcard">
         <h3>🕒 Opening hours</h3>
@@ -186,22 +202,25 @@
         </ul>
       </div>
       <div class="vcard">
-        <h3>📍 Find us</h3>
+        <h3>📍 Where to find us</h3>
         <p class="addr">{{shopAddressLine1}}<br>{{shopCity}}, {{shopPostcode}}</p>
         <p class="note">🛍️ Collection only — order online and pick it up fresh.</p>
         <div class="v-actions">
-          <a href="/order" class="btn light">Order online →</a>
-          <a href="tel:{{shopPhoneTel}}" class="btn ghost">📞 {{shopPhone}}</a>
+          <a href="/order" class="btn light">Order online</a>
+          <a href="tel:{{shopPhoneTel}}" class="btn ghost">{{shopPhone}}</a>
         </div>
       </div>
     </div>
   </div></section>
 
   <section class="cta">
-    <div class="fish">🐟🍟</div>
-    <h2 class="slab">Hungry yet?</h2>
+    <span class="script">Hungry yet?</span>
+    <h2 class="slab">Get your order in</h2>
     <p>Order online in a couple of taps and collect your fish &amp; chips hot from {{shopAddressLine1}}, {{shopCity}}.</p>
-    <a href="/order" class="btn">Start your order →</a>
+    <a href="/order" class="btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.2 12c2.4-3.6 5.9-5.3 9.6-4.7 1.9.3 3.6 2 4.7 4.7-1.1 2.7-2.8 4.4-4.7 4.7-3.7.6-7.2-1.1-9.6-4.7z"/><path d="M6.2 12 2.6 15V9l3.6 3z"/><circle cx="16.6" cy="10.8" r=".6" fill="currentColor"/></svg>
+      Start your order
+    </a>
   </section>
 
   <footer>
@@ -218,7 +237,7 @@
       <div class="foot-col">
         <h4>Opening hours</h4>
         <p>Tue – Sat · 11:30am – 8:50pm<br>Sun &amp; Mon · 3:00pm – 8:50pm</p>
-        <a href="/order" class="btn" style="margin-top:6px;padding:10px 22px;font-size:.85rem;text-transform:uppercase;">Order now →</a>
+        <a href="/order" class="btn light" style="margin-top:8px;padding:11px 22px;font-size:.76rem;">Order now</a>
       </div>
     </div>
     <div class="foot-bottom">

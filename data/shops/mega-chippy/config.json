@@ -28,7 +28,7 @@
     "sameAs": []
   },
 
-  "_comment_theme": "Palette + type taken from the customer's reference brand (Poppies Fish & Chips): CREAM background #FFF7E8 (never a cold white), indigo #3E46BA = primary (the pill buttons, headings, links), teal #54C2CC = secondary accent, and a warm heritage red #E23A2E for small highlights (star/badge, echoing Poppies' red script logo). Headings use a Rockwell-style bold SLAB SERIF (Zilla Slab — the reference brand's heading stack is 'RockwellStdBold') over Montserrat body (the reference brand's body face). The shared order template puts light text on the primary colour, so primary stays dark enough for white text.",
+  "_comment_theme": "Palette + type taken from the customer's reference brand (Poppies Fish & Chips): CREAM background #FFF7E8 (never a cold white), indigo #3E46BA = primary (the pill buttons, headings, links), teal #54C2CC = secondary accent, and a warm heritage red #E23A2E for highlights (script wordmark / stars, echoing Poppies' red script logo). Type per the reference: headings = Rockwell Bold ('RockwellStdBold') → Rokkitt, its closest Google Fonts clone; UI caps (nav/buttons) = Heavitas → Montserrat ExtraBold uppercase; body = Montserrat; script accents = Pacifico (stand-in for the red brush-script logo). The shared order template puts light text on the primary colour, so primary stays dark enough for white text.",
   "theme": {
     "primary":     "#3E46BA",
     "primaryDark":  "#31379A",
@@ -39,11 +39,11 @@
     "surface":      "#FFFFFF",
     "chrome":       "#3E46BA",
     "fonts": {
-      "link":       "https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@600;700&family=Caveat:wght@500;700&family=Montserrat:wght@400;500;600;700;800&display=swap",
-      "display":    "'Zilla Slab', Rockwell, Georgia, serif",
-      "displayAlt": "'Zilla Slab', Rockwell, Georgia, serif",
+      "link":       "https://fonts.googleapis.com/css2?family=Rokkitt:wght@500;600;700;800&family=Pacifico&family=Montserrat:wght@400;500;600;700;800;900&display=swap",
+      "display":    "'Rokkitt', Rockwell, 'Roboto Slab', Georgia, serif",
+      "displayAlt": "'Rokkitt', Rockwell, 'Roboto Slab', Georgia, serif",
       "body":       "'Montserrat', system-ui, sans-serif",
-      "hand":       "'Caveat', cursive"
+      "hand":       "'Pacifico', cursive"
     }
   },
 
