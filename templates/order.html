@@ -1770,7 +1770,7 @@ function itemRowHTML(item) {
     <button class="item-row${soldOut ? ' soldout' : ''}" type="button" data-id="${item.id}"${soldOut ? ' aria-disabled="true"' : ''} aria-label="${soldOut ? 'Sold out — ' : 'View '}${escapeHTML(item.name)}">
       <div class="item-row-main">
         <h3 class="item-row-name">${escapeHTML(item.name)}${tag}</h3>
-        <p class="item-row-desc">${escapeHTML(item.desc)}</p>
+        ${item.desc ? `<p class="item-row-desc">${escapeHTML(item.desc)}</p>` : ''}
       </div>
       <div class="item-row-right">
         <span class="item-row-price">${fmt(item.price)}</span>
@@ -2023,7 +2023,7 @@ function itemDetailHTML(item) {
     <div class="${photoClass}">${photo}</div>
     <h4 class="item-detail-name">${escapeHTML(item.name)}</h4>
     <div class="item-detail-price" id="itemDetailPrice">${fmt(item.price)}</div>
-    <p class="item-detail-desc">${escapeHTML(item.desc)}</p>
+    ${item.desc ? `<p class="item-detail-desc">${escapeHTML(item.desc)}</p>` : ''}
     <div class="item-detail-controls">
       ${optionGroupsHTML(item)}
       ${spiceField}
