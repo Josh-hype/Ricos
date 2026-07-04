@@ -139,9 +139,13 @@
     .foot-brand .logo-badge,.foot-brand p{margin-left:auto;margin-right:auto;}
     .foot-bottom{justify-content:center;text-align:center;}
     .v-actions{justify-content:center;}
-    /* Balanced hero on phones — trimmed from desktop, but not cramped */
-    .hero{padding:62px 0 100px;}
-    .hero .sub{margin:18px auto 28px;}
+    /* Roomier hero on phones — taller, stacked CTAs, more line spacing */
+    .hero{padding:80px 0 120px;}
+    .hero .script-line{margin-bottom:18px;}
+    .hero h1{line-height:1.12;}
+    .hero .sub{margin:28px auto 36px;line-height:1.75;}
+    .hero-actions{flex-direction:column;align-items:center;gap:16px;}
+    .hero-actions .btn{width:min(330px,84%);justify-content:center;}
   }
 </style>
 </head>
