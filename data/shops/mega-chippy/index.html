@@ -39,7 +39,8 @@
 
   /* Yellow marquee ticker — slab-serif caps with red stars, like the reference */
   .marquee{background:var(--yellow);color:var(--ink);overflow:hidden;white-space:nowrap;}
-  .marquee .track{display:inline-block;padding:10px 0;animation:scroll 28s linear infinite;}
+  .marquee .track{display:inline-flex;align-items:center;padding:10px 0;animation:scroll 55s linear infinite;will-change:transform;}
+  .marquee .set{display:inline-flex;align-items:center;flex:0 0 auto;}
   .marquee span{font-family:'Rokkitt',Rockwell,serif;font-weight:800;text-transform:uppercase;letter-spacing:.05em;font-size:1.02rem;padding:0 10px;}
   .marquee .star{color:var(--red);font-family:'Montserrat',sans-serif;font-size:.9rem;vertical-align:1px;}
   @keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
@@ -48,8 +49,8 @@
   header.bar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 36px;
              background:var(--cream);position:sticky;top:0;z-index:30;border-bottom:1px solid rgba(36,31,26,.07);}
   header.bar .logo img{height:78px;display:block;}
-  header.bar nav{display:flex;align-items:center;gap:38px;}
-  header.bar nav a.link{font-family:'Montserrat',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.11em;font-size:1rem;text-decoration:none;color:var(--ink);}
+  header.bar nav{display:flex;align-items:center;gap:30px;}
+  header.bar nav a.link{font-family:'Montserrat',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.1em;font-size:.82rem;text-decoration:none;color:var(--ink);}
   header.bar nav a.link:hover{color:var(--indigo);}
   header.bar .btn{padding:17px 30px;font-size:.95rem;}
   header.bar .btn svg{width:22px;height:22px;}
@@ -144,8 +145,7 @@
 
   <div class="marquee" aria-hidden="true">
     <div class="track">
-      <span>Freshly fried to order</span><span class="star">★</span><span>Proper fish &amp; chips in {{shopCity}}</span><span class="star">★</span><span>Order online · skip the queue</span><span class="star">★</span><span>Back your local chippy</span><span class="star">★</span>
-      <span>Freshly fried to order</span><span class="star">★</span><span>Proper fish &amp; chips in {{shopCity}}</span><span class="star">★</span><span>Order online · skip the queue</span><span class="star">★</span><span>Back your local chippy</span><span class="star">★</span>
+      <span class="set"><span>Freshly fried to order</span><span class="star">★</span><span>Proper fish &amp; chips in {{shopCity}}</span><span class="star">★</span><span>Order online · skip the queue</span><span class="star">★</span><span>Back your local chippy</span><span class="star">★</span><span>Freshly fried to order</span><span class="star">★</span><span>Proper fish &amp; chips in {{shopCity}}</span><span class="star">★</span><span>Order online · skip the queue</span><span class="star">★</span><span>Back your local chippy</span><span class="star">★</span></span><span class="set"><span>Freshly fried to order</span><span class="star">★</span><span>Proper fish &amp; chips in {{shopCity}}</span><span class="star">★</span><span>Order online · skip the queue</span><span class="star">★</span><span>Back your local chippy</span><span class="star">★</span><span>Freshly fried to order</span><span class="star">★</span><span>Proper fish &amp; chips in {{shopCity}}</span><span class="star">★</span><span>Order online · skip the queue</span><span class="star">★</span><span>Back your local chippy</span><span class="star">★</span></span>
     </div>
   </div>
 
