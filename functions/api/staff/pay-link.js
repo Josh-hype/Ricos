@@ -120,6 +120,10 @@ export const onRequestPost = async ({ request, env }) => {
   }
   const link = session.url;
   if (!link) return err('Stripe did not return a payment link.', 502);
+  // Text a SHORT branded link that 302-redirects to the (long) Stripe Checkout URL.
+  // The raw Stripe URL is ~600 chars with a #fragment; SMS clients truncate it so the
+  // tap opens a broken page. /pay/:id looks the order up and forwards to `payment.link`.
+  const payUrl = domain ? `https://${domain}/pay/${id}` : link;
 
   const order = {
     id,
@@ -151,7 +155,7 @@ export const onRequestPost = async ({ request, env }) => {
 
   // Text the link. Falls back gracefully — if Twilio isn't configured or errors,
   // we still return the link so the till can show a "copy link" button instead.
-  const smsBody = `${tradingName}: tap to pay for order #${orderNumber} (£${(totals.totalP / 100).toFixed(2)}) — ${link}`;
+  const smsBody = `${tradingName}: tap to pay for order #${orderNumber} (£${(totals.totalP / 100).toFixed(2)}) — ${payUrl}`;
   let smsRes;
   try { smsRes = await sendSms({ to: phone, body: smsBody }, env); }
   catch (e) { smsRes = { error: String(e?.message || e) }; }
@@ -164,7 +168,8 @@ export const onRequestPost = async ({ request, env }) => {
     details: { mode, totalP: totals.totalP, smsSent },
   });
 
-  return Response.json({ ok: true, order, link, smsSent });
+  // Return the short link too, so the till's "copy link" fallback shares it.
+  return Response.json({ ok: true, order, link: payUrl, smsSent });
 };
 
 function err(error, status) {
