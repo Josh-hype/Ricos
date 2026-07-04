@@ -50,8 +50,20 @@
   "fulfillment": {
     "collection": { "enabled": true },
     "delivery": {
-      "_comment": "Collection-only for now. To switch delivery on, set enabled:true and add a radius block (charge by straight-line distance from the shop — origin defaults to the shop's own postcode YO24 3AQ) or an outcode block. See data/shops/_template/config.json and docs/ADDING_A_SHOP.md. Need the shop's delivery areas + fees + minimum order first.",
-      "enabled": false
+      "_comment": "Radius/distance delivery. The customer postcode is geocoded (postcodes.io, free, no key) and the straight-line distance from the shop (origin defaults to business.address.postcode YO24 3AQ) selects a band fee. Owner-agreed shape: £1.50 first mile then +£1/mile, up to a 4-mile limit (beyond = no delivery). CONFIRM the exact bands/fees + max distance with the owner before go-live.",
+      "enabled": true,
+      "mode": "radius",
+      "minimumOrderPence": 1000,
+      "areaDescription": "within 4 miles of us in York",
+      "radius": {
+        "maxMiles": 4,
+        "bands": [
+          { "maxMiles": 1, "feePence": 150 },
+          { "maxMiles": 2, "feePence": 250 },
+          { "maxMiles": 3, "feePence": 350 },
+          { "maxMiles": 4, "feePence": 450 }
+        ]
+      }
     }
   },
 
