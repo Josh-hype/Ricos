@@ -1,9 +1,14 @@
-/* GET /api/staff/sms-test — Twilio SMS diagnostics (staff-gated).
+/* GET /api/staff/sms-test — Twilio SMS diagnostics.
 
    With no query      → reports whether the Twilio secrets are present on THIS
                         deployment, and the Account SID type (AC vs SK).
    With ?to=+447…      → also sends a real test SMS and returns Twilio's exact
                         HTTP status + error code/message, so a failure is visible.
+
+   Access: a valid back-office session, OR a temporary one-click ?key= token so
+   the owner can run it from a browser address bar without a session (the till app
+   authenticates with a Bearer token, not a browser cookie). REMOVE the token once
+   SMS is confirmed working.
 
    Safe: never returns secret values — only presence, lengths, the SID prefix,
    and the From number (which the operator already knows). */
@@ -11,9 +16,14 @@
 import { requireStaff } from '../../_lib/auth.js';
 import { normalisePhoneE164UK } from '../../_lib/sms.js';
 
+const DIAG_KEY = 'diag-9f4c7a2e8b6d1350'; // temporary; remove after SMS is fixed
+
 export const onRequestGet = async ({ request, env }) => {
-  const denied = await requireStaff(request, env);
-  if (denied) return denied;
+  const url = new URL(request.url);
+  if (url.searchParams.get('key') !== DIAG_KEY) {
+    const denied = await requireStaff(request, env);
+    if (denied) return denied;
+  }
 
   const sid = env.TWILIO_ACCOUNT_SID || '';
   const token = env.TWILIO_AUTH_TOKEN || '';
@@ -31,10 +41,10 @@ export const onRequestGet = async ({ request, env }) => {
   if (!token) hints.push('TWILIO_AUTH_TOKEN is MISSING on this deployment.');
   if (!from) hints.push('TWILIO_FROM_NUMBER is MISSING on this deployment.');
   else if (!/^\+/.test(from)) hints.push('TWILIO_FROM_NUMBER should be a Twilio number in +44… (E.164) format.');
-  if (sid && token && from && hints.length === 0) hints.push('All three secrets are present and look well-formed. Add ?to=+447XXXXXXXXX to send a real test and see Twilio’s response.');
+  if (sid && token && from && hints.length === 0) hints.push('All three secrets are present and look well-formed. Add &to=+447XXXXXXXXX to send a real test and see Twilio’s response.');
 
   let send = null;
-  const toRaw = new URL(request.url).searchParams.get('to');
+  const toRaw = url.searchParams.get('to');
   if (toRaw) {
     const to = normalisePhoneE164UK(toRaw);
     if (!to) {
@@ -74,7 +84,7 @@ export const onRequestGet = async ({ request, env }) => {
   }
 
   return Response.json(
-    { ok: true, env: report, hints, send, usage: 'Append ?to=+447XXXXXXXXX to this URL to send a real test SMS.' },
+    { ok: true, env: report, hints, send, usage: 'Append &to=+447XXXXXXXXX to send a real test SMS.' },
     { headers: { 'Cache-Control': 'no-store' } },
   );
 };
