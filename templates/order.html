@@ -995,6 +995,11 @@
   .opt-choice .opt-delta { margin-left: auto; font-weight: 700; color: var(--primary, #c8261c); }
   .opt-required-note { color: #c0392b; font-size: 0.8rem; margin: 2px 0 0; min-height: 1em; }
   .opt-required-note:empty { min-height: 0; }
+  /* Count hint on option legends (e.g. "· choose 3") and dimmed choices once a
+     multi-select group has hit its max. Gated: only render where min/max set. */
+  .opt-group legend .opt-hint { font-weight: 700; font-size: 0.8rem; color: var(--ink-soft, #6a6157); }
+  .opt-choice input:disabled { cursor: not-allowed; }
+  .opt-choice:has(input:disabled) { opacity: 0.4; cursor: not-allowed; }
 
   .checkout-btn {
     width: 100%;
@@ -1796,9 +1801,17 @@ function optionGroupsHTML(item) {
       const delta = `<span class="opt-delta">${c.price ? '+' + fmt(c.price) : ''}</span>`;
       return `<label class="opt-choice"><input type="${type}" name="${gid}" value="${escapeHTML(c.id)}" data-price="${Number(c.price) || 0}" data-label="${escapeHTML(c.label)}" ${checked}/><span>${escapeHTML(c.label)}</span>${delta}</label>`;
     }).join('');
+    // Optional exact/ranged count for multi-selects (e.g. a meal-deal's "choose 3
+    // drinks"). min/max are gated: absent -> current behaviour (required = at
+    // least one). A small "· choose N" hint is shown in the legend.
+    const minN = Number.isInteger(g.min) ? g.min : null;
+    const maxN = Number.isInteger(g.max) ? g.max : null;
+    const hint = (minN !== null && maxN !== null)
+      ? (minN === maxN ? ` <span class="opt-hint">· choose ${minN}</span>` : ` <span class="opt-hint">· choose ${minN}–${maxN}</span>`)
+      : (maxN !== null ? ` <span class="opt-hint">· up to ${maxN}</span>` : (minN !== null ? ` <span class="opt-hint">· at least ${minN}</span>` : ''));
     // whenMeal groups (e.g. cheese on the meal's chips) start hidden and only
     // appear — and only count — when the meal checkbox is ticked.
-    return `<fieldset class="opt-group" data-select="${type === 'checkbox' ? 'multi' : 'single'}" data-required="${g.required ? '1' : '0'}" data-when-meal="${g.whenMeal === true ? '1' : '0'}"${g.whenMeal === true ? ' style="display:none"' : ''}><legend>${escapeHTML(g.label)}</legend>${rows}<div class="opt-required-note" data-err></div></fieldset>`;
+    return `<fieldset class="opt-group" data-select="${type === 'checkbox' ? 'multi' : 'single'}" data-required="${g.required ? '1' : '0'}" data-min="${minN !== null ? minN : ''}" data-max="${maxN !== null ? maxN : ''}" data-label="${escapeHTML(g.label)}" data-when-meal="${g.whenMeal === true ? '1' : '0'}"${g.whenMeal === true ? ' style="display:none"' : ''}><legend>${escapeHTML(g.label)}${hint}</legend>${rows}<div class="opt-required-note" data-err></div></fieldset>`;
   }).join('');
 }
 
@@ -1878,6 +1891,20 @@ function openItemDetail(itemId) {
   };
   body.querySelectorAll('.opt-group input').forEach(inp => inp.addEventListener('change', recalcPrice));
 
+  // Cap a multi-select group at its `max`: once `max` choices are ticked, disable
+  // the rest so an included-count (e.g. a meal deal's "choose 3 drinks") can't be
+  // exceeded. No-op for groups without a max, so existing shops are unaffected.
+  function enforceGroupMax(grp) {
+    const max = grp.dataset.max !== '' ? parseInt(grp.dataset.max, 10) : 0;
+    if (!max) return;
+    const boxes = [...grp.querySelectorAll('input[type="checkbox"]')];
+    const checked = boxes.filter(b => b.checked).length;
+    boxes.forEach(b => { if (!b.checked) b.disabled = checked >= max; });
+  }
+  body.querySelectorAll('.opt-group').forEach(grp => {
+    if (grp.dataset.max) { grp.addEventListener('change', () => enforceGroupMax(grp)); enforceGroupMax(grp); }
+  });
+
   if (mealInput) {
     mealInput.addEventListener('change', () => {
       mealInput.closest('.meal-toggle').classList.toggle('active', mealInput.checked);
@@ -1895,14 +1922,26 @@ function openItemDetail(itemId) {
     const spiceSel = body.querySelector('.spice-select');
     const isMeal = mealInput ? mealInput.checked : false;
 
-    // Required option groups must have a selection (radios default-check the
-    // first choice, so this mainly catches required multi-select groups).
+    // Validate each visible option group's selection count. Required groups need
+    // at least one; groups with min/max must fall within that range (e.g. a meal
+    // deal's "choose exactly 3 drinks"). Hidden groups (unticked meal-only) skip.
     let optionErr = false;
-    body.querySelectorAll('.opt-group[data-required="1"]').forEach(grp => {
+    body.querySelectorAll('.opt-group').forEach(grp => {
+      if (grp.offsetParent === null) return; // hidden group — don't enforce
+      const req = grp.dataset.required === '1';
+      const minA = grp.dataset.min !== '' ? parseInt(grp.dataset.min, 10) : (req ? 1 : 0);
+      const maxA = grp.dataset.max !== '' ? parseInt(grp.dataset.max, 10) : Infinity;
+      if (!minA && maxA === Infinity) return; // nothing to enforce
+      const n = grp.querySelectorAll('input:checked').length;
       const errEl = grp.querySelector('[data-err]');
-      if (!grp.querySelector('input:checked')) {
-        const lbl = grp.querySelector('legend') ? grp.querySelector('legend').textContent : 'an option';
-        if (errEl) errEl.textContent = 'Please choose ' + lbl + '.';
+      const lbl = grp.dataset.label || 'an option';
+      if (n < minA || n > maxA) {
+        let msg;
+        if (minA && maxA !== Infinity && minA === maxA) msg = `Please choose exactly ${minA} for ${lbl}.`;
+        else if (minA && maxA !== Infinity) msg = `Please choose between ${minA} and ${maxA} for ${lbl}.`;
+        else if (maxA !== Infinity) msg = `Please choose no more than ${maxA} for ${lbl}.`;
+        else msg = `Please choose ${lbl}.`;
+        if (errEl) errEl.textContent = msg;
         optionErr = true;
       } else if (errEl) { errEl.textContent = ''; }
     });

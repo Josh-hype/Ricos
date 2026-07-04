@@ -4,10 +4,676 @@
     "name": "Special Offers",
     "icon": "⭐",
     "items": [
-      { "id": "special-offer",    "name": "Special Offer",    "price": 19.90, "desc": "Regular fish & chips, large sausage & chips, 2 sauces & 2 drinks." },
-      { "id": "family-special-1", "name": "Family Special 1", "price": 24.90, "desc": "Regular fish & chips, large sausage & chips, burger of your choice with chips, 3 sauces & 3 drinks." },
-      { "id": "family-special-2", "name": "Family Special 2", "price": 24.90, "desc": "Fish bites & chips, 6 chicken strips & chips, large sausage & chips, 3 sauces & 3 drinks." },
-      { "id": "big-mega-box",     "name": "Big Mega Box",     "price": 25.90, "desc": "Fish & chips, 3 onion rings, 3 hash browns, 3 chicken nuggets, 3 small sausages, 1 spam fritter, 1 fish cake, 3 small sauces & 3 drinks." }
+      {
+        "id": "special-offer",
+        "name": "Special Offer",
+        "price": 19.9,
+        "desc": "Regular fish & chips, large sausage & chips, 2 sauces & 2 drinks.",
+        "options": [
+          {
+            "id": "sauces",
+            "label": "Included sauces",
+            "select": "multi",
+            "required": true,
+            "min": 2,
+            "max": 2,
+            "choices": [
+              {
+                "id": "opt-sauce-pot-peas",
+                "label": "Peas",
+                "price": 0
+              },
+              {
+                "id": "opt-sauce-tartar-sauce",
+                "label": "Homemade Tartar Sauce",
+                "price": 0
+              },
+              {
+                "id": "opt-sauce-pot-curry",
+                "label": "Curry",
+                "price": 0
+              },
+              {
+                "id": "opt-sauce-pot-gravy",
+                "label": "Gravy",
+                "price": 0
+              },
+              {
+                "id": "opt-sauce-pot-beans",
+                "label": "Beans",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "drinks",
+            "label": "Included drinks",
+            "select": "multi",
+            "required": true,
+            "min": 2,
+            "max": 2,
+            "choices": [
+              {
+                "id": "opt-drink-water",
+                "label": "Bottle of Water",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-pepsi",
+                "label": "Can of Pepsi",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-coke",
+                "label": "Can of Coke",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-diet-coke",
+                "label": "Can of Diet Coke",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-cherry-coke",
+                "label": "Can of Cherry Coke",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-dr-pepper",
+                "label": "Can of Dr Pepper",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-tango-orange",
+                "label": "Can of Tango Orange",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-tango-apple",
+                "label": "Can of Tango Apple",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-benshaws-lemonade",
+                "label": "Can of Ben Shaw's Lemonade",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-dandelion-burdock",
+                "label": "Can of Dandelion & Burdock",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-irn-bru",
+                "label": "Can of Irn Bru",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-rio-tropical",
+                "label": "Can of Rio Tropical",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-rubicon-mango",
+                "label": "Can of Rubicon Mango",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-rubicon-guava",
+                "label": "Can of Rubicon Guava",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-7up",
+                "label": "Can of 7Up",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-vimto",
+                "label": "Can of Vimto",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-fanta-twist",
+                "label": "Can of Fanta Twist",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-fanta-lemon",
+                "label": "Can of Fanta Lemon",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-fanta-orange",
+                "label": "Can of Fanta Orange",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-fanta-lilt",
+                "label": "Can of Fanta Lilt",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-mirinda",
+                "label": "Can of Mirinda",
+                "price": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "family-special-1",
+        "name": "Family Special 1",
+        "price": 24.9,
+        "desc": "Regular fish & chips, large sausage & chips, burger of your choice with chips, 3 sauces & 3 drinks.",
+        "options": [
+          {
+            "id": "burger",
+            "label": "Choose your burger",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "opt-burger-beef-burger",
+                "label": "Beef Burger",
+                "price": 0
+              },
+              {
+                "id": "opt-burger-double-beef-burger",
+                "label": "Double Beef Burger",
+                "price": 0
+              },
+              {
+                "id": "opt-burger-cheeseburger",
+                "label": "Cheeseburger",
+                "price": 0
+              },
+              {
+                "id": "opt-burger-double-cheeseburger",
+                "label": "Double Cheeseburger",
+                "price": 0
+              },
+              {
+                "id": "opt-burger-chicken-fillet-burger",
+                "label": "Chicken Fillet Burger",
+                "price": 0
+              },
+              {
+                "id": "opt-burger-veggie-burger",
+                "label": "Veggie Burger",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "sauces",
+            "label": "Included sauces",
+            "select": "multi",
+            "required": true,
+            "min": 3,
+            "max": 3,
+            "choices": [
+              {
+                "id": "opt-sauce-pot-peas",
+                "label": "Peas",
+                "price": 0
+              },
+              {
+                "id": "opt-sauce-tartar-sauce",
+                "label": "Homemade Tartar Sauce",
+                "price": 0
+              },
+              {
+                "id": "opt-sauce-pot-curry",
+                "label": "Curry",
+                "price": 0
+              },
+              {
+                "id": "opt-sauce-pot-gravy",
+                "label": "Gravy",
+                "price": 0
+              },
+              {
+                "id": "opt-sauce-pot-beans",
+                "label": "Beans",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "drinks",
+            "label": "Included drinks",
+            "select": "multi",
+            "required": true,
+            "min": 3,
+            "max": 3,
+            "choices": [
+              {
+                "id": "opt-drink-water",
+                "label": "Bottle of Water",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-pepsi",
+                "label": "Can of Pepsi",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-coke",
+                "label": "Can of Coke",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-diet-coke",
+                "label": "Can of Diet Coke",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-cherry-coke",
+                "label": "Can of Cherry Coke",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-dr-pepper",
+                "label": "Can of Dr Pepper",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-tango-orange",
+                "label": "Can of Tango Orange",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-tango-apple",
+                "label": "Can of Tango Apple",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-benshaws-lemonade",
+                "label": "Can of Ben Shaw's Lemonade",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-dandelion-burdock",
+                "label": "Can of Dandelion & Burdock",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-irn-bru",
+                "label": "Can of Irn Bru",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-rio-tropical",
+                "label": "Can of Rio Tropical",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-rubicon-mango",
+                "label": "Can of Rubicon Mango",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-rubicon-guava",
+                "label": "Can of Rubicon Guava",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-7up",
+                "label": "Can of 7Up",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-vimto",
+                "label": "Can of Vimto",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-fanta-twist",
+                "label": "Can of Fanta Twist",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-fanta-lemon",
+                "label": "Can of Fanta Lemon",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-fanta-orange",
+                "label": "Can of Fanta Orange",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-fanta-lilt",
+                "label": "Can of Fanta Lilt",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-mirinda",
+                "label": "Can of Mirinda",
+                "price": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "family-special-2",
+        "name": "Family Special 2",
+        "price": 24.9,
+        "desc": "Fish bites & chips, 6 chicken strips & chips, large sausage & chips, 3 sauces & 3 drinks.",
+        "options": [
+          {
+            "id": "sauces",
+            "label": "Included sauces",
+            "select": "multi",
+            "required": true,
+            "min": 3,
+            "max": 3,
+            "choices": [
+              {
+                "id": "opt-sauce-pot-peas",
+                "label": "Peas",
+                "price": 0
+              },
+              {
+                "id": "opt-sauce-tartar-sauce",
+                "label": "Homemade Tartar Sauce",
+                "price": 0
+              },
+              {
+                "id": "opt-sauce-pot-curry",
+                "label": "Curry",
+                "price": 0
+              },
+              {
+                "id": "opt-sauce-pot-gravy",
+                "label": "Gravy",
+                "price": 0
+              },
+              {
+                "id": "opt-sauce-pot-beans",
+                "label": "Beans",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "drinks",
+            "label": "Included drinks",
+            "select": "multi",
+            "required": true,
+            "min": 3,
+            "max": 3,
+            "choices": [
+              {
+                "id": "opt-drink-water",
+                "label": "Bottle of Water",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-pepsi",
+                "label": "Can of Pepsi",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-coke",
+                "label": "Can of Coke",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-diet-coke",
+                "label": "Can of Diet Coke",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-cherry-coke",
+                "label": "Can of Cherry Coke",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-dr-pepper",
+                "label": "Can of Dr Pepper",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-tango-orange",
+                "label": "Can of Tango Orange",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-tango-apple",
+                "label": "Can of Tango Apple",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-benshaws-lemonade",
+                "label": "Can of Ben Shaw's Lemonade",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-dandelion-burdock",
+                "label": "Can of Dandelion & Burdock",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-irn-bru",
+                "label": "Can of Irn Bru",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-rio-tropical",
+                "label": "Can of Rio Tropical",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-rubicon-mango",
+                "label": "Can of Rubicon Mango",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-rubicon-guava",
+                "label": "Can of Rubicon Guava",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-7up",
+                "label": "Can of 7Up",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-vimto",
+                "label": "Can of Vimto",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-fanta-twist",
+                "label": "Can of Fanta Twist",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-fanta-lemon",
+                "label": "Can of Fanta Lemon",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-fanta-orange",
+                "label": "Can of Fanta Orange",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-fanta-lilt",
+                "label": "Can of Fanta Lilt",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-mirinda",
+                "label": "Can of Mirinda",
+                "price": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "big-mega-box",
+        "name": "Big Mega Box",
+        "price": 25.9,
+        "desc": "Fish & chips, 3 onion rings, 3 hash browns, 3 chicken nuggets, 3 small sausages, 1 spam fritter, 1 fish cake, 3 small sauces & 3 drinks.",
+        "options": [
+          {
+            "id": "sauces",
+            "label": "Included sauces",
+            "select": "multi",
+            "required": true,
+            "min": 3,
+            "max": 3,
+            "choices": [
+              {
+                "id": "opt-sauce-pot-peas",
+                "label": "Peas",
+                "price": 0
+              },
+              {
+                "id": "opt-sauce-tartar-sauce",
+                "label": "Homemade Tartar Sauce",
+                "price": 0
+              },
+              {
+                "id": "opt-sauce-pot-curry",
+                "label": "Curry",
+                "price": 0
+              },
+              {
+                "id": "opt-sauce-pot-gravy",
+                "label": "Gravy",
+                "price": 0
+              },
+              {
+                "id": "opt-sauce-pot-beans",
+                "label": "Beans",
+                "price": 0
+              }
+            ]
+          },
+          {
+            "id": "drinks",
+            "label": "Included drinks",
+            "select": "multi",
+            "required": true,
+            "min": 3,
+            "max": 3,
+            "choices": [
+              {
+                "id": "opt-drink-water",
+                "label": "Bottle of Water",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-pepsi",
+                "label": "Can of Pepsi",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-coke",
+                "label": "Can of Coke",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-diet-coke",
+                "label": "Can of Diet Coke",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-cherry-coke",
+                "label": "Can of Cherry Coke",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-dr-pepper",
+                "label": "Can of Dr Pepper",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-tango-orange",
+                "label": "Can of Tango Orange",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-tango-apple",
+                "label": "Can of Tango Apple",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-benshaws-lemonade",
+                "label": "Can of Ben Shaw's Lemonade",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-dandelion-burdock",
+                "label": "Can of Dandelion & Burdock",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-irn-bru",
+                "label": "Can of Irn Bru",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-rio-tropical",
+                "label": "Can of Rio Tropical",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-rubicon-mango",
+                "label": "Can of Rubicon Mango",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-rubicon-guava",
+                "label": "Can of Rubicon Guava",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-7up",
+                "label": "Can of 7Up",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-vimto",
+                "label": "Can of Vimto",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-fanta-twist",
+                "label": "Can of Fanta Twist",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-fanta-lemon",
+                "label": "Can of Fanta Lemon",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-fanta-orange",
+                "label": "Can of Fanta Orange",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-fanta-lilt",
+                "label": "Can of Fanta Lilt",
+                "price": 0
+              },
+              {
+                "id": "opt-drink-mirinda",
+                "label": "Can of Mirinda",
+                "price": 0
+              }
+            ]
+          }
+        ]
+      }
     ]
   },
   {
@@ -15,15 +681,60 @@
     "name": "Fish",
     "icon": "🐟",
     "items": [
-      { "id": "reg-haddock",         "name": "Regular Haddock",            "price": 8.10,  "desc": "Freshly fried haddock fillet." },
-      { "id": "small-haddock",       "name": "Small Haddock",              "price": 6.90,  "desc": "A smaller haddock fillet." },
-      { "id": "reg-cod",             "name": "Regular Cod",                "price": 8.30,  "desc": "Freshly fried cod fillet." },
-      { "id": "cod-chips",           "name": "Cod & Chips",                "price": 10.30, "desc": "Cod fillet with a portion of chunky chips." },
-      { "id": "reg-haddock-chips",   "name": "Regular Haddock & Chips",    "price": 10.10, "desc": "Haddock fillet with a portion of chunky chips." },
-      { "id": "small-haddock-chips", "name": "Small Haddock & Chips",      "price": 9.15,  "desc": "Small haddock fillet with chips." },
-      { "id": "fish-bites-chips",    "name": "Fish Bites & Chips",         "price": 8.45,  "desc": "Battered fish bites with chips." },
-      { "id": "scampi-chips",        "name": "Scampi with Chips",          "price": 9.95,  "desc": "10 pieces of scampi with chips." },
-      { "id": "wholetail-scampi",    "name": "Wholetail Scampi with Chips","price": 9.95,  "desc": "10 pieces of wholetail scampi with chips." }
+      {
+        "id": "reg-haddock",
+        "name": "Regular Haddock",
+        "price": 8.1,
+        "desc": "Freshly fried haddock fillet."
+      },
+      {
+        "id": "small-haddock",
+        "name": "Small Haddock",
+        "price": 6.9,
+        "desc": "A smaller haddock fillet."
+      },
+      {
+        "id": "reg-cod",
+        "name": "Regular Cod",
+        "price": 8.3,
+        "desc": "Freshly fried cod fillet."
+      },
+      {
+        "id": "cod-chips",
+        "name": "Cod & Chips",
+        "price": 10.3,
+        "desc": "Cod fillet with a portion of chunky chips."
+      },
+      {
+        "id": "reg-haddock-chips",
+        "name": "Regular Haddock & Chips",
+        "price": 10.1,
+        "desc": "Haddock fillet with a portion of chunky chips."
+      },
+      {
+        "id": "small-haddock-chips",
+        "name": "Small Haddock & Chips",
+        "price": 9.15,
+        "desc": "Small haddock fillet with chips."
+      },
+      {
+        "id": "fish-bites-chips",
+        "name": "Fish Bites & Chips",
+        "price": 8.45,
+        "desc": "Battered fish bites with chips."
+      },
+      {
+        "id": "scampi-chips",
+        "name": "Scampi with Chips",
+        "price": 9.95,
+        "desc": "10 pieces of scampi with chips."
+      },
+      {
+        "id": "wholetail-scampi",
+        "name": "Wholetail Scampi with Chips",
+        "price": 9.95,
+        "desc": "10 pieces of wholetail scampi with chips."
+      }
     ]
   },
   {
@@ -31,17 +742,61 @@
     "name": "Burgers",
     "icon": "🍔",
     "items": [
-      { "id": "beef-burger",              "name": "Beef Burger",                 "price": 4.60 },
-      { "id": "beef-burger-chips",        "name": "Beef Burger & Chips",         "price": 6.70 },
-      { "id": "double-beef-burger",       "name": "Double Beef Burger",          "price": 5.90 },
-      { "id": "cheeseburger",             "name": "Cheeseburger",                "price": 4.70 },
-      { "id": "cheeseburger-chips",       "name": "Cheeseburger & Chips",        "price": 6.90 },
-      { "id": "double-cheeseburger",      "name": "Double Cheeseburger",         "price": 6.10 },
-      { "id": "double-cheeseburger-chips","name": "Double Cheeseburger & Chips", "price": 7.90 },
-      { "id": "chicken-fillet-burger",    "name": "Chicken Fillet Burger",       "price": 4.70 },
-      { "id": "chicken-fillet-chips",     "name": "Chicken Fillet Burger & Chips","price": 6.90 },
-      { "id": "veggie-burger",            "name": "Veggie Burger",               "price": 4.70 },
-      { "id": "veggie-burger-chips",      "name": "Veggie Burger & Chips",       "price": 6.90 }
+      {
+        "id": "beef-burger",
+        "name": "Beef Burger",
+        "price": 4.6
+      },
+      {
+        "id": "beef-burger-chips",
+        "name": "Beef Burger & Chips",
+        "price": 6.7
+      },
+      {
+        "id": "double-beef-burger",
+        "name": "Double Beef Burger",
+        "price": 5.9
+      },
+      {
+        "id": "cheeseburger",
+        "name": "Cheeseburger",
+        "price": 4.7
+      },
+      {
+        "id": "cheeseburger-chips",
+        "name": "Cheeseburger & Chips",
+        "price": 6.9
+      },
+      {
+        "id": "double-cheeseburger",
+        "name": "Double Cheeseburger",
+        "price": 6.1
+      },
+      {
+        "id": "double-cheeseburger-chips",
+        "name": "Double Cheeseburger & Chips",
+        "price": 7.9
+      },
+      {
+        "id": "chicken-fillet-burger",
+        "name": "Chicken Fillet Burger",
+        "price": 4.7
+      },
+      {
+        "id": "chicken-fillet-chips",
+        "name": "Chicken Fillet Burger & Chips",
+        "price": 6.9
+      },
+      {
+        "id": "veggie-burger",
+        "name": "Veggie Burger",
+        "price": 4.7
+      },
+      {
+        "id": "veggie-burger-chips",
+        "name": "Veggie Burger & Chips",
+        "price": 6.9
+      }
     ]
   },
   {
@@ -49,9 +804,21 @@
     "name": "Pukka Pies",
     "icon": "🥧",
     "items": [
-      { "id": "steak-kidney-pie",    "name": "Steak & Kidney Pie",     "price": 4.20 },
-      { "id": "chicken-mushroom-pie","name": "Chicken & Mushroom Pie", "price": 4.20 },
-      { "id": "beef-onion-pie",      "name": "Beef & Onion Pie",       "price": 4.20 }
+      {
+        "id": "steak-kidney-pie",
+        "name": "Steak & Kidney Pie",
+        "price": 4.2
+      },
+      {
+        "id": "chicken-mushroom-pie",
+        "name": "Chicken & Mushroom Pie",
+        "price": 4.2
+      },
+      {
+        "id": "beef-onion-pie",
+        "name": "Beef & Onion Pie",
+        "price": 4.2
+      }
     ]
   },
   {
@@ -59,11 +826,31 @@
     "name": "Sauces & Pots",
     "icon": "🥣",
     "items": [
-      { "id": "pot-peas",     "name": "Pot of Peas",           "price": 1.40 },
-      { "id": "tartar-sauce", "name": "Homemade Tartar Sauce", "price": 1.90 },
-      { "id": "pot-curry",    "name": "Pot of Curry",          "price": 1.40 },
-      { "id": "pot-gravy",    "name": "Pot of Gravy",          "price": 1.40 },
-      { "id": "pot-beans",    "name": "Pot of Beans",          "price": 1.40 }
+      {
+        "id": "pot-peas",
+        "name": "Pot of Peas",
+        "price": 1.4
+      },
+      {
+        "id": "tartar-sauce",
+        "name": "Homemade Tartar Sauce",
+        "price": 1.9
+      },
+      {
+        "id": "pot-curry",
+        "name": "Pot of Curry",
+        "price": 1.4
+      },
+      {
+        "id": "pot-gravy",
+        "name": "Pot of Gravy",
+        "price": 1.4
+      },
+      {
+        "id": "pot-beans",
+        "name": "Pot of Beans",
+        "price": 1.4
+      }
     ]
   },
   {
@@ -71,20 +858,85 @@
     "name": "Sides",
     "icon": "🍟",
     "items": [
-      { "id": "chips",                "name": "Chips",                          "price": 2.80,  "desc": "Chunky, hand-cut chips." },
-      { "id": "cheesy-chips",         "name": "Cheesy Chips",                   "price": 3.90,  "desc": "Chips topped with melted cheese." },
-      { "id": "chicken-strips-chips", "name": "Chicken Strips with Chips",      "price": 8.45,  "desc": "6 chicken strips with chips." },
-      { "id": "fish-cake",            "name": "Fish Cake",                      "price": 2.30 },
-      { "id": "bread-cake",           "name": "Bread Cake",                     "price": 1.40 },
-      { "id": "chip-butty",           "name": "Chip Butty",                     "price": 4.20,  "desc": "Chips in a buttered bread cake." },
-      { "id": "jumbo-sausage",        "name": "Jumbo Sausage",                  "price": 2.45 },
-      { "id": "small-sausage",        "name": "Small Sausage",                  "price": 1.45 },
-      { "id": "spam-fritter",         "name": "Spam Fritter",                   "price": 3.45 },
-      { "id": "chicken-nuggets-chips","name": "Chicken Nuggets with Chips",     "price": 7.90,  "desc": "10 chicken nuggets with chips." },
-      { "id": "onion-rings",          "name": "Onion Rings",                    "price": 3.35,  "desc": "10 battered onion rings." },
-      { "id": "mozzarella-sticks",    "name": "Mozzarella Sticks",              "price": 4.35,  "desc": "6 mozzarella sticks." },
-      { "id": "jalapeno-cheese-bites","name": "Jalapeno Cheese Bites with Chips","price": 7.35, "desc": "8 jalapeno cheese bites with chips." },
-      { "id": "hash-browns",          "name": "Hash Browns",                    "price": 2.90,  "desc": "5 hash browns." }
+      {
+        "id": "chips",
+        "name": "Chips",
+        "price": 2.8,
+        "desc": "Chunky, hand-cut chips."
+      },
+      {
+        "id": "cheesy-chips",
+        "name": "Cheesy Chips",
+        "price": 3.9,
+        "desc": "Chips topped with melted cheese."
+      },
+      {
+        "id": "chicken-strips-chips",
+        "name": "Chicken Strips with Chips",
+        "price": 8.45,
+        "desc": "6 chicken strips with chips."
+      },
+      {
+        "id": "fish-cake",
+        "name": "Fish Cake",
+        "price": 2.3
+      },
+      {
+        "id": "bread-cake",
+        "name": "Bread Cake",
+        "price": 1.4
+      },
+      {
+        "id": "chip-butty",
+        "name": "Chip Butty",
+        "price": 4.2,
+        "desc": "Chips in a buttered bread cake."
+      },
+      {
+        "id": "jumbo-sausage",
+        "name": "Jumbo Sausage",
+        "price": 2.45
+      },
+      {
+        "id": "small-sausage",
+        "name": "Small Sausage",
+        "price": 1.45
+      },
+      {
+        "id": "spam-fritter",
+        "name": "Spam Fritter",
+        "price": 3.45
+      },
+      {
+        "id": "chicken-nuggets-chips",
+        "name": "Chicken Nuggets with Chips",
+        "price": 7.9,
+        "desc": "10 chicken nuggets with chips."
+      },
+      {
+        "id": "onion-rings",
+        "name": "Onion Rings",
+        "price": 3.35,
+        "desc": "10 battered onion rings."
+      },
+      {
+        "id": "mozzarella-sticks",
+        "name": "Mozzarella Sticks",
+        "price": 4.35,
+        "desc": "6 mozzarella sticks."
+      },
+      {
+        "id": "jalapeno-cheese-bites",
+        "name": "Jalapeno Cheese Bites with Chips",
+        "price": 7.35,
+        "desc": "8 jalapeno cheese bites with chips."
+      },
+      {
+        "id": "hash-browns",
+        "name": "Hash Browns",
+        "price": 2.9,
+        "desc": "5 hash browns."
+      }
     ]
   },
   {
@@ -92,14 +944,46 @@
     "name": "Extras",
     "icon": "🧂",
     "items": [
-      { "id": "ketchup-bottle", "name": "Bottle of Tomato Ketchup", "price": 3.50 },
-      { "id": "vinegar-bottle", "name": "Vinegar Bottle",           "price": 2.90 },
-      { "id": "chip-spice-box", "name": "Chip Spice Box",           "price": 2.90 },
-      { "id": "sachet-mayo",    "name": "Sachet Mayo",              "price": 0.60 },
-      { "id": "sachet-ketchup", "name": "Sachet Ketchup",           "price": 0.60 },
-      { "id": "pickled-onion",  "name": "Pickled Onion",            "price": 1.30 },
-      { "id": "pickled-egg",    "name": "Pickled Egg",              "price": 1.30 },
-      { "id": "pickled-gherkin","name": "Pickled Gherkin",          "price": 1.30 }
+      {
+        "id": "ketchup-bottle",
+        "name": "Bottle of Tomato Ketchup",
+        "price": 3.5
+      },
+      {
+        "id": "vinegar-bottle",
+        "name": "Vinegar Bottle",
+        "price": 2.9
+      },
+      {
+        "id": "chip-spice-box",
+        "name": "Chip Spice Box",
+        "price": 2.9
+      },
+      {
+        "id": "sachet-mayo",
+        "name": "Sachet Mayo",
+        "price": 0.6
+      },
+      {
+        "id": "sachet-ketchup",
+        "name": "Sachet Ketchup",
+        "price": 0.6
+      },
+      {
+        "id": "pickled-onion",
+        "name": "Pickled Onion",
+        "price": 1.3
+      },
+      {
+        "id": "pickled-egg",
+        "name": "Pickled Egg",
+        "price": 1.3
+      },
+      {
+        "id": "pickled-gherkin",
+        "name": "Pickled Gherkin",
+        "price": 1.3
+      }
     ]
   },
   {
@@ -107,27 +991,111 @@
     "name": "Drinks",
     "icon": "🥤",
     "items": [
-      { "id": "water",            "name": "Bottle of Water",            "price": 1.35 },
-      { "id": "pepsi",            "name": "Can of Pepsi",               "price": 1.55 },
-      { "id": "coke",             "name": "Can of Coke",                "price": 1.55 },
-      { "id": "diet-coke",        "name": "Can of Diet Coke",           "price": 1.55 },
-      { "id": "cherry-coke",      "name": "Can of Cherry Coke",         "price": 1.55 },
-      { "id": "dr-pepper",        "name": "Can of Dr Pepper",           "price": 1.55 },
-      { "id": "tango-orange",     "name": "Can of Tango Orange",        "price": 1.55 },
-      { "id": "tango-apple",      "name": "Can of Tango Apple",         "price": 1.55 },
-      { "id": "benshaws-lemonade","name": "Can of Ben Shaw's Lemonade", "price": 1.55 },
-      { "id": "dandelion-burdock","name": "Can of Dandelion & Burdock", "price": 1.55 },
-      { "id": "irn-bru",          "name": "Can of Irn Bru",             "price": 1.55 },
-      { "id": "rio-tropical",     "name": "Can of Rio Tropical",        "price": 1.55 },
-      { "id": "rubicon-mango",    "name": "Can of Rubicon Mango",       "price": 1.55 },
-      { "id": "rubicon-guava",    "name": "Can of Rubicon Guava",       "price": 1.55 },
-      { "id": "7up",              "name": "Can of 7Up",                 "price": 1.55 },
-      { "id": "vimto",            "name": "Can of Vimto",               "price": 1.55 },
-      { "id": "fanta-twist",      "name": "Can of Fanta Twist",         "price": 1.55 },
-      { "id": "fanta-lemon",      "name": "Can of Fanta Lemon",         "price": 1.55 },
-      { "id": "fanta-orange",     "name": "Can of Fanta Orange",        "price": 1.55 },
-      { "id": "fanta-lilt",       "name": "Can of Fanta Lilt",          "price": 1.55 },
-      { "id": "mirinda",          "name": "Can of Mirinda",             "price": 1.55 }
+      {
+        "id": "water",
+        "name": "Bottle of Water",
+        "price": 1.35
+      },
+      {
+        "id": "pepsi",
+        "name": "Can of Pepsi",
+        "price": 1.55
+      },
+      {
+        "id": "coke",
+        "name": "Can of Coke",
+        "price": 1.55
+      },
+      {
+        "id": "diet-coke",
+        "name": "Can of Diet Coke",
+        "price": 1.55
+      },
+      {
+        "id": "cherry-coke",
+        "name": "Can of Cherry Coke",
+        "price": 1.55
+      },
+      {
+        "id": "dr-pepper",
+        "name": "Can of Dr Pepper",
+        "price": 1.55
+      },
+      {
+        "id": "tango-orange",
+        "name": "Can of Tango Orange",
+        "price": 1.55
+      },
+      {
+        "id": "tango-apple",
+        "name": "Can of Tango Apple",
+        "price": 1.55
+      },
+      {
+        "id": "benshaws-lemonade",
+        "name": "Can of Ben Shaw's Lemonade",
+        "price": 1.55
+      },
+      {
+        "id": "dandelion-burdock",
+        "name": "Can of Dandelion & Burdock",
+        "price": 1.55
+      },
+      {
+        "id": "irn-bru",
+        "name": "Can of Irn Bru",
+        "price": 1.55
+      },
+      {
+        "id": "rio-tropical",
+        "name": "Can of Rio Tropical",
+        "price": 1.55
+      },
+      {
+        "id": "rubicon-mango",
+        "name": "Can of Rubicon Mango",
+        "price": 1.55
+      },
+      {
+        "id": "rubicon-guava",
+        "name": "Can of Rubicon Guava",
+        "price": 1.55
+      },
+      {
+        "id": "7up",
+        "name": "Can of 7Up",
+        "price": 1.55
+      },
+      {
+        "id": "vimto",
+        "name": "Can of Vimto",
+        "price": 1.55
+      },
+      {
+        "id": "fanta-twist",
+        "name": "Can of Fanta Twist",
+        "price": 1.55
+      },
+      {
+        "id": "fanta-lemon",
+        "name": "Can of Fanta Lemon",
+        "price": 1.55
+      },
+      {
+        "id": "fanta-orange",
+        "name": "Can of Fanta Orange",
+        "price": 1.55
+      },
+      {
+        "id": "fanta-lilt",
+        "name": "Can of Fanta Lilt",
+        "price": 1.55
+      },
+      {
+        "id": "mirinda",
+        "name": "Can of Mirinda",
+        "price": 1.55
+      }
     ]
   },
   {
@@ -135,9 +1103,24 @@
     "name": "Kids' Meals",
     "icon": "🧒",
     "items": [
-      { "id": "kids-fish-dippers","name": "Kids' Homemade Fish Dippers", "price": 6.10, "desc": "Served with chips, a lolly, a drink & an activity kit." },
-      { "id": "kids-nuggets",     "name": "Kids' Chicken Nuggets (4pcs)", "price": 6.10, "desc": "Served with chips, a lolly, a drink & an activity kit." },
-      { "id": "kids-sausage",     "name": "Kids' Sausage",               "price": 6.10, "desc": "Served with chips, a lolly, a drink & an activity kit." }
+      {
+        "id": "kids-fish-dippers",
+        "name": "Kids' Homemade Fish Dippers",
+        "price": 6.1,
+        "desc": "Served with chips, a lolly, a drink & an activity kit."
+      },
+      {
+        "id": "kids-nuggets",
+        "name": "Kids' Chicken Nuggets (4pcs)",
+        "price": 6.1,
+        "desc": "Served with chips, a lolly, a drink & an activity kit."
+      },
+      {
+        "id": "kids-sausage",
+        "name": "Kids' Sausage",
+        "price": 6.1,
+        "desc": "Served with chips, a lolly, a drink & an activity kit."
+      }
     ]
   }
 ]

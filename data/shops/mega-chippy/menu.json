@@ -3,132 +3,1002 @@
     "id": "specials",
     "name": "Special Offers",
     "items": [
-      { "id": "special-offer",     "name": "Special Offer",     "priceP": 1990 },
-      { "id": "family-special-1",  "name": "Family Special 1",  "priceP": 2490 },
-      { "id": "family-special-2",  "name": "Family Special 2",  "priceP": 2490 },
-      { "id": "big-mega-box",      "name": "Big Mega Box",      "priceP": 2590 }
+      {
+        "id": "special-offer",
+        "name": "Special Offer",
+        "priceP": 1990,
+        "modifiers": [
+          {
+            "id": "opt-sauce-pot-peas",
+            "label": "Peas",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-sauce-tartar-sauce",
+            "label": "Homemade Tartar Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-sauce-pot-curry",
+            "label": "Curry",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-sauce-pot-gravy",
+            "label": "Gravy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-sauce-pot-beans",
+            "label": "Beans",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-water",
+            "label": "Bottle of Water",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-pepsi",
+            "label": "Can of Pepsi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-coke",
+            "label": "Can of Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-diet-coke",
+            "label": "Can of Diet Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-cherry-coke",
+            "label": "Can of Cherry Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-dr-pepper",
+            "label": "Can of Dr Pepper",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-tango-orange",
+            "label": "Can of Tango Orange",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-tango-apple",
+            "label": "Can of Tango Apple",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-benshaws-lemonade",
+            "label": "Can of Ben Shaw's Lemonade",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-dandelion-burdock",
+            "label": "Can of Dandelion & Burdock",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-irn-bru",
+            "label": "Can of Irn Bru",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-rio-tropical",
+            "label": "Can of Rio Tropical",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-rubicon-mango",
+            "label": "Can of Rubicon Mango",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-rubicon-guava",
+            "label": "Can of Rubicon Guava",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-7up",
+            "label": "Can of 7Up",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-vimto",
+            "label": "Can of Vimto",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-fanta-twist",
+            "label": "Can of Fanta Twist",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-fanta-lemon",
+            "label": "Can of Fanta Lemon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-fanta-orange",
+            "label": "Can of Fanta Orange",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-fanta-lilt",
+            "label": "Can of Fanta Lilt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-mirinda",
+            "label": "Can of Mirinda",
+            "priceDeltaP": 0
+          }
+        ]
+      },
+      {
+        "id": "family-special-1",
+        "name": "Family Special 1",
+        "priceP": 2490,
+        "modifiers": [
+          {
+            "id": "opt-burger-beef-burger",
+            "label": "Beef Burger",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-burger-double-beef-burger",
+            "label": "Double Beef Burger",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-burger-cheeseburger",
+            "label": "Cheeseburger",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-burger-double-cheeseburger",
+            "label": "Double Cheeseburger",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-burger-chicken-fillet-burger",
+            "label": "Chicken Fillet Burger",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-burger-veggie-burger",
+            "label": "Veggie Burger",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-sauce-pot-peas",
+            "label": "Peas",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-sauce-tartar-sauce",
+            "label": "Homemade Tartar Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-sauce-pot-curry",
+            "label": "Curry",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-sauce-pot-gravy",
+            "label": "Gravy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-sauce-pot-beans",
+            "label": "Beans",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-water",
+            "label": "Bottle of Water",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-pepsi",
+            "label": "Can of Pepsi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-coke",
+            "label": "Can of Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-diet-coke",
+            "label": "Can of Diet Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-cherry-coke",
+            "label": "Can of Cherry Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-dr-pepper",
+            "label": "Can of Dr Pepper",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-tango-orange",
+            "label": "Can of Tango Orange",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-tango-apple",
+            "label": "Can of Tango Apple",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-benshaws-lemonade",
+            "label": "Can of Ben Shaw's Lemonade",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-dandelion-burdock",
+            "label": "Can of Dandelion & Burdock",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-irn-bru",
+            "label": "Can of Irn Bru",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-rio-tropical",
+            "label": "Can of Rio Tropical",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-rubicon-mango",
+            "label": "Can of Rubicon Mango",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-rubicon-guava",
+            "label": "Can of Rubicon Guava",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-7up",
+            "label": "Can of 7Up",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-vimto",
+            "label": "Can of Vimto",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-fanta-twist",
+            "label": "Can of Fanta Twist",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-fanta-lemon",
+            "label": "Can of Fanta Lemon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-fanta-orange",
+            "label": "Can of Fanta Orange",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-fanta-lilt",
+            "label": "Can of Fanta Lilt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-mirinda",
+            "label": "Can of Mirinda",
+            "priceDeltaP": 0
+          }
+        ]
+      },
+      {
+        "id": "family-special-2",
+        "name": "Family Special 2",
+        "priceP": 2490,
+        "modifiers": [
+          {
+            "id": "opt-sauce-pot-peas",
+            "label": "Peas",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-sauce-tartar-sauce",
+            "label": "Homemade Tartar Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-sauce-pot-curry",
+            "label": "Curry",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-sauce-pot-gravy",
+            "label": "Gravy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-sauce-pot-beans",
+            "label": "Beans",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-water",
+            "label": "Bottle of Water",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-pepsi",
+            "label": "Can of Pepsi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-coke",
+            "label": "Can of Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-diet-coke",
+            "label": "Can of Diet Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-cherry-coke",
+            "label": "Can of Cherry Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-dr-pepper",
+            "label": "Can of Dr Pepper",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-tango-orange",
+            "label": "Can of Tango Orange",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-tango-apple",
+            "label": "Can of Tango Apple",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-benshaws-lemonade",
+            "label": "Can of Ben Shaw's Lemonade",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-dandelion-burdock",
+            "label": "Can of Dandelion & Burdock",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-irn-bru",
+            "label": "Can of Irn Bru",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-rio-tropical",
+            "label": "Can of Rio Tropical",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-rubicon-mango",
+            "label": "Can of Rubicon Mango",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-rubicon-guava",
+            "label": "Can of Rubicon Guava",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-7up",
+            "label": "Can of 7Up",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-vimto",
+            "label": "Can of Vimto",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-fanta-twist",
+            "label": "Can of Fanta Twist",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-fanta-lemon",
+            "label": "Can of Fanta Lemon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-fanta-orange",
+            "label": "Can of Fanta Orange",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-fanta-lilt",
+            "label": "Can of Fanta Lilt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-mirinda",
+            "label": "Can of Mirinda",
+            "priceDeltaP": 0
+          }
+        ]
+      },
+      {
+        "id": "big-mega-box",
+        "name": "Big Mega Box",
+        "priceP": 2590,
+        "modifiers": [
+          {
+            "id": "opt-sauce-pot-peas",
+            "label": "Peas",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-sauce-tartar-sauce",
+            "label": "Homemade Tartar Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-sauce-pot-curry",
+            "label": "Curry",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-sauce-pot-gravy",
+            "label": "Gravy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-sauce-pot-beans",
+            "label": "Beans",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-water",
+            "label": "Bottle of Water",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-pepsi",
+            "label": "Can of Pepsi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-coke",
+            "label": "Can of Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-diet-coke",
+            "label": "Can of Diet Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-cherry-coke",
+            "label": "Can of Cherry Coke",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-dr-pepper",
+            "label": "Can of Dr Pepper",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-tango-orange",
+            "label": "Can of Tango Orange",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-tango-apple",
+            "label": "Can of Tango Apple",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-benshaws-lemonade",
+            "label": "Can of Ben Shaw's Lemonade",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-dandelion-burdock",
+            "label": "Can of Dandelion & Burdock",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-irn-bru",
+            "label": "Can of Irn Bru",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-rio-tropical",
+            "label": "Can of Rio Tropical",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-rubicon-mango",
+            "label": "Can of Rubicon Mango",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-rubicon-guava",
+            "label": "Can of Rubicon Guava",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-7up",
+            "label": "Can of 7Up",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-vimto",
+            "label": "Can of Vimto",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-fanta-twist",
+            "label": "Can of Fanta Twist",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-fanta-lemon",
+            "label": "Can of Fanta Lemon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-fanta-orange",
+            "label": "Can of Fanta Orange",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-fanta-lilt",
+            "label": "Can of Fanta Lilt",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "opt-drink-mirinda",
+            "label": "Can of Mirinda",
+            "priceDeltaP": 0
+          }
+        ]
+      }
     ]
   },
   {
     "id": "fish",
     "name": "Fish",
     "items": [
-      { "id": "reg-haddock",         "name": "Regular Haddock",           "priceP": 810 },
-      { "id": "small-haddock",       "name": "Small Haddock",             "priceP": 690 },
-      { "id": "reg-cod",             "name": "Regular Cod",               "priceP": 830 },
-      { "id": "cod-chips",           "name": "Cod & Chips",               "priceP": 1030 },
-      { "id": "reg-haddock-chips",   "name": "Regular Haddock & Chips",   "priceP": 1010 },
-      { "id": "small-haddock-chips", "name": "Small Haddock & Chips",     "priceP": 915 },
-      { "id": "fish-bites-chips",    "name": "Fish Bites & Chips",        "priceP": 845 },
-      { "id": "scampi-chips",        "name": "Scampi with Chips",         "priceP": 995 },
-      { "id": "wholetail-scampi",    "name": "Wholetail Scampi with Chips","priceP": 995 }
+      {
+        "id": "reg-haddock",
+        "name": "Regular Haddock",
+        "priceP": 810
+      },
+      {
+        "id": "small-haddock",
+        "name": "Small Haddock",
+        "priceP": 690
+      },
+      {
+        "id": "reg-cod",
+        "name": "Regular Cod",
+        "priceP": 830
+      },
+      {
+        "id": "cod-chips",
+        "name": "Cod & Chips",
+        "priceP": 1030
+      },
+      {
+        "id": "reg-haddock-chips",
+        "name": "Regular Haddock & Chips",
+        "priceP": 1010
+      },
+      {
+        "id": "small-haddock-chips",
+        "name": "Small Haddock & Chips",
+        "priceP": 915
+      },
+      {
+        "id": "fish-bites-chips",
+        "name": "Fish Bites & Chips",
+        "priceP": 845
+      },
+      {
+        "id": "scampi-chips",
+        "name": "Scampi with Chips",
+        "priceP": 995
+      },
+      {
+        "id": "wholetail-scampi",
+        "name": "Wholetail Scampi with Chips",
+        "priceP": 995
+      }
     ]
   },
   {
     "id": "burgers",
     "name": "Burgers",
     "items": [
-      { "id": "beef-burger",              "name": "Beef Burger",                 "priceP": 460 },
-      { "id": "beef-burger-chips",        "name": "Beef Burger & Chips",         "priceP": 670 },
-      { "id": "double-beef-burger",       "name": "Double Beef Burger",          "priceP": 590 },
-      { "id": "cheeseburger",             "name": "Cheeseburger",                "priceP": 470 },
-      { "id": "cheeseburger-chips",       "name": "Cheeseburger & Chips",        "priceP": 690 },
-      { "id": "double-cheeseburger",      "name": "Double Cheeseburger",         "priceP": 610 },
-      { "id": "double-cheeseburger-chips","name": "Double Cheeseburger & Chips", "priceP": 790 },
-      { "id": "chicken-fillet-burger",    "name": "Chicken Fillet Burger",       "priceP": 470 },
-      { "id": "chicken-fillet-chips",     "name": "Chicken Fillet Burger & Chips","priceP": 690 },
-      { "id": "veggie-burger",            "name": "Veggie Burger",               "priceP": 470 },
-      { "id": "veggie-burger-chips",      "name": "Veggie Burger & Chips",       "priceP": 690 }
+      {
+        "id": "beef-burger",
+        "name": "Beef Burger",
+        "priceP": 460
+      },
+      {
+        "id": "beef-burger-chips",
+        "name": "Beef Burger & Chips",
+        "priceP": 670
+      },
+      {
+        "id": "double-beef-burger",
+        "name": "Double Beef Burger",
+        "priceP": 590
+      },
+      {
+        "id": "cheeseburger",
+        "name": "Cheeseburger",
+        "priceP": 470
+      },
+      {
+        "id": "cheeseburger-chips",
+        "name": "Cheeseburger & Chips",
+        "priceP": 690
+      },
+      {
+        "id": "double-cheeseburger",
+        "name": "Double Cheeseburger",
+        "priceP": 610
+      },
+      {
+        "id": "double-cheeseburger-chips",
+        "name": "Double Cheeseburger & Chips",
+        "priceP": 790
+      },
+      {
+        "id": "chicken-fillet-burger",
+        "name": "Chicken Fillet Burger",
+        "priceP": 470
+      },
+      {
+        "id": "chicken-fillet-chips",
+        "name": "Chicken Fillet Burger & Chips",
+        "priceP": 690
+      },
+      {
+        "id": "veggie-burger",
+        "name": "Veggie Burger",
+        "priceP": 470
+      },
+      {
+        "id": "veggie-burger-chips",
+        "name": "Veggie Burger & Chips",
+        "priceP": 690
+      }
     ]
   },
   {
     "id": "pies",
     "name": "Pukka Pies",
     "items": [
-      { "id": "steak-kidney-pie",   "name": "Steak & Kidney Pie",    "priceP": 420 },
-      { "id": "chicken-mushroom-pie","name": "Chicken & Mushroom Pie","priceP": 420 },
-      { "id": "beef-onion-pie",     "name": "Beef & Onion Pie",      "priceP": 420 }
+      {
+        "id": "steak-kidney-pie",
+        "name": "Steak & Kidney Pie",
+        "priceP": 420
+      },
+      {
+        "id": "chicken-mushroom-pie",
+        "name": "Chicken & Mushroom Pie",
+        "priceP": 420
+      },
+      {
+        "id": "beef-onion-pie",
+        "name": "Beef & Onion Pie",
+        "priceP": 420
+      }
     ]
   },
   {
     "id": "sauces",
     "name": "Sauces & Pots",
     "items": [
-      { "id": "pot-peas",     "name": "Pot of Peas",          "priceP": 140 },
-      { "id": "tartar-sauce", "name": "Homemade Tartar Sauce","priceP": 190 },
-      { "id": "pot-curry",    "name": "Pot of Curry",         "priceP": 140 },
-      { "id": "pot-gravy",    "name": "Pot of Gravy",         "priceP": 140 },
-      { "id": "pot-beans",    "name": "Pot of Beans",         "priceP": 140 }
+      {
+        "id": "pot-peas",
+        "name": "Pot of Peas",
+        "priceP": 140
+      },
+      {
+        "id": "tartar-sauce",
+        "name": "Homemade Tartar Sauce",
+        "priceP": 190
+      },
+      {
+        "id": "pot-curry",
+        "name": "Pot of Curry",
+        "priceP": 140
+      },
+      {
+        "id": "pot-gravy",
+        "name": "Pot of Gravy",
+        "priceP": 140
+      },
+      {
+        "id": "pot-beans",
+        "name": "Pot of Beans",
+        "priceP": 140
+      }
     ]
   },
   {
     "id": "sides",
     "name": "Sides",
     "items": [
-      { "id": "chips",             "name": "Chips",                         "priceP": 280 },
-      { "id": "cheesy-chips",      "name": "Cheesy Chips",                  "priceP": 390 },
-      { "id": "chicken-strips-chips","name": "Chicken Strips with Chips",   "priceP": 845 },
-      { "id": "fish-cake",         "name": "Fish Cake",                     "priceP": 230 },
-      { "id": "bread-cake",        "name": "Bread Cake",                    "priceP": 140 },
-      { "id": "chip-butty",        "name": "Chip Butty",                    "priceP": 420 },
-      { "id": "jumbo-sausage",     "name": "Jumbo Sausage",                 "priceP": 245 },
-      { "id": "small-sausage",     "name": "Small Sausage",                 "priceP": 145 },
-      { "id": "spam-fritter",      "name": "Spam Fritter",                  "priceP": 345 },
-      { "id": "chicken-nuggets-chips","name": "Chicken Nuggets with Chips", "priceP": 790 },
-      { "id": "onion-rings",       "name": "Onion Rings",                   "priceP": 335 },
-      { "id": "mozzarella-sticks", "name": "Mozzarella Sticks",             "priceP": 435 },
-      { "id": "jalapeno-cheese-bites","name": "Jalapeno Cheese Bites with Chips","priceP": 735 },
-      { "id": "hash-browns",       "name": "Hash Browns",                   "priceP": 290 }
+      {
+        "id": "chips",
+        "name": "Chips",
+        "priceP": 280
+      },
+      {
+        "id": "cheesy-chips",
+        "name": "Cheesy Chips",
+        "priceP": 390
+      },
+      {
+        "id": "chicken-strips-chips",
+        "name": "Chicken Strips with Chips",
+        "priceP": 845
+      },
+      {
+        "id": "fish-cake",
+        "name": "Fish Cake",
+        "priceP": 230
+      },
+      {
+        "id": "bread-cake",
+        "name": "Bread Cake",
+        "priceP": 140
+      },
+      {
+        "id": "chip-butty",
+        "name": "Chip Butty",
+        "priceP": 420
+      },
+      {
+        "id": "jumbo-sausage",
+        "name": "Jumbo Sausage",
+        "priceP": 245
+      },
+      {
+        "id": "small-sausage",
+        "name": "Small Sausage",
+        "priceP": 145
+      },
+      {
+        "id": "spam-fritter",
+        "name": "Spam Fritter",
+        "priceP": 345
+      },
+      {
+        "id": "chicken-nuggets-chips",
+        "name": "Chicken Nuggets with Chips",
+        "priceP": 790
+      },
+      {
+        "id": "onion-rings",
+        "name": "Onion Rings",
+        "priceP": 335
+      },
+      {
+        "id": "mozzarella-sticks",
+        "name": "Mozzarella Sticks",
+        "priceP": 435
+      },
+      {
+        "id": "jalapeno-cheese-bites",
+        "name": "Jalapeno Cheese Bites with Chips",
+        "priceP": 735
+      },
+      {
+        "id": "hash-browns",
+        "name": "Hash Browns",
+        "priceP": 290
+      }
     ]
   },
   {
     "id": "extras",
     "name": "Extras",
     "items": [
-      { "id": "ketchup-bottle", "name": "Bottle of Tomato Ketchup", "priceP": 350 },
-      { "id": "vinegar-bottle", "name": "Vinegar Bottle",           "priceP": 290 },
-      { "id": "chip-spice-box", "name": "Chip Spice Box",           "priceP": 290 },
-      { "id": "sachet-mayo",    "name": "Sachet Mayo",              "priceP": 60 },
-      { "id": "sachet-ketchup", "name": "Sachet Ketchup",           "priceP": 60 },
-      { "id": "pickled-onion",  "name": "Pickled Onion",            "priceP": 130 },
-      { "id": "pickled-egg",    "name": "Pickled Egg",              "priceP": 130 },
-      { "id": "pickled-gherkin","name": "Pickled Gherkin",          "priceP": 130 }
+      {
+        "id": "ketchup-bottle",
+        "name": "Bottle of Tomato Ketchup",
+        "priceP": 350
+      },
+      {
+        "id": "vinegar-bottle",
+        "name": "Vinegar Bottle",
+        "priceP": 290
+      },
+      {
+        "id": "chip-spice-box",
+        "name": "Chip Spice Box",
+        "priceP": 290
+      },
+      {
+        "id": "sachet-mayo",
+        "name": "Sachet Mayo",
+        "priceP": 60
+      },
+      {
+        "id": "sachet-ketchup",
+        "name": "Sachet Ketchup",
+        "priceP": 60
+      },
+      {
+        "id": "pickled-onion",
+        "name": "Pickled Onion",
+        "priceP": 130
+      },
+      {
+        "id": "pickled-egg",
+        "name": "Pickled Egg",
+        "priceP": 130
+      },
+      {
+        "id": "pickled-gherkin",
+        "name": "Pickled Gherkin",
+        "priceP": 130
+      }
     ]
   },
   {
     "id": "drinks",
     "name": "Drinks",
     "items": [
-      { "id": "water",            "name": "Bottle of Water",           "priceP": 135 },
-      { "id": "pepsi",            "name": "Can of Pepsi",              "priceP": 155 },
-      { "id": "coke",             "name": "Can of Coke",               "priceP": 155 },
-      { "id": "diet-coke",        "name": "Can of Diet Coke",          "priceP": 155 },
-      { "id": "cherry-coke",      "name": "Can of Cherry Coke",        "priceP": 155 },
-      { "id": "dr-pepper",        "name": "Can of Dr Pepper",          "priceP": 155 },
-      { "id": "tango-orange",     "name": "Can of Tango Orange",       "priceP": 155 },
-      { "id": "tango-apple",      "name": "Can of Tango Apple",        "priceP": 155 },
-      { "id": "benshaws-lemonade","name": "Can of Ben Shaw's Lemonade","priceP": 155 },
-      { "id": "dandelion-burdock","name": "Can of Dandelion & Burdock","priceP": 155 },
-      { "id": "irn-bru",          "name": "Can of Irn Bru",            "priceP": 155 },
-      { "id": "rio-tropical",     "name": "Can of Rio Tropical",       "priceP": 155 },
-      { "id": "rubicon-mango",    "name": "Can of Rubicon Mango",      "priceP": 155 },
-      { "id": "rubicon-guava",    "name": "Can of Rubicon Guava",      "priceP": 155 },
-      { "id": "7up",              "name": "Can of 7Up",                "priceP": 155 },
-      { "id": "vimto",            "name": "Can of Vimto",              "priceP": 155 },
-      { "id": "fanta-twist",      "name": "Can of Fanta Twist",        "priceP": 155 },
-      { "id": "fanta-lemon",      "name": "Can of Fanta Lemon",        "priceP": 155 },
-      { "id": "fanta-orange",     "name": "Can of Fanta Orange",       "priceP": 155 },
-      { "id": "fanta-lilt",       "name": "Can of Fanta Lilt",         "priceP": 155 },
-      { "id": "mirinda",          "name": "Can of Mirinda",            "priceP": 155 }
+      {
+        "id": "water",
+        "name": "Bottle of Water",
+        "priceP": 135
+      },
+      {
+        "id": "pepsi",
+        "name": "Can of Pepsi",
+        "priceP": 155
+      },
+      {
+        "id": "coke",
+        "name": "Can of Coke",
+        "priceP": 155
+      },
+      {
+        "id": "diet-coke",
+        "name": "Can of Diet Coke",
+        "priceP": 155
+      },
+      {
+        "id": "cherry-coke",
+        "name": "Can of Cherry Coke",
+        "priceP": 155
+      },
+      {
+        "id": "dr-pepper",
+        "name": "Can of Dr Pepper",
+        "priceP": 155
+      },
+      {
+        "id": "tango-orange",
+        "name": "Can of Tango Orange",
+        "priceP": 155
+      },
+      {
+        "id": "tango-apple",
+        "name": "Can of Tango Apple",
+        "priceP": 155
+      },
+      {
+        "id": "benshaws-lemonade",
+        "name": "Can of Ben Shaw's Lemonade",
+        "priceP": 155
+      },
+      {
+        "id": "dandelion-burdock",
+        "name": "Can of Dandelion & Burdock",
+        "priceP": 155
+      },
+      {
+        "id": "irn-bru",
+        "name": "Can of Irn Bru",
+        "priceP": 155
+      },
+      {
+        "id": "rio-tropical",
+        "name": "Can of Rio Tropical",
+        "priceP": 155
+      },
+      {
+        "id": "rubicon-mango",
+        "name": "Can of Rubicon Mango",
+        "priceP": 155
+      },
+      {
+        "id": "rubicon-guava",
+        "name": "Can of Rubicon Guava",
+        "priceP": 155
+      },
+      {
+        "id": "7up",
+        "name": "Can of 7Up",
+        "priceP": 155
+      },
+      {
+        "id": "vimto",
+        "name": "Can of Vimto",
+        "priceP": 155
+      },
+      {
+        "id": "fanta-twist",
+        "name": "Can of Fanta Twist",
+        "priceP": 155
+      },
+      {
+        "id": "fanta-lemon",
+        "name": "Can of Fanta Lemon",
+        "priceP": 155
+      },
+      {
+        "id": "fanta-orange",
+        "name": "Can of Fanta Orange",
+        "priceP": 155
+      },
+      {
+        "id": "fanta-lilt",
+        "name": "Can of Fanta Lilt",
+        "priceP": 155
+      },
+      {
+        "id": "mirinda",
+        "name": "Can of Mirinda",
+        "priceP": 155
+      }
     ]
   },
   {
     "id": "kids",
     "name": "Kids' Meals",
     "items": [
-      { "id": "kids-fish-dippers","name": "Kids' Homemade Fish Dippers","priceP": 610 },
-      { "id": "kids-nuggets",     "name": "Kids' Chicken Nuggets (4pcs)","priceP": 610 },
-      { "id": "kids-sausage",     "name": "Kids' Sausage",              "priceP": 610 }
+      {
+        "id": "kids-fish-dippers",
+        "name": "Kids' Homemade Fish Dippers",
+        "priceP": 610
+      },
+      {
+        "id": "kids-nuggets",
+        "name": "Kids' Chicken Nuggets (4pcs)",
+        "priceP": 610
+      },
+      {
+        "id": "kids-sausage",
+        "name": "Kids' Sausage",
+        "priceP": 610
+      }
     ]
   }
 ]
