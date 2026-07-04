@@ -45,14 +45,20 @@
   @keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
   @media(prefers-reduced-motion:reduce){.marquee .track{animation:none;}}
 
-  header.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 26px;
+  header.bar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 36px;
              background:var(--cream);position:sticky;top:0;z-index:30;border-bottom:1px solid rgba(36,31,26,.07);}
-  header.bar .logo img{height:58px;display:block;}
-  header.bar nav{display:flex;align-items:center;gap:28px;}
-  header.bar nav a.link{font-family:'Montserrat',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.1em;font-size:.78rem;text-decoration:none;color:var(--ink);}
+  header.bar .logo img{height:78px;display:block;}
+  header.bar nav{display:flex;align-items:center;gap:38px;}
+  header.bar nav a.link{font-family:'Montserrat',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.11em;font-size:1rem;text-decoration:none;color:var(--ink);}
   header.bar nav a.link:hover{color:var(--indigo);}
-  header.bar .btn{padding:13px 24px;font-size:.78rem;}
-  @media(max-width:860px){header.bar nav a.link{display:none;}}
+  header.bar .btn{padding:17px 30px;font-size:.95rem;}
+  header.bar .btn svg{width:22px;height:22px;}
+  @media(max-width:980px){header.bar nav a.link{display:none;}}
+  @media(max-width:600px){
+    header.bar{padding:14px 18px;gap:12px;flex-wrap:wrap;}
+    header.bar .logo img{height:60px;}
+    header.bar .btn{padding:13px 20px;font-size:.8rem;}
+  }
 
   /* Hero — deep indigo with a soft fish-scale sheen and cream wave, like the reference's dark photo hero */
   .hero{position:relative;background:linear-gradient(180deg,var(--indigo-dark),var(--indigo-deep));
@@ -145,6 +151,10 @@
       <a class="link" href="/order">Menu</a>
       <a class="link" href="#visit">Find us</a>
       <a class="link" href="tel:{{shopPhoneTel}}">Call us</a>
+      <a href="/order" class="btn ghost">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="17.5" r="2.4"/><circle cx="17.5" cy="17.5" r="2.4"/><path d="M8.4 17.5h6.7M4.2 6.2h3.1l2.4 8.2M13 6.2h3.9l1.9 5.1M15.4 17.5l-2-8.7"/></svg>
+        Delivery
+      </a>
       <a href="/order" class="btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.2 12c2.4-3.6 5.9-5.3 9.6-4.7 1.9.3 3.6 2 4.7 4.7-1.1 2.7-2.8 4.4-4.7 4.7-3.7.6-7.2-1.1-9.6-4.7z"/><path d="M6.2 12 2.6 15V9l3.6 3z"/><circle cx="16.6" cy="10.8" r=".6" fill="currentColor"/></svg>
         Click + Collect
