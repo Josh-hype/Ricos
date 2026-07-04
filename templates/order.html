@@ -545,6 +545,7 @@
     border-radius: 10px;
     background: var(--cream);
   }
+  .meal-choices-title { font-weight: 800; font-size: 0.85rem; color: var(--ink, #181210); margin-bottom: 2px; }
   .meal-choice {
     display: flex;
     align-items: center;
@@ -1870,6 +1871,7 @@ function openItemDetail(itemId) {
 
   const mealInput = body.querySelector('.meal-toggle input');
   const mealChoicesEl = body.querySelector('#mealChoices');
+  const forcedMeal = !!(item.meal && item.meal.forced);
   const priceEl = body.querySelector('#itemDetailPrice');
 
   // Live price = base + meal upgrade (if ticked) + selected option deltas.
@@ -1877,7 +1879,7 @@ function openItemDetail(itemId) {
   // the ticked size so the customer always sees the price they'll be charged.
   const recalcPrice = () => {
     let p = item.price;
-    if (mealInput && mealInput.checked && item.meal) p += item.meal.addPrice;
+    if (((mealInput && mealInput.checked) || forcedMeal) && item.meal) p += item.meal.addPrice;
     for (const o of readSelectedOptions(body, item)) p += o.price;
     const active = activeSizeId(item, body);
     const byId = optionChoiceMap(item);
@@ -1920,7 +1922,7 @@ function openItemDetail(itemId) {
   const addBtn = body.querySelector('.item-detail-add');
   addBtn.addEventListener('click', () => {
     const spiceSel = body.querySelector('.spice-select');
-    const isMeal = mealInput ? mealInput.checked : false;
+    const isMeal = forcedMeal || (mealInput ? mealInput.checked : false);
 
     // Validate each visible option group's selection count. Required groups need
     // at least one; groups with min/max must fall within that range (e.g. a meal
@@ -1954,7 +1956,7 @@ function openItemDetail(itemId) {
       const selects = [...mealChoicesEl.querySelectorAll('select')];
       const errEl = body.querySelector('#mealChoiceErr');
       if (selects.some(s => !s.value)) {
-        if (errEl) errEl.textContent = 'Please choose your sides and drink.';
+        if (errEl) errEl.textContent = 'Please make all your included choices.';
         return;
       }
       if (errEl) errEl.textContent = '';
@@ -1995,17 +1997,23 @@ function itemDetailHTML(item) {
        </select>`
     : '';
 
-  const mealField = item.meal
+  // A "forced" meal (item.meal.forced) is one where the choices ARE the item —
+  // e.g. a combo/meal deal whose included sides & drinks the customer must pick.
+  // We drop the upgrade checkbox and show the pickers straight away (always
+  // required). A normal meal keeps its "+£ make it a meal" toggle.
+  const forcedMeal = !!(item.meal && item.meal.forced);
+  const mealField = (item.meal && !forcedMeal)
     ? `<label class="meal-toggle">
          <input type="checkbox" />
          <span>${escapeHTML(item.meal.label)} (+${fmt(item.meal.addPrice)})</span>
        </label>`
     : '';
 
-  // Meal side/drink pickers — only when the meal defines a `choose` config.
-  // Hidden until the meal checkbox is ticked.
+  // Meal side/drink pickers — when the meal defines a `choose` config. Hidden
+  // until the meal checkbox is ticked, unless the meal is forced (shown always).
   const mealChooseField = (item.meal && item.meal.choose)
-    ? `<div class="meal-choices" id="mealChoices" style="display:none">
+    ? `<div class="meal-choices" id="mealChoices"${forcedMeal ? '' : ' style="display:none"'}>
+         ${forcedMeal && item.meal.label ? `<div class="meal-choices-title">${escapeHTML(item.meal.label)}</div>` : ''}
          ${mealChoiceSelectsHTML(item.meal.choose)}
          <div class="meal-choice-err" id="mealChoiceErr" aria-live="polite"></div>
        </div>`

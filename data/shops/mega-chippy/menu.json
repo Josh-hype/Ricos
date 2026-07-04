@@ -7,136 +7,17 @@
         "id": "special-offer",
         "name": "Special Offer",
         "priceP": 1990,
-        "modifiers": [
+        "mealAddP": 0,
+        "mealChoose": [
           {
-            "id": "opt-sauce-pot-peas",
-            "label": "Peas",
-            "priceDeltaP": 0
+            "category": "sauces",
+            "label": "Sauce",
+            "count": 2
           },
           {
-            "id": "opt-sauce-tartar-sauce",
-            "label": "Homemade Tartar Sauce",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-sauce-pot-curry",
-            "label": "Curry",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-sauce-pot-gravy",
-            "label": "Gravy",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-sauce-pot-beans",
-            "label": "Beans",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-water",
-            "label": "Bottle of Water",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-pepsi",
-            "label": "Can of Pepsi",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-coke",
-            "label": "Can of Coke",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-diet-coke",
-            "label": "Can of Diet Coke",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-cherry-coke",
-            "label": "Can of Cherry Coke",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-dr-pepper",
-            "label": "Can of Dr Pepper",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-tango-orange",
-            "label": "Can of Tango Orange",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-tango-apple",
-            "label": "Can of Tango Apple",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-benshaws-lemonade",
-            "label": "Can of Ben Shaw's Lemonade",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-dandelion-burdock",
-            "label": "Can of Dandelion & Burdock",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-irn-bru",
-            "label": "Can of Irn Bru",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-rio-tropical",
-            "label": "Can of Rio Tropical",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-rubicon-mango",
-            "label": "Can of Rubicon Mango",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-rubicon-guava",
-            "label": "Can of Rubicon Guava",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-7up",
-            "label": "Can of 7Up",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-vimto",
-            "label": "Can of Vimto",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-fanta-twist",
-            "label": "Can of Fanta Twist",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-fanta-lemon",
-            "label": "Can of Fanta Lemon",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-fanta-orange",
-            "label": "Can of Fanta Orange",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-fanta-lilt",
-            "label": "Can of Fanta Lilt",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-mirinda",
-            "label": "Can of Mirinda",
-            "priceDeltaP": 0
+            "category": "drinks",
+            "label": "Drink",
+            "count": 2
           }
         ]
       },
@@ -144,166 +25,30 @@
         "id": "family-special-1",
         "name": "Family Special 1",
         "priceP": 2490,
-        "modifiers": [
+        "mealAddP": 0,
+        "mealChoose": [
           {
-            "id": "opt-burger-beef-burger",
-            "label": "Beef Burger",
-            "priceDeltaP": 0
+            "category": "burgers",
+            "label": "Burger",
+            "count": 1,
+            "include": [
+              "beef-burger",
+              "double-beef-burger",
+              "cheeseburger",
+              "double-cheeseburger",
+              "chicken-fillet-burger",
+              "veggie-burger"
+            ]
           },
           {
-            "id": "opt-burger-double-beef-burger",
-            "label": "Double Beef Burger",
-            "priceDeltaP": 0
+            "category": "sauces",
+            "label": "Sauce",
+            "count": 3
           },
           {
-            "id": "opt-burger-cheeseburger",
-            "label": "Cheeseburger",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-burger-double-cheeseburger",
-            "label": "Double Cheeseburger",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-burger-chicken-fillet-burger",
-            "label": "Chicken Fillet Burger",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-burger-veggie-burger",
-            "label": "Veggie Burger",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-sauce-pot-peas",
-            "label": "Peas",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-sauce-tartar-sauce",
-            "label": "Homemade Tartar Sauce",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-sauce-pot-curry",
-            "label": "Curry",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-sauce-pot-gravy",
-            "label": "Gravy",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-sauce-pot-beans",
-            "label": "Beans",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-water",
-            "label": "Bottle of Water",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-pepsi",
-            "label": "Can of Pepsi",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-coke",
-            "label": "Can of Coke",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-diet-coke",
-            "label": "Can of Diet Coke",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-cherry-coke",
-            "label": "Can of Cherry Coke",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-dr-pepper",
-            "label": "Can of Dr Pepper",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-tango-orange",
-            "label": "Can of Tango Orange",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-tango-apple",
-            "label": "Can of Tango Apple",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-benshaws-lemonade",
-            "label": "Can of Ben Shaw's Lemonade",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-dandelion-burdock",
-            "label": "Can of Dandelion & Burdock",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-irn-bru",
-            "label": "Can of Irn Bru",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-rio-tropical",
-            "label": "Can of Rio Tropical",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-rubicon-mango",
-            "label": "Can of Rubicon Mango",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-rubicon-guava",
-            "label": "Can of Rubicon Guava",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-7up",
-            "label": "Can of 7Up",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-vimto",
-            "label": "Can of Vimto",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-fanta-twist",
-            "label": "Can of Fanta Twist",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-fanta-lemon",
-            "label": "Can of Fanta Lemon",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-fanta-orange",
-            "label": "Can of Fanta Orange",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-fanta-lilt",
-            "label": "Can of Fanta Lilt",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-mirinda",
-            "label": "Can of Mirinda",
-            "priceDeltaP": 0
+            "category": "drinks",
+            "label": "Drink",
+            "count": 3
           }
         ]
       },
@@ -311,136 +56,17 @@
         "id": "family-special-2",
         "name": "Family Special 2",
         "priceP": 2490,
-        "modifiers": [
+        "mealAddP": 0,
+        "mealChoose": [
           {
-            "id": "opt-sauce-pot-peas",
-            "label": "Peas",
-            "priceDeltaP": 0
+            "category": "sauces",
+            "label": "Sauce",
+            "count": 3
           },
           {
-            "id": "opt-sauce-tartar-sauce",
-            "label": "Homemade Tartar Sauce",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-sauce-pot-curry",
-            "label": "Curry",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-sauce-pot-gravy",
-            "label": "Gravy",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-sauce-pot-beans",
-            "label": "Beans",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-water",
-            "label": "Bottle of Water",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-pepsi",
-            "label": "Can of Pepsi",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-coke",
-            "label": "Can of Coke",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-diet-coke",
-            "label": "Can of Diet Coke",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-cherry-coke",
-            "label": "Can of Cherry Coke",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-dr-pepper",
-            "label": "Can of Dr Pepper",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-tango-orange",
-            "label": "Can of Tango Orange",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-tango-apple",
-            "label": "Can of Tango Apple",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-benshaws-lemonade",
-            "label": "Can of Ben Shaw's Lemonade",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-dandelion-burdock",
-            "label": "Can of Dandelion & Burdock",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-irn-bru",
-            "label": "Can of Irn Bru",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-rio-tropical",
-            "label": "Can of Rio Tropical",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-rubicon-mango",
-            "label": "Can of Rubicon Mango",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-rubicon-guava",
-            "label": "Can of Rubicon Guava",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-7up",
-            "label": "Can of 7Up",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-vimto",
-            "label": "Can of Vimto",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-fanta-twist",
-            "label": "Can of Fanta Twist",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-fanta-lemon",
-            "label": "Can of Fanta Lemon",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-fanta-orange",
-            "label": "Can of Fanta Orange",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-fanta-lilt",
-            "label": "Can of Fanta Lilt",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-mirinda",
-            "label": "Can of Mirinda",
-            "priceDeltaP": 0
+            "category": "drinks",
+            "label": "Drink",
+            "count": 3
           }
         ]
       },
@@ -448,136 +74,17 @@
         "id": "big-mega-box",
         "name": "Big Mega Box",
         "priceP": 2590,
-        "modifiers": [
+        "mealAddP": 0,
+        "mealChoose": [
           {
-            "id": "opt-sauce-pot-peas",
-            "label": "Peas",
-            "priceDeltaP": 0
+            "category": "sauces",
+            "label": "Sauce",
+            "count": 3
           },
           {
-            "id": "opt-sauce-tartar-sauce",
-            "label": "Homemade Tartar Sauce",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-sauce-pot-curry",
-            "label": "Curry",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-sauce-pot-gravy",
-            "label": "Gravy",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-sauce-pot-beans",
-            "label": "Beans",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-water",
-            "label": "Bottle of Water",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-pepsi",
-            "label": "Can of Pepsi",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-coke",
-            "label": "Can of Coke",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-diet-coke",
-            "label": "Can of Diet Coke",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-cherry-coke",
-            "label": "Can of Cherry Coke",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-dr-pepper",
-            "label": "Can of Dr Pepper",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-tango-orange",
-            "label": "Can of Tango Orange",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-tango-apple",
-            "label": "Can of Tango Apple",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-benshaws-lemonade",
-            "label": "Can of Ben Shaw's Lemonade",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-dandelion-burdock",
-            "label": "Can of Dandelion & Burdock",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-irn-bru",
-            "label": "Can of Irn Bru",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-rio-tropical",
-            "label": "Can of Rio Tropical",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-rubicon-mango",
-            "label": "Can of Rubicon Mango",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-rubicon-guava",
-            "label": "Can of Rubicon Guava",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-7up",
-            "label": "Can of 7Up",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-vimto",
-            "label": "Can of Vimto",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-fanta-twist",
-            "label": "Can of Fanta Twist",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-fanta-lemon",
-            "label": "Can of Fanta Lemon",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-fanta-orange",
-            "label": "Can of Fanta Orange",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-fanta-lilt",
-            "label": "Can of Fanta Lilt",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "opt-drink-mirinda",
-            "label": "Can of Mirinda",
-            "priceDeltaP": 0
+            "category": "drinks",
+            "label": "Drink",
+            "count": 3
           }
         ]
       }
