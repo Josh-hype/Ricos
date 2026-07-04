@@ -14,9 +14,9 @@
       "country": "United Kingdom"
     },
     "phone": "01904 793511",
-    "_comment_todo": "Orders email + domain not supplied yet. Left blank so the legal pages fall back gracefully (they use the trading name + phone until these are filled). Set business.email + business.domain when the shop's domain is registered, then re-deploy so SEO/JSON-LD and receipt emails get the real address.",
-    "email": "",
-    "domain": ""
+    "_comment_todo": "Domain registered: megachippy.co.uk (GoDaddy registration, Cloudflare DNS). For receipt emails to actually SEND from orders@megachippy.co.uk, verify the domain in Resend (SPF/DKIM) and set RESEND_FROM_EMAIL=orders@megachippy.co.uk in Cloudflare; recommend Cloudflare Email Routing to forward orders@ to the shop's inbox so replies are received.",
+    "email": "orders@megachippy.co.uk",
+    "domain": "megachippy.co.uk"
   },
 
   "_comment_seo": "Search-engine extras used to build the landing page's JSON-LD Restaurant schema + social meta. Purely for search engines — doesn't change the page visually.",
