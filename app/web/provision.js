@@ -21,7 +21,8 @@
   // bare apex, which 301-redirects and can break API POSTs).
   var DIRECTORY = {
     '190059': 'https://ricosyork.co.uk',
-    '833541': 'https://www.foodstationyork.uk'
+    '833541': 'https://www.foodstationyork.uk',
+    '318181': 'https://megachippy.co.uk'
   };
 
   function prefs() {
