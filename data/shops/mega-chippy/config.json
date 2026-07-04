@@ -1,0 +1,109 @@
+{
+  "_comment": "Mega Chippy, Acomb (York) — new LumiWEB customer. Branding modelled on the customer's reference site (Poppies Fish & Chips): indigo + teal on a clean light palette, heavy display type over Montserrat body. Legal entity supplied (AYAZ LARA LTD, 14372361). PLACEHOLDERS to fill before go-live: business.email + domain, stripe.connectedAccountId, and delivery (collection-only for now — needs delivery areas/fees to switch on). Orders cannot be taken until the real Stripe Connect account + platform Stripe secrets are configured in Cloudflare.",
+
+  "business": {
+    "tradingName": "Mega Chippy",
+    "_comment_shortName": "Conversational short form used in page headers, aria labels and the staff PWA name.",
+    "shortName": "Mega Chippy",
+    "legalName": "AYAZ LARA LTD",
+    "companyNumber": "14372361",
+    "address": {
+      "line1": "218-220 Gale Lane",
+      "city": "York",
+      "postcode": "YO24 3AQ",
+      "country": "United Kingdom"
+    },
+    "phone": "01904 793511",
+    "_comment_todo": "Orders email + domain not supplied yet. Left blank so the legal pages fall back gracefully (they use the trading name + phone until these are filled). Set business.email + business.domain when the shop's domain is registered, then re-deploy so SEO/JSON-LD and receipt emails get the real address.",
+    "email": "",
+    "domain": ""
+  },
+
+  "_comment_seo": "Search-engine extras used to build the landing page's JSON-LD Restaurant schema + social meta. Purely for search engines — doesn't change the page visually.",
+  "seo": {
+    "cuisine": ["Fish and Chips", "British", "Seafood", "Takeaway"],
+    "priceRange": "££",
+    "addressRegion": "North Yorkshire",
+    "description": "Mega Chippy — proper fish and chips in Acomb, York. Freshly fried cod & haddock, chunky chips, chippy classics and kids' boxes. Order online for collection.",
+    "sameAs": []
+  },
+
+  "_comment_theme": "Palette derived from the customer's reference brand (Poppies Fish & Chips). Indigo #3E46BA = primary (buttons, headings, links); teal #54C2CC = accent; clean light background with a faint indigo-tinted surface. The shared order template puts light text on the primary colour, so primary stays dark enough for white text. Type: Archivo Black display / Anton alt over Montserrat body (Montserrat matches the reference brand's body face).",
+  "theme": {
+    "primary":     "#3E46BA",
+    "primaryDark":  "#31379A",
+    "primaryDeep":  "#262B7A",
+    "accent":       "#54C2CC",
+    "accentDeep":   "#3BA5AF",
+    "background":   "#F5F7FF",
+    "surface":      "#FFFFFF",
+    "chrome":       "#3E46BA",
+    "fonts": {
+      "link":       "https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Caveat:wght@500;700&family=Montserrat:wght@400;500;600;700;800&display=swap",
+      "display":    "'Archivo Black', 'Arial Black', sans-serif",
+      "displayAlt": "'Anton', 'Impact', sans-serif",
+      "body":       "'Montserrat', system-ui, sans-serif",
+      "hand":       "'Caveat', cursive"
+    }
+  },
+
+  "fulfillment": {
+    "collection": { "enabled": true },
+    "delivery": {
+      "_comment": "Collection-only for now. To switch delivery on, set enabled:true and add a radius block (charge by straight-line distance from the shop — origin defaults to the shop's own postcode YO24 3AQ) or an outcode block. See data/shops/_template/config.json and docs/ADDING_A_SHOP.md. Need the shop's delivery areas + fees + minimum order first.",
+      "enabled": false
+    }
+  },
+
+  "_comment_serviceFee": "Per-order service charge in pence (shown at checkout). serviceFeePlatformPence is the platform's (Lumin Labs') cut taken as the Stripe application_fee; the rest stays with the shop. £1.00 charge = 50p platform + 50p shop.",
+  "serviceFeePence": 100,
+  "serviceFeePlatformPence": 50,
+
+  "_comment_stripe": "PLACEHOLDER — card payments WILL FAIL until the venue's real Stripe Connect acct_… is set here AND the platform Stripe secrets + this shop's Connect webhook are configured in Cloudflare. Orders stay off until then (the build prints a loud warning).",
+  "stripe": {
+    "connectedAccountId": "acct_REPLACE_WITH_STRIPE_CONNECT_ID"
+  },
+
+  "pos": { "requireOrderPin": false },
+
+  "hours": {
+    "_comment": "24-hour format. Source: owner-supplied. Sat 11:30-20:50; Sun & Mon 15:00-20:50; Tue-Fri 11:30-20:50. (8:50pm close = 20:50.)",
+    "monday":    { "closed": false, "windows": [{ "open": "15:00", "close": "20:50" }] },
+    "tuesday":   { "closed": false, "windows": [{ "open": "11:30", "close": "20:50" }] },
+    "wednesday": { "closed": false, "windows": [{ "open": "11:30", "close": "20:50" }] },
+    "thursday":  { "closed": false, "windows": [{ "open": "11:30", "close": "20:50" }] },
+    "friday":    { "closed": false, "windows": [{ "open": "11:30", "close": "20:50" }] },
+    "saturday":  { "closed": false, "windows": [{ "open": "11:30", "close": "20:50" }] },
+    "sunday":    { "closed": false, "windows": [{ "open": "15:00", "close": "20:50" }] }
+  },
+
+  "_comment_closures": "One-off emergency closures. Each \"YYYY-MM-DD\" (shop-local) takes online ordering OFFLINE for that whole day and shows a popup. Self-expires once the date passes. Empty means no closure in effect.",
+  "closures": {},
+
+  "ordering": {
+    "timezone": "Europe/London",
+    "businessDayStartHour": 4,
+    "asapMinPrepMinutes": 20,
+    "scheduling": { "enabled": true, "slotMinutes": 15, "maxOrdersPerSlot": 6, "horizonDays": 2 },
+    "lastOrderBeforeCloseMinutes": 15,
+    "itemNotes": true
+  },
+
+  "promo": {
+    "autoOnlineDiscount": { "enabled": false, "label": "10% off online orders", "percent": 10 }
+  },
+
+  "_comment_payments": "stripeEnabled true but cash options OFF, so the ONLY checkout path is online card — which can't complete until Stripe is wired up. This enforces 'no orders until we accept online payments'. Flip cashOnCollectionEnabled true later if you want to also take cash on collection.",
+  "payments": {
+    "stripeEnabled": true,
+    "cashOnCollectionEnabled": false,
+    "cashOnDeliveryEnabled": false,
+    "savedCardCvcThresholdPence": 5000
+  },
+
+  "allergens": {
+    "noticeAtCheckout": "For allergens please contact us before ordering."
+  },
+
+  "marketing": { "emailOptIn": true, "smsOptIn": true }
+}

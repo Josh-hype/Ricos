@@ -1,0 +1,93 @@
+[
+  {
+    "id": "fish-chips",
+    "name": "Fish & Chips",
+    "icon": "🐟",
+    "items": [
+      { "id": "cod-chips", "name": "Cod & Chips", "price": 8.90, "desc": "Freshly fried sustainable cod in our crisp batter, with a portion of chunky chips.",
+        "options": [
+          { "id": "extras", "label": "Add to your plate", "select": "multi", "required": false, "choices": [
+            { "id": "add-mushy-peas",  "label": "Mushy peas",  "price": 1.00 },
+            { "id": "add-curry-sauce", "label": "Curry sauce", "price": 0.90 },
+            { "id": "add-gravy",       "label": "Gravy",       "price": 0.90 }
+          ] }
+        ] },
+      { "id": "haddock-chips", "name": "Haddock & Chips", "price": 9.20, "desc": "Prime haddock fillet, battered to order, with chunky chips.",
+        "options": [
+          { "id": "extras", "label": "Add to your plate", "select": "multi", "required": false, "choices": [
+            { "id": "add-mushy-peas",  "label": "Mushy peas",  "price": 1.00 },
+            { "id": "add-curry-sauce", "label": "Curry sauce", "price": 0.90 },
+            { "id": "add-gravy",       "label": "Gravy",       "price": 0.90 }
+          ] }
+        ] },
+      { "id": "large-cod-chips",  "name": "Large Cod & Chips",        "price": 11.50, "desc": "A generous large cod fillet with extra chips — for a proper appetite." },
+      { "id": "scampi-chips",     "name": "Wholetail Scampi & Chips", "price": 8.50,  "desc": "Golden wholetail scampi with chunky chips." },
+      { "id": "fishcake-chips",   "name": "Fishcake & Chips",         "price": 6.80,  "desc": "Classic cod fishcake in batter with chips." }
+    ]
+  },
+  {
+    "id": "classics",
+    "name": "Chippy Classics",
+    "icon": "🌭",
+    "items": [
+      { "id": "sausage-chips",       "name": "Sausage & Chips",       "price": 5.60, "desc": "Battered pork sausage with a portion of chunky chips." },
+      { "id": "battered-sausage",    "name": "Battered Sausage",      "price": 2.50, "desc": "On its own — crisp battered pork sausage." },
+      { "id": "meat-pie-chips",      "name": "Meat Pie & Chips",      "price": 6.50, "desc": "Traditional meat & potato pie with chips." },
+      { "id": "steak-pudding-chips", "name": "Steak Pudding & Chips", "price": 6.80, "desc": "Steamed steak pudding with chunky chips." },
+      { "id": "saveloy-chips",       "name": "Saveloy & Chips",       "price": 5.60, "desc": "A proper saveloy with a portion of chips." }
+    ]
+  },
+  {
+    "id": "chicken",
+    "name": "Chicken",
+    "icon": "🍗",
+    "items": [
+      { "id": "chicken-nuggets",  "name": "Chicken Nuggets (6) & Chips",  "price": 5.50, "desc": "Six chicken nuggets with chunky chips." },
+      { "id": "chicken-strips",   "name": "Chicken Strips (4) & Chips",   "price": 6.20, "desc": "Four breaded chicken strips with chips." },
+      { "id": "quarter-chicken",  "name": "Quarter Roast Chicken & Chips","price": 7.80, "desc": "Quarter roast chicken with a portion of chips." }
+    ]
+  },
+  {
+    "id": "sides",
+    "name": "Sides",
+    "icon": "🍟",
+    "items": [
+      { "id": "chips-reg", "name": "Chips (Regular)", "price": 3.20, "desc": "Chunky, hand-cut chips.",
+        "options": [
+          { "id": "extras", "label": "Add a topping", "select": "multi", "required": false, "choices": [
+            { "id": "add-cheese",      "label": "Cheese",      "price": 1.20 },
+            { "id": "add-curry-sauce", "label": "Curry sauce", "price": 0.90 },
+            { "id": "add-gravy",       "label": "Gravy",       "price": 0.90 }
+          ] }
+        ] },
+      { "id": "chips-large",    "name": "Chips (Large)",   "price": 4.20, "desc": "A large portion of our chunky chips." },
+      { "id": "mushy-peas",     "name": "Mushy Peas",      "price": 2.00, "desc": "Traditional mushy peas." },
+      { "id": "curry-sauce",    "name": "Curry Sauce",     "price": 2.00, "desc": "A pot of chip-shop curry sauce." },
+      { "id": "gravy",          "name": "Gravy",           "price": 2.00, "desc": "A pot of rich gravy." },
+      { "id": "onion-rings",    "name": "Onion Rings (6)", "price": 3.00, "desc": "Six crispy battered onion rings." },
+      { "id": "pickled-egg",    "name": "Pickled Egg",     "price": 1.20, "desc": "A chippy classic." }
+    ]
+  },
+  {
+    "id": "kids",
+    "name": "Kids' Boxes",
+    "icon": "🧒",
+    "items": [
+      { "id": "kids-fish",     "name": "Kids' Fish & Chips",    "price": 4.90, "desc": "A small fish with a kids' portion of chips." },
+      { "id": "kids-sausage",  "name": "Kids' Sausage & Chips", "price": 4.20, "desc": "Battered sausage with a kids' portion of chips." },
+      { "id": "kids-nuggets",  "name": "Kids' Nuggets & Chips", "price": 4.20, "desc": "Four nuggets with a kids' portion of chips." }
+    ]
+  },
+  {
+    "id": "drinks",
+    "name": "Drinks",
+    "icon": "🥤",
+    "items": [
+      { "id": "can-coke",       "name": "Coca-Cola (330ml)",   "price": 1.40 },
+      { "id": "can-diet-coke",  "name": "Diet Coke (330ml)",   "price": 1.40 },
+      { "id": "can-fanta",      "name": "Fanta (330ml)",       "price": 1.40 },
+      { "id": "bottle-water",   "name": "Still Water (500ml)", "price": 1.20 },
+      { "id": "irn-bru",        "name": "Irn-Bru (330ml)",     "price": 1.50 }
+    ]
+  }
+]
