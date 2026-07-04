@@ -3894,6 +3894,14 @@ fetch('/menu-visual.json').then(r => r.ok ? r.json() : Promise.reject()).then(da
   if (menuRootEl) menuRootEl.innerHTML = '<div style="text-align:center;padding:40px 20px;color:#a8331a">Sorry, the menu didn\'t load. Refresh to try again.</div>';
 });
 renderCart();
+// Fulfillment hint from a landing-page link (?mode=deliver|collect) lets a shop's
+// "Delivery" / "Click + Collect" buttons preselect the tab. Backwards-compatible:
+// links that omit it keep the persisted/default mode, and collection-only shops are
+// still corrected by applyDeliveryAvailability once /api/config loads.
+try {
+  const modeHint = new URLSearchParams(location.search).get('mode');
+  if (modeHint === 'deliver' || modeHint === 'collect') { state.mode = modeHint; saveState(); }
+} catch (e) {}
 applyMode(state.mode);
 refreshPCMessage();
 updateAccountButton();
