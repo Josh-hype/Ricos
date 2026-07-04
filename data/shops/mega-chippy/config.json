@@ -105,11 +105,11 @@
     "autoOnlineDiscount": { "enabled": false, "label": "10% off online orders", "percent": 10 }
   },
 
-  "_comment_payments": "stripeEnabled true but cash options OFF, so the ONLY checkout path is online card — which can't complete until Stripe is wired up. This enforces 'no orders until we accept online payments'. Flip cashOnCollectionEnabled true later if you want to also take cash on collection.",
+  "_comment_payments": "Cash on collection AND delivery are ON so the shop can take online orders now (cash doesn't need Stripe). Card also works once the venue's Stripe Connect onboarding is charges-enabled. To make delivery prepaid-card-only, set cashOnDeliveryEnabled:false.",
   "payments": {
     "stripeEnabled": true,
-    "cashOnCollectionEnabled": false,
-    "cashOnDeliveryEnabled": false,
+    "cashOnCollectionEnabled": true,
+    "cashOnDeliveryEnabled": true,
     "savedCardCvcThresholdPence": 5000
   },
 
