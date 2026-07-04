@@ -5,9 +5,9 @@
    modifiers + a sale mode + the customer's mobile — NEVER prices; we recompute
    totals from the canonical menu, server-authoritative.
 
-   Priced like an ONLINE order: the £1 service fee is charged (the platform keeps
-   its cut via the Stripe application_fee), but the online 10% promo is suppressed
-   — a staff-initiated link isn't a self-serve web order.
+   Priced like a COUNTER sale: NO service fee (it's a staff-taken order, not a
+   self-serve web order) and the online 10% promo is suppressed too. With no service
+   fee there's no platform application_fee, so the full amount settles to the venue.
 
    The order is stored status='pending_payment' and reaches the kitchen only once
    payment succeeds, exactly like a web card order: the Checkout Session's
@@ -79,7 +79,7 @@ export const onRequestPost = async ({ request, env }) => {
   const totals = computeTotals(
     { items: body.items, fulfillment, deliveryAddress: address ? { postcode: address.postcode } : undefined },
     config,
-    { suppressPromo: true, suppressServiceFee: false, allowCustom: true, allowPosOnly: true, deliveryFeeP: deliveryFeeP ?? undefined },
+    { suppressPromo: true, suppressServiceFee: true, allowCustom: true, allowPosOnly: true, deliveryFeeP: deliveryFeeP ?? undefined },
   );
   if (!totals.ok) return err(totals.reason, 400);
 
