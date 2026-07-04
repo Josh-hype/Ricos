@@ -60,17 +60,21 @@
     header.bar .btn{padding:13px 20px;font-size:.8rem;}
   }
 
-  /* Hero — deep indigo with a soft fish-scale sheen and cream wave, like the reference's dark photo hero */
-  .hero{position:relative;background:linear-gradient(180deg,var(--indigo-dark),var(--indigo-deep));
-        color:#fff;text-align:center;padding:76px 0 138px;overflow:hidden;}
-  .hero::before{content:'';position:absolute;inset:0;pointer-events:none;
-        background:
-          radial-gradient(circle farthest-side at 50% 135%, #0000 46%, rgba(255,255,255,.045) 47% 55%, #0000 56%) 0 0/64px 32px repeat,
-          radial-gradient(circle farthest-side at 50% 135%, #0000 46%, rgba(255,255,255,.045) 47% 55%, #0000 56%) 32px 16px/64px 32px repeat;}
+  /* Hero — full-bleed food photo (assets/hero.jpg) under a dark indigo wash so the
+     white headline stays legible; falls back to the indigo gradient if the photo is absent. */
+  .hero{position:relative;color:#fff;text-align:center;padding:96px 0 150px;overflow:hidden;
+        background-color:var(--indigo-deep);
+        background-image:
+          linear-gradient(180deg, rgba(14,15,46,.74) 0%, rgba(20,22,60,.5) 42%, rgba(14,15,46,.82) 100%),
+          url('assets/hero.jpg'),
+          linear-gradient(180deg, var(--indigo-dark), var(--indigo-deep));
+        background-size:cover, cover, cover;
+        background-position:center, center, center;
+        background-repeat:no-repeat, no-repeat, no-repeat;}
   .hero .inner{position:relative;z-index:1;}
-  .hero .script-line{display:block;color:var(--yellow);font-size:clamp(1.6rem,4vw,2.4rem);transform:rotate(-2.5deg);margin-bottom:14px;text-shadow:0 2px 12px rgba(0,0,0,.25);}
-  .hero h1{font-size:clamp(2.5rem,6vw,4rem);margin:0;text-transform:uppercase;letter-spacing:.02em;line-height:1.04;}
-  .hero .sub{font-size:clamp(1rem,2.2vw,1.18rem);max-width:580px;margin:22px auto 32px;color:#e7e9ff;font-weight:500;}
+  .hero .script-line{display:block;color:var(--yellow);font-size:clamp(1.6rem,4vw,2.4rem);transform:rotate(-2.5deg);margin-bottom:14px;text-shadow:0 2px 16px rgba(0,0,0,.5);}
+  .hero h1{font-size:clamp(2.5rem,6vw,4rem);margin:0;text-transform:uppercase;letter-spacing:.02em;line-height:1.04;text-shadow:0 3px 22px rgba(0,0,0,.45);}
+  .hero .sub{font-size:clamp(1rem,2.2vw,1.18rem);max-width:580px;margin:22px auto 32px;color:#f2f3ff;font-weight:500;text-shadow:0 2px 14px rgba(0,0,0,.5);}
   .hero-actions{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;}
   .wave{position:absolute;left:0;right:0;bottom:-1px;width:100%;display:block;z-index:2;}
 
