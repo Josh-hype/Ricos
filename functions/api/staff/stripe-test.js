@@ -4,22 +4,17 @@
    connectedAccountId, and retrieves that connected account to show whether it's
    charge-ready — surfacing the exact Stripe error behind a pay-link "502".
 
-   Access: a back-office session, OR a temporary ?key= token so the owner can run
-   it from a browser while setting up a new shop. REMOVE the token once done.
-   Safe: never returns secret values — only presence, key MODE (live/test), and
-   Stripe's own (non-secret) account status / error messages. */
+   Staff-gated (back-office session). Safe: never returns secret values — only
+   presence, key MODE (live/test), and Stripe's own (non-secret) account status /
+   error messages. */
 
 import { requireStaff } from '../../_lib/auth.js';
 import { getConfig } from '../../_lib/config.js';
 
-const DIAG_KEY = 'diag-4b8e1f6a9c2d7530'; // temporary; remove after setup
-
 export const onRequestGet = async ({ request, env }) => {
+  const denied = await requireStaff(request, env);
+  if (denied) return denied;
   const url = new URL(request.url);
-  if (url.searchParams.get('key') !== DIAG_KEY) {
-    const denied = await requireStaff(request, env);
-    if (denied) return denied;
-  }
 
   const sk = env.STRIPE_SECRET_KEY || '';
   const pk = env.STRIPE_PUBLISHABLE_KEY || '';
