@@ -1,5 +1,5 @@
 {
-  "_comment": "Mega Chippy, Acomb (York) — new LumiWEB customer. Branding modelled on the customer's reference site (Poppies Fish & Chips): indigo + teal on a clean light palette, heavy display type over Montserrat body. Legal entity supplied (AYAZ LARA LTD, 14372361). PLACEHOLDERS to fill before go-live: business.email + domain, stripe.connectedAccountId, and delivery (collection-only for now — needs delivery areas/fees to switch on). Orders cannot be taken until the real Stripe Connect account + platform Stripe secrets are configured in Cloudflare.",
+  "_comment": "Mega Chippy, Acomb (York) — LumiWEB customer, LIVE. Branding modelled on the reference site (Poppies Fish & Chips): indigo + teal on a clean light palette, heavy display type over Montserrat body. Legal entity: AYAZ LARA LTD (14372361). Live at megachippy.co.uk; Stripe Connect acct set; card + cash (collection & delivery) enabled. Reminder for future deploys: use Cloudflare 'Create deployment' (builds latest main) — a 'Retry' rebuilds an OLD commit and can ship stale config (e.g. cash flags).",
 
   "business": {
     "tradingName": "Mega Chippy",
