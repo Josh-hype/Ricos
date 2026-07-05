@@ -74,5 +74,36 @@ export const onRequestGet = async ({ request, env }) => {
     }
   }
 
-  return Response.json({ ok: true, env: report, config: configReport, hints, account }, { headers: { 'Cache-Control': 'no-store' } });
+  // THE definitive test: create a checkout session on the connected account exactly
+  // like the pay-link does. This is the operation that 502s, so its result is the
+  // real answer (the account-read above may 403 on a restricted key — harmless).
+  // The test session is never paid and expires; it does not create an app order.
+  let checkout = null;
+  if (sk && acct) {
+    const dom = config.business?.domain || 'example.com';
+    const f = new URLSearchParams();
+    f.set('mode', 'payment');
+    f.set('line_items[0][price_data][currency]', 'gbp');
+    f.set('line_items[0][price_data][product_data][name]', 'Stripe connectivity test');
+    f.set('line_items[0][price_data][unit_amount]', '100');
+    f.set('line_items[0][quantity]', '1');
+    f.set('success_url', `https://${dom}/thank-you`);
+    f.set('cancel_url', `https://${dom}/`);
+    try {
+      const res = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${sk}`, 'Stripe-Account': acct, 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: f.toString(),
+      });
+      const j = await res.json().catch(() => ({}));
+      checkout = { ok: res.ok, httpStatus: res.status, stripeCode: j.error?.code || null, stripeMessage: j.error?.message || null, sessionCreated: !!j.id };
+      if (res.ok) checkout.diagnosis = 'SUCCESS — a checkout session was created on the connected account. The pay-link WILL work now (this test session is unused and expires).';
+      else if (res.status === 403) checkout.diagnosis = 'The restricted key (rk_live_) cannot create Checkout Sessions on connected accounts. Fix: use the SAME key Rico\'s uses (its key clearly can), OR in Stripe → edit this restricted key and grant "Checkout Sessions: Write" (+ PaymentIntents: Write) and enable Connect.';
+      else checkout.diagnosis = 'Checkout creation failed — see stripeMessage. This is the exact error behind the pay-link 502.';
+    } catch (e) {
+      checkout = { ok: false, networkError: String(e?.message || e) };
+    }
+  }
+
+  return Response.json({ ok: true, env: report, config: configReport, hints, account, checkout }, { headers: { 'Cache-Control': 'no-store' } });
 };
