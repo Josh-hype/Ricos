@@ -40,6 +40,11 @@
         ],
         "modifiers": [
           {
+            "id": "add-2-thighs",
+            "label": "2 extra thighs",
+            "priceDeltaP": 495
+          },
+          {
             "id": "chips-mozz",
             "label": "Mozzarella on chips",
             "priceDeltaP": 200,

@@ -47,6 +47,19 @@
         },
         "options": [
           {
+            "id": "add-thighs",
+            "label": "Add extra thighs",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "add-2-thighs",
+                "label": "2 extra thighs",
+                "price": 4.95
+              }
+            ]
+          },
+          {
             "id": "chips-cheese",
             "label": "Add cheese to your chips",
             "select": "multi",
