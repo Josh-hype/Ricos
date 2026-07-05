@@ -77,7 +77,7 @@
     "scheduling": {
       "enabled": true,
       "slotMinutes": 15,
-      "maxOrdersPerSlot": 6,
+      "maxOrdersPerSlot": 0,
       "horizonDays": 2
     },
     "lastOrderBeforeCloseMinutes": 30

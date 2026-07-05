@@ -73,7 +73,7 @@
     "timezone": "Europe/London",
     "businessDayStartHour": 4,
     "asapMinPrepMinutes": 20,
-    "scheduling": { "enabled": true, "slotMinutes": 15, "maxOrdersPerSlot": 6, "horizonDays": 2 },
+    "scheduling": { "enabled": true, "slotMinutes": 15, "maxOrdersPerSlot": 0, "horizonDays": 2 },
     "lastOrderBeforeCloseMinutes": 20,
     "itemNotes": true
   },
