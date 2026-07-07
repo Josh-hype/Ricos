@@ -18,6 +18,7 @@ import { getOperator } from '../../_lib/operators.js';
 import { logAudit } from '../../_lib/audit.js';
 import { getConfig } from '../../_lib/config.js';
 import { priceCounterSale } from '../../_lib/counter-totals.js';
+import { resolveMenu } from '../../_lib/menu-store.js';
 import { retrievePaymentIntent, capturePaymentIntent } from '../../_lib/stripe.js';
 import { putOrder, newOrderId, nextOrderNumber } from '../../_lib/kv.js';
 
@@ -77,7 +78,7 @@ export const onRequestPost = async ({ request, env }) => {
   const externalCard = !!(config.pos && config.pos.externalCardMachine);
 
   // Price the sale (server-authoritative; identical maths to /terminal/charge).
-  const priced = await priceCounterSale({ items: body.items, mode: body.mode, address: body.address }, config);
+  const priced = await priceCounterSale({ items: body.items, mode: body.mode, address: body.address }, config, { menu: await resolveMenu(env) });
   if (!priced.ok) return err(priced.error, 400);
   const { mode, fulfillment, totals, address } = priced;
 

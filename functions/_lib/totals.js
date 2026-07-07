@@ -6,7 +6,10 @@ import { getMenu } from './menu.js';
 import { normalisePostcode } from './postcode.js';
 
 export function computeTotals(input, config, opts = {}) {
-  const menu = getMenu();
+  // opts.menu lets the API layer inject a runtime (owner-edited) menu resolved
+  // from KV; when absent we fall back to the static build-time menu. Kept sync so
+  // the money tests and pure callers need no change.
+  const menu = opts.menu || getMenu();
   const itemsById = indexMenu(menu);
   const lines = [];
   let subtotalP = 0;

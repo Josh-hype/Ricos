@@ -3939,7 +3939,13 @@ function renderCheckout() {
    then render. Renders a brief "Loading menu…" placeholder until it arrives. */
 const menuRootEl = document.getElementById('menuRoot');
 if (menuRootEl) menuRootEl.innerHTML = '<div class="menu-loading" style="text-align:center;padding:40px 20px;color:#6b5e58">Loading menu…</div>';
-fetch('/menu-visual.json').then(r => r.ok ? r.json() : Promise.reject()).then(data => {
+// Live menu: /api/menu-visual returns the owner-edited menu (or the static file
+// as fallback). If the API is unreachable we still fall back to the static asset
+// directly so ordering never breaks.
+fetch('/api/menu-visual')
+  .then(r => r.ok ? r.json() : Promise.reject())
+  .catch(() => fetch('/menu-visual.json').then(r => r.ok ? r.json() : Promise.reject()))
+  .then(data => {
   // Hide POS-only sections/items (e.g. in-store student deals) from the website —
   // they exist in the menu for the till, but customers must not see or order them.
   MENU_DATA = (Array.isArray(data) ? data : [])

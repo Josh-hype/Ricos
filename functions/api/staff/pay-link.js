@@ -22,6 +22,7 @@ import { getOperator } from '../../_lib/operators.js';
 import { logAudit } from '../../_lib/audit.js';
 import { getConfig } from '../../_lib/config.js';
 import { computeTotals } from '../../_lib/totals.js';
+import { resolveMenu } from '../../_lib/menu-store.js';
 import { resolveDelivery } from '../../_lib/delivery.js';
 import { createCheckoutSession } from '../../_lib/stripe.js';
 import { putOrder, newOrderId, nextOrderNumber } from '../../_lib/kv.js';
@@ -79,7 +80,7 @@ export const onRequestPost = async ({ request, env }) => {
   const totals = computeTotals(
     { items: body.items, fulfillment, deliveryAddress: address ? { postcode: address.postcode } : undefined },
     config,
-    { suppressPromo: true, suppressServiceFee: true, allowCustom: true, allowPosOnly: true, deliveryFeeP: deliveryFeeP ?? undefined },
+    { suppressPromo: true, suppressServiceFee: true, allowCustom: true, allowPosOnly: true, deliveryFeeP: deliveryFeeP ?? undefined, menu: await resolveMenu(env) },
   );
   if (!totals.ok) return err(totals.reason, 400);
 

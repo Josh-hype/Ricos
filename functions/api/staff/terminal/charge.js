@@ -10,6 +10,7 @@
 import { requirePermission } from '../../../_lib/permissions.js';
 import { getConfig } from '../../../_lib/config.js';
 import { priceCounterSale, cardFeeP } from '../../../_lib/counter-totals.js';
+import { resolveMenu } from '../../../_lib/menu-store.js';
 import { createPaymentIntent, listTerminalReaders, processPaymentIntentOnReader } from '../../../_lib/stripe.js';
 import { newOrderId } from '../../../_lib/kv.js';
 
@@ -25,7 +26,7 @@ export const onRequestPost = async ({ request, env }) => {
   const acct = config.stripe?.connectedAccountId;
   if (!acct || acct === 'TBD') return err('Card payments are not configured for this shop.', 400);
 
-  const priced = await priceCounterSale({ items: body.items, mode: body.mode, address: body.address }, config);
+  const priced = await priceCounterSale({ items: body.items, mode: body.mode, address: body.address }, config, { menu: await resolveMenu(env) });
   if (!priced.ok) return err(priced.error, 400);
 
   // Normal card sale charges the full total. For a split payment the till passes

@@ -9,6 +9,7 @@
 
 import { getConfig } from '../_lib/config.js';
 import { computeTotals } from '../_lib/totals.js';
+import { resolveMenu } from '../_lib/menu-store.js';
 import { resolveDelivery } from '../_lib/delivery.js';
 import { isOpenNow, isSlotValid, listSlots, deliveryLateStart, activeClosure } from '../_lib/hours.js';
 import { createPaymentIntent, createCustomer } from '../_lib/stripe.js';
@@ -136,8 +137,10 @@ export const onRequestPost = async ({ request, env }) => {
     }
   }
 
-  // Totals (server-side; client never trusted for prices).
-  const totals = computeTotals(input, config, { deliveryFeeP });
+  // Totals (server-side; client never trusted for prices). resolveMenu applies
+  // any owner-edited menu from KV, falling back to the static build-time menu.
+  const menu = await resolveMenu(env);
+  const totals = computeTotals(input, config, { deliveryFeeP, menu });
   if (!totals.ok) return errJson(totals.reason, 400);
 
   // Payment method.
