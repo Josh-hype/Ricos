@@ -3624,6 +3624,13 @@ function formatTime(iso) {
   return new Date(iso).toLocaleTimeString('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit' });
 }
 
+// Fulfilment-time label for printed tickets: a scheduled/pre-order shows its
+// requested time ("for 22:45"), everything else is "ASAP". Previously the
+// tickets hardcoded "ASAP", so pre-orders printed with the wrong time.
+function fulfilWhen(o) {
+  return (o && o.schedule && o.schedule !== 'asap') ? ('for ' + formatTime(o.schedule)) : 'ASAP';
+}
+
 function formatDate(iso) {
   return new Date(iso).toLocaleDateString('en-GB', { timeZone: 'Europe/London', day: '2-digit', month: 'short' });
 }
@@ -5320,7 +5327,7 @@ function buildReceiptText(o, ctx) {
   out.push(heavy);
   out.push(row('Ref ' + o.id, when));
   out.push(light);
-  out.push(mode + (who ? ' · ' + who : '') + ' · ASAP');
+  out.push(mode + (who ? ' · ' + who : '') + ' · ' + fulfilWhen(o));
   if (o.customer && o.customer.phone) out.push('Tel ' + o.customer.phone);
   if (o.fulfillment === 'delivery' && o.address) {
     if (o.address.line1) out.push(o.address.line1);
@@ -5384,7 +5391,7 @@ function buildKitchenTicket(o) {
   const mode = o.fulfillment === 'delivery' ? 'DELIVERY' : (o.source === 'counter-walkin' ? 'WALK IN' : 'COLLECTION');
   let when = '';
   try { when = new Date(o.createdAt).toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit' }); } catch (e) {}
-  const out = [heavy, center('KITCHEN'), heavy, center(mode + (when ? '   ' + when : '')), center('Order ' + (o.orderNumber || o.id))];
+  const out = [heavy, center('KITCHEN'), heavy, center(mode + (when ? '   ' + when : '')), center(fulfilWhen(o).toUpperCase()), center('Order ' + (o.orderNumber || o.id))];
   if (o.customer && o.customer.name && o.customer.name !== 'Walk-in') out.push(center(o.customer.name));
   if (o.customer && o.customer.phone) out.push(center(o.customer.phone));
   if (o.fulfillment === 'delivery' && o.address) {
@@ -5475,7 +5482,7 @@ function buildReceiptDoc(o, ctx, kind) {
 
   ops.push(ruleOp());
   ops.push(rowOp('Ref ' + o.id, when, SZ.body, true));
-  ops.push({ t: 'text', s: mode + (who ? ' · ' + who : '') + ' · ASAP', size: SZ.body, bold: true });
+  ops.push({ t: 'text', s: mode + (who ? ' · ' + who : '') + ' · ' + fulfilWhen(o), size: SZ.body, bold: true });
   // Customer phone — essential for deliveries (the kitchen/driver calls the customer).
   if (phone) ops.push({ t: 'text', s: 'Tel ' + phone, size: SZ.body, bold: true });
   if (o.fulfillment === 'delivery' && o.address) {
