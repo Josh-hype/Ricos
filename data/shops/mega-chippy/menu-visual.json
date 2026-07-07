@@ -5,6 +5,29 @@
     "icon": "⭐",
     "items": [
       {
+        "id": "netflix-deal",
+        "name": "Netflix Deal",
+        "price": 22.99,
+        "desc": "2× Regular Fish & Chips, 2× Sauces & 2× Drinks — the perfect big night in.",
+        "meal": {
+          "label": "Included items",
+          "addPrice": 0,
+          "forced": true,
+          "choose": [
+            {
+              "category": "sauces",
+              "label": "Sauce",
+              "count": 2
+            },
+            {
+              "category": "drinks",
+              "label": "Drink",
+              "count": 2
+            }
+          ]
+        }
+      },
+      {
         "id": "special-offer",
         "name": "Special Offer",
         "price": 19.9,

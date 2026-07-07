@@ -4,6 +4,24 @@
     "name": "Special Offers",
     "items": [
       {
+        "id": "netflix-deal",
+        "name": "Netflix Deal",
+        "priceP": 2299,
+        "mealAddP": 0,
+        "mealChoose": [
+          {
+            "category": "sauces",
+            "label": "Sauce",
+            "count": 2
+          },
+          {
+            "category": "drinks",
+            "label": "Drink",
+            "count": 2
+          }
+        ]
+      },
+      {
         "id": "special-offer",
         "name": "Special Offer",
         "priceP": 1990,
