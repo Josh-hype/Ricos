@@ -1590,7 +1590,7 @@ button{cursor:pointer;border:0;background:none}
       <button data-min="45">45</button>
       <button data-min="60">60</button>
     </div>
-    <div style="text-align:center;margin:-6px 0 14px;color:var(--muted);font-size:0.9rem">
+    <div id="prepGridNote" style="text-align:center;margin:-6px 0 14px;color:var(--muted);font-size:0.9rem">
       mins from now
     </div>
     <div class="row">
@@ -1620,7 +1620,7 @@ button{cursor:pointer;border:0;background:none}
       <button data-min="45">45</button>
       <button data-min="60">60</button>
     </div>
-    <div class="alarm-prep-label">ready in (mins) — pick before accepting</div>
+    <div class="alarm-prep-label" id="alarmPrepLabel">ready in (mins) — pick before accepting</div>
     <div class="alarm-actions">
       <button class="reject" id="alarmReject">Reject</button>
       <button class="accept" id="alarmAccept">Accept</button>
@@ -3703,17 +3703,23 @@ function renderAlarm(o, qlen) {
       ${addr}
     </div>`;
 
+  // Scheduled/pre-order: accept for the requested time only — hide the
+  // "ready in N minutes" presets (irrelevant for a booked time).
   const scheduled = o.schedule && o.schedule !== 'asap';
   const rq = $('#alarmForReq');
+  const alabel = $('#alarmPrepLabel');
   if (scheduled) {
-    state.alarmReadyAt = o.schedule;                             // default to the requested time
-    rq.innerHTML = `🕒 Accept for requested time<small>Ready at ${formatTime(o.schedule)}</small>`;
+    state.alarmReadyAt = o.schedule;
+    rq.innerHTML = `🕒 Ready for ${formatTime(o.schedule)}<small>Customer’s requested time</small>`;
     rq.classList.remove('inactive');
     rq.hidden = false;
-    $$('#alarmPrep button').forEach(x => x.classList.remove('active'));
+    $('#alarmPrep').style.display = 'none';
+    if (alabel) alabel.hidden = true;
   } else {
     state.alarmReadyAt = null;
     if (rq) rq.hidden = true;
+    $('#alarmPrep').style.display = '';
+    if (alabel) alabel.hidden = false;
     $$('#alarmPrep button').forEach(x => x.classList.toggle('active', Number(x.dataset.min) === state.alarmMin));
   }
 }
@@ -3853,17 +3859,22 @@ function openAccept(id) {
   const scheduled = o && o.schedule && o.schedule !== 'asap';
   const rq = $('#acceptForReq');
   const lbl = $('#acceptPrepLabel');
+  // A scheduled/pre-order can ONLY be accepted for its requested time — the
+  // "ready in N minutes" presets are meaningless for it, so hide them entirely.
   if (scheduled) {
-    acceptReadyAt = o.schedule;                                    // default: accept for requested time
-    rq.innerHTML = `🕒 Accept for requested time<small>Ready at ${formatTime(o.schedule)}</small>`;
+    acceptReadyAt = o.schedule;
+    rq.innerHTML = `🕒 Ready for ${formatTime(o.schedule)}<small>Customer’s requested time</small>`;
     rq.classList.remove('inactive');
     rq.hidden = false;
-    if (lbl) lbl.hidden = false;
+    if (lbl) lbl.hidden = true;
+    $('#prepGrid').style.display = 'none';
+    if ($('#prepGridNote')) $('#prepGridNote').hidden = true;
     $('#acceptTitle').textContent = 'Accept scheduled order';
-    $$('#prepGrid button').forEach(x => x.classList.remove('active'));   // no preset preselected
   } else {
     if (rq) rq.hidden = true;
     if (lbl) lbl.hidden = true;
+    $('#prepGrid').style.display = '';
+    if ($('#prepGridNote')) $('#prepGridNote').hidden = false;
     $('#acceptTitle').textContent = 'Ready in how long?';
     $$('#prepGrid button').forEach(x => x.classList.toggle('active', Number(x.dataset.min) === 25));
   }
