@@ -2929,6 +2929,18 @@ async function populateScheduleSelect() {
   }
   sel.innerHTML = opts.join('');
 
+  // Persist the chosen time across re-renders. The payment step rebuilds this
+  // <select> on every render (navigating Back→Next, saved-card/express-wallet
+  // loads, etc.), which would otherwise silently reset a customer's picked slot
+  // back to ASAP — the cause of "specific delivery time reverted to ASAP"
+  // complaints. checkoutData survives re-renders, so it is the source of truth.
+  if (checkoutData.schedule && [...sel.options].some(o => o.value === checkoutData.schedule)) {
+    sel.value = checkoutData.schedule;          // restore their choice
+  } else {
+    checkoutData.schedule = sel.value;          // adopt the current default
+  }
+  sel.onchange = () => { checkoutData.schedule = sel.value; };
+
   if (!isOpen && slots.length > 0) {
     const noteEl = document.getElementById('scheduleNote');
     if (noteEl) noteEl.textContent = "We're closed right now — pick a scheduled time above.";
@@ -2956,7 +2968,7 @@ function buildOrderRequest() {
       postcode: state.postcode,
       notes: checkoutData.notes || '',
     } : null,
-    schedule: document.getElementById('paySchedule')?.value || 'asap',
+    schedule: checkoutData.schedule || document.getElementById('paySchedule')?.value || 'asap',
     customer: {
       name: checkoutData.name,
       email: checkoutData.email,
