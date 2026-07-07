@@ -675,6 +675,14 @@ button{cursor:pointer;border:0;background:none}
   background:var(--blue);color:#fff;border-color:var(--blue);
   box-shadow:0 6px 14px rgba(0,112,240,.3);
 }
+.req-accept{
+  display:block;width:100%;margin:0 0 12px;padding:13px;border-radius:12px;
+  border:2px solid var(--blue);background:var(--blue);color:#fff;font-weight:800;font-size:15px;line-height:1.2;
+  box-shadow:0 6px 14px rgba(0,112,240,.3);transition:.12s;
+}
+.req-accept small{display:block;font-weight:600;font-size:12px;opacity:.92;margin-top:3px}
+.req-accept.inactive{background:var(--panel);color:var(--blue);box-shadow:var(--sh-sm)}
+.prep-label{text-align:center;margin:-4px 0 10px;color:var(--muted);font-size:0.85rem}
 .modal .row{display:flex;gap:8px}
 .modal .row button{flex:1;padding:14px;border-radius:12px;font-weight:700;font-size:14px}
 .modal .cancel{background:var(--canvas);color:var(--ink-2);border:1px solid var(--line) !important}
@@ -1570,6 +1578,8 @@ button{cursor:pointer;border:0;background:none}
 <div class="ovl" id="acceptOvl" role="dialog" aria-modal="true" aria-labelledby="acceptTitle">
   <div class="modal">
     <h2 id="acceptTitle">Ready in how long?</h2>
+    <button class="req-accept" id="acceptForReq" type="button" hidden></button>
+    <div class="prep-label" id="acceptPrepLabel" hidden>or choose a prep time</div>
     <div class="prep-grid" id="prepGrid">
       <button data-min="15">15</button>
       <button data-min="20">20</button>
@@ -1599,6 +1609,7 @@ button{cursor:pointer;border:0;background:none}
       <span class="alarm-queue" id="alarmQueue">new</span>
     </div>
     <div class="alarm-body" id="alarmBody"></div>
+    <button class="req-accept" id="alarmForReq" type="button" hidden></button>
     <div class="prep-grid" id="alarmPrep">
       <button data-min="15">15</button>
       <button data-min="20">20</button>
@@ -2061,6 +2072,7 @@ const state = {
   alarmHandle: null,   // setInterval for the repeating new-order chime
   alarmId: null,       // order id currently shown in the alarm popup
   alarmMin: 25,        // prep minutes selected in the alarm popup
+  alarmReadyAt: null,  // set when accepting a scheduled order "for its requested time"
   view: 'live',        // live (board) | summary | zreport | sale | backoffice
   boardTab: 'live',    // board sub-tab: 'live' | 'completed'
   summaryOrders: [],   // cache of today's orders shown under the Today view
@@ -3684,7 +3696,19 @@ function renderAlarm(o, qlen) {
       ${addr}
     </div>`;
 
-  $$('#alarmPrep button').forEach(x => x.classList.toggle('active', Number(x.dataset.min) === state.alarmMin));
+  const scheduled = o.schedule && o.schedule !== 'asap';
+  const rq = $('#alarmForReq');
+  if (scheduled) {
+    state.alarmReadyAt = o.schedule;                             // default to the requested time
+    rq.innerHTML = `🕒 Accept for requested time<small>Ready at ${formatTime(o.schedule)}</small>`;
+    rq.classList.remove('inactive');
+    rq.hidden = false;
+    $$('#alarmPrep button').forEach(x => x.classList.remove('active'));
+  } else {
+    state.alarmReadyAt = null;
+    if (rq) rq.hidden = true;
+    $$('#alarmPrep button').forEach(x => x.classList.toggle('active', Number(x.dataset.min) === state.alarmMin));
+  }
 }
 
 function startAlarm() {
@@ -3701,7 +3725,16 @@ $$('#alarmPrep button').forEach(b => {
     $$('#alarmPrep button').forEach(x => x.classList.remove('active'));
     b.classList.add('active');
     state.alarmMin = Number(b.dataset.min);
+    state.alarmReadyAt = null;                                   // a preset overrides the requested time
+    const rq = $('#alarmForReq'); if (rq && !rq.hidden) rq.classList.add('inactive');
   });
+});
+$('#alarmForReq').addEventListener('click', () => {
+  const o = (state.orders || []).find(x => x.id === state.alarmId);
+  if (!o || !o.schedule || o.schedule === 'asap') return;
+  state.alarmReadyAt = o.schedule;
+  $$('#alarmPrep button').forEach(x => x.classList.remove('active'));
+  $('#alarmForReq').classList.remove('inactive');
 });
 
 $('#alarmAccept').addEventListener('click', async () => {
@@ -3709,7 +3742,7 @@ $('#alarmAccept').addEventListener('click', async () => {
   if (!id) return;
   $('#alarmAccept').disabled = true;
   try {
-    await acceptOrder(id, state.alarmMin);
+    await acceptOrder(id, state.alarmReadyAt ? { readyAt: state.alarmReadyAt } : { prepMinutes: state.alarmMin });
     state.alarmId = null;   // force the next pending order to render fresh
     setView('live');        // land on the live board after accepting
     await poll();           // poll() -> syncAlarm() advances or closes
@@ -3742,13 +3775,23 @@ $('#alarmReject').addEventListener('click', async () => {
 /* ============================== Accept modal */
 let acceptingId = null;
 let acceptMin = 25;
+let acceptReadyAt = null;   // ISO — set when accepting a scheduled order for its requested time
 
 $$('#prepGrid button').forEach(b => {
   b.addEventListener('click', () => {
     $$('#prepGrid button').forEach(x => x.classList.remove('active'));
     b.classList.add('active');
     acceptMin = Number(b.dataset.min);
+    acceptReadyAt = null;                                    // a preset overrides the requested time
+    const rq = $('#acceptForReq'); if (rq && !rq.hidden) rq.classList.add('inactive');
   });
+});
+$('#acceptForReq').addEventListener('click', () => {
+  const o = (state.orders || []).find(x => x.id === acceptingId);
+  if (!o || !o.schedule || o.schedule === 'asap') return;
+  acceptReadyAt = o.schedule;
+  $$('#prepGrid button').forEach(x => x.classList.remove('active'));
+  $('#acceptForReq').classList.remove('inactive');
 });
 $('#acceptCancel').addEventListener('click', () => closeAccept());
 $('#acceptOvl').addEventListener('click', (e) => {
@@ -3758,7 +3801,7 @@ $('#acceptConfirm').addEventListener('click', async () => {
   if (!acceptingId) return;
   $('#acceptConfirm').disabled = true;
   try {
-    await acceptOrder(acceptingId, acceptMin);
+    await acceptOrder(acceptingId, acceptReadyAt ? { readyAt: acceptReadyAt } : { prepMinutes: acceptMin });
     closeAccept();
     poll();
   } catch (e) {
@@ -3768,11 +3811,17 @@ $('#acceptConfirm').addEventListener('click', async () => {
   }
 });
 
-async function acceptOrder(id, prepMinutes) {
+async function acceptOrder(id, opts) {
+  // opts may be a number (prep minutes) or an object { prepMinutes } / { readyAt }.
+  // readyAt lets staff accept a scheduled/pre-order FOR its requested time rather
+  // than "N minutes from now"; the server honours an explicit readyAt.
+  const body = (opts && typeof opts === 'object')
+    ? (opts.readyAt ? { readyAt: opts.readyAt } : { prepMinutes: opts.prepMinutes })
+    : { prepMinutes: opts };
   const res = await fetch(`/api/staff/orders/${id}/accept`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prepMinutes }),
+    body: JSON.stringify(body),
   });
   if (!res.ok) {
     const j = await res.json().catch(() => ({}));
@@ -3792,7 +3841,25 @@ async function acceptOrder(id, prepMinutes) {
 function openAccept(id) {
   acceptingId = id;
   acceptMin = 25;
-  $$('#prepGrid button').forEach(x => x.classList.toggle('active', Number(x.dataset.min) === 25));
+  acceptReadyAt = null;
+  const o = (state.orders || []).find(x => x.id === id);
+  const scheduled = o && o.schedule && o.schedule !== 'asap';
+  const rq = $('#acceptForReq');
+  const lbl = $('#acceptPrepLabel');
+  if (scheduled) {
+    acceptReadyAt = o.schedule;                                    // default: accept for requested time
+    rq.innerHTML = `🕒 Accept for requested time<small>Ready at ${formatTime(o.schedule)}</small>`;
+    rq.classList.remove('inactive');
+    rq.hidden = false;
+    if (lbl) lbl.hidden = false;
+    $('#acceptTitle').textContent = 'Accept scheduled order';
+    $$('#prepGrid button').forEach(x => x.classList.remove('active'));   // no preset preselected
+  } else {
+    if (rq) rq.hidden = true;
+    if (lbl) lbl.hidden = true;
+    $('#acceptTitle').textContent = 'Ready in how long?';
+    $$('#prepGrid button').forEach(x => x.classList.toggle('active', Number(x.dataset.min) === 25));
+  }
   $('#acceptOvl').classList.add('open');
 }
 function closeAccept() {
