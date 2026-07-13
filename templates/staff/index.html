@@ -5825,8 +5825,10 @@ function buildReceiptText(o, ctx) {
   if (t.deliveryFeeP || t.serviceFeeP) out.push(row('Subtotal', money(t.subtotalP)));
   if (t.deliveryFeeP) out.push(row('Delivery', money(t.deliveryFeeP)));
   if (t.serviceFeeP) {
-    out.push(row('Service fee', money(t.serviceFeeShopP != null ? t.serviceFeeShopP : 0)));
-    out.push(row('Lumin Labs fee', money(t.serviceFeePlatformP != null ? t.serviceFeePlatformP : t.serviceFeeP)));
+    // Show the whole service charge as one line on the ticket. The shop/platform
+    // split (serviceFeeShopP + serviceFeePlatformP) is still recorded on the order
+    // and used for reporting — it's just not broken out on the printed ticket.
+    out.push(row('Service charge', money(t.serviceFeeP)));
   }
   out.push(row('TOTAL', money(t.totalP)));
   out.push(light);
@@ -5982,8 +5984,9 @@ function buildReceiptDoc(o, ctx, kind) {
   if (t.deliveryFeeP || t.serviceFeeP) ops.push(rowOp('Subtotal', money(t.subtotalP), SZ.body, true));
   if (t.deliveryFeeP) ops.push(rowOp('Delivery', money(t.deliveryFeeP), SZ.body, true));
   if (t.serviceFeeP) {
-    ops.push(rowOp('Service fee', money(t.serviceFeeShopP != null ? t.serviceFeeShopP : 0), SZ.body, true));
-    ops.push(rowOp('Lumin Labs fee', money(t.serviceFeePlatformP != null ? t.serviceFeePlatformP : t.serviceFeeP), SZ.body, true));
+    // One combined "Service charge" line on the printed ticket (the shop/platform
+    // split is still kept on the order for reporting, just not shown here).
+    ops.push(rowOp('Service charge', money(t.serviceFeeP), SZ.body, true));
   }
   ops.push(rowOp('TOTAL', '£' + money(t.totalP), SZ.body, true));
   ops.push(ruleOp());
