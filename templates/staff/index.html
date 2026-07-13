@@ -2157,6 +2157,7 @@ const state = {
   managerUnlocked: false, // optimistic flag — server still validates via the manager cookie
   pendingMgrTarget: null, // tab we're trying to open behind the manager PIN gate
   operatorsEnabled: false, // per-operator mode (from /api/staff/me)
+  ordersOnly: false,       // online-orders-only device: hide counter EPOS + card reader (from /api/config pos.ordersOnly)
   operator: null,          // { id, name, role, colour } when signed in per-operator
   perms: new Set(),        // permissions the signed-in operator holds
   fullAccess: false,       // owner/master session (username-password or pre-operators) — full perms, bypasses forced manager-override prompts
@@ -2235,7 +2236,7 @@ function setView(view, mode) {
   const isSale = (view === 'sale');
   const isBoard = (view === 'live');
   const usesRange = (view === 'zreport');
-  $('#modeBar').hidden = !isBoard;          // mode buttons: board only
+  $('#modeBar').hidden = !isBoard || state.ordersOnly;  // counter EPOS bar: board only, and hidden on orders-only devices
   const tb = $('#tabBar'); if (tb) tb.hidden = !isBoard;     // Live/Completed tab bar: board only
   const ch = $('#boardChips'); if (ch) ch.hidden = !isBoard; // filter chips: board only
   $('#dateBar').hidden = !usesRange;
@@ -2650,6 +2651,9 @@ async function applyShopBranding() {
     const res = await fetch('/api/config', { cache: 'no-store' });
     if (!res.ok) return;
     const cfg = await res.json();
+    // Online-orders-only device mode (delivery-only shops on a handheld): hide the
+    // in-person EPOS (counter sale + card reader), keep everything else.
+    state.ordersOnly = !!(cfg.pos && cfg.pos.ordersOnly);
     // Username + password mode: WEB only. The till app (EPOS_IS_APP) always keeps the
     // numeric PIN pad for fast per-staff operator-code login; only the browser back
     // office swaps to username/password.
@@ -3162,7 +3166,7 @@ function renderBackOffice() {
   ];
   if (canStaff) tiles.push({ k: 'staff', ic: 'green', svg: ICON.staff, tl: 'Staff', ds: 'Operators &amp; their PIN codes' });
   tiles.push({ k: 'audit', ic: 'ink', svg: ICON.audit, tl: 'Activity Log', ds: 'Refunds, voids, sign-ins &amp; overrides' });
-  tiles.push({ k: 'reader', ic: 'blue', svg: ICON.reader, tl: 'Card Reader', ds: 'Register the WisePOS card terminal' });
+  if (!state.ordersOnly) tiles.push({ k: 'reader', ic: 'blue', svg: ICON.reader, tl: 'Card Reader', ds: 'Register the WisePOS card terminal' });
   tiles.push({ k: 'routing', ic: 'green', svg: ICON.routing, tl: 'Order routing', ds: 'Currently: <b>' + routingLabel(state.routing) + '</b> — tap to change' });
   $('#grid').innerHTML = '<div class="bo-wrap"><div class="bo-grid">' +
     tiles.map(t => `<button class="bo-tile" data-bo="${t.k}"><div class="ic ${t.ic}">${t.svg}</div><div class="tl">${t.tl}</div><div class="ds">${t.ds}</div></button>`).join('') +

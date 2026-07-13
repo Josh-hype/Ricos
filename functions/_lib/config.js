@@ -61,6 +61,10 @@ export function getPublicConfig() {
       externalCardMachine: !!pos.externalCardMachine,
       selfServeDrinks: !!pos.selfServeDrinks,
       requireOrderPin: !!pos.requireOrderPin,
+      // Online-orders-only device mode (e.g. Sunmi V2 Plus at a delivery-only
+      // shop): the till receives/accepts/prints online orders and keeps the full
+      // back office, but hides the in-person EPOS (counter sale + card reader).
+      ordersOnly: !!pos.ordersOnly,
     },
     allergens: config.allergens,
     marketing: config.marketing,

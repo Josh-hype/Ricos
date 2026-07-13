@@ -76,7 +76,7 @@
     "connectedAccountId": "acct_1TpYK4JDn2SsTUNp"
   },
 
-  "pos": { "requireOrderPin": false },
+  "pos": { "requireOrderPin": false, "ordersOnly": true },
 
   "hours": {
     "_comment": "24-hour format. Source: owner-supplied. Sat 11:30-20:50; Sun & Mon 15:00-20:50; Tue-Fri 11:30-20:50. (8:50pm close = 20:50.)",
