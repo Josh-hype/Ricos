@@ -1505,7 +1505,7 @@
       <div class="cart-body" id="cartBody"></div>
       <div class="cart-summary" id="cartSummary" style="display: none;">
         <div class="cart-row"><span>Subtotal</span><span id="sumSub">£0.00</span></div>
-        <div class="cart-row"><span>Online discount (10%)</span><span class="discount" id="sumDisc">-£0.00</span></div>
+        <div class="cart-row"><span>Discount</span><span class="discount" id="sumDisc">-£0.00</span></div>
         <div class="cart-row" id="sumDeliveryRow" style="display:none"><span>Delivery</span><span id="sumDelivery">£2.00</span></div>
         <div class="cart-row"><span>Service fee</span><span id="sumService">£0.30</span></div>
         <div class="cart-row total"><span>Total</span><span id="sumTotal">£0.00</span></div>
@@ -1549,7 +1549,7 @@
     <div class="modal-body" id="cartModalBody"></div>
     <div class="modal-footer" id="cartModalFooter" style="display: none;">
       <div class="cart-row"><span>Subtotal</span><span id="mSumSub">£0.00</span></div>
-      <div class="cart-row"><span>Online discount (10%)</span><span class="discount" id="mSumDisc">-£0.00</span></div>
+      <div class="cart-row"><span>Discount</span><span class="discount" id="mSumDisc">-£0.00</span></div>
       <div class="cart-row" id="mSumDeliveryRow" style="display:none"><span>Delivery</span><span id="mSumDelivery">£2.00</span></div>
       <div class="cart-row"><span>Service fee</span><span id="mSumService">£0.30</span></div>
       <div class="cart-row total"><span>Total</span><span id="mSumTotal">£0.00</span></div>
@@ -2316,18 +2316,39 @@ function deliveryFeeGBP() {
   return (Number(p) || 0) / 100;
 }
 
+/* Which discount to preview in the cart: the first-orders welcome offer if the
+   customer is signed in and still has redemptions left, otherwise the shop's
+   standing "% off all online orders" offer. Returns {pct,label}. The server
+   (/api/order) recomputes this authoritatively — this is a display hint, so a
+   customer who isn't really eligible just sees the price corrected at checkout. */
+function activeDiscount() {
+  const p = window.SHOP_CONFIG?.promo || {};
+  const fo = p.firstOrders;
+  const user = state.user;
+  if (fo && fo.enabled && user && (Number(user.promoOrdersUsed) || 0) < (Number(fo.limit) || 0)) {
+    const pct = Math.max(0, Math.min(100, Number(fo.percent) || 0));
+    const left = (Number(fo.limit) || 0) - (Number(user.promoOrdersUsed) || 0);
+    return { pct, label: fo.label || `${pct}% off — first ${Number(fo.limit) || 0} orders`, ordersLeft: left };
+  }
+  const auto = p.autoOnlineDiscount;
+  if (auto && auto.enabled) {
+    const pct = Math.max(0, Math.min(100, Number(auto.percent) || 0));
+    return { pct, label: auto.label || `Online discount (${pct}%)`, ordersLeft: null };
+  }
+  return { pct: 0, label: null, ordersLeft: null };
+}
+
 function cartTotals() {
   // Compute in integer pence (mirroring the server's computeTotals) so the
   // displayed total can't drift a penny from what Stripe is charged via
   // floating-point pound arithmetic. Returns pounds for display.
   const subP = state.cart.reduce((s, l) => s + Math.round((Number(l.price) || 0) * 100) * (Number(l.qty) || 0), 0);
-  const promo = window.SHOP_CONFIG?.promo?.autoOnlineDiscount;
-  const discountPct = (promo && promo.enabled) ? (Number(promo.percent) || 0) : 0;
-  const discountP = Math.round(subP * (discountPct / 100));
+  const disc = activeDiscount();
+  const discountP = Math.round(subP * (disc.pct / 100));
   const deliveryP = Math.round(deliveryFeeGBP() * 100);
   const serviceP = state.cart.length > 0 ? Math.round(serviceFeeGBP() * 100) : 0;
   const totalP = Math.max(0, subP - discountP + deliveryP + serviceP);
-  return { sub: subP / 100, discount: discountP / 100, delivery: deliveryP / 100, serviceFee: serviceP / 100, total: totalP / 100 };
+  return { sub: subP / 100, discount: discountP / 100, delivery: deliveryP / 100, serviceFee: serviceP / 100, total: totalP / 100, discountLabel: disc.label };
 }
 
 function cartLineHTML(line) {
@@ -2377,7 +2398,13 @@ function renderCart() {
     document.getElementById(subId).textContent  = fmt(t.sub);
     document.getElementById(discId).textContent = `-${fmt(t.discount)}`;
     const discRow = document.getElementById(discId).closest('.cart-row');
-    if (discRow) discRow.style.display = t.discount > 0 ? '' : 'none';
+    if (discRow) {
+      discRow.style.display = t.discount > 0 ? '' : 'none';
+      // Label the discount with whichever offer is active (first-orders vs the
+      // standing online discount) rather than a hardcoded "(10%)".
+      const lbl = discRow.querySelector('span');
+      if (lbl && t.discountLabel) lbl.textContent = t.discountLabel;
+    }
     document.getElementById(svcId).textContent  = fmt(t.serviceFee);
     document.getElementById(totalId).textContent = fmt(t.total);
     const dRow = document.getElementById(delvRowId);
@@ -2634,6 +2661,7 @@ function renderAccountModal() {
       saveState();
       updateAccountButton();
       renderAccountModal();
+      renderCart(); // signing out removes the first-orders discount preview
     });
     return;
   }
@@ -2709,6 +2737,7 @@ function renderAccountTab() {
         saveState();
         updateAccountButton();
         renderAccountModal();
+        renderCart(); // reflect the first-orders discount now they're signed in
       } catch {
         errEl.textContent = 'Network error — please try again.';
         errEl.style.display = 'block';
@@ -2770,6 +2799,7 @@ function renderAccountTab() {
         saveState();
         updateAccountButton();
         renderAccountModal();
+        renderCart(); // reflect the first-orders discount now they're signed in
       } catch {
         errEl.textContent = 'Network error — please try again.';
         errEl.style.display = 'block';
@@ -3529,7 +3559,7 @@ function renderCheckout() {
         <h4>Order summary</h4>
         ${linesHTML}
         <div class="line"><span>Subtotal</span><span>${fmt(t.sub)}</span></div>
-        ${t.discount > 0 ? `<div class="line"><span style="color:var(--success)">Online discount (10%)</span><span style="color:var(--success)">-${fmt(t.discount)}</span></div>` : ''}
+        ${t.discount > 0 ? `<div class="line"><span style="color:var(--success)">${escapeHTML(t.discountLabel || 'Online discount')}</span><span style="color:var(--success)">-${fmt(t.discount)}</span></div>` : ''}
         ${state.mode==='deliver' ? `<div class="line"><span>Delivery</span><span>${t.delivery===0?'FREE':fmt(t.delivery)}</span></div>` : ''}
         ${t.serviceFee > 0 ? `<div class="line"><span>Service fee</span><span>${fmt(t.serviceFee)}</span></div>` : ''}
         <div class="line total"><span>Total</span><span>${fmt(t.total)}</span></div>
@@ -4125,6 +4155,9 @@ fetch('/api/account/me', { credentials: 'same-origin' })
     state.user = body.user || null;
     saveState();
     updateAccountButton();
+    // Signed-in state affects the first-orders discount preview, so refresh the
+    // cart totals now that we know who (if anyone) is logged in.
+    renderCart();
   })
   .catch(() => { /* offline boot — keep whatever was cached */ });
 </script>

@@ -106,8 +106,10 @@
     "itemNotes": true
   },
 
+  "_comment_promo": "firstOrders = a signed-in customer gets `percent`% off the subtotal of their first `limit` orders (a welcome offer to reward sign-ups). Enforced server-side against the account's redemption count — guests/walk-ins never qualify, and a redemption is only spent when an order is actually placed (cash) or paid (card), so an abandoned card payment doesn't burn one. Takes precedence over autoOnlineDiscount (they don't stack). Set enabled:false to end it.",
   "promo": {
-    "autoOnlineDiscount": { "enabled": false, "label": "10% off online orders", "percent": 10 }
+    "autoOnlineDiscount": { "enabled": false, "label": "10% off online orders", "percent": 10 },
+    "firstOrders": { "enabled": true, "percent": 15, "limit": 2, "label": "15% off — first 2 orders" }
   },
 
   "_comment_payments": "Cash on collection AND delivery are ON so the shop can take online orders now (cash doesn't need Stripe). Card also works once the venue's Stripe Connect onboarding is charges-enabled. To make delivery prepaid-card-only, set cashOnDeliveryEnabled:false.",

@@ -374,6 +374,27 @@ const promoSection = (promo && promo.enabled)
   ? `<h2>Promotional discounts</h2>\n    <p>The ${promo.percent}% online discount is applied automatically to the subtotal of qualifying online orders. We may change or end this offer at any time.</p>`
   : '';
 
+// First-orders welcome offer: a landing-page banner + a plain-text sentence,
+// emitted only when the shop runs it (config.promo.firstOrders.enabled). The
+// banner is a config-gated token so it ships to every landing template but only
+// renders where the offer is on — turning it off in config makes it vanish on
+// the next build. Colours come from the shop theme so it matches the brand.
+const firstOrders = config.promo?.firstOrders;
+const firstOrdersOn = !!(firstOrders && firstOrders.enabled);
+const firstOrdersLimit = Number(firstOrders?.limit) || 0;
+const firstOrdersPct = Number(firstOrders?.percent) || 0;
+const firstOrderPromoText = firstOrdersOn
+  ? `${firstOrdersPct}% off your first ${firstOrdersLimit} order${firstOrdersLimit === 1 ? '' : 's'}`
+  : '';
+const foBg = config.theme?.accent || '#f5b71e';
+const foFg = config.theme?.primaryDeep || config.theme?.primaryDark || '#1a1a1a';
+const firstOrderPromoBanner = firstOrdersOn
+  ? `<div class="promo-flash" role="note" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 14px;text-align:center;background:${foBg};color:${foFg};font-weight:800;letter-spacing:.01em;padding:11px 18px;font-size:clamp(.95rem,2.4vw,1.1rem);line-height:1.3;">`
+    + `<span>🎉 New here? Get <strong>${firstOrderPromoText}</strong></span>`
+    + `<a href="/order" style="color:${foFg};text-decoration:underline;text-underline-offset:3px;font-weight:800;white-space:nowrap;">Sign up &amp; order →</a>`
+    + `</div>`
+  : '';
+
 // SEO <head> block for the landing page: a JSON-LD Restaurant schema (so Google
 // can confidently tie this domain to the business — name, address, hours, phone,
 // menu, cuisine) plus a canonical link and Open Graph / Twitter tags. Built from
@@ -484,6 +505,10 @@ const tokens = {
   controllerIdentity,
   contactLine,
   promoSection,
+  // First-orders welcome offer: a ready-to-drop landing banner (empty when the
+  // offer is off) and the plain-text version for bespoke landing copy / meta.
+  firstOrderPromoBanner,
+  firstOrderPromoText,
   // SEO meta sentence — only advertises the discount for shops that run it.
   promoTagline:            (promo && promo.enabled) ? ` ${promo.percent}% off all online orders.` : '',
   // Landing-page SEO <head>: JSON-LD Restaurant schema + canonical + OG/Twitter.

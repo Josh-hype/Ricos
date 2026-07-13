@@ -50,6 +50,10 @@ export function getPublicConfig() {
     // Today's one-off closure (emergency "we're closed today"), or null.
     closure: activeClosure(config),
     ordering: config.ordering,
+    // promo carries both the standing autoOnlineDiscount and the first-orders
+    // welcome offer (firstOrders {enabled,percent,limit,label}); the order page
+    // previews the right one for the signed-in customer. The server recomputes
+    // authoritatively at /api/order regardless.
     promo: config.promo,
     serviceFeePence: Number(config.serviceFeePence) || 0,
     payments: {

@@ -43,6 +43,10 @@ export function publicProfile(customer) {
     email: customer.email || (customer.contactType === 'email' ? customer.contact : null),
     phone: customer.phone || (customer.contactType === 'phone' ? customer.contact : null),
     addresses,
+    // How many first-orders welcome discounts this account has already used, so
+    // the order page can preview the discount for eligible customers. The server
+    // is still the authority — this is a display hint only.
+    promoOrdersUsed: Number(customer.promoOrdersUsed) || 0,
   };
 }
 
