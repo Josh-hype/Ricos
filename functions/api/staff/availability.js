@@ -3,14 +3,15 @@
    POST -> { itemId, off:true, mode:'tomorrow'|'manual' } | { itemId, off:false }
    Staff-gated (the back office is already PIN/manager protected). */
 import { requireStaff, csrfOriginCheck } from '../../_lib/auth.js';
-import { getMenu } from '../../_lib/menu.js';
+import { resolveMenu } from '../../_lib/menu-store.js';
 import { getOffMap, setOff, setOn } from '../../_lib/availability.js';
 
 export const onRequestGet = async ({ request, env }) => {
   const denied = await requireStaff(request, env);
   if (denied) return denied;
   const map = await getOffMap(env);
-  const categories = getMenu().map((c) => ({
+  const menu = await resolveMenu(env);
+  const categories = menu.map((c) => ({
     id: c.id,
     name: c.name,
     items: (c.items || []).map((i) => {
@@ -31,7 +32,8 @@ export const onRequestPost = async ({ request, env }) => {
   try { body = await request.json(); } catch { return j({ error: 'Invalid JSON' }, 400); }
 
   const itemId = String(body.itemId || '');
-  const item = getMenu().flatMap((c) => c.items || []).find((i) => i.id === itemId);
+  const menu = await resolveMenu(env);
+  const item = menu.flatMap((c) => c.items || []).find((i) => i.id === itemId);
   if (!item) return j({ error: 'Unknown item.' }, 400);
 
   if (body.off) {

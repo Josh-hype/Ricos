@@ -44,6 +44,34 @@ test('size-priced modifier falls back to flat priceDeltaP when no size selected'
   assert.equal(t.subtotalP, 900);                 // 800 + flat topping 100 (no 'lg')
 });
 
+test('first-order discount (opts) overrides the standing online discount and uses its label', () => {
+  const t = computeTotals({
+    items: [{ id: 'burger', qty: 1, meal: true, modifiers: ['extra', 'cheese', 'lg', 'topping'], mealChoices: ['fries'] }],
+    fulfillment: 'collection',
+  }, config, { firstOrderDiscount: { percent: 15, label: '15% off — first 2 orders' } });
+  assert.equal(t.ok, true);
+  assert.equal(t.subtotalP, 1550);
+  assert.equal(t.discountP, 233);                 // 15% of 1550 (not the 10% auto discount = 155)
+  assert.equal(t.discountLabel, '15% off — first 2 orders');
+  assert.equal(t.totalP, 1550 - 233 + 100);       // 1417
+});
+
+test('suppressPromo also suppresses the first-order discount (counter sale)', () => {
+  const t = computeTotals({
+    items: [{ id: 'burger', qty: 1, meal: true, modifiers: ['extra', 'cheese', 'lg', 'topping'], mealChoices: ['fries'] }],
+    fulfillment: 'collection',
+  }, config, { firstOrderDiscount: { percent: 15, label: 'x' }, suppressPromo: true });
+  assert.equal(t.discountP, 0);
+  assert.equal(t.discountLabel, null);
+});
+
+test('first-order percent is clamped to 0..100', () => {
+  const over = computeTotals({ items: [{ id: 'coke', qty: 1 }], fulfillment: 'collection' }, config, { firstOrderDiscount: { percent: 999 } });
+  assert.equal(over.discountP, over.subtotalP);    // 100% cap — never exceeds subtotal
+  const neg = computeTotals({ items: [{ id: 'coke', qty: 1 }], fulfillment: 'collection' }, config, { firstOrderDiscount: { percent: -20 } });
+  assert.equal(neg.discountP, 0);
+});
+
 test('quantity is floored and clamped to 1..20', () => {
   const frac = computeTotals({ items: [{ id: 'coke', qty: 2.9 }], fulfillment: 'collection' }, config);
   assert.equal(frac.lines[0].qty, 2);             // floor, not round

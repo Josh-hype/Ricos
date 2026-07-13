@@ -829,6 +829,81 @@ button{cursor:pointer;border:0;background:none}
 .bo-tile .ic.ink{background:#EAF0F7;color:var(--ink-2)}
 .bo-tile .tl{font-size:16px;font-weight:800;color:var(--ink);letter-spacing:-.015em}
 .bo-tile .ds{font-size:12.5px;color:var(--muted);font-weight:500;line-height:1.45}
+/* ===== Menu editor ===== */
+.me-wrap{grid-column:1/-1;max-width:860px;margin:0 auto;width:100%;padding-bottom:40px}
+.me-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin:6px 0 14px}
+.me-head h2{font-size:22px;font-weight:800;letter-spacing:-.02em}
+.me-head p{color:var(--muted);font-size:13px;margin-top:3px}
+.me-badge{font-size:12px;font-weight:700;padding:2px 8px;border-radius:20px;background:#EAF0F7;color:var(--ink-2)}
+.me-badge.live{background:var(--green-tint);color:var(--green)}
+.me-badge.dirty{background:var(--amber-tint);color:var(--amber-bg)}
+.me-save{flex:none;background:linear-gradient(135deg,#0E9F6E,#0B8A5E);color:#fff;border:0;border-radius:12px;padding:13px 20px;font-size:15px;font-weight:800;box-shadow:0 8px 20px rgba(14,159,110,.3)}
+.me-save:disabled{background:#CBD5E1;box-shadow:none;color:#eef}
+.me-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.me-tab{background:var(--panel);border:1.5px solid var(--line);border-radius:11px;padding:9px 13px;font-weight:700;font-size:14px;color:var(--ink-2);display:inline-flex;align-items:center;gap:7px}
+.me-tab.sel{background:var(--blue);color:#fff;border-color:var(--blue)}
+.me-tab-n{font-size:11px;opacity:.7;background:rgba(0,0,0,.08);padding:0 6px;border-radius:10px}
+.me-tab.sel .me-tab-n{background:rgba(255,255,255,.25)}
+.me-tab.addcat{border-style:dashed;color:var(--blue)}
+.me-catbar{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.me-catname{font-weight:800;font-size:16px;margin-right:auto}
+.me-mini{background:var(--panel);border:1.5px solid var(--line);border-radius:9px;padding:7px 11px;font-weight:700;font-size:13px;color:var(--ink-2)}
+.me-mini.danger{color:var(--red);border-color:#F3C9C9}
+.me-mini:disabled{opacity:.4}
+.me-items{display:flex;flex-direction:column;gap:8px}
+.me-item{display:flex;align-items:center;gap:10px;background:var(--panel);border:1.5px solid var(--line);border-radius:12px;padding:11px 12px}
+.me-item.hid{opacity:.6;background:repeating-linear-gradient(45deg,#fafafa,#fafafa 8px,#f2f2f2 8px,#f2f2f2 16px)}
+.me-item-main{flex:1;min-width:0;cursor:pointer}
+.me-item-name{font-weight:800;font-size:15px;letter-spacing:-.01em}
+.me-hidtag{font-size:10px;background:#E2E8F0;color:#64748B;padding:1px 5px;border-radius:5px;vertical-align:middle;margin-left:6px}
+.me-item-sub{font-size:12.5px;color:var(--muted);margin-top:2px}
+.me-item-acts{display:flex;align-items:center;gap:5px}
+.me-ib{background:var(--canvas);border:1.5px solid var(--line);border-radius:9px;min-width:38px;height:38px;padding:0 8px;font-weight:700;font-size:13px;color:var(--ink-2)}
+.me-ib.edit{background:var(--blue-tint);color:var(--blue);border-color:#CFE0F6}
+.me-ib:disabled{opacity:.35}
+.me-additem{margin-top:12px;width:100%;background:var(--blue-tint);color:var(--blue);border:1.5px dashed #Bcd;border-radius:12px;padding:14px;font-weight:800;font-size:15px}
+.me-empty,.me-none{color:var(--muted);text-align:center;padding:16px;font-size:14px}
+.me-none{padding:8px}
+.me-footnote{margin-top:20px;text-align:center;color:var(--muted);font-size:12.5px}
+.me-reset{background:none;border:0;color:var(--red);text-decoration:underline;font-weight:600;font-size:12.5px;padding:4px}
+/* item modal */
+.me-modal{max-width:520px;width:100%;max-height:90vh;overflow-y:auto;text-align:left}
+.me-modal-title{font-size:19px;font-weight:800;margin-bottom:12px}
+.me-fld{display:block;font-weight:700;font-size:13px;color:var(--ink-2);margin-bottom:11px}
+.me-fld-row{display:flex;gap:14px;align-items:flex-end;margin-bottom:11px}
+.me-opt{font-weight:500;color:var(--muted);font-size:12px}
+.me-in{width:100%;padding:11px 12px;border:1.5px solid var(--ink);border-radius:10px;font-size:15px;margin-top:4px;font-weight:600}
+.me-in.sm{width:auto;font-size:13px;padding:8px 10px}
+.me-in.price{width:90px;text-align:right}
+.me-in.num{width:60px;text-align:center}
+textarea.me-in{resize:vertical;font-family:inherit}
+.me-poundwrap{display:inline-flex;align-items:center;gap:4px;margin-top:4px}
+.me-poundwrap>span{font-weight:800;color:var(--ink-2)}
+.me-check{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:13px;color:var(--ink-2)}
+.me-check.big{white-space:nowrap;padding-bottom:2px}
+.me-check input{width:18px;height:18px}
+.me-photo{display:flex;align-items:center;gap:12px;margin:4px 0 14px}
+.me-photo-prev{width:64px;height:64px;border-radius:10px;border:1.5px solid var(--line);background:var(--canvas);display:flex;align-items:center;justify-content:center;overflow:hidden;flex:none}
+.me-photo-prev img{width:100%;height:100%;object-fit:cover}
+.me-photo-prev span{font-size:10px;color:var(--muted)}
+.me-adv{border:1.5px solid var(--line);border-radius:12px;padding:4px 12px;margin-top:6px;background:var(--canvas)}
+.me-adv>summary{font-weight:800;font-size:14px;padding:10px 2px;cursor:pointer;color:var(--blue)}
+.me-adv-sec{padding:8px 0 12px;border-top:1px solid var(--line)}
+.me-adv-h{font-weight:800;font-size:13px;margin-bottom:8px}
+.me-group{border:1.5px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px;background:var(--panel)}
+.me-group-h{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.me-group-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.me-group-row label{font-size:12.5px;font-weight:700;color:var(--ink-2);display:flex;gap:6px;align-items:center}
+.me-choice{display:flex;gap:7px;align-items:center;margin-bottom:7px;flex-wrap:wrap}
+.me-choice .me-in{flex:1;min-width:110px;margin-top:0}
+.me-x{background:#FBE9E9;color:var(--red);border:0;border-radius:8px;width:34px;height:34px;font-weight:800;flex:none}
+.me-meal{border:1.5px solid var(--line);border-radius:10px;padding:10px;background:var(--panel);margin-bottom:8px}
+.me-sublabel{font-weight:800;font-size:12.5px;margin:6px 0}
+.me-modal-foot{display:flex;justify-content:space-between;gap:10px;margin-top:16px;position:sticky;bottom:0;background:var(--modal-bg,#fff);padding-top:10px}
+.me-del-item{background:#FBE9E9;color:var(--red);border:0;border-radius:11px;padding:13px 16px;font-weight:800;font-size:14px}
+.me-done{background:var(--blue);color:#fff;border:0;border-radius:11px;padding:13px 26px;font-weight:800;font-size:15px}
+.me-toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#0E9F6E;color:#fff;padding:13px 22px;border-radius:12px;font-weight:800;font-size:15px;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:.25s;z-index:99999}
+.me-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .bo-back{
   grid-column:1/-1;justify-self:start;display:inline-flex;align-items:center;gap:7px;
   background:var(--panel);border:1px solid var(--line);color:var(--ink-2);
@@ -2082,6 +2157,7 @@ const state = {
   managerUnlocked: false, // optimistic flag — server still validates via the manager cookie
   pendingMgrTarget: null, // tab we're trying to open behind the manager PIN gate
   operatorsEnabled: false, // per-operator mode (from /api/staff/me)
+  ordersOnly: false,       // online-orders-only device: hide counter EPOS + card reader (from /api/config pos.ordersOnly)
   operator: null,          // { id, name, role, colour } when signed in per-operator
   perms: new Set(),        // permissions the signed-in operator holds
   fullAccess: false,       // owner/master session (username-password or pre-operators) — full perms, bypasses forced manager-override prompts
@@ -2160,7 +2236,7 @@ function setView(view, mode) {
   const isSale = (view === 'sale');
   const isBoard = (view === 'live');
   const usesRange = (view === 'zreport');
-  $('#modeBar').hidden = !isBoard;          // mode buttons: board only
+  $('#modeBar').hidden = !isBoard || state.ordersOnly;  // counter EPOS bar: board only, and hidden on orders-only devices
   const tb = $('#tabBar'); if (tb) tb.hidden = !isBoard;     // Live/Completed tab bar: board only
   const ch = $('#boardChips'); if (ch) ch.hidden = !isBoard; // filter chips: board only
   $('#dateBar').hidden = !usesRange;
@@ -2575,6 +2651,9 @@ async function applyShopBranding() {
     const res = await fetch('/api/config', { cache: 'no-store' });
     if (!res.ok) return;
     const cfg = await res.json();
+    // Online-orders-only device mode (delivery-only shops on a handheld): hide the
+    // in-person EPOS (counter sale + card reader), keep everything else.
+    state.ordersOnly = !!(cfg.pos && cfg.pos.ordersOnly);
     // Username + password mode: WEB only. The till app (EPOS_IS_APP) always keeps the
     // numeric PIN pad for fast per-staff operator-code login; only the browser back
     // office swaps to username/password.
@@ -3073,6 +3152,7 @@ function renderBackOffice() {
     routing: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>',
     stock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l1.2-5h15.6L21 9M3 9v10a1 1 0 001 1h16a1 1 0 001-1V9M3 9h18M9 13h6"/></svg>',
     pause: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v9"/><path d="M18.36 6.64a9 9 0 11-12.73 0"/></svg>',
+    menu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 7h16M4 12h16M4 17h10"/><path d="M17 15l2.2 2.2L23 13.5" stroke-width="2.2"/></svg>',
   };
   const canStaff = !state.operatorsEnabled || can('operators.manage');
   const paused = !!state.orderingPaused;
@@ -3081,11 +3161,12 @@ function renderBackOffice() {
       ds: paused ? '<b>PAUSED for today</b> — tap to resume' : 'Taking orders — tap to pause for today' },
     { k: 'summary', ic: 'orange', svg: ICON.takings, tl: "Today's Takings", ds: 'Live daily totals — cash, card &amp; order counts' },
     { k: 'zreport', ic: 'blue', svg: ICON.z, tl: 'Z-Report', ds: 'Date-range report with end-of-day print' },
+    { k: 'menu', ic: 'blue', svg: ICON.menu, tl: 'Menu', ds: 'Add, edit or remove items, prices &amp; photos' },
     { k: 'stock', ic: 'orange', svg: ICON.stock, tl: 'Sold out', ds: 'Turn items off when you run out of stock' },
   ];
   if (canStaff) tiles.push({ k: 'staff', ic: 'green', svg: ICON.staff, tl: 'Staff', ds: 'Operators &amp; their PIN codes' });
   tiles.push({ k: 'audit', ic: 'ink', svg: ICON.audit, tl: 'Activity Log', ds: 'Refunds, voids, sign-ins &amp; overrides' });
-  tiles.push({ k: 'reader', ic: 'blue', svg: ICON.reader, tl: 'Card Reader', ds: 'Register the WisePOS card terminal' });
+  if (!state.ordersOnly) tiles.push({ k: 'reader', ic: 'blue', svg: ICON.reader, tl: 'Card Reader', ds: 'Register the WisePOS card terminal' });
   tiles.push({ k: 'routing', ic: 'green', svg: ICON.routing, tl: 'Order routing', ds: 'Currently: <b>' + routingLabel(state.routing) + '</b> — tap to change' });
   $('#grid').innerHTML = '<div class="bo-wrap"><div class="bo-grid">' +
     tiles.map(t => `<button class="bo-tile" data-bo="${t.k}"><div class="ic ${t.ic}">${t.svg}</div><div class="tl">${t.tl}</div><div class="ds">${t.ds}</div></button>`).join('') +
@@ -3094,6 +3175,7 @@ function renderBackOffice() {
     const k = b.dataset.bo;
     if (k === 'summary') setView('summary');
     else if (k === 'zreport') setView('zreport');
+    else if (k === 'menu') renderMenuEditor();
     else if (k === 'stock') renderStock();
     else if (k === 'staff') openStaffModal();
     else if (k === 'audit') openAuditModal();
@@ -3253,6 +3335,385 @@ async function setItemAvailability(id, off, mode) {
   } catch (e) {
     const el = $('#stockOffErr'); if (el) el.textContent = 'Network error — try again.';
   }
+}
+
+/* ============================================================================
+   MENU EDITOR (Back Office → Menu) — owners add / edit / remove items, prices,
+   photos, categories, options & meal deals. Edits a single "unified" draft and
+   saves it live to KV via /api/staff/menu; the site + till read it instantly.
+   Built plain and tap-friendly for non-technical owners.
+   ========================================================================== */
+let menuDraft = null;      // unified doc being edited (deep copy from the API)
+let menuDirty = false;     // unsaved changes present?
+let menuCatIdx = 0;        // selected category
+let menuSource = 'built-in';
+let meEditItem = null;     // draft item object currently open in the edit modal
+
+const poundsToP = (v) => Math.round((parseFloat(v) || 0) * 100);
+const pToPounds = (p) => ((p || 0) / 100).toFixed(2);
+
+async function renderMenuEditor() {
+  const backBtn = '<button class="bo-back" id="boBack">← Back office</button>';
+  const wireBack = () => { const b = $('#boBack'); if (b) b.addEventListener('click', menuLeave); };
+  $('#grid').innerHTML = backBtn + '<div class="empty">Loading menu…</div>';
+  wireBack();
+  if (!menuDraft) {
+    try {
+      const res = await fetch('/api/staff/menu', { cache: 'no-store' });
+      if (res.status === 401) { $('#logoutBtn').click(); return; }
+      const d = await res.json();
+      menuDraft = d.menu; menuSource = d.source; menuDirty = false; menuCatIdx = 0;
+    } catch (e) {
+      $('#grid').innerHTML = backBtn + '<div class="empty">Couldn’t load the menu — check your connection and try again.</div>';
+      wireBack(); return;
+    }
+  }
+  paintMenuEditor();
+}
+
+function menuLeave() {
+  if (menuDirty && !confirm('You have unsaved menu changes.\n\nLeave without saving?')) return;
+  menuDraft = null; menuDirty = false; meEditItem = null;
+  setView('backoffice');
+}
+function menuMarkDirty() { menuDirty = true; }
+
+function paintMenuEditor() {
+  const cats = menuDraft.categories;
+  if (menuCatIdx >= cats.length) menuCatIdx = Math.max(0, cats.length - 1);
+  const cat = cats[menuCatIdx];
+  const tabs = cats.map((c, i) =>
+    `<button class="me-tab${i === menuCatIdx ? ' sel' : ''}" data-ci="${i}">${escapeHtml(c.name)}<span class="me-tab-n">${c.items.length}</span></button>`).join('');
+  const badge = menuDirty
+    ? '<span class="me-badge dirty">● Unsaved changes</span>'
+    : (menuSource === 'live' ? '<span class="me-badge live">● Live menu</span>' : '<span class="me-badge">Built-in menu</span>');
+  const rows = cat && cat.items.length
+    ? cat.items.map((it, ii) => menuItemRow(it, ii)).join('')
+    : '<div class="me-empty">No items in this category yet. Tap “Add item”.</div>';
+
+  $('#grid').innerHTML = `<button class="bo-back" id="boBack">← Back office</button>
+    <div class="me-wrap">
+      <div class="me-head">
+        <div><h2>Menu</h2><p>Add, edit or remove items &amp; prices. ${badge}</p></div>
+        <button class="me-save" id="meSave"${menuDirty ? '' : ' disabled'}>Save — go live</button>
+      </div>
+      <div class="me-tabs">${tabs}<button class="me-tab addcat" id="meAddCat">＋ Category</button></div>
+      ${cat ? `
+      <div class="me-catbar">
+        <span class="me-catname">${escapeHtml(cat.name)}</span>
+        <button class="me-mini" id="meRenameCat">Rename</button>
+        <button class="me-mini" id="meMoveCatL"${menuCatIdx === 0 ? ' disabled' : ''}>◀</button>
+        <button class="me-mini" id="meMoveCatR"${menuCatIdx === cats.length - 1 ? ' disabled' : ''}>▶</button>
+        <button class="me-mini danger" id="meDelCat">Delete</button>
+      </div>
+      <div class="me-items">${rows}</div>
+      <button class="me-additem" id="meAddItem">➕ Add item to ${escapeHtml(cat.name)}</button>
+      ` : '<div class="me-empty">No categories yet — tap “＋ Category”.</div>'}
+      <div class="me-footnote">Changes go live the moment you press <b>Save</b>. <button class="me-reset" id="meReset">Discard all edits</button></div>
+    </div>`;
+  wireMenuEditor();
+}
+
+function menuItemRow(it, ii) {
+  const tags = [];
+  if (it.meal) tags.push('Meal deal');
+  if (it.options && it.options.length) tags.push('Options');
+  if (it.spicy) tags.push('🌶');
+  return `<div class="me-item${it.hidden ? ' hid' : ''}" data-ii="${ii}">
+    <div class="me-item-main" data-act="edit">
+      <div class="me-item-name">${escapeHtml(it.name)}${it.hidden ? ' <span class="me-hidtag">HIDDEN</span>' : ''}</div>
+      <div class="me-item-sub">£${pToPounds(it.priceP)}${tags.length ? ' · ' + tags.join(' · ') : ''}</div>
+    </div>
+    <div class="me-item-acts">
+      <button class="me-ib" data-act="up"${ii === 0 ? ' disabled' : ''} title="Move up">▲</button>
+      <button class="me-ib" data-act="down" title="Move down">▼</button>
+      <button class="me-ib" data-act="hide" title="Show/Hide">${it.hidden ? 'Show' : 'Hide'}</button>
+      <button class="me-ib edit" data-act="edit">Edit</button>
+    </div>
+  </div>`;
+}
+
+function wireMenuEditor() {
+  const b = $('#boBack'); if (b) b.addEventListener('click', menuLeave);
+  $$('#grid .me-tab[data-ci]').forEach(t => t.addEventListener('click', () => { menuCatIdx = Number(t.dataset.ci); paintMenuEditor(); }));
+  const on = (id, fn) => { const el = $('#' + id); if (el) el.addEventListener('click', fn); };
+  on('meAddCat', addMenuCategory);
+  on('meRenameCat', renameMenuCategory);
+  on('meDelCat', deleteMenuCategory);
+  on('meMoveCatL', () => moveMenuCategory(-1));
+  on('meMoveCatR', () => moveMenuCategory(1));
+  on('meAddItem', addMenuItem);
+  on('meSave', saveMenu);
+  on('meReset', resetMenu);
+  $$('#grid .me-item').forEach(row => {
+    const ii = Number(row.dataset.ii);
+    row.querySelectorAll('[data-act]').forEach(el => el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const act = el.dataset.act;
+      if (act === 'edit') openMenuItem(ii);
+      else if (act === 'up') moveMenuItem(ii, -1);
+      else if (act === 'down') moveMenuItem(ii, 1);
+      else if (act === 'hide') { const it = menuDraft.categories[menuCatIdx].items[ii]; it.hidden = !it.hidden; menuMarkDirty(); paintMenuEditor(); }
+    }));
+  });
+}
+
+/* ---- category ops ---- */
+function usedItemIds() { return new Set(menuDraft.categories.flatMap(c => c.items.map(i => i.id))); }
+function usedCatIds() { return new Set(menuDraft.categories.map(c => c.id)); }
+function meSlug(name, taken) {
+  let base = String(name || 'x').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'x';
+  let id = base, n = 2; while (taken.has(id)) id = base + '-' + (n++); return id;
+}
+function addMenuCategory() {
+  const name = (prompt('New category name (e.g. Burgers):') || '').trim();
+  if (!name) return;
+  menuDraft.categories.push({ id: meSlug(name, usedCatIds()), name, items: [] });
+  menuCatIdx = menuDraft.categories.length - 1; menuMarkDirty(); paintMenuEditor();
+}
+function renameMenuCategory() {
+  const cat = menuDraft.categories[menuCatIdx];
+  const name = (prompt('Rename category:', cat.name) || '').trim();
+  if (!name) return; cat.name = name; menuMarkDirty(); paintMenuEditor();
+}
+function deleteMenuCategory() {
+  const cat = menuDraft.categories[menuCatIdx];
+  if (!confirm(`Delete the whole “${cat.name}” category and its ${cat.items.length} item(s)?`)) return;
+  menuDraft.categories.splice(menuCatIdx, 1); menuMarkDirty(); paintMenuEditor();
+}
+function moveMenuCategory(dir) {
+  const j = menuCatIdx + dir; if (j < 0 || j >= menuDraft.categories.length) return;
+  const a = menuDraft.categories; [a[menuCatIdx], a[j]] = [a[j], a[menuCatIdx]];
+  menuCatIdx = j; menuMarkDirty(); paintMenuEditor();
+}
+function moveMenuItem(ii, dir) {
+  const items = menuDraft.categories[menuCatIdx].items;
+  const j = ii + dir; if (j < 0 || j >= items.length) return;
+  [items[ii], items[j]] = [items[j], items[ii]]; menuMarkDirty(); paintMenuEditor();
+}
+function addMenuItem() {
+  const name = (prompt('New item name (e.g. Cheeseburger):') || '').trim();
+  if (!name) return;
+  const it = { id: meSlug(name, usedItemIds()), name, priceP: 0 };
+  menuDraft.categories[menuCatIdx].items.push(it);
+  menuMarkDirty(); paintMenuEditor(); openMenuItem(menuDraft.categories[menuCatIdx].items.length - 1);
+}
+
+/* ---- item edit modal (built dynamically) ---- */
+function openMenuItem(ii) {
+  meEditItem = menuDraft.categories[menuCatIdx].items[ii];
+  meEditItem._ii = ii;
+  let ovl = $('#meItemOvl');
+  if (!ovl) {
+    ovl = document.createElement('div');
+    ovl.className = 'ovl'; ovl.id = 'meItemOvl';
+    ovl.innerHTML = '<div class="modal me-modal"><div class="me-modal-body" id="meItemBody"></div></div>';
+    document.body.appendChild(ovl);
+    ovl.addEventListener('click', (e) => { if (e.target.id === 'meItemOvl') closeMenuItem(true); });
+  }
+  paintMenuItemModal();
+  ovl.classList.add('open');
+}
+function closeMenuItem(readFirst) {
+  if (readFirst) { readItemForm(); menuMarkDirty(); }   // Done = an edit was made
+  const ovl = $('#meItemOvl'); if (ovl) ovl.classList.remove('open');
+  meEditItem = null;
+  paintMenuEditor();
+}
+
+// Read every field in the modal back into the draft item (called before any
+// re-render or on Done, so nothing is lost).
+function readItemForm() {
+  const it = meEditItem; if (!it) return;
+  const g = (id) => { const el = $('#' + id); return el ? el.value : undefined; };
+  const c = (id) => { const el = $('#' + id); return el ? el.checked : undefined; };
+  if (g('miName') !== undefined) it.name = g('miName').trim() || it.name;
+  if (g('miPrice') !== undefined) it.priceP = poundsToP(g('miPrice'));
+  const desc = g('miDesc'); if (desc !== undefined) { desc.trim() ? it.desc = desc.trim() : delete it.desc; }
+  if (c('miSpicy') !== undefined) { c('miSpicy') ? it.spicy = true : delete it.spicy; }
+  if (c('miHidden') !== undefined) { c('miHidden') ? it.hidden = true : delete it.hidden; }
+  // Options
+  if (it.options) it.options.forEach((grp, gi) => {
+    const lab = g('optL' + gi); if (lab !== undefined) grp.label = lab.trim() || grp.label;
+    const sel = g('optS' + gi); if (sel !== undefined) grp.select = sel;
+    const req = c('optR' + gi); if (req !== undefined) grp.required = !!req;
+    grp.choices.forEach((ch, ci) => {
+      const cl = g('optCL' + gi + '_' + ci); if (cl !== undefined) ch.label = cl.trim() || ch.label;
+      const cp = g('optCP' + gi + '_' + ci); if (cp !== undefined) ch.priceP = poundsToP(cp);
+    });
+  });
+  // Meal
+  if (it.meal) {
+    const ml = g('mealL'); if (ml !== undefined) it.meal.label = ml.trim() || it.meal.label;
+    const mp = g('mealP'); if (mp !== undefined) it.meal.addP = poundsToP(mp);
+    const mf = c('mealF'); if (mf !== undefined) it.meal.forced = !!mf;
+    (it.meal.choose || []).forEach((row, ri) => {
+      const rc = g('mealC' + ri); if (rc !== undefined) row.category = rc;
+      const rn = g('mealN' + ri); if (rn !== undefined) row.count = Math.max(1, parseInt(rn, 10) || 1);
+      const rl = g('mealLbl' + ri); if (rl !== undefined) row.label = rl.trim() || row.label;
+    });
+  }
+}
+
+function paintMenuItemModal() {
+  const it = meEditItem;
+  const body = $('#meItemBody'); if (!body) return;
+  const catOpts = menuDraft.categories.map(c => `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}</option>`).join('');
+
+  const optionsHtml = (it.options || []).map((grp, gi) => `
+    <div class="me-group" data-gi="${gi}">
+      <div class="me-group-h">
+        <input id="optL${gi}" class="me-in" value="${escapeHtml(grp.label || '')}" placeholder="Option name (e.g. Add cheese)" />
+        <button class="me-mini danger" data-optdel="${gi}">Remove</button>
+      </div>
+      <div class="me-group-row">
+        <label>Customer picks
+          <select id="optS${gi}" class="me-in sm"><option value="multi"${grp.select !== 'single' ? ' selected' : ''}>any (tick boxes)</option><option value="single"${grp.select === 'single' ? ' selected' : ''}>one (radio)</option></select>
+        </label>
+        <label class="me-check"><input type="checkbox" id="optR${gi}"${grp.required ? ' checked' : ''}/> Required</label>
+      </div>
+      ${(grp.choices || []).map((ch, ci) => `
+        <div class="me-choice">
+          <input id="optCL${gi}_${ci}" class="me-in" value="${escapeHtml(ch.label || '')}" placeholder="Choice (e.g. Mozzarella)" />
+          <span class="me-poundwrap"><span>£</span><input id="optCP${gi}_${ci}" class="me-in price" type="number" step="0.01" min="0" value="${pToPounds(ch.priceP)}" /></span>
+          <button class="me-x" data-choicedel="${gi}_${ci}">✕</button>
+        </div>`).join('')}
+      <button class="me-mini" data-choiceadd="${gi}">＋ Add choice</button>
+    </div>`).join('');
+
+  const mealHtml = it.meal ? `
+    <div class="me-meal">
+      <div class="me-group-row">
+        <input id="mealL" class="me-in" value="${escapeHtml(it.meal.label || '')}" placeholder="Meal label (e.g. Make it a meal)" />
+        <span class="me-poundwrap"><span>£</span><input id="mealP" class="me-in price" type="number" step="0.01" min="0" value="${pToPounds(it.meal.addP)}" /></span>
+      </div>
+      <label class="me-check"><input type="checkbox" id="mealF"${it.meal.forced ? ' checked' : ''}/> Included free (customer must choose, no extra charge)</label>
+      <div class="me-sublabel">Customer chooses:</div>
+      ${(it.meal.choose || []).map((row, ri) => `
+        <div class="me-choice">
+          <input id="mealN${ri}" class="me-in num" type="number" min="1" value="${row.count || 1}" />
+          <span>×</span>
+          <input id="mealLbl${ri}" class="me-in" value="${escapeHtml(row.label || '')}" placeholder="Label (e.g. Drink)" />
+          <span>from</span>
+          <select id="mealC${ri}" class="me-in sm">${menuDraft.categories.map(c => `<option value="${escapeHtml(c.id)}"${c.id === row.category ? ' selected' : ''}>${escapeHtml(c.name)}</option>`).join('')}</select>
+          <button class="me-x" data-mealdel="${ri}">✕</button>
+        </div>`).join('')}
+      <button class="me-mini" id="mealAddRow">＋ Add a choice</button>
+    </div>` : '';
+
+  body.innerHTML = `
+    <h3 class="me-modal-title">Edit item</h3>
+    <label class="me-fld">Name<input id="miName" class="me-in" value="${escapeHtml(it.name || '')}" /></label>
+    <div class="me-fld-row">
+      <label class="me-fld">Price <span class="me-poundwrap"><span>£</span><input id="miPrice" class="me-in price" type="number" step="0.01" min="0" value="${pToPounds(it.priceP)}" /></span></label>
+      <label class="me-check big"><input type="checkbox" id="miSpicy"${it.spicy ? ' checked' : ''}/> 🌶 Spicy</label>
+    </div>
+    <label class="me-fld">Description <span class="me-opt">(optional)</span><textarea id="miDesc" class="me-in" rows="2" placeholder="Short description customers see">${escapeHtml(it.desc || '')}</textarea></label>
+    <div class="me-photo">
+      <div class="me-photo-prev" id="miPhotoPrev">${it.image ? `<img src="${it.image}" alt="" />` : '<span>No photo</span>'}</div>
+      <div>
+        <button class="me-mini" id="miPhotoBtn">${it.image ? 'Change photo' : 'Add photo'}</button>
+        ${it.image ? '<button class="me-mini danger" id="miPhotoDel">Remove</button>' : ''}
+        <input type="file" id="miPhotoFile" accept="image/*" hidden />
+      </div>
+    </div>
+
+    <details class="me-adv"${(it.options && it.options.length) || it.meal ? ' open' : ''}>
+      <summary>Advanced: options &amp; meal deals</summary>
+      <div class="me-adv-sec">
+        <div class="me-adv-h">Add-on options <span class="me-opt">(extras the customer can pick)</span></div>
+        ${optionsHtml || '<div class="me-none">No options.</div>'}
+        <button class="me-mini" id="meAddOpt">＋ Add an option</button>
+      </div>
+      <div class="me-adv-sec">
+        <div class="me-adv-h">Meal deal / combo</div>
+        ${it.meal ? mealHtml + '<button class="me-mini danger" id="meDelMeal">Remove meal deal</button>'
+                  : '<button class="me-mini" id="meAddMeal">Make this a meal / combo</button>'}
+      </div>
+    </details>
+
+    <div class="me-modal-foot">
+      <button class="me-del-item" id="miDelete">🗑 Delete item</button>
+      <button class="me-done" id="miDone">Done</button>
+    </div>`;
+
+  wireMenuItemModal();
+}
+
+function wireMenuItemModal() {
+  const it = meEditItem;
+  const on = (id, fn) => { const el = $('#' + id); if (el) el.addEventListener('click', fn); };
+  on('miDone', () => closeMenuItem(true));
+  on('miDelete', () => {
+    if (!confirm(`Delete “${it.name}”?`)) return;
+    const items = menuDraft.categories[menuCatIdx].items;
+    items.splice(items.indexOf(it), 1); menuMarkDirty();
+    const ovl = $('#meItemOvl'); if (ovl) ovl.classList.remove('open'); meEditItem = null; paintMenuEditor();
+  });
+  // Photo
+  on('miPhotoBtn', () => $('#miPhotoFile').click());
+  on('miPhotoDel', () => { readItemForm(); delete it.image; menuMarkDirty(); paintMenuItemModal(); });
+  const pf = $('#miPhotoFile');
+  if (pf) pf.addEventListener('change', (e) => {
+    const f = e.target.files && e.target.files[0]; if (!f) return;
+    if (f.size > 1600000) { alert('That photo is a bit big — please use one under ~1.5 MB.'); return; }
+    const r = new FileReader();
+    r.onload = () => { readItemForm(); it.image = r.result; menuMarkDirty(); paintMenuItemModal(); };
+    r.readAsDataURL(f);
+  });
+  // Options
+  on('meAddOpt', () => { readItemForm(); it.options = it.options || []; const gid = meSlug(it.id + '-opt', new Set((it.options).map(o => o.id))); it.options.push({ id: gid, label: '', select: 'multi', required: false, choices: [{ id: gid + '-1', label: '', priceP: 0 }] }); menuMarkDirty(); paintMenuItemModal(); });
+  $$('#meItemBody [data-optdel]').forEach(b => b.addEventListener('click', () => { readItemForm(); it.options.splice(Number(b.dataset.optdel), 1); if (!it.options.length) delete it.options; menuMarkDirty(); paintMenuItemModal(); }));
+  $$('#meItemBody [data-choiceadd]').forEach(b => b.addEventListener('click', () => { readItemForm(); const gi = Number(b.dataset.choiceadd); const grp = it.options[gi]; grp.choices.push({ id: meSlug(grp.id + '-c', new Set(grp.choices.map(c => c.id))), label: '', priceP: 0 }); menuMarkDirty(); paintMenuItemModal(); }));
+  $$('#meItemBody [data-choicedel]').forEach(b => b.addEventListener('click', () => { readItemForm(); const [gi, ci] = b.dataset.choicedel.split('_').map(Number); it.options[gi].choices.splice(ci, 1); menuMarkDirty(); paintMenuItemModal(); }));
+  // Meal
+  on('meAddMeal', () => { readItemForm(); it.meal = { label: 'Make it a meal', addP: 0, forced: false, choose: [] }; menuMarkDirty(); paintMenuItemModal(); });
+  on('meDelMeal', () => { readItemForm(); delete it.meal; menuMarkDirty(); paintMenuItemModal(); });
+  on('mealAddRow', () => { readItemForm(); it.meal.choose = it.meal.choose || []; it.meal.choose.push({ category: menuDraft.categories[0]?.id || '', label: '', count: 1 }); menuMarkDirty(); paintMenuItemModal(); });
+  $$('#meItemBody [data-mealdel]').forEach(b => b.addEventListener('click', () => { readItemForm(); it.meal.choose.splice(Number(b.dataset.mealdel), 1); menuMarkDirty(); paintMenuItemModal(); }));
+}
+
+/* ---- save / reset ---- */
+async function saveMenu() {
+  const btn = $('#meSave'); if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+  try {
+    const res = await fetch('/api/staff/menu', {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ menu: menuDraft }),
+    });
+    if (res.status === 401) { $('#logoutBtn').click(); return; }
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      alert((d.error || 'Could not save.') + (d.problems ? '\n\n• ' + d.problems.join('\n• ') : ''));
+      if (btn) { btn.disabled = false; btn.textContent = 'Save — go live'; }
+      return;
+    }
+    menuDirty = false; menuSource = 'live';
+    paintMenuEditor();
+    toast('✓ Saved — your menu is now live');
+  } catch (e) {
+    alert('Network error — please try again.');
+    if (btn) { btn.disabled = false; btn.textContent = 'Save — go live'; }
+  }
+}
+async function resetMenu() {
+  if (!confirm('Discard ALL your menu edits and go back to the built-in menu?\n\nThis cannot be undone.')) return;
+  try {
+    const res = await fetch('/api/staff/menu', { method: 'DELETE' });
+    if (res.status === 401) { $('#logoutBtn').click(); return; }
+    if (!res.ok) { alert('Could not reset — try again.'); return; }
+    menuDraft = null; menuDirty = false;
+    toast('Reverted to the built-in menu');
+    renderMenuEditor();
+  } catch (e) { alert('Network error — try again.'); }
+}
+
+// tiny transient toast (reuses no libs)
+function toast(msg) {
+  let t = $('#meToast');
+  if (!t) { t = document.createElement('div'); t.id = 'meToast'; t.className = 'me-toast'; document.body.appendChild(t); }
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._h); toast._h = setTimeout(() => t.classList.remove('show'), 2600);
 }
 
 function renderReport(s, orders) {

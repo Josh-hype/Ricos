@@ -13,7 +13,7 @@ import { resolveDelivery } from './delivery.js';
 const MODES = new Set(['walkin', 'collection', 'delivery']);
 
 // → { ok:true, mode, fulfillment, totals, address } | { ok:false, error }
-export async function priceCounterSale({ items, mode, address: rawAddress }, config) {
+export async function priceCounterSale({ items, mode, address: rawAddress }, config, opts = {}) {
   const list = Array.isArray(items) ? items : [];
   if (list.length === 0) return { ok: false, error: 'Add at least one item before charging.' };
 
@@ -43,7 +43,7 @@ export async function priceCounterSale({ items, mode, address: rawAddress }, con
   const totals = computeTotals(
     { items: list, fulfillment, deliveryAddress: address ? { postcode: address.postcode } : undefined },
     config,
-    { suppressPromo: true, suppressServiceFee: true, allowCustom: true, allowPosOnly: true, deliveryFeeP: deliveryFeeP ?? undefined },
+    { suppressPromo: true, suppressServiceFee: true, allowCustom: true, allowPosOnly: true, deliveryFeeP: deliveryFeeP ?? undefined, menu: opts.menu },
   );
   if (!totals.ok) return { ok: false, error: totals.reason };
 

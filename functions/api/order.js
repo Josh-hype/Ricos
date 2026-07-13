@@ -9,6 +9,7 @@
 
 import { getConfig } from '../_lib/config.js';
 import { computeTotals } from '../_lib/totals.js';
+import { resolveMenu } from '../_lib/menu-store.js';
 import { resolveDelivery } from '../_lib/delivery.js';
 import { isOpenNow, isSlotValid, listSlots, deliveryLateStart, activeClosure } from '../_lib/hours.js';
 import { createPaymentIntent, createCustomer } from '../_lib/stripe.js';
@@ -136,8 +137,41 @@ export const onRequestPost = async ({ request, env }) => {
     }
   }
 
-  // Totals (server-side; client never trusted for prices).
-  const totals = computeTotals(input, config, { deliveryFeeP });
+  // Resolve the signed-in customer (if any) BEFORE totals: the first-orders
+  // promo is per-customer, so we need their redemption count to decide the
+  // discount before it's baked into the total (and the Stripe amount).
+  let session = null;
+  let storedCustomer = null;
+  try {
+    session = await readCustomerSession(request.headers.get('Cookie'), env);
+    if (session) storedCustomer = await getCustomer(session.contact, env);
+  } catch (e) {
+    console.warn('reading session failed', e);
+  }
+
+  // First-orders welcome promo: a signed-in customer gets X% off their first N
+  // orders. Enforced server-side (never trust the client for a discount) and
+  // gated on config + the customer's redemption count. Guests/walk-ins never
+  // qualify — there's no account to meter against.
+  let firstOrderDiscount = null;
+  {
+    const fo = config.promo?.firstOrders;
+    if (fo?.enabled && storedCustomer) {
+      const limit = Math.max(0, Number(fo.limit) || 0);
+      const used = Number(storedCustomer.promoOrdersUsed) || 0;
+      if (limit > 0 && used < limit) {
+        firstOrderDiscount = {
+          percent: Math.max(0, Math.min(100, Number(fo.percent) || 0)),
+          label: fo.label || `${Number(fo.percent) || 0}% off — first ${limit} orders`,
+        };
+      }
+    }
+  }
+
+  // Totals (server-side; client never trusted for prices). resolveMenu applies
+  // any owner-edited menu from KV, falling back to the static build-time menu.
+  const menu = await resolveMenu(env);
+  const totals = computeTotals(input, config, { deliveryFeeP, menu, firstOrderDiscount });
   if (!totals.ok) return errJson(totals.reason, 400);
 
   // Payment method.
@@ -173,15 +207,14 @@ export const onRequestPost = async ({ request, env }) => {
     history: [{ at: createdAt, event: 'created' }],
   };
 
-  // Resolve the signed-in customer (if any) up-front so we can attach the
-  // Stripe Customer on the PaymentIntent when needed for saved cards.
-  let session = null;
-  let storedCustomer = null;
-  try {
-    session = await readCustomerSession(request.headers.get('Cookie'), env);
-    if (session) storedCustomer = await getCustomer(session.contact, env);
-  } catch (e) {
-    console.warn('reading session failed', e);
+  // (storedCustomer was resolved above, before totals, for the first-orders promo.)
+
+  // Record that this order carried the first-orders promo, so the redemption is
+  // counted exactly once when the order is actually placed: now for cash (below),
+  // or on payment success in markOrderPaid for card (so an abandoned card payment
+  // doesn't burn a redemption). `contact` lets the webhook find the customer.
+  if (firstOrderDiscount && storedCustomer && totals.discountP > 0) {
+    order.promo = { firstOrders: true, contact: storedCustomer.contact, counted: false };
   }
 
   // saveCard: caller wants the new card stored for future orders.
@@ -304,6 +337,14 @@ export const onRequestPost = async ({ request, env }) => {
       updateContactDetails(storedCustomer, { email, phone });
       if (address) upsertAddress(storedCustomer, address);
       storedCustomer.lastOrderAt = createdAt;
+      // Cash orders are placed immediately (pending_accept), so count the
+      // first-orders redemption now. Card orders wait for payment success
+      // (markOrderPaid) so an abandoned payment doesn't consume a redemption.
+      if (order.promo?.firstOrders && paymentMethod !== 'card' && !order.promo.counted) {
+        storedCustomer.promoOrdersUsed = (Number(storedCustomer.promoOrdersUsed) || 0) + 1;
+        order.promo.counted = true;
+        await putOrder(order, env);
+      }
       await putCustomer(storedCustomer, env);
     }
   } catch (e) {

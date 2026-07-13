@@ -74,5 +74,31 @@ export async function resolveDelivery(rawPostcode, config) {
   if (!v.ok) return v;
   const override = d.feeByOutcode?.[v.outcode];
   const feePence = Number.isFinite(override) ? override : d.feePence;
+
+  // Optional hard distance cap ON TOP of outcode pricing. Some outcodes sprawl
+  // well past the delivery radius (e.g. YO26 reaches 6–7 miles), so even a priced,
+  // allowed outcode is refused beyond maxMiles ROAD miles (straight-line × roadFactor).
+  // Only runs when d.maxMiles is set; fail-open if geocoding is momentarily down —
+  // the outcode allow-list is still the primary gate.
+  const maxMiles = Number(d.maxMiles) > 0 ? Number(d.maxMiles) : 0;
+  if (maxMiles) {
+    const dest = await geocodePostcode(v.postcode);
+    const origin = (d.origin && typeof d.origin.lat === 'number')
+      ? d.origin
+      : await geocodePostcode(config.business?.address?.postcode);
+    if (dest && origin) {
+      const factor = Number(d.roadFactor) > 0 ? Number(d.roadFactor) : 1;
+      const miles = milesBetween(origin, dest) * factor;
+      if (miles > maxMiles + 1e-9) {
+        return {
+          ok: false,
+          reason: `Sorry, ${v.postcode} is outside our delivery area (within ${maxMiles} miles). You can still collect.`,
+          suggestCollection: true,
+        };
+      }
+      return { ok: true, postcode: v.postcode, feePence, distanceMiles: Math.round(miles * 10) / 10 };
+    }
+  }
+
   return { ok: true, postcode: v.postcode, feePence };
 }

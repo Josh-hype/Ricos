@@ -6,7 +6,10 @@ import { getMenu } from './menu.js';
 import { normalisePostcode } from './postcode.js';
 
 export function computeTotals(input, config, opts = {}) {
-  const menu = getMenu();
+  // opts.menu lets the API layer inject a runtime (owner-edited) menu resolved
+  // from KV; when absent we fall back to the static build-time menu. Kept sync so
+  // the money tests and pure callers need no change.
+  const menu = opts.menu || getMenu();
   const itemsById = indexMenu(menu);
   const lines = [];
   let subtotalP = 0;
@@ -123,12 +126,24 @@ export function computeTotals(input, config, opts = {}) {
 
   const fulfillment = input.fulfillment === 'delivery' ? 'delivery' : 'collection';
 
-  // Promo: 10% off online subtotal. Counter sales (taken in-person at the
-  // till) opt out via opts.suppressPromo — the online discount isn't intended
+  // Promo: percentage off the online subtotal. Counter sales (taken in-person at
+  // the till) opt out via opts.suppressPromo — the online discount isn't intended
   // for walk-ins, and the customer is paying the menu price face-to-face.
+  //
+  // Two sources, first-order takes precedence (it's the bigger, more specific
+  // welcome offer and shouldn't stack with the always-on discount):
+  //   - opts.firstOrderDiscount {percent,label}: a signed-in customer within
+  //     their first N orders. Eligibility is per-customer, so /api/order decides
+  //     it and injects it here; a walk-in or guest never carries it.
+  //   - config.promo.autoOnlineDiscount: the shop's standing "% off all online
+  //     orders" offer, applied to everyone.
   let discountP = 0;
   let discountLabel = null;
-  if (config.promo?.autoOnlineDiscount?.enabled && !opts.suppressPromo) {
+  if (opts.firstOrderDiscount && !opts.suppressPromo) {
+    const pct = Math.max(0, Math.min(100, Number(opts.firstOrderDiscount.percent) || 0));
+    discountP = Math.min(subtotalP, Math.round(subtotalP * (pct / 100)));
+    discountLabel = opts.firstOrderDiscount.label || `${pct}% off`;
+  } else if (config.promo?.autoOnlineDiscount?.enabled && !opts.suppressPromo) {
     const pct = Math.max(0, Math.min(100, Number(config.promo.autoOnlineDiscount.percent) || 0));
     discountP = Math.min(subtotalP, Math.round(subtotalP * (pct / 100)));
     discountLabel = config.promo.autoOnlineDiscount.label;

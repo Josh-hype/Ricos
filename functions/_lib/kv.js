@@ -4,6 +4,7 @@
    - SLOTS_KV          keyed slot:<isoTimestamp>:count for capacity tracking */
 
 import { getConfig } from './config.js';
+import { getCustomer, putCustomer } from './customer.js';
 
 export async function putOrder(order, env) {
   const key = `orders:${order.id}`;
@@ -38,6 +39,24 @@ export async function markOrderPaid(order, env) {
   await putOrder(order, env);
   if (order.marketing?.email && order.customer?.email) await recordOptIn({ kind: 'email', value: order.customer.email, source: 'checkout' }, env);
   if (order.marketing?.sms && order.customer?.phone) await recordOptIn({ kind: 'sms', value: order.customer.phone, source: 'checkout' }, env);
+  // Count a first-orders promo redemption now that a card order is truly paid —
+  // exactly once (the `counted` flag guards the webhook + client-confirm both
+  // calling this). Deferring it to here means an abandoned/declined card payment
+  // never consumes one of the customer's welcome-discount orders. Best-effort:
+  // a KV hiccup here must not fail the payment promotion.
+  if (order.promo?.firstOrders && !order.promo.counted && order.promo.contact) {
+    try {
+      const c = await getCustomer(order.promo.contact, env);
+      if (c) {
+        c.promoOrdersUsed = (Number(c.promoOrdersUsed) || 0) + 1;
+        await putCustomer(c, env);
+        order.promo.counted = true;
+        await putOrder(order, env);
+      }
+    } catch (e) {
+      console.warn('first-orders promo count failed', e);
+    }
+  }
   return true;
 }
 

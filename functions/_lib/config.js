@@ -37,6 +37,11 @@ export function getPublicConfig() {
         minimumOrderPence: delivery.minimumOrderPence,
         minimumIncludesFees: !!delivery.minimumIncludesFees,
         allowedOutcodes: delivery.allowedOutcodes,
+        // Hard distance cap (road miles) layered on top of outcode pricing. When
+        // set, the browser can't price locally (distance needs a geocode), so the
+        // order page routes the postcode check through /api/delivery-quote — the
+        // same server path radius shops use — so the cap actually applies.
+        maxMiles: Number(delivery.maxMiles) > 0 ? Number(delivery.maxMiles) : null,
         radius: delivery.radius || null,
         lateStart: delivery.lateStart || null,
       },
@@ -45,6 +50,10 @@ export function getPublicConfig() {
     // Today's one-off closure (emergency "we're closed today"), or null.
     closure: activeClosure(config),
     ordering: config.ordering,
+    // promo carries both the standing autoOnlineDiscount and the first-orders
+    // welcome offer (firstOrders {enabled,percent,limit,label}); the order page
+    // previews the right one for the signed-in customer. The server recomputes
+    // authoritatively at /api/order regardless.
     promo: config.promo,
     serviceFeePence: Number(config.serviceFeePence) || 0,
     payments: {
@@ -61,6 +70,10 @@ export function getPublicConfig() {
       externalCardMachine: !!pos.externalCardMachine,
       selfServeDrinks: !!pos.selfServeDrinks,
       requireOrderPin: !!pos.requireOrderPin,
+      // Online-orders-only device mode (e.g. Sunmi V2 Plus at a delivery-only
+      // shop): the till receives/accepts/prints online orders and keeps the full
+      // back office, but hides the in-person EPOS (counter sale + card reader).
+      ordersOnly: !!pos.ordersOnly,
     },
     allergens: config.allergens,
     marketing: config.marketing,
