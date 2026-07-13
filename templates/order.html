@@ -2277,6 +2277,16 @@ function serviceFeeGBP() {
   return Number.isFinite(p) ? p / 100 : 0.50;
 }
 
+/* Does this shop's delivery need a server-side postcode check? True for radius
+   shops (distance can't be computed in the browser) AND for outcode shops that
+   layer a hard distance cap (maxMiles) on top of the price — the cap needs a
+   geocode, so the browser must ask /api/delivery-quote rather than pricing the
+   outcode locally. Otherwise a far postcode inside a priced outcode would show a
+   fee and only get rejected at final submit. */
+function needsServerQuote(d) {
+  return !!d && (d.mode === 'radius' || Number(d.maxMiles) > 0);
+}
+
 /* Delivery fee in pounds. Per-outcode if the shop configures feeByOutcode,
    otherwise the default feePence. Outcode comes from the entered postcode
    (the bit before the space); before a postcode is set we show the default
@@ -2285,12 +2295,19 @@ function deliveryFeeGBP() {
   if (state.mode !== 'deliver') return 0;
   const d = window.SHOP_CONFIG?.fulfillment?.delivery;
   if (!d) return 2.00; // fallback until config loads
-  // Radius shops: use the server-quoted fee once a postcode is checked; before
-  // that, preview the lowest band so the total isn't misleadingly £0.
-  if (d.mode === 'radius') {
+  // Server-quoted shops (radius, or outcode + distance cap): use the fee the
+  // server returned once a postcode is checked; before that, preview a sensible
+  // low fee so the total isn't misleadingly £0.
+  if (needsServerQuote(d)) {
     if (Number.isFinite(state.deliveryFeeP)) return state.deliveryFeeP / 100;
-    const bands = d.radius?.bands || [];
-    const lowest = bands.length ? Math.min(...bands.map(b => Number(b.feePence) || 0)) : 0;
+    if (d.mode === 'radius') {
+      const bands = d.radius?.bands || [];
+      const lowest = bands.length ? Math.min(...bands.map(b => Number(b.feePence) || 0)) : 0;
+      return lowest / 100;
+    }
+    // outcode + cap, before the server check: preview the cheapest outcode fee.
+    const fees = Object.values(d.feeByOutcode || {}).map(Number).filter(Number.isFinite);
+    const lowest = fees.length ? Math.min(...fees) : (Number(d.feePence) || 0);
     return lowest / 100;
   }
   const outcode = state.postcode ? state.postcode.split(' ')[0].toUpperCase() : null;
@@ -2464,11 +2481,12 @@ function applyMode(mode) {
   });
   document.getElementById('serviceMode').textContent = mode === 'collect' ? 'Collection' : 'Delivery in {{shopCity}}';
 
-  // Radius shops: delivery distance can't be re-checked locally, so clear a
-  // stored postcode when switching to delivery and prompt a fresh check.
-  // Collection needs no distance, so a stored postcode is fine there.
+  // Server-quoted shops (radius, or outcode + distance cap): delivery can't be
+  // re-checked locally, so clear a stored postcode when switching to delivery
+  // and prompt a fresh check. Collection needs no distance, so a stored postcode
+  // is fine there.
   const dCfg = window.SHOP_CONFIG?.fulfillment?.delivery;
-  if (dCfg?.mode === 'radius') {
+  if (needsServerQuote(dCfg)) {
     if (mode === 'deliver' && state.postcode) {
       state.postcode = null;
       state.deliveryFeeP = null;
@@ -2528,7 +2546,7 @@ function refreshPCMessage() {
     msg.className = 'pc-message ok';
     const verb = state.mode === 'collect' ? 'Collection' : 'Delivery';
     const d = window.SHOP_CONFIG?.fulfillment?.delivery;
-    const extra = (state.mode === 'deliver' && d?.mode === 'radius' && Number.isFinite(state.deliveryFeeP))
+    const extra = (state.mode === 'deliver' && needsServerQuote(d) && Number.isFinite(state.deliveryFeeP))
       ? ` — delivery £${(state.deliveryFeeP / 100).toFixed(2)}` : '';
     msg.innerHTML = `✓ ${verb} confirmed for <strong>${state.postcode}</strong>${extra}. <button class="change" type="button" id="changePc">Change</button>`;
     document.getElementById('changePc').addEventListener('click', () => {
@@ -2562,9 +2580,10 @@ document.getElementById('postcodeForm').addEventListener('submit', async (e) => 
     }
   };
 
-  // Radius shops checking delivery: distance is computed server-side
-  // (geocode + straight-line distance), so ask /api/delivery-quote.
-  if (state.mode === 'deliver' && d?.mode === 'radius') {
+  // Server-quoted shops checking delivery: distance is computed server-side
+  // (geocode + straight-line distance — for radius bands or an outcode
+  // distance cap), so ask /api/delivery-quote instead of pricing locally.
+  if (state.mode === 'deliver' && needsServerQuote(d)) {
     if (!raw || !raw.trim()) { msg.className = 'pc-message err'; msg.innerHTML = '✕ Enter a postcode.'; return; }
     msg.className = 'pc-message';
     msg.textContent = 'Checking your postcode…';

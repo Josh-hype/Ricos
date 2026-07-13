@@ -37,6 +37,11 @@ export function getPublicConfig() {
         minimumOrderPence: delivery.minimumOrderPence,
         minimumIncludesFees: !!delivery.minimumIncludesFees,
         allowedOutcodes: delivery.allowedOutcodes,
+        // Hard distance cap (road miles) layered on top of outcode pricing. When
+        // set, the browser can't price locally (distance needs a geocode), so the
+        // order page routes the postcode check through /api/delivery-quote — the
+        // same server path radius shops use — so the cap actually applies.
+        maxMiles: Number(delivery.maxMiles) > 0 ? Number(delivery.maxMiles) : null,
         radius: delivery.radius || null,
         lateStart: delivery.lateStart || null,
       },
