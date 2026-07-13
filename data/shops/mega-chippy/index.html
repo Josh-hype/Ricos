@@ -78,6 +78,20 @@
   .hero .sub{font-size:clamp(1rem,2.2vw,1.18rem);max-width:580px;margin:22px auto 32px;color:#f2f3ff;font-weight:500;text-shadow:0 2px 14px rgba(0,0,0,.5);}
   .hero-actions{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;}
   .wave{position:absolute;left:0;right:0;bottom:-1px;width:100%;display:block;z-index:2;}
+  /* Round "% OFF" seal on the hero — the first-orders offer, impossible to miss.
+     Config-gated: the seal element only renders when the offer is on (build
+     token), so this CSS is dormant otherwise. */
+  .promo-seal{position:absolute;top:26px;right:26px;z-index:4;width:134px;height:134px;border-radius:50%;
+    background:var(--yellow);color:var(--indigo-deep);display:flex;flex-direction:column;align-items:center;
+    justify-content:center;text-align:center;transform:rotate(9deg);box-shadow:0 12px 28px rgba(0,0,0,.34);
+    border:3px dashed rgba(38,43,122,.42);animation:seal-pop 3s ease-in-out infinite;}
+  .promo-seal-pct{font-family:'Rokkitt',Rockwell,'Roboto Slab',serif;font-weight:800;font-size:2.6rem;line-height:.85;}
+  .promo-seal-off{font-weight:800;font-size:1.05rem;letter-spacing:.18em;line-height:1;margin-top:3px;}
+  .promo-seal-bot{margin-top:8px;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;line-height:1.15;max-width:104px;}
+  @keyframes seal-pop{0%,100%{transform:rotate(9deg) scale(1);}50%{transform:rotate(9deg) scale(1.06);}}
+  @media (prefers-reduced-motion:reduce){.promo-seal{animation:none;}}
+  @media (max-width:720px){.promo-seal{width:104px;height:104px;top:12px;right:10px;border-width:2px;}
+    .promo-seal-pct{font-size:1.95rem;}.promo-seal-off{font-size:.86rem;}.promo-seal-bot{font-size:.6rem;max-width:82px;margin-top:5px;}}
 
   .strip{background:var(--cream);padding:24px 0 2px;}
   .chips{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
@@ -176,6 +190,7 @@
   </header>
 
   <section class="hero">
+    {{firstOrderPromoBadge}}
     <div class="wrap inner">
       <span class="script script-line">Proper fish &amp; chips</span>
       <h1 class="slab">Welcome to<br>{{shopName}}</h1>

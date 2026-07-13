@@ -394,6 +394,16 @@ const firstOrderPromoBanner = firstOrdersOn
     + `<a href="/order" style="color:${foFg};text-decoration:underline;text-underline-offset:3px;font-weight:800;white-space:nowrap;">Sign up &amp; order →</a>`
     + `</div>`
   : '';
+// A round "sticker" seal for the hero — big % OFF the customer can't miss.
+// Styling lives in the landing page (.promo-seal); this only emits the element
+// (empty when the offer is off) with the shop's real numbers.
+const firstOrderPromoBadge = firstOrdersOn
+  ? `<div class="promo-seal" role="img" aria-label="${firstOrderPromoText}">`
+    + `<span class="promo-seal-pct">${firstOrdersPct}%</span>`
+    + `<span class="promo-seal-off">OFF</span>`
+    + `<span class="promo-seal-bot">first ${firstOrdersLimit} order${firstOrdersLimit === 1 ? '' : 's'}</span>`
+    + `</div>`
+  : '';
 
 // SEO <head> block for the landing page: a JSON-LD Restaurant schema (so Google
 // can confidently tie this domain to the business — name, address, hours, phone,
@@ -505,9 +515,11 @@ const tokens = {
   controllerIdentity,
   contactLine,
   promoSection,
-  // First-orders welcome offer: a ready-to-drop landing banner (empty when the
-  // offer is off) and the plain-text version for bespoke landing copy / meta.
+  // First-orders welcome offer: a ready-to-drop landing banner + a round hero
+  // seal (both empty when the offer is off) and the plain-text version for
+  // bespoke landing copy / meta.
   firstOrderPromoBanner,
+  firstOrderPromoBadge,
   firstOrderPromoText,
   // SEO meta sentence — only advertises the discount for shops that run it.
   promoTagline:            (promo && promo.enabled) ? ` ${promo.percent}% off all online orders.` : '',
