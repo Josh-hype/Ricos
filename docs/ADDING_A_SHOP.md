@@ -120,6 +120,31 @@ others. In the Cloudflare dashboard:
 - **Environment variables (Production + Preview)**:
   - `SHOP_SLUG` = `<your-slug>`
   - `NODE_VERSION` = `20` (or whatever matches local dev)
+  - `NPM_FLAGS` = `--omit=dev` — skips installing the dev-only dependency
+    (wrangler), which Cloudflare doesn't need to build the site. The build
+    itself is pure Node built-ins, so this is safe and makes each build much
+    faster. **Set it on Production AND Preview.**
+
+### b2) Build watch paths — only rebuild the shop that changed
+
+**Every shop is a separate Pages project, and they all watch the same repo +
+`main` branch — so by default a change to ONE shop's folder rebuilds EVERY
+project** (slow, and an unnecessary deploy to unrelated live shops). Fix it per
+project under **Settings → Builds & deployments → Build watch paths**:
+
+- **Include paths**: `*` (everything — so shared-code changes still rebuild
+  this shop, which is correct).
+- **Exclude paths**: every OTHER shop's folder, e.g. for the `mega-chippy`
+  project: `data/shops/ricos/*`, `data/shops/food-station/*`,
+  `data/shops/grub-hub/*`. (One tag each; no separators.)
+
+The rule: **each project excludes every shop folder except its own.** A change
+to `data/shops/<this-shop>/**` or to shared code (`templates/`, `functions/`,
+`scripts/`) still builds; a change to only another shop's folder is skipped.
+
+⚠️ **When you add a NEW shop, update the EXISTING projects too:** add the new
+shop's `data/shops/<new-slug>/*` to every other project's Exclude paths, or
+they'll keep rebuilding whenever the new shop changes.
 
 ### c) KV namespaces
 

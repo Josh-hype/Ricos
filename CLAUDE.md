@@ -148,9 +148,17 @@ Each project (`ricos`, the Food Station project, and any future shop):
   **not** leave it blank.
 - **Build output directory:** `public`
 - **Production branch:** `main`
-- **Environment variables — set `SHOP_SLUG` for BOTH Production and Preview:**
+- **Environment variables — set for BOTH Production and Preview:**
   - `SHOP_SLUG` = the shop's slug (`ricos`, `food-station`, …)
   - `NODE_VERSION` = `20`
+  - `NPM_FLAGS` = `--omit=dev` — skips installing wrangler (dev-only; Cloudflare
+    doesn't need it to build). The build is pure Node built-ins, so this is safe
+    and makes builds much faster.
+- **Build watch paths** (Settings → Builds & deployments): Include `*`, Exclude
+  every OTHER shop's folder (`data/shops/<other-slug>/*`, one per shop). Without
+  this, a one-shop change rebuilds **every** project. Each project excludes every
+  shop except its own; shared-code changes still rebuild all. **Adding a new shop?
+  Add its `data/shops/<slug>/*` to every existing project's Exclude paths too.**
 - **KV namespaces** (create per shop, bind by these names):
   `ORDERS_KV`, `CUSTOMERS_KV`, `MARKETING_KV`, `SLOTS_KV`, `STAFF_LOGIN_KV`
 - **Secrets** (encrypted env vars — names the code actually reads):
@@ -173,7 +181,9 @@ Each project (`ricos`, the Food Station project, and any future shop):
     fallback is used instead. Make it different per shop.)
 - **Custom domain:** add it under the project's Custom domains.
 
-A push to `main` rebuilds **every** project (each with its own `SHOP_SLUG`).
+A push to `main` rebuilds each project (each with its own `SHOP_SLUG`) — but with
+the **Build watch paths** above, a change to a single shop's `data/shops/<slug>/`
+only rebuilds that shop, while shared-code changes still rebuild all.
 Stripe is **Stripe Connect** in **LIVE** mode. The platform's API keys
 (`STRIPE_SECRET_KEY` / `STRIPE_PUBLISHABLE_KEY`) are **shared across all shops** —
 each shop's project sets the same platform keys; what differs per shop is the

@@ -54,6 +54,13 @@ Pick a slug — lowercase, dashes only, no leading underscore (e.g. `bobs-burger
 - [ ] **Environment variables (Production + Preview)**:
   - [ ] `SHOP_SLUG` = `<slug>`
   - [ ] `NODE_VERSION` = `20`
+  - [ ] `NPM_FLAGS` = `--omit=dev` (skips the wrangler install → faster builds)
+- [ ] **Build watch paths** (Settings → Builds & deployments): Include `*`;
+      Exclude every OTHER shop's folder — e.g. `data/shops/<other-slug>/*` per
+      existing shop. So a one-shop change only rebuilds that shop.
+- [ ] ⚠️ **Update the EXISTING projects:** add this new shop's
+      `data/shops/<slug>/*` to every other project's Exclude paths (or they'll
+      rebuild whenever this shop changes).
 
 ## Phase 4 — KV namespaces (~5 min, you)
 
