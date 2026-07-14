@@ -211,6 +211,22 @@ for (const bg of ['reader-bg.jpg', 'reader-bg.png']) {
   }
 }
 
+// Favicon source. Google (and browser tabs) show a site's favicon; with none
+// declared it falls back to a generic globe. A shop can drop a SQUARE icon.png
+// in its folder to use as the favicon (recommended when logo.png is wide/
+// rectangular, which letterboxes badly at favicon size). Otherwise we fall back
+// to logo.png, which is ideal for the square badge-style logos.
+const shopIcon = path.join(shopDir, 'icon.png');
+const hasShopIcon = fs.existsSync(shopIcon);
+const publicIcon = path.join(repoRoot, 'public', 'icon.png');
+if (hasShopIcon) {
+  fs.copyFileSync(shopIcon, publicIcon);
+  console.log(`build-shop: ${slug}/icon.png -> public/icon.png`);
+} else if (fs.existsSync(publicIcon)) {
+  fs.rmSync(publicIcon); // clear a stale icon.png from a previous local build
+}
+const faviconHref = hasShopIcon ? '/icon.png' : '/logo.png';
+
 /* menu-visual.json: pull any inline base64 images out into separate, cacheable
    files and rewrite the JSON to reference them by URL. A photo-heavy menu can be
    2-3MB of base64 inline, and the order page must download the whole thing before
@@ -569,6 +585,15 @@ function substitute(src, label, { json = false } = {}) {
   return { out, replaced };
 }
 
+// Declare the site favicon in every page <head> so search engines and browser
+// tabs show the shop logo, not a generic globe. Injected centrally here rather
+// than editing every template/landing head. No-op if the page already sets one.
+const faviconTags = `<link rel="icon" href="${faviconHref}"><link rel="apple-touch-icon" href="${faviconHref}">`;
+function injectFavicon(html) {
+  if (/rel=["']icon["']/i.test(html)) return html;
+  return html.replace(/<head([^>]*)>/i, (m) => `${m}\n  ${faviconTags}`);
+}
+
 // Move each inline <script> into a same-origin .js file (token substitution has
 // already run, so the extracted JS is final) and replace it with <script src>.
 // This lets the CSP use script-src 'self' instead of 'unsafe-inline'. Only plain
@@ -609,7 +634,7 @@ for (const [tplRel, outRelRaw] of templatedFiles) {
   // to the new path. The (?<!\/api) lookbehind leaves every /api/staff/ API call
   // alone, so the till's backend calls keep working.
   if (isStaff && moveStaff) out = out.replace(/(?<!\/api)\/staff\//g, `/${STAFF_PATH}/`);
-  if (outRel.endsWith('.html')) out = externalizeInlineScripts(out, outRel);
+  if (outRel.endsWith('.html')) out = externalizeInlineScripts(injectFavicon(out), outRel);
   fs.mkdirSync(path.dirname(outFile), { recursive: true });
   fs.writeFileSync(outFile, out);
   console.log(`build-shop: templates/${tplRel} -> ${outRel} (${replaced} token(s))`);
@@ -635,7 +660,7 @@ for (const [tplRel, outRelRaw] of templatedFiles) {
       : src;
     const { out, replaced } = substitute(srcWithBar, label);
     const outFile = path.join(repoRoot, 'public', 'index.html');
-    fs.writeFileSync(outFile, externalizeInlineScripts(out, 'public/index.html'));
+    fs.writeFileSync(outFile, externalizeInlineScripts(injectFavicon(out), 'public/index.html'));
     console.log(`build-shop: ${label} -> public/index.html (${replaced} token(s))`);
   } else {
     console.warn(`build-shop: no landing page found (shop or default); public/index.html left as-is`);
