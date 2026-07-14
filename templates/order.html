@@ -8,6 +8,10 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<!-- Warm Stripe's connections early so Apple Pay / Google Pay render fast at checkout. -->
+<link rel="preconnect" href="https://js.stripe.com" />
+<link rel="preconnect" href="https://api.stripe.com" crossorigin />
+<link rel="preconnect" href="https://merchant-ui-api.stripe.com" crossorigin />
 <link href="{{fontLink}}" rel="stylesheet" />
 
 <style>
@@ -1559,6 +1563,11 @@
   </div>
 </div>
 
+<!-- Offscreen container used to pre-warm the Apple/Google Pay availability check
+     when checkout opens, so the real wallet buttons render instantly at the pay
+     step. Never confirmed; unmounted as soon as the check resolves. -->
+<div id="wallet-prewarm" aria-hidden="true" style="position:absolute;left:-9999px;top:0;width:260px;height:48px;overflow:hidden;opacity:0;pointer-events:none"></div>
+
 <!-- ======== CHECKOUT MODAL ======== -->
 <div class="modal-overlay" id="checkoutOverlay" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
   <div class="modal" style="max-width: 580px;">
@@ -2925,6 +2934,33 @@ let stripeElements = null;
 // Express Checkout (Apple/Google Pay) uses its own Elements group so its
 // submit() doesn't validate the (possibly empty) card Payment Element.
 let expressElements = null;
+
+/* Pre-warm Apple/Google Pay availability the moment checkout opens (a step or
+   two before the payment screen), so the real Express Checkout Element renders
+   its buttons instantly instead of after a visible pause. Stripe caches the
+   device wallet-availability check per session, so a throwaway Express Checkout
+   Element mounted offscreen resolves it early; we unmount it as soon as it's
+   ready. Entirely best-effort — any failure is swallowed and never blocks
+   checkout, which still works exactly as before. Runs at most once per page. */
+let walletsPrewarmed = false;
+function prewarmWallets() {
+  if (walletsPrewarmed) return;
+  try {
+    const pk   = window.SHOP_CONFIG?.stripe?.publishableKey;
+    const acct = window.SHOP_CONFIG?.stripe?.connectedAccountId;
+    if (!window.Stripe || !pk || !acct || acct === 'TBD') return;
+    if (!stripeInstance) stripeInstance = window.Stripe(pk, { stripeAccount: acct });
+    walletsPrewarmed = true;
+    const warmAmount = Math.max(100, Math.round((cartTotals().total || 1) * 100));
+    const els = stripeInstance.elements({ mode: 'payment', amount: warmAmount, currency: 'gbp' });
+    const ece = els.create('expressCheckout', {
+      paymentMethods: { applePay: 'auto', googlePay: 'auto', link: 'never', paypal: 'never', amazonPay: 'never' },
+    });
+    // On ready the availability check is done + cached — drop the throwaway element.
+    ece.on('ready', () => { try { ece.unmount(); } catch (e) {} });
+    ece.mount('#wallet-prewarm');
+  } catch (e) { /* best-effort; never block checkout */ }
+}
 // CVC re-collection state (lives at module scope so placeOrder can see it).
 let cvcElement = null;
 let cvcMounted = false;
@@ -3352,6 +3388,7 @@ function startCheckout() {
 
 function runCheckout() {
   checkoutStep = 'contact';
+  prewarmWallets(); // start the Apple/Google Pay availability check now, not at the pay step
   checkoutData = checkoutData.guest ? { guest: true } : {};
   if (state.user) {
     checkoutData.name = state.user.name;
