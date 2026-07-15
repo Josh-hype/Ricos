@@ -50,6 +50,16 @@
       "subscription": { "status": "active", "perWeekPence": 1900, "via": "stripe", "since": "2026-07-15" }
     },
     {
+      "slug": "mega-chippy",
+      "name": "Mega Chippy",
+      "city": "York",
+      "connectedAccountId": "acct_1TpYK4JDn2SsTUNp",
+      "onlineProcessor": "stripe",
+      "live": true,
+      "_subscription_note": "Agreed £19/wk with the FIRST WEEK FREE — Mega Chippy completes the Stripe subscription next week (w/c 20 Jul 2026). Until then only per-order fees accrue. When the sub shows active in Stripe Billing, set status:\"active\" and add the \"since\" date.",
+      "subscription": { "status": "pending", "perWeekPence": 1900, "via": "stripe" }
+    },
+    {
       "slug": "grub-hub",
       "name": "The Grub Hub",
       "city": "York",
