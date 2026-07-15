@@ -5972,6 +5972,15 @@ function buildReceiptDoc(o, ctx, kind) {
   for (const li of (t.lines || [])) {
     if (kitchen) {
       ops.push({ t: 'text', s: (li.qty || 1) + 'x ' + String(li.name || '').toUpperCase(), size: SZ.food, bold: true });
+      // Per-item price line (shops asked to see item prices, not just the order
+      // total). Right-aligned line total; for a multi-qty line also show the unit
+      // price ("2 @ £2.50 ....... £5.00") so "price per item" is explicit.
+      {
+        const qty = li.qty || 1;
+        const unitP = (li.unitPriceP != null) ? li.unitPriceP : Math.round((li.lineTotalP || 0) / qty);
+        const left = qty > 1 ? (qty + ' @ £' + money(unitP)) : '';
+        ops.push(rowOp(left, '£' + money(li.lineTotalP), SZ.body, true));
+      }
       for (const ex of lineExtras(li)) ops.push({ t: 'text', s: '   ' + ex, size: SZ.body, bold: true });
       if (li.notes) ops.push({ t: 'text', s: '   >> ' + li.notes, size: SZ.body, bold: true });
     } else {
