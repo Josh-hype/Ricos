@@ -42,13 +42,17 @@ export const onRequestGet = async ({ request, env }) => {
     try {
       const subs = await listSubscriptions(env);
       subscriptions = (subs.data || []).map((s) => {
-        const item = s.items?.data?.[0];
-        const price = item?.price || {};
+        // A sub can carry several line items (Rico's = software + hardware +
+        // terminal, £35/wk total) — sum them all; showing items[0] alone made
+        // Rico's read as £10/wk. Every item on a Stripe sub shares one billing
+        // interval, so the first item's interval speaks for the total.
+        const items = s.items?.data || [];
+        const price = items[0]?.price || {};
         return {
           id: s.id,
           status: s.status,
           customer: s.customer?.name || s.customer?.email || s.customer?.id || s.customer || null,
-          amountP: Number(price.unit_amount) || 0,
+          amountP: items.reduce((sum, it) => sum + (Number(it.price?.unit_amount) || 0) * (it.quantity || 1), 0),
           interval: price.recurring?.interval || null,
           intervalCount: price.recurring?.interval_count || 1,
           currentPeriodEnd: s.current_period_end ? new Date(s.current_period_end * 1000).toISOString() : null,
