@@ -4,119 +4,142 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>{{shopName}} — Pizza · Parmo · Kebab · Burger · Wrap in {{shopCity}}</title>
-<meta name="description" content="{{shopName}} — five cravings, one kitchen. Pizza, parmos, kebabs, burgers and loaded wraps. Order online for collection or delivery {{deliveryAreaDescription}}." />
+<meta name="description" content="{{shopName}} — big flavour, big portions. Pizza, parmos, kebabs, burgers and loaded wraps, fresh & loaded. Order online for collection or delivery {{deliveryAreaDescription}}." />
 {{seoHead}}
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <style>
-  :root{ --red:#D72C26; --green:#4FAE3F; --mustard:#F2B91D; --ink:#1A1A1A; --cream:#FBF5E9; --surface:#FFFDF6; }
+  /* Big Bites brand system — yellow #F7C61A leads, red #E32619 fires it up,
+     charcoal #0C0C0C grounds it, cream #FBF3DE softens. 60/30/10 mix. */
+  :root{ --yellow:#F7C61A; --red:#E32619; --deepred:#A81409; --char:#0C0C0C;
+         --cream:#FBF3DE; --off:#FFFDF7; --ink:#0C0C0C; }
   *{box-sizing:border-box;} html,body{margin:0;} html{scroll-behavior:smooth;}
-  body{font-family:'Poppins',system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.5;overflow-x:hidden;}
-  .display{font-family:'Lilita One',system-ui,sans-serif;line-height:.95;letter-spacing:.5px;}
+  body{font-family:'Montserrat',system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.5;overflow-x:hidden;}
+  .display{font-family:'Luckiest Guy',system-ui,sans-serif;font-weight:400;line-height:.92;letter-spacing:1px;text-transform:uppercase;}
   .wrap{max-width:1000px;margin:0 auto;padding:0 22px;}
   a{color:inherit;}
+  /* halftone glow — subtle dot texture on dark panels (brand toolkit) */
+  .halftone{background-color:var(--char);
+    background-image:radial-gradient(rgba(247,198,26,.14) 1.5px, transparent 1.5px);
+    background-size:22px 22px;}
   .btn{display:inline-flex;align-items:center;gap:10px;font-weight:800;font-size:1.1rem;text-decoration:none;
-       padding:16px 32px;border:3px solid var(--ink);border-radius:14px;box-shadow:5px 5px 0 var(--ink);
-       background:var(--mustard);color:var(--ink);transition:transform .08s,box-shadow .08s;cursor:pointer;}
-  .btn:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--ink);}
-  .btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink);}
+       padding:16px 32px;border:3px solid var(--char);border-radius:14px;box-shadow:5px 5px 0 rgba(12,12,12,.9);
+       background:var(--yellow);color:var(--char);transition:transform .08s,box-shadow .08s;cursor:pointer;}
+  .btn:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 rgba(12,12,12,.9);}
+  .btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(12,12,12,.9);}
+  .btn.red{background:var(--red);color:#fff;}
+  /* slanted tab — offers & CTAs, always red, always tilted (brand toolkit) */
+  .tab{display:inline-block;background:var(--red);color:#fff;font-family:'Luckiest Guy';font-size:1.15rem;
+       letter-spacing:1.5px;text-transform:uppercase;padding:8px 22px 6px;transform:rotate(-3deg);
+       box-shadow:4px 4px 0 rgba(12,12,12,.55);}
+  /* dotted rule — quick divider (brand toolkit) */
+  .dotrule{display:flex;gap:9px;justify-content:center;margin:0 auto;}
+  .dotrule i{width:14px;height:7px;background:var(--red);display:block;}
+  /* star ticker strip */
+  .ticker{background:var(--red);color:#fff;border-top:3px solid var(--char);border-bottom:3px solid var(--char);overflow:hidden;white-space:nowrap;}
+  .ticker .roll{display:inline-block;padding:9px 0 7px;font-family:'Luckiest Guy';font-size:1.05rem;letter-spacing:2px;animation:roll 28s linear infinite;}
+  @keyframes roll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-  header.bar{display:flex;align-items:center;justify-content:space-between;padding:12px 22px;background:var(--cream);border-bottom:4px solid var(--ink);position:sticky;top:0;z-index:20;}
-  header.bar img{height:48px;display:block;}
-  header.bar .btn{padding:11px 20px;font-size:.95rem;box-shadow:3px 3px 0 var(--ink);background:var(--red);color:#fff;}
+  header.bar{display:flex;align-items:center;justify-content:space-between;padding:12px 22px;background:var(--char);border-bottom:4px solid var(--yellow);position:sticky;top:0;z-index:20;}
+  header.bar img{height:62px;display:block;}
+  header.bar .btn{padding:11px 20px;font-size:.95rem;box-shadow:3px 3px 0 rgba(247,198,26,.45);}
 
-  .hero{background:var(--red);color:var(--cream);border-bottom:5px solid var(--ink);position:relative;overflow:hidden;padding:64px 0 60px;text-align:center;}
+  .hero{color:var(--off);position:relative;overflow:hidden;padding:66px 0 58px;text-align:center;border-bottom:5px solid var(--yellow);}
   .hero .inner{position:relative;z-index:2;}
-  .float{position:absolute;z-index:1;pointer-events:none;filter:drop-shadow(0 10px 14px rgba(0,0,0,.45));}
+  .float{position:absolute;z-index:1;pointer-events:none;filter:drop-shadow(0 10px 14px rgba(0,0,0,.55));}
   .float.pizza{width:clamp(150px,23vw,300px);top:-40px;left:-46px;transform:rotate(-12deg);}
   .float.burger{width:clamp(145px,21.25vw,273px);top:6px;right:-30px;transform:rotate(11deg);}
-  .float.wrap{width:clamp(140px,20vw,256px);bottom:8%;left:8%;transform:rotate(-8deg);}
+  .float.wrapimg{width:clamp(140px,20vw,256px);bottom:8%;left:8%;transform:rotate(-8deg);}
   .wrap-below{display:none;}
-  .badge{display:inline-block;background:var(--mustard);color:var(--ink);border:3px solid var(--ink);border-radius:999px;
-         padding:7px 22px;font-weight:800;box-shadow:4px 4px 0 var(--ink);margin-bottom:24px;transform:rotate(-2deg);}
-  .hero h1{font-size:clamp(3rem,9vw,6rem);margin:0;color:var(--cream);text-shadow:4px 4px 0 var(--ink);}
-  .hero h1 .m{color:var(--mustard);}
-  .hero h1 .g{color:var(--green);}
-  .hero p{font-size:clamp(1.1rem,2.6vw,1.4rem);font-weight:600;max-width:600px;margin:22px auto 30px;}
+  .hero h1{font-size:clamp(2.9rem,8.5vw,5.6rem);margin:0;color:var(--off);text-shadow:4px 4px 0 rgba(0,0,0,.6);}
+  .hero h1 .y{color:var(--yellow);} .hero h1 .r{color:var(--red);text-shadow:3px 3px 0 rgba(0,0,0,.75);}
+  .hero p{font-size:clamp(1.05rem,2.6vw,1.35rem);font-weight:600;max-width:620px;margin:22px auto 30px;color:#f4ecd8;}
+  .hero .tab{margin-bottom:26px;}
   .hero .btn{font-size:1.25rem;padding:18px 40px;}
+  .loc-line{display:flex;align-items:center;gap:16px;justify-content:center;margin-top:34px;font-weight:800;letter-spacing:.22em;font-size:.8rem;color:var(--yellow);text-transform:uppercase;}
+  .loc-line .dotrule{margin:0;}
 
-  .cravings{padding:46px 0;text-align:center;}
-  .cravings .lbl{font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--red);margin-bottom:18px;}
+  .cravings{padding:48px 0 44px;text-align:center;}
+  .cravings .lbl{font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--red);margin-bottom:20px;}
   .chips{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;}
-  .chip{font-family:'Lilita One';font-size:1.5rem;color:#fff;padding:14px 30px;border:3px solid var(--ink);border-radius:999px;box-shadow:5px 5px 0 var(--ink);transform:rotate(-2deg);}
+  .chip{font-family:'Luckiest Guy';font-size:1.45rem;letter-spacing:1px;color:#fff;padding:14px 30px 11px;border:3px solid var(--char);border-radius:999px;box-shadow:5px 5px 0 var(--char);transform:rotate(-2deg);}
   .chip:nth-child(2n){transform:rotate(2deg);}
-  .chip.r{background:var(--red);} .chip.g{background:var(--green);} .chip.m{background:var(--mustard);color:var(--ink);} .chip.k{background:var(--ink);color:var(--mustard);}
+  .chip.r{background:var(--red);} .chip.y{background:var(--yellow);color:var(--char);} .chip.k{background:var(--char);color:var(--yellow);}
 
-  .story{background:var(--ink);color:var(--cream);padding:60px 0;}
-  .story h2{font-size:clamp(2rem,5vw,3.2rem);margin:0 0 16px;color:#fff;}
-  .story h2 .m{color:var(--mustard);} .story h2 .g{color:var(--green);}
-  .story p{font-size:1.15rem;max-width:740px;margin:0;}
-  .story .t{color:var(--mustard);font-weight:700;}
+  .story{color:var(--cream);padding:62px 0;border-top:5px solid var(--char);border-bottom:5px solid var(--yellow);}
+  .story h2{font-size:clamp(2rem,5vw,3.2rem);margin:0 0 18px;color:var(--off);}
+  .story h2 .y{color:var(--yellow);} .story h2 .r{color:var(--red);}
+  .story p{font-size:1.12rem;max-width:740px;margin:0;color:#efe6d0;}
+  .story .t{color:var(--yellow);font-weight:700;}
+  .story .dotrule{justify-content:flex-start;margin:26px 0 0;}
 
   .feat{padding:56px 0;}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:26px;}
-  .card{padding:30px;border:3px solid var(--ink);border-radius:18px;box-shadow:7px 7px 0 var(--ink);color:#fff;}
-  .card.red{background:var(--red);} .card.green{background:var(--green);}
-  .card .pill{display:inline-block;background:var(--mustard);color:var(--ink);font-weight:800;font-size:.78rem;padding:5px 14px;border-radius:999px;border:2px solid var(--ink);margin-bottom:14px;}
-  .card h3{font-family:'Lilita One';font-size:2rem;margin:0 0 10px;}
-  .card p{margin:0;font-size:1.05rem;}
+  .card{padding:30px;border:3px solid var(--char);border-radius:18px;box-shadow:7px 7px 0 var(--char);}
+  .card.red{background:var(--red);color:#fff;}
+  .card.yellow{background:var(--yellow);color:var(--char);}
+  .card .tab{font-size:.95rem;margin-bottom:16px;box-shadow:3px 3px 0 rgba(12,12,12,.4);}
+  .card.red .tab{background:var(--char);color:var(--yellow);}
+  .card h3{font-family:'Luckiest Guy';font-weight:400;letter-spacing:1px;font-size:2rem;margin:0 0 10px;text-transform:uppercase;}
+  .card p{margin:0;font-size:1.05rem;font-weight:500;}
 
   .eyebrow{display:block;text-align:center;font-weight:800;letter-spacing:.2em;text-transform:uppercase;font-size:.82rem;margin-bottom:10px;}
 
-  .find{background:var(--green);color:#fff;padding:66px 0;border-top:5px solid var(--ink);border-bottom:5px solid var(--ink);}
-  .find .eyebrow{color:var(--ink);opacity:.85;}
-  .find h2{font-size:clamp(2rem,5vw,3rem);text-align:center;margin:0 0 40px;color:#fff;text-shadow:3px 3px 0 var(--ink);}
+  .find{color:var(--off);padding:66px 0;border-top:5px solid var(--char);border-bottom:5px solid var(--char);}
+  .find .eyebrow{color:var(--yellow);}
+  .find h2{font-size:clamp(2rem,5vw,3rem);text-align:center;margin:0 0 40px;color:var(--off);text-shadow:3px 3px 0 rgba(0,0,0,.6);}
   .find-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:stretch;}
-  .panel{background:var(--cream);color:var(--ink);border:3px solid var(--ink);border-radius:22px;box-shadow:9px 9px 0 var(--ink);padding:30px;display:flex;flex-direction:column;}
+  .panel{background:var(--off);color:var(--ink);border:3px solid var(--char);border-radius:22px;box-shadow:9px 9px 0 rgba(247,198,26,.85);padding:30px;display:flex;flex-direction:column;}
   .panel-head{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
-  .ic-badge{display:grid;place-items:center;width:50px;height:50px;border-radius:50%;border:3px solid var(--ink);background:var(--mustard);font-size:1.4rem;flex:0 0 auto;box-shadow:3px 3px 0 var(--ink);}
-  .panel-head h3{font-family:'Lilita One';font-weight:400;font-size:1.55rem;margin:0;}
+  .ic-badge{display:grid;place-items:center;width:50px;height:50px;border-radius:50%;border:3px solid var(--char);background:var(--yellow);font-size:1.4rem;flex:0 0 auto;box-shadow:3px 3px 0 var(--char);}
+  .panel-head h3{font-family:'Luckiest Guy';font-weight:400;font-size:1.55rem;letter-spacing:1px;margin:0;text-transform:uppercase;}
   .hours{list-style:none;margin:0 0 20px;padding:0;}
-  .hours li{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:13px 2px;border-bottom:2px dashed rgba(26,26,26,.16);font-weight:600;}
+  .hours li{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:13px 2px;border-bottom:3px dotted rgba(227,38,25,.4);font-weight:600;}
   .hours li:last-child{border-bottom:0;}
-  .hours li b{font-family:'Lilita One';font-weight:400;font-size:1.2rem;white-space:nowrap;}
-  .tag{align-self:flex-start;margin-top:auto;display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;border:2px solid var(--ink);border-radius:999px;padding:7px 16px;font-weight:700;font-size:.9rem;box-shadow:2px 2px 0 var(--ink);}
+  .hours li b{font-family:'Luckiest Guy';font-weight:400;font-size:1.2rem;white-space:nowrap;letter-spacing:.5px;}
+  .tag{align-self:flex-start;margin-top:auto;display:inline-flex;align-items:center;gap:8px;background:var(--red);color:#fff;border:2px solid var(--char);border-radius:999px;padding:7px 16px;font-weight:700;font-size:.9rem;box-shadow:2px 2px 0 var(--char);}
   .addr{font-size:1.3rem;font-weight:700;margin:0 0 12px;line-height:1.35;}
-  .deliv{font-weight:600;margin:0 0 auto;color:#403c34;}
+  .deliv{font-weight:600;margin:0 0 auto;color:#4d453a;}
   .loc-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;}
-  .btn.ghost{background:#fff;color:var(--ink);}
-  .btn.sm{font-size:.95rem;padding:11px 20px;box-shadow:3px 3px 0 var(--ink);}
+  .btn.ghost{background:var(--off);color:var(--char);}
+  .btn.sm{font-size:.95rem;padding:11px 20px;box-shadow:3px 3px 0 var(--char);}
 
-  .cta{background:var(--mustard);text-align:center;padding:76px 22px;border-bottom:5px solid var(--ink);}
-  .cta h2{font-family:'Lilita One';font-weight:400;font-size:clamp(2.4rem,6.5vw,4rem);margin:0 0 14px;line-height:1;}
+  .cta{background:var(--yellow);text-align:center;padding:76px 22px;border-bottom:5px solid var(--char);}
+  .cta .tab{margin-bottom:22px;}
+  .cta h2{font-family:'Luckiest Guy';font-weight:400;font-size:clamp(2.4rem,6.5vw,4rem);margin:0 0 14px;line-height:.95;letter-spacing:1px;text-transform:uppercase;}
   .cta h2 span{color:var(--red);}
   .cta p{font-weight:600;font-size:1.15rem;max-width:540px;margin:0 auto 30px;}
   .cta-actions{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;}
-  .btn.dark{background:var(--ink);color:var(--mustard);}
+  .btn.dark{background:var(--char);color:var(--yellow);box-shadow:5px 5px 0 rgba(168,20,9,.8);}
 
-  footer{background:var(--ink);color:#cfc7b8;}
+  footer{color:#d8d0bd;}
   .foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:32px;max-width:1000px;margin:0 auto;padding:52px 22px 40px;}
-  .logo-chip{display:inline-block;background:var(--cream);border:3px solid #000;border-radius:14px;padding:10px 14px;box-shadow:4px 4px 0 #000;}
-  .logo-chip img{height:46px;display:block;}
+  .foot-brand img{height:74px;display:block;}
   .foot-brand p{margin:16px 0 0;max-width:320px;font-size:.95rem;line-height:1.65;}
-  .foot-col h4{font-family:'Lilita One';font-weight:400;color:#fff;font-size:1.25rem;margin:0 0 14px;}
+  .foot-col h4{font-family:'Luckiest Guy';font-weight:400;color:var(--yellow);font-size:1.25rem;letter-spacing:1px;margin:0 0 14px;text-transform:uppercase;}
   .foot-col p{margin:0 0 10px;font-size:.95rem;line-height:1.65;}
-  .foot-col a{color:var(--mustard);font-weight:700;text-decoration:none;}
-  .foot-col .btn.sm{margin-top:6px;background:var(--mustard);color:var(--ink);}
-  .foot-bottom{border-top:2px solid rgba(255,255,255,.12);display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;max-width:1000px;margin:0 auto;padding:16px 22px;font-size:.82rem;}
-  .foot-bottom a{color:var(--mustard);font-weight:600;text-decoration:none;}
+  .foot-col a{color:var(--yellow);font-weight:700;text-decoration:none;}
+  .foot-col a.btn.sm{margin-top:6px;color:var(--char);box-shadow:3px 3px 0 rgba(247,198,26,.45);}
+  .foot-bottom{border-top:2px solid rgba(247,198,26,.25);display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;max-width:1000px;margin:0 auto;padding:16px 22px;font-size:.82rem;}
+  .foot-bottom a{color:var(--yellow);font-weight:600;text-decoration:none;}
   @media(max-width:720px){
     .grid2{grid-template-columns:1fr;}
     .find-grid{grid-template-columns:1fr;}
     .foot-grid{grid-template-columns:1fr;text-align:center;gap:26px;}
+    .foot-brand img{margin:0 auto;}
     .foot-brand p{margin-left:auto;margin-right:auto;}
     .foot-bottom{justify-content:center;text-align:center;}
     .loc-actions,.cta-actions{justify-content:center;}
-    .hero{padding:70px 0 44px;}
+    .hero{padding:64px 0 44px;}
     .hero h1{font-size:clamp(2.1rem,9.5vw,3rem);}
-    .hero p{font-size:1.05rem;margin:32px auto 44px;}
-    .hero .btn{font-size:0.92rem;padding:11px 18px;}
-    .badge{margin-bottom:50px;}
+    .hero p{font-size:1.05rem;margin:26px auto 36px;}
+    .hero .btn{font-size:0.95rem;padding:12px 20px;}
     .float.pizza{width:140px;top:-28px;left:-40px;}
     .float.burger{width:116px;top:6px;right:-30px;}
-    .float.wrap{display:none;}
-    .wrap-below{display:block;width:119px;margin:44px auto 0;transform:rotate(-4deg);filter:drop-shadow(0 10px 14px rgba(0,0,0,.45));}
+    .float.wrapimg{display:none;}
+    .wrap-below{display:block;width:119px;margin:44px auto 0;transform:rotate(-4deg);filter:drop-shadow(0 10px 14px rgba(0,0,0,.55));}
+    .loc-line{flex-direction:column;gap:10px;}
   }
 </style>
 </head>
@@ -127,39 +150,46 @@
     <a href="/order" class="btn">Order now</a>
   </header>
 
-  <section class="hero">
+  <section class="hero halftone">
     <img class="float pizza"  src="assets/pizza.png"  alt="Loaded pizza" />
     <img class="float burger" src="assets/burger.png" alt="Stacked cheeseburger" />
-    <img class="float wrap"   src="assets/wrap.png"   alt="Loaded doner wrap" />
+    <img class="float wrapimg" src="assets/wrap.png"  alt="Loaded doner wrap" />
     <div class="wrap inner">
-      <span class="badge">Pull up. Pig out.</span>
-      <h1 class="display"><span class="m">FIVE</span> CRAVINGS.<br><span class="g">ONE</span> KITCHEN.<br>ZERO COMPROMISES.</h1>
-      <p>Pizza, parmo, kebab, burger, wrap — five comfort-food worlds under one roof. Big portions, real ingredients, no fuss.</p>
+      <span class="tab">Slice it!</span>
+      <h1 class="display"><span class="y">Big flavour.</span><br><span class="r">Big</span> portions.<br><span class="y">Big Bites.</span></h1>
+      <p>Pizza, parmo, kebab, burger, wrap — fresh &amp; loaded, hot out the oven and out the door. You bring the hunger, we'll bring the lot.</p>
       <a href="/order" class="btn">Start your order →</a>
       <img class="wrap-below" src="assets/wrap.png" alt="Loaded doner wrap" />
+      <div class="loc-line"><span class="dotrule"><i></i><i></i><i></i><i></i><i></i></span>Fresh &amp; loaded · {{shopCity}}'s favourite<span class="dotrule"><i></i><i></i><i></i><i></i><i></i></span></div>
     </div>
   </section>
 
+  <div class="ticker" aria-hidden="true"><div class="roll">
+    SLICE IT ★ BIG BITES ★ FRESH &amp; LOADED ★ SLICE IT ★ BIG BITES ★ FRESH &amp; LOADED ★ SLICE IT ★ BIG BITES ★ FRESH &amp; LOADED ★&nbsp;
+    SLICE IT ★ BIG BITES ★ FRESH &amp; LOADED ★ SLICE IT ★ BIG BITES ★ FRESH &amp; LOADED ★ SLICE IT ★ BIG BITES ★ FRESH &amp; LOADED ★&nbsp;
+  </div></div>
+
   <section class="cravings"><div class="wrap">
-    <div class="lbl">Five worlds · one menu</div>
+    <div class="lbl">Five cravings · one kitchen</div>
     <div class="chips">
-      <span class="chip r">PIZZA</span><span class="chip g">PARMO</span><span class="chip m">KEBAB</span><span class="chip k">BURGER</span><span class="chip r">WRAP</span>
+      <span class="chip r">PIZZA</span><span class="chip y">PARMO</span><span class="chip k">KEBAB</span><span class="chip r">BURGER</span><span class="chip y">WRAP</span>
     </div>
   </div></section>
 
-  <section class="story"><div class="wrap">
-    <h2 class="display">When five cravings <span class="m">stop fighting</span><br>and <span class="g">share a kitchen.</span></h2>
-    <p>One spot for every kind of hunger — the post-shift one, the late-night one, the "feed the whole family" one. Pizza, parmo, kebab, burger and wrap, all under one roof and done properly. <span class="t">Pull up to the station. Pile your plate. Job done.</span></p>
+  <section class="story halftone"><div class="wrap">
+    <h2 class="display">Never <span class="r">whisper.</span><br>Always <span class="y">flavour.</span></h2>
+    <p>One spot for every kind of hunger — the post-shift one, the late-night one, the "feed the whole family" one. Pizza, parmo, kebab, burger and wrap, made to order and never tired. <span class="t">Grab a bite — you know you want to.</span></p>
+    <span class="dotrule"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
   </div></section>
 
   <section class="feat"><div class="wrap grid2">
-    <div class="card red"><span class="pill">The famous one</span><h3>The Goodie Box</h3><p>An 11″ margherita, doner, chips, 4 nuggets, 4 onion rings and a can of drink — the whole station in one box.</p></div>
-    <div class="card green"><span class="pill">Signature offer</span><h3>The Burger Box</h3><p>Cheeseburger, chips, 6 nuggets, 6 onion rings, a dip of your choice and a can of drink. Sorted.</p></div>
+    <div class="card red"><span class="tab">The famous one</span><h3>The Goodie Box</h3><p>An 11″ margherita, doner, chips, 4 nuggets, 4 onion rings and a can of drink — the whole lot in one box.</p></div>
+    <div class="card yellow"><span class="tab">Signature offer</span><h3>The Burger Box</h3><p>Cheeseburger, chips, 6 nuggets, 6 onion rings, a dip of your choice and a can of drink. Sorted.</p></div>
   </div></section>
 
-  <section class="find"><div class="wrap">
+  <section class="find halftone"><div class="wrap">
     <span class="eyebrow">Come &amp; get it</span>
-    <h2 class="display">Find the station</h2>
+    <h2 class="display">Find your bite</h2>
     <div class="find-grid">
       <div class="panel">
         <div class="panel-head"><span class="ic-badge">🕒</span><h3>Opening hours</h3></div>
@@ -167,7 +197,7 @@
           <li><span>Sunday – Thursday</span><b>4 – 10pm</b></li>
           <li><span>Friday &amp; Saturday</span><b>4 – 11pm</b></li>
         </ul>
-        <span class="tag">🔥 Kitchen open till late</span>
+        <span class="tag">🔥 Hot out the oven till late</span>
       </div>
       <div class="panel">
         <div class="panel-head"><span class="ic-badge">📍</span><h3>Where to find us</h3></div>
@@ -175,27 +205,27 @@
         <p class="deliv">🛵 Delivery {{deliveryAreaDescription}} · £12 minimum order, or grab it fresh on collection.</p>
         <div class="loc-actions">
           <a href="tel:{{shopPhoneTel}}" class="btn ghost">📞 {{shopPhone}}</a>
-          <a href="/order" class="btn">Order online →</a>
+          <a href="/order" class="btn red">Order online →</a>
         </div>
       </div>
     </div>
   </div></section>
 
   <section class="cta">
-    <span class="eyebrow">Hungry yet?</span>
-    <h2 class="display">Pick your <span>hunger.</span></h2>
-    <p>Collection or delivery around {{shopCity}} — five comfort-food worlds, one easy order.</p>
+    <span class="tab">Hungry yet?</span>
+    <h2>Order, grab, <span>gone.</span></h2>
+    <p>Collection or delivery around {{shopCity}} — big portions, proper flavour, one easy order.</p>
     <div class="cta-actions">
       <a href="/order" class="btn dark">Start your order →</a>
       <a href="tel:{{shopPhoneTel}}" class="btn ghost">📞 Call {{shopPhone}}</a>
     </div>
   </section>
 
-  <footer>
+  <footer class="halftone">
     <div class="foot-grid">
       <div class="foot-brand">
-        <span class="logo-chip"><img src="logo.png" alt="{{shopName}}" /></span>
-        <p>Five cravings, one kitchen. Pizza, parmos, kebabs, burgers and loaded wraps in {{shopCity}}.</p>
+        <img src="logo.png" alt="{{shopName}}" />
+        <p>Big flavour. Big portions. Pizza, parmos, kebabs, burgers and loaded wraps in {{shopCity}} — fresh &amp; loaded.</p>
       </div>
       <div class="foot-col">
         <h4>Visit us</h4>

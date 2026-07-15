@@ -1,11 +1,10 @@
 {
   "_comment": "Copy this folder to data/shops/<your-slug>/ and fill in the values below. Use lowercase, dashes-only for the slug (e.g. pizza-bob, joes-takeaway). The slug becomes the SHOP_SLUG env var in this shop's Cloudflare Pages project.",
-
   "business": {
-    "tradingName": "Food Station",
+    "tradingName": "Big Bites",
     "_comment_shortName": "Conversational short form used in page headers, aria labels and the staff PWA name.",
-    "shortName": "Food Station",
-    "_comment_todo": "Domain foodstationyork.uk is now owned. Order confirmations send from sales@foodstationyork.uk via Resend (verify the domain's SPF/DKIM in Resend; no mailbox needed). Recommend Cloudflare Email Routing to forward sales@ -> the shop's inbox so replies are received. Stripe Connect account is set (stripe.connectedAccountId). Remaining Cloudflare go-live steps: set STRIPE_SECRET_KEY + STRIPE_PUBLISHABLE_KEY (platform keys) and the Connect webhook -> STRIPE_WEBHOOK_SECRET, then redeploy.",
+    "shortName": "Big Bites",
+    "_comment_todo": "REBRAND STAGED ON DEV — Food Station is becoming Big Bites. Go-live steps (in order): 1) buy bigbiteseasingwold.uk (named in the brand guidelines p9) and attach as a SECOND custom domain on this Pages project; 2) confirm /api/config + a test order on the new host; 3) re-register wallet domain (Apple/Google Pay); 4) verify the new domain in Resend and switch RESEND_FROM_EMAIL; 5) flip business.domain/email below; 6) 301 the old foodstationyork.uk zone to the new domain (keep 6-12 months); 7) rename the Google Business Profile (EDIT, never re-create). CHECK FIRST: brand guidelines list Tel 01347 820820 but this config has 01347 824522 — confirm with the owner which is right. legalName stays FOOD STATION 56 LTD unless the company itself renames at Companies House.",
     "legalName": "FOOD STATION 56 LTD",
     "companyNumber": "15387417",
     "address": {
@@ -18,36 +17,41 @@
     "email": "sales@foodstationyork.uk",
     "domain": "www.foodstationyork.uk"
   },
-
   "_comment_seo": "Search-engine extras used to build the landing page's JSON-LD Restaurant schema + social meta. cuisine + priceRange feed the structured data; addressRegion sharpens the location; sameAs links your social profiles to the business in Google (paste your Facebook / Instagram / TikTok URLs); description overrides the default meta/OG text. None of this changes the page visually — it's purely for search engines.",
   "seo": {
-    "cuisine": ["Pizza", "Kebab", "Burgers", "Parmo", "Wraps"],
+    "cuisine": [
+      "Pizza",
+      "Kebab",
+      "Burgers",
+      "Parmo",
+      "Wraps"
+    ],
     "priceRange": "££",
     "addressRegion": "North Yorkshire",
-    "description": "Food Station — pizza, parmos, kebabs, burgers and loaded wraps in Easingwold, near York. Order online for collection or delivery.",
+    "description": "Big Bites — big flavour, big portions. Pizza, parmos, kebabs, burgers and loaded wraps in Easingwold, near York. Fresh & loaded — order online for collection or delivery.",
     "sameAs": []
   },
-
   "_comment_theme": "Food Station palette (Brand Identity Guide vol.01). Tomato Red #D72C26 = primary (headlines, buttons). Mustard #F2B91D = accent. Cream #FBF5E9 = background (never pure white). Brand also uses Leaf Green #4FAE3F (secondary) and Charcoal #1A1A1A (text/outlines) — no theme slot, applied in the custom landing/CSS. Type: Poppins Bold (display) / Poppins Regular (body).",
   "theme": {
-    "primary":     "#D72C26",
-    "primaryDark": "#B5241F",
-    "primaryDeep": "#8E1A16",
-    "accent":      "#F2B91D",
-    "accentDeep":  "#CE9C0C",
-    "background":  "#FBF5E9",
-    "surface":     "#FFFDF6",
+    "primary": "#E32619",
+    "primaryDark": "#C11F13",
+    "primaryDeep": "#A81409",
+    "accent": "#F7C61A",
+    "accentDeep": "#D9A90A",
+    "background": "#FBF3DE",
+    "surface": "#FFFDF7",
     "fonts": {
-      "link":       "https://fonts.googleapis.com/css2?family=Lilita+One&family=Poppins:wght@400;500;600;700;800&display=swap",
-      "display":    "'Lilita One', system-ui, sans-serif",
-      "displayAlt": "'Lilita One', system-ui, sans-serif",
-      "body":       "'Poppins', system-ui, sans-serif",
-      "hand":       "'Lilita One', system-ui, sans-serif"
+      "link": "https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Montserrat:wght@400;500;600;700;800&display=swap",
+      "display": "'Luckiest Guy', system-ui, sans-serif",
+      "displayAlt": "'Luckiest Guy', system-ui, sans-serif",
+      "body": "'Montserrat', system-ui, sans-serif",
+      "hand": "'Luckiest Guy', system-ui, sans-serif"
     }
   },
-
   "fulfillment": {
-    "collection": { "enabled": true },
+    "collection": {
+      "enabled": true
+    },
     "delivery": {
       "enabled": true,
       "_comment_mode": "Radius/distance delivery. The customer postcode is geocoded (postcodes.io, free, no key) and the straight-line distance from the shop selects a band fee. Origin defaults to the shop's own postcode (business.address.postcode); set radius.origin {lat,lng} to override. Matches the old site's £1 + £1/mile rings (1-mile bands, £1-£5, max 5 miles).",
@@ -57,43 +61,112 @@
       "radius": {
         "maxMiles": 5,
         "bands": [
-          { "maxMiles": 1, "feePence": 100 },
-          { "maxMiles": 2, "feePence": 200 },
-          { "maxMiles": 3, "feePence": 300 },
-          { "maxMiles": 4, "feePence": 400 },
-          { "maxMiles": 5, "feePence": 500 }
+          {
+            "maxMiles": 1,
+            "feePence": 100
+          },
+          {
+            "maxMiles": 2,
+            "feePence": 200
+          },
+          {
+            "maxMiles": 3,
+            "feePence": 300
+          },
+          {
+            "maxMiles": 4,
+            "feePence": 400
+          },
+          {
+            "maxMiles": 5,
+            "feePence": 500
+          }
         ]
       }
     }
   },
-
   "_comment_serviceFee": "Per-order service charge in pence, shown to the customer at checkout and added to the total. SPLIT: serviceFeePlatformPence is taken as the Stripe Connect application_fee (Lumin Labs' cut); the rest stays with the venue. On card orders the split is automatic; on cash orders the venue collects the whole charge and the platform reconciles its share separately.",
   "serviceFeePence": 100,
   "_comment_serviceFeePlatform": "Of serviceFeePence, the portion taken as the platform application_fee (Lumin Labs). The remainder stays with the shop — here a £1.00 charge = 50p platform + 50p shop.",
   "serviceFeePlatformPence": 50,
-
   "_comment_stripe": "Stripe Connect: this site's PaymentIntents are created on the venue's connected account. connectedAccountId is the venue's acct_xxx string from Stripe Connect.",
   "stripe": {
     "connectedAccountId": "acct_1Tey3sJlWcdyhDMU"
   },
-
   "_comment_pos": "Till behaviour. externalCardMachine:true makes the staff till's Card button record the sale as paid by card immediately — Food Station takes the actual payment on its own third-party card machine, so there is no LumiPOS Stripe reader to drive. The website still takes online card payments via Stripe normally. requireOrderPin:false — staff take orders (walk-in/collection/delivery) without entering a per-order code; the manager/owner PIN on voids, refunds and cancellations is separate and still always required.",
-  "pos": { "externalCardMachine": true, "requireOrderPin": false, "ordersOnly": true },
-
+  "pos": {
+    "externalCardMachine": true,
+    "requireOrderPin": false,
+    "ordersOnly": true
+  },
   "hours": {
     "_comment": "24-hour format. Source: printed menu — Sun-Thu 4pm-10pm, Fri-Sat 4pm-11pm.",
-    "monday":    { "closed": false, "windows": [{ "open": "16:00", "close": "22:00" }] },
-    "tuesday":   { "closed": false, "windows": [{ "open": "16:00", "close": "22:00" }] },
-    "wednesday": { "closed": false, "windows": [{ "open": "16:00", "close": "22:00" }] },
-    "thursday":  { "closed": false, "windows": [{ "open": "16:00", "close": "22:00" }] },
-    "friday":    { "closed": false, "windows": [{ "open": "16:00", "close": "23:00" }] },
-    "saturday":  { "closed": false, "windows": [{ "open": "16:00", "close": "23:00" }] },
-    "sunday":    { "closed": false, "windows": [{ "open": "16:00", "close": "22:00" }] }
+    "monday": {
+      "closed": false,
+      "windows": [
+        {
+          "open": "16:00",
+          "close": "22:00"
+        }
+      ]
+    },
+    "tuesday": {
+      "closed": false,
+      "windows": [
+        {
+          "open": "16:00",
+          "close": "22:00"
+        }
+      ]
+    },
+    "wednesday": {
+      "closed": false,
+      "windows": [
+        {
+          "open": "16:00",
+          "close": "22:00"
+        }
+      ]
+    },
+    "thursday": {
+      "closed": false,
+      "windows": [
+        {
+          "open": "16:00",
+          "close": "22:00"
+        }
+      ]
+    },
+    "friday": {
+      "closed": false,
+      "windows": [
+        {
+          "open": "16:00",
+          "close": "23:00"
+        }
+      ]
+    },
+    "saturday": {
+      "closed": false,
+      "windows": [
+        {
+          "open": "16:00",
+          "close": "23:00"
+        }
+      ]
+    },
+    "sunday": {
+      "closed": false,
+      "windows": [
+        {
+          "open": "16:00",
+          "close": "22:00"
+        }
+      ]
+    }
   },
-
   "_comment_closures": "One-off emergency closures. Each \"YYYY-MM-DD\" (shop-local) takes online ordering OFFLINE for that whole day and shows a popup with the message. Self-expires once the date passes (a past date is ignored). Empty means no closure in effect; add an entry when a day needs to be taken offline.",
   "closures": {},
-
   "ordering": {
     "timezone": "Europe/London",
     "_comment_businessDayStartHour": "Trading-day rollover hour (0–23, shop local time). 4 = the day's orders / takings / Z-report run 4am-to-4am, so late-night orders taken after midnight still count toward the day the shop opened. 0 = plain midnight-to-midnight. Harmless for shops that close before midnight (nothing to reclassify).",
@@ -108,7 +181,6 @@
     "lastOrderBeforeCloseMinutes": 30,
     "itemNotes": true
   },
-
   "promo": {
     "_comment": "Food Station's printed offer is 'spend over £40, free garlic bread or drink' — a threshold reward the simple promo schema can't express. The generic online discount is DISABLED so we don't apply a discount the shop didn't ask for. TODO confirm desired promo.",
     "autoOnlineDiscount": {
@@ -117,7 +189,6 @@
       "percent": 10
     }
   },
-
   "payments": {
     "stripeEnabled": true,
     "cashOnCollectionEnabled": true,
@@ -125,11 +196,9 @@
     "_comment_cvcThreshold": "Order total (in pence) above which a customer paying with a saved card has to re-enter their CVV. Defends against account-takeover for higher-value orders. Set to 0 to never require CVC re-collection. £50 = 5000.",
     "savedCardCvcThresholdPence": 5000
   },
-
   "allergens": {
     "noticeAtCheckout": "For allergens please contact the restaurant before ordering."
   },
-
   "marketing": {
     "emailOptIn": true,
     "smsOptIn": true
