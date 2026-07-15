@@ -320,13 +320,63 @@
         "id": "chips",
         "name": "Chips",
         "price": 2.8,
-        "desc": "Chunky, hand-cut chips."
+        "desc": "Chunky, hand-cut chips.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-sm",
+                "label": "Small",
+                "price": 0
+              },
+              {
+                "id": "sz-md",
+                "label": "Medium",
+                "price": 0.6
+              },
+              {
+                "id": "sz-lg",
+                "label": "Large",
+                "price": 2.1
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "cheesy-chips",
         "name": "Cheesy Chips",
         "price": 3.9,
-        "desc": "Chips topped with melted cheese."
+        "desc": "Chips topped with melted cheese.",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-sm",
+                "label": "Small",
+                "price": 0
+              },
+              {
+                "id": "sz-md",
+                "label": "Medium",
+                "price": 1.0
+              },
+              {
+                "id": "sz-lg",
+                "label": "Large",
+                "price": 2.4
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "chicken-strips-chips",

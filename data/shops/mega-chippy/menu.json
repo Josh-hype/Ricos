@@ -279,12 +279,46 @@
       {
         "id": "chips",
         "name": "Chips",
-        "priceP": 280
+        "priceP": 280,
+        "modifiers": [
+          {
+            "id": "sz-sm",
+            "label": "Small",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-md",
+            "label": "Medium",
+            "priceDeltaP": 60
+          },
+          {
+            "id": "sz-lg",
+            "label": "Large",
+            "priceDeltaP": 210
+          }
+        ]
       },
       {
         "id": "cheesy-chips",
         "name": "Cheesy Chips",
-        "priceP": 390
+        "priceP": 390,
+        "modifiers": [
+          {
+            "id": "sz-sm",
+            "label": "Small",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-md",
+            "label": "Medium",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "sz-lg",
+            "label": "Large",
+            "priceDeltaP": 240
+          }
+        ]
       },
       {
         "id": "chicken-strips-chips",
