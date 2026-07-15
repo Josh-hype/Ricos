@@ -47,8 +47,7 @@
       "connectedAccountId": "acct_1Tey3sJlWcdyhDMU",
       "onlineProcessor": "stripe",
       "live": true,
-      "_subscription_note": "Operating + taking orders (so per-order fees still accrue to Lumin), but the weekly subscription has NOT started yet. Agreed rate is £19/wk (a fresh Bacs Direct Debit link is being sent via scripts/setup-billing.mjs food-station). When Food Station signs the mandate, set status:\"active\" and add a \"since\" date.",
-      "subscription": { "status": "pending", "perWeekPence": 1900, "via": "stripe" }
+      "subscription": { "status": "active", "perWeekPence": 1900, "via": "stripe", "since": "2026-07-15" }
     },
     {
       "slug": "grub-hub",
