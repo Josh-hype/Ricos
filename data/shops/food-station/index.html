@@ -38,12 +38,17 @@
   .dotrule i{width:14px;height:7px;background:var(--red);display:block;}
   /* star ticker strip */
   .ticker{background:var(--red);color:#fff;border-top:3px solid var(--char);border-bottom:3px solid var(--char);overflow:hidden;white-space:nowrap;}
-  .ticker .roll{display:inline-block;padding:9px 0 7px;font-family:'Luckiest Guy';font-size:1.05rem;letter-spacing:2px;animation:roll 28s linear infinite;}
+  .ticker .roll{display:flex;width:max-content;padding:9px 0 7px;font-family:'Luckiest Guy';font-size:1.05rem;letter-spacing:2px;animation:roll 80s linear infinite;}
+  .ticker .seq{display:inline-block;white-space:nowrap;}
   @keyframes roll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
   header.bar{display:flex;align-items:center;justify-content:space-between;padding:12px 22px;background:var(--char);border-bottom:4px solid var(--yellow);position:sticky;top:0;z-index:20;}
   header.bar img{height:62px;display:block;}
   header.bar .btn{padding:11px 20px;font-size:.95rem;box-shadow:3px 3px 0 rgba(247,198,26,.45);}
+  .brand{display:flex;align-items:center;gap:14px;}
+  .hdr-loc{font-family:'Luckiest Guy';font-size:1.2rem;letter-spacing:2.5px;color:var(--yellow);text-transform:uppercase;padding-top:8px;}
+  .hdr-loc::first-letter{color:var(--red);}
+  @media(max-width:560px){.hdr-loc{font-size:.95rem;letter-spacing:1.5px;}}
 
   .hero{color:var(--off);position:relative;overflow:hidden;padding:66px 0 58px;text-align:center;border-bottom:5px solid var(--yellow);}
   .hero .inner{position:relative;z-index:2;}
@@ -146,7 +151,7 @@
 <body>
 
   <header class="bar">
-    <img src="logo.png" alt="{{shopName}}" />
+    <div class="brand"><img src="logo.png" alt="{{shopName}}" /><span class="hdr-loc">★ {{shopCity}}</span></div>
     <a href="/order" class="btn">Order now</a>
   </header>
 
@@ -164,10 +169,7 @@
     </div>
   </section>
 
-  <div class="ticker" aria-hidden="true"><div class="roll">
-    SLICE IT ★ BIG BITES ★ FRESH &amp; LOADED ★ SLICE IT ★ BIG BITES ★ FRESH &amp; LOADED ★ SLICE IT ★ BIG BITES ★ FRESH &amp; LOADED ★&nbsp;
-    SLICE IT ★ BIG BITES ★ FRESH &amp; LOADED ★ SLICE IT ★ BIG BITES ★ FRESH &amp; LOADED ★ SLICE IT ★ BIG BITES ★ FRESH &amp; LOADED ★&nbsp;
-  </div></div>
+  <div class="ticker" aria-hidden="true"><div class="roll"><span class="seq">SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;</span><span class="seq">SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;</span></div></div>
 
   <section class="cravings"><div class="wrap">
     <div class="lbl">Five cravings · one kitchen</div>
