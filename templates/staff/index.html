@@ -5905,12 +5905,26 @@ function buildKitchenTicket(o) {
 // FULL paper at whatever font size it uses (no empty right margin). Tune SZ to taste.
 const SZ = { sm: 24, body: 30, pay: 36, food: 40, name: 52 };
 function colsFor(size) { return Math.max(8, Math.floor(1152 / (size || 24))); }
+// The Sunmi font draws ASCII (and £) at fontSize/2 — one "column" — but other
+// glyphs (¼, ½, …) come from a full-width fallback font: TWO columns. Counting
+// them as one made "¼lb …… £6.50" one column too long, so the last digit
+// wrapped onto its own line. Measure real columns; when trimming, under-fill —
+// a slightly short line beats a wrapped one.
+function chCols(ch) { return ((ch >= ' ' && ch <= '~') || ch === '£') ? 1 : 2; }
+function strCols(s) { let w = 0; for (const ch of String(s)) w += chCols(ch); return w; }
 function padRow(left, right, size) {
   const cols = colsFor(size);
   left = String(left == null ? '' : left);
   right = String(right == null ? '' : right);
-  if (left.length + right.length + 1 > cols) left = left.slice(0, Math.max(0, cols - right.length - 1));
-  const gap = Math.max(1, cols - left.length - right.length);
+  let lw = strCols(left);
+  const rw = strCols(right);
+  if (lw + rw + 1 > cols) { // trim the left side by drawn width, not char count
+    const max = Math.max(0, cols - rw - 1);
+    let out = ''; lw = 0;
+    for (const ch of left) { const w = chCols(ch); if (lw + w > max) break; out += ch; lw += w; }
+    left = out;
+  }
+  const gap = Math.max(1, cols - lw - rw);
   return left + ' '.repeat(gap) + right;
 }
 function rowOp(left, right, size, bold) { const s = size || SZ.body; return { t: 'text', s: padRow(left, right, s), size: s, bold: !!bold }; }
@@ -5969,8 +5983,12 @@ function buildReceiptDoc(o, ctx, kind) {
   // The food. Kitchen copy: BIG, uppercase and price-free so it reads at a glance,
   // with options/notes a step down but still large. Customer receipt: the usual
   // priced line. Either way the options (no salad, ¼lb, 11", …) print under the item.
+  let firstItem = true;
   for (const li of (t.lines || [])) {
     if (kitchen) {
+      // A blank line between item blocks — without it the next item's name sits
+      // right under the previous item's options and the ticket reads as one blur.
+      if (!firstItem) ops.push({ t: 'feed', n: 1 });
       ops.push({ t: 'text', s: (li.qty || 1) + 'x ' + String(li.name || '').toUpperCase(), size: SZ.food, bold: true });
       // Per-item price (shops asked to see item prices, not just the order
       // total). Print the line total on the SAME row as the first option — the
@@ -5997,6 +6015,7 @@ function buildReceiptDoc(o, ctx, kind) {
       for (const ex of lineExtras(li)) ops.push({ t: 'text', s: '   ' + ex, size: SZ.sm, bold: true });
       if (li.notes) ops.push({ t: 'text', s: '   >> ' + li.notes, size: SZ.sm, bold: true });
     }
+    firstItem = false;
   }
   ops.push(ruleOp());
   if (t.deliveryFeeP || t.serviceFeeP) ops.push(rowOp('Subtotal', money(t.subtotalP), SZ.body, true));
