@@ -77,9 +77,10 @@ export function listSlots(config) {
     const conf = config.hours[dayKey];
     if (!conf || conf.closed || !Array.isArray(conf.windows)) continue;
     // Skip a whole day that has a one-off closure — no slots should be offered
-    // for a day the shop has taken offline (matches activeClosure's date key).
+    // for a day the shop has taken offline (matches activeClosure's keys,
+    // including the indefinite "*" closure).
     const ymd = new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(day);
-    if (config.closures && config.closures[ymd]) continue;
+    if (config.closures && (config.closures[ymd] || config.closures['*'])) continue;
     for (const w of conf.windows) {
       const start = hhmmToMin(w.open);
       const end = hhmmToMin(w.close) - lastBuffer;
@@ -171,14 +172,17 @@ export function deliveryLateStart(config, when = new Date()) {
 /* One-off full-day closure. config.closures maps shop-local "YYYY-MM-DD" -> { title,
    message }. On a listed date the shop is fully closed for online ordering (enforced
    in /api/order) and the order page shows the message + disables checkout. Self-
-   expiring: a past date never matches, so it's a no-op afterwards. Returns
-   { title, message } for today, else null. */
+   expiring: a past date never matches, so it's a no-op afterwards. The special key
+   "*" closes the shop indefinitely ("until further notice") — it matches every
+   date until the entry is removed from config. A date entry wins over "*" so a
+   specific day can carry its own message. Returns { title, message } for the
+   given day, else null. */
 export function activeClosure(config, when = new Date()) {
   const closures = config?.closures;
   if (!closures || typeof closures !== 'object') return null;
   const tz = config.ordering?.timezone || 'Europe/London';
   const { ymd } = localParts(when, tz);
-  const rec = closures[ymd];
+  const rec = closures[ymd] || closures['*'];
   if (!rec || typeof rec !== 'object') return null;
   return {
     title: (rec.title && String(rec.title)) || 'We’re closed today',
