@@ -96,8 +96,8 @@
       }
     },
     {
-      "slug": "nazli",
-      "name": "Nazli",
+      "slug": "one-sip",
+      "name": "One Sip",
       "city": "TBC",
       "connectedAccountId": "",
       "onlineProcessor": "stripe",

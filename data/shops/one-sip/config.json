@@ -1,10 +1,10 @@
 {
-  "_comment": "NAZLI — till-only venue (owner's aunt; LumiPOS provided free). NO customer website, NO online ordering, NO Stripe: both fulfillment modes are disabled (order page + /api/order refuse), card is taken on her own machine (pos.externalCardMachine). The Pages project exists only to serve /staff to her Windows till at the *.pages.dev URL. Menu transcribed from her old Epos Now till 2026-07-16. TODO before receipts go out: confirm address, phone, legal name and opening hours with the owner.",
+  "_comment": "ONE SIP — till-only venue (owner's aunt; LumiPOS provided free). NO customer website, NO online ordering, NO Stripe: both fulfillment modes are disabled (order page + /api/order refuse), card is taken on her own machine (pos.externalCardMachine). The Pages project exists only to serve /staff to her Windows till at the *.pages.dev URL. Menu transcribed from her old Epos Now till (account name 'Nazli') 2026-07-16. TODO before receipts go out: confirm address, phone, legal name and opening hours with the owner.",
   "business": {
-    "tradingName": "Nazli",
+    "tradingName": "One Sip",
     "_comment_shortName": "Conversational short form used in page headers, aria labels and the staff PWA name (e.g. 'Pizza Bob's' instead of 'Pizza Bob's Burgers Ltd').",
-    "shortName": "Nazli",
-    "legalName": "NAZLI (TODO — confirm legal entity)",
+    "shortName": "One Sip",
+    "legalName": "ONE SIP (TODO — confirm legal entity)",
     "companyNumber": "",
     "address": {
       "line1": "TODO — confirm address",
