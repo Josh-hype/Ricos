@@ -57,6 +57,13 @@ export const onRequestPost = async ({ request, env }) => {
 
   // Fulfillment.
   const fulfillment = input.fulfillment === 'delivery' ? 'delivery' : 'collection';
+  // Collection can be switched off too (till-only venues take no online orders
+  // at all). delivery.enabled is enforced below where delivery is chosen; this
+  // is the missing half of the same config contract. Gated on an explicit
+  // false so existing shops (enabled:true or absent) are untouched.
+  if (fulfillment === 'collection' && config.fulfillment?.collection?.enabled === false) {
+    return errJson('Online ordering is not available.', 400);
+  }
   let address = null;
   let deliveryFeeP = null;
   if (fulfillment === 'delivery') {
