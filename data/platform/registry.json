@@ -1,6 +1,5 @@
 {
   "_comment": "LUMIN LABS PLATFORM REGISTRY — the owner back-office reads this (NOT served to shops). It is the source of truth for which venues exist, their Stripe Connect accounts, who processes their online card payments, and what each one pays Lumin Labs. Committed to git: it holds acct_… ids (already public-ish, also in each shop config) but NEVER secrets — the platform Stripe key lives in Cloudflare env. When you onboard a shop, add it here AND set its connectedAccountId once Stripe Connect is live.",
-
   "platform": {
     "name": "Lumin Labs",
     "legalName": "LUMIN LABS",
@@ -13,22 +12,32 @@
     "_comment_perOrderInPerson": "Default platform margin per IN-PERSON card payment through the LumiPOS till, in pence (10p) — mirrors cardFeeP in counter-totals.js (config.payments.cardPlatformFeeP, default 10p flat). A shop can override with perOrderFeeInPersonPence below.",
     "perOrderFeeInPersonPence": 10
   },
-
   "_comment_processors": "CARD PROCESSORS and their fees — the processor-AWARE seam. Lumin Labs' own revenue (subscription + per-order fee) does NOT depend on who processes the card; the card-PROCESSING COST does, and it's in flux (Stripe today, moving to Elavon/MWBS for cheaper online rates). Each shop names its online processor below; the dashboard prices the processing-cost line from THESE numbers, so swapping a processor re-prices the cost without touching Lumin Labs' revenue. Rates: percent of amount + fixed pence per transaction. Fill Elavon's real numbers once the MWBS ISO deal is signed.",
   "processors": {
     "stripe": {
       "label": "Stripe",
-      "online":   { "percent": 1.5, "fixedPence": 20 },
-      "inPerson": { "percent": 1.4, "fixedPence": 10 }
+      "online": {
+        "percent": 1.5,
+        "fixedPence": 20
+      },
+      "inPerson": {
+        "percent": 1.4,
+        "fixedPence": 10
+      }
     },
     "elavon": {
       "label": "Elavon (via MWBS ISO)",
       "_status": "PENDING — in talks. Replace these placeholders with the agreed MWBS/Elavon rates before switching any shop to it.",
-      "online":   { "percent": 0.0, "fixedPence": 0 },
-      "inPerson": { "percent": 0.0, "fixedPence": 0 }
+      "online": {
+        "percent": 0.0,
+        "fixedPence": 0
+      },
+      "inPerson": {
+        "percent": 0.0,
+        "fixedPence": 0
+      }
     }
   },
-
   "_comment_shops": "Every venue on the platform. connectedAccountId = the venue's Stripe Connect acct_… (empty until Connect is live — that shop then shows as 'pending' and is skipped in Stripe aggregation). onlineProcessor keys into processors{} above. live:false keeps a not-yet-launched shop out of the subscription run-rate.",
   "shops": [
     {
@@ -38,7 +47,12 @@
       "connectedAccountId": "acct_1TbeYBJXCn3TpBE3",
       "onlineProcessor": "stripe",
       "live": true,
-      "subscription": { "status": "active", "perWeekPence": 3500, "via": "stripe", "since": "2026-01-01" }
+      "subscription": {
+        "status": "active",
+        "perWeekPence": 3500,
+        "via": "stripe",
+        "since": "2026-01-01"
+      }
     },
     {
       "slug": "food-station",
@@ -47,7 +61,12 @@
       "connectedAccountId": "acct_1Tey3sJlWcdyhDMU",
       "onlineProcessor": "stripe",
       "live": true,
-      "subscription": { "status": "active", "perWeekPence": 1900, "via": "stripe", "since": "2026-07-15" }
+      "subscription": {
+        "status": "active",
+        "perWeekPence": 1900,
+        "via": "stripe",
+        "since": "2026-07-15"
+      }
     },
     {
       "slug": "mega-chippy",
@@ -57,7 +76,11 @@
       "onlineProcessor": "stripe",
       "live": true,
       "_subscription_note": "Agreed £19/wk with the FIRST WEEK FREE — Mega Chippy completes the Stripe subscription next week (w/c 20 Jul 2026). Until then only per-order fees accrue. When the sub shows active in Stripe Billing, set status:\"active\" and add the \"since\" date.",
-      "subscription": { "status": "pending", "perWeekPence": 1900, "via": "stripe" }
+      "subscription": {
+        "status": "pending",
+        "perWeekPence": 1900,
+        "via": "stripe"
+      }
     },
     {
       "slug": "grub-hub",
@@ -66,7 +89,26 @@
       "connectedAccountId": "",
       "onlineProcessor": "stripe",
       "live": false,
-      "subscription": { "status": "pending", "perWeekPence": 3500, "via": "stripe" }
+      "subscription": {
+        "status": "pending",
+        "perWeekPence": 3500,
+        "via": "stripe"
+      }
+    },
+    {
+      "slug": "nazli",
+      "name": "Nazli",
+      "city": "TBC",
+      "connectedAccountId": "",
+      "onlineProcessor": "stripe",
+      "live": true,
+      "_subscription_note": "Family venue (owner's aunt) — LumiPOS provided FREE, till-only: no website, no online ordering, no Stripe. £0/wk keeps the console honest; per-order fees don't apply (no online orders).",
+      "subscription": {
+        "status": "active",
+        "perWeekPence": 0,
+        "via": "none",
+        "since": "2026-07-16"
+      }
     }
   ]
 }

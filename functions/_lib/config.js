@@ -47,8 +47,13 @@ export function getPublicConfig() {
       },
     },
     hours: config.hours,
-    // Today's one-off closure (emergency "we're closed today"), or null.
-    closure: activeClosure(config),
+    // Today's one-off closure (emergency "we're closed today"), or null. A shop
+    // with BOTH fulfillment modes disabled is a till-only venue that never takes
+    // online orders — reuse the same client machinery (popup + banner + disabled
+    // checkout) permanently, with an "in store" message instead of "closed".
+    closure: activeClosure(config) || ((collection.enabled === false && delivery.enabled === false)
+      ? { title: 'Online ordering unavailable', message: 'We don’t take online orders — come and see us in store!' }
+      : null),
     ordering: config.ordering,
     // promo carries both the standing autoOnlineDiscount and the first-orders
     // welcome offer (firstOrders {enabled,percent,limit,label}); the order page

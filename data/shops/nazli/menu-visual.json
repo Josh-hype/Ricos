@@ -1,0 +1,675 @@
+[
+  {
+    "id": "specials",
+    "name": "Specials",
+    "icon": "🍲",
+    "items": [
+      {
+        "id": "daily-soup",
+        "name": "Daily Soup",
+        "price": 6.5,
+        "desc": "Ask what's in the pot today."
+      },
+      {
+        "id": "pogaca",
+        "name": "Poğaça",
+        "price": 1.5,
+        "desc": "Traditional Turkish pastry."
+      },
+      {
+        "id": "turkish-manti",
+        "name": "Turkish Manti",
+        "price": 10.5,
+        "desc": "Handmade Turkish dumplings."
+      }
+    ]
+  },
+  {
+    "id": "breakfast",
+    "name": "Breakfast",
+    "icon": "🍳",
+    "items": [
+      {
+        "id": "avo-egg",
+        "name": "Avo & Egg",
+        "price": 12.9
+      },
+      {
+        "id": "beans-toast",
+        "name": "Beans on Toast",
+        "price": 6.5
+      },
+      {
+        "id": "full-english",
+        "name": "Full English Breakfast",
+        "price": 12.9
+      },
+      {
+        "id": "kids-breakfast",
+        "name": "Kids Breakfast",
+        "price": 7.0
+      },
+      {
+        "id": "omelette",
+        "name": "Omelette",
+        "price": 8.0
+      },
+      {
+        "id": "scrambled-eggs",
+        "name": "Scrambled Eggs",
+        "price": 7.5
+      },
+      {
+        "id": "skinny-breakfast",
+        "name": "Skinny Breakfast",
+        "price": 10.9
+      },
+      {
+        "id": "turkish-breakfast",
+        "name": "Turkish Breakfast",
+        "price": 12.9
+      },
+      {
+        "id": "vegetarian-plate",
+        "name": "Vegetarian Plate",
+        "price": 12.9
+      }
+    ]
+  },
+  {
+    "id": "coffees",
+    "name": "Coffees",
+    "icon": "☕",
+    "items": [
+      {
+        "id": "americano",
+        "name": "Americano",
+        "price": 3.3
+      },
+      {
+        "id": "white-americano",
+        "name": "White Americano",
+        "price": 3.5
+      },
+      {
+        "id": "iced-americano",
+        "name": "Iced Americano",
+        "price": 4.0
+      },
+      {
+        "id": "cappuccino",
+        "name": "Cappuccino",
+        "price": 3.8
+      },
+      {
+        "id": "latte",
+        "name": "Latte",
+        "price": 3.8
+      },
+      {
+        "id": "iced-latte",
+        "name": "Iced Latte",
+        "price": 4.0
+      },
+      {
+        "id": "flat-white",
+        "name": "Flat White",
+        "price": 3.5
+      },
+      {
+        "id": "mocha",
+        "name": "Mocha",
+        "price": 4.5
+      },
+      {
+        "id": "espresso-single",
+        "name": "Espresso — Single Shot",
+        "price": 3.0
+      },
+      {
+        "id": "espresso-double",
+        "name": "Espresso — Double Shot",
+        "price": 3.0
+      },
+      {
+        "id": "espresso-macchiato",
+        "name": "Espresso Macchiato",
+        "price": 3.2
+      },
+      {
+        "id": "turkish-coffee",
+        "name": "Turkish Coffee",
+        "price": 3.9
+      },
+      {
+        "id": "decaf-coffee",
+        "name": "Decaf Coffee",
+        "price": 4.0
+      },
+      {
+        "id": "chai-latte",
+        "name": "Chai Latte",
+        "price": 5.0
+      },
+      {
+        "id": "matcha-latte",
+        "name": "Matcha Latte",
+        "price": 4.0
+      },
+      {
+        "id": "vanilla-matcha",
+        "name": "Vanilla Matcha",
+        "price": 5.0
+      },
+      {
+        "id": "hot-chocolate",
+        "name": "Hot Chocolate",
+        "price": 3.5
+      },
+      {
+        "id": "hot-chocolate-deluxe",
+        "name": "Hot Chocolate with Marshmallows & Cream",
+        "price": 4.0
+      },
+      {
+        "id": "syrup-caramel",
+        "name": "Caramel Syrup",
+        "price": 0.5,
+        "desc": "Add to any drink."
+      },
+      {
+        "id": "syrup-hazelnut",
+        "name": "Hazelnut Syrup",
+        "price": 0.5,
+        "desc": "Add to any drink."
+      },
+      {
+        "id": "syrup-vanilla",
+        "name": "Vanilla Syrup",
+        "price": 0.5,
+        "desc": "Add to any drink."
+      }
+    ]
+  },
+  {
+    "id": "teas",
+    "name": "Teas",
+    "icon": "🫖",
+    "items": [
+      {
+        "id": "english-breakfast-tea",
+        "name": "English Breakfast Tea",
+        "price": 3.0
+      },
+      {
+        "id": "pot-of-tea",
+        "name": "Pot of Tea",
+        "price": 3.9
+      },
+      {
+        "id": "earl-grey",
+        "name": "Earl Grey Tea",
+        "price": 3.9
+      },
+      {
+        "id": "green-tea",
+        "name": "Green Tea",
+        "price": 3.9
+      },
+      {
+        "id": "peppermint-tea",
+        "name": "Peppermint Tea",
+        "price": 3.9
+      },
+      {
+        "id": "herbal-tea",
+        "name": "Herbal Tea",
+        "price": 3.9
+      },
+      {
+        "id": "decaf-tea",
+        "name": "Decaf Tea",
+        "price": 3.9
+      },
+      {
+        "id": "turkish-apple-tea",
+        "name": "Turkish Apple Tea",
+        "price": 3.9
+      }
+    ]
+  },
+  {
+    "id": "cold-sandwiches",
+    "name": "Cold Sandwiches",
+    "icon": "🥪",
+    "items": [
+      {
+        "id": "chicken-mayo",
+        "name": "Chicken Mayo",
+        "price": 6.5
+      },
+      {
+        "id": "chicken-tikka",
+        "name": "Chicken Tikka",
+        "price": 6.5
+      },
+      {
+        "id": "coronation-chicken",
+        "name": "Coronation Chicken",
+        "price": 6.5
+      },
+      {
+        "id": "egg-mayo",
+        "name": "Egg Mayo",
+        "price": 6.5
+      },
+      {
+        "id": "tuna-mayo",
+        "name": "Tuna Mayo",
+        "price": 6.5
+      }
+    ]
+  },
+  {
+    "id": "hot-sandwiches",
+    "name": "Hot Sandwiches",
+    "icon": "🥓",
+    "items": [
+      {
+        "id": "bacon-sandwich",
+        "name": "Bacon Sandwich",
+        "price": 6.5
+      },
+      {
+        "id": "bacon-egg-sandwich",
+        "name": "Bacon & Egg Sandwich",
+        "price": 7.0
+      },
+      {
+        "id": "bacon-sausage-sandwich",
+        "name": "Bacon & Sausage Sandwich",
+        "price": 7.0
+      },
+      {
+        "id": "blt",
+        "name": "BLT Sandwich",
+        "price": 7.0
+      },
+      {
+        "id": "sausage-sandwich",
+        "name": "Sausage Sandwich",
+        "price": 6.0
+      }
+    ]
+  },
+  {
+    "id": "paninis",
+    "name": "Paninis",
+    "icon": "🥖",
+    "items": [
+      {
+        "id": "panini-veg",
+        "name": "Aubergine, Courgette, Peppers & Cheese Panini",
+        "price": 8.5
+      },
+      {
+        "id": "panini-chicken-pesto",
+        "name": "Chicken, Mozzarella & Pesto Panini",
+        "price": 7.0
+      },
+      {
+        "id": "panini-ham-cheese",
+        "name": "Ham & Cheese Panini",
+        "price": 8.0
+      },
+      {
+        "id": "panini-quorn",
+        "name": "Quorn Beef & Cheese Panini",
+        "price": 8.5
+      },
+      {
+        "id": "panini-sucuk",
+        "name": "Sucuk & Cheese Panini",
+        "price": 8.5
+      },
+      {
+        "id": "panini-caprese",
+        "name": "Tomato, Basil & Mozzarella Panini",
+        "price": 7.0
+      },
+      {
+        "id": "panini-tuna-melt",
+        "name": "Tuna Melt Panini",
+        "price": 7.0
+      },
+      {
+        "id": "simit",
+        "name": "Simit",
+        "price": 4.5,
+        "desc": "Traditional Turkish sesame bread ring."
+      }
+    ]
+  },
+  {
+    "id": "jacket-potatoes",
+    "name": "Jacket Potatoes",
+    "icon": "🥔",
+    "items": [
+      {
+        "id": "jacket-cheese-beans",
+        "name": "Jacket Potato — Cheese & Beans",
+        "price": 6.5
+      },
+      {
+        "id": "jacket-cheese-butter",
+        "name": "Jacket Potato — Cheese & Butter",
+        "price": 5.5
+      },
+      {
+        "id": "jacket-tuna-cheese",
+        "name": "Jacket Potato — Tuna & Cheese",
+        "price": 6.5
+      }
+    ]
+  },
+  {
+    "id": "salads",
+    "name": "Salads",
+    "icon": "🥗",
+    "items": [
+      {
+        "id": "green-salad",
+        "name": "Green Salad",
+        "price": 6.5
+      },
+      {
+        "id": "salad-box",
+        "name": "Salad Box",
+        "price": 6.5
+      }
+    ]
+  },
+  {
+    "id": "milkshakes",
+    "name": "Milkshakes",
+    "icon": "🥤",
+    "items": [
+      {
+        "id": "milkshake-banana",
+        "name": "Banana Milkshake",
+        "price": 5.0
+      },
+      {
+        "id": "milkshake-strawberry",
+        "name": "Strawberry Milkshake",
+        "price": 5.0
+      },
+      {
+        "id": "milkshake-vanilla",
+        "name": "Vanilla Milkshake",
+        "price": 5.0
+      }
+    ]
+  },
+  {
+    "id": "desserts",
+    "name": "Desserts",
+    "icon": "🍰",
+    "items": [
+      {
+        "id": "baklava-large",
+        "name": "Baklava — Large Slice",
+        "price": 5.0
+      },
+      {
+        "id": "baklava-small",
+        "name": "Baklava — Small Slice",
+        "price": 3.8
+      },
+      {
+        "id": "caramel-cake",
+        "name": "Caramel Cake",
+        "price": 5.5
+      },
+      {
+        "id": "carrot-cake",
+        "name": "Carrot Cake",
+        "price": 5.0
+      },
+      {
+        "id": "cheesecake",
+        "name": "Cheesecake",
+        "price": 5.0
+      },
+      {
+        "id": "chocolate-cake",
+        "name": "Chocolate Cake",
+        "price": 5.5
+      },
+      {
+        "id": "milk-vanilla-chocolate",
+        "name": "Milk, Vanilla & Chocolate Cake",
+        "price": 5.5
+      },
+      {
+        "id": "pistachio-cream-cake",
+        "name": "Pistachio Cream Cake",
+        "price": 5.5
+      },
+      {
+        "id": "tres-leches",
+        "name": "Tres Leches",
+        "price": 5.5
+      },
+      {
+        "id": "vanilla-cake",
+        "name": "Vanilla Cake",
+        "price": 5.5
+      }
+    ]
+  },
+  {
+    "id": "cookies",
+    "name": "Cookies",
+    "icon": "🍪",
+    "items": [
+      {
+        "id": "cookie-almond",
+        "name": "Almond Cookies",
+        "price": 2.8
+      },
+      {
+        "id": "cookie-cinnamon",
+        "name": "Cinnamon Cookies (2 for)",
+        "price": 2.8
+      },
+      {
+        "id": "cookie-italian",
+        "name": "Italian Cookies (2 for)",
+        "price": 3.0
+      },
+      {
+        "id": "cookie-nutella",
+        "name": "Nutella Cookies",
+        "price": 2.4
+      },
+      {
+        "id": "cookie-pistachio",
+        "name": "Pistachio Cookies",
+        "price": 2.5
+      },
+      {
+        "id": "cookie-sesame",
+        "name": "Sesame Savoury Cookie",
+        "price": 1.5
+      },
+      {
+        "id": "cookie-triple-choc",
+        "name": "Triple Chocolate Cookies",
+        "price": 2.5
+      },
+      {
+        "id": "turkish-shortbread",
+        "name": "Turkish Shortbread",
+        "price": 2.4
+      },
+      {
+        "id": "cookie-walnut",
+        "name": "Walnut Cookie",
+        "price": 1.5
+      }
+    ]
+  },
+  {
+    "id": "snacks",
+    "name": "Snacks",
+    "icon": "🍿",
+    "items": [
+      {
+        "id": "quavers",
+        "name": "Quavers",
+        "price": 1.5
+      },
+      {
+        "id": "walkers",
+        "name": "Walkers Crisps",
+        "price": 1.5,
+        "desc": "All flavours."
+      },
+      {
+        "id": "wotsits",
+        "name": "Wotsits",
+        "price": 1.5
+      }
+    ]
+  },
+  {
+    "id": "soft-drinks",
+    "name": "Soft Drinks",
+    "icon": "🧃",
+    "items": [
+      {
+        "id": "coca-cola",
+        "name": "Coca-Cola",
+        "price": 2.0
+      },
+      {
+        "id": "coke-diet-zero",
+        "name": "Diet Coke / Coke Zero",
+        "price": 2.0
+      },
+      {
+        "id": "7up",
+        "name": "7UP",
+        "price": 2.0
+      },
+      {
+        "id": "dr-pepper",
+        "name": "Dr Pepper",
+        "price": 2.0
+      },
+      {
+        "id": "fanta-lemon",
+        "name": "Fanta Lemon",
+        "price": 2.0
+      },
+      {
+        "id": "rio",
+        "name": "Rio",
+        "price": 2.0
+      },
+      {
+        "id": "fruit-shot",
+        "name": "Fruit Shot",
+        "price": 1.0
+      },
+      {
+        "id": "juice-burst",
+        "name": "Juice Burst — Apple & Orange",
+        "price": 2.3
+      },
+      {
+        "id": "lipton-original",
+        "name": "Lipton Ice Tea — Original",
+        "price": 2.3
+      },
+      {
+        "id": "lipton-peach",
+        "name": "Lipton Ice Tea — Peach",
+        "price": 2.3
+      },
+      {
+        "id": "lucozade",
+        "name": "Lucozade",
+        "price": 2.4
+      },
+      {
+        "id": "red-bull",
+        "name": "Red Bull",
+        "price": 2.4
+      },
+      {
+        "id": "still-water",
+        "name": "Still Water",
+        "price": 1.5
+      }
+    ]
+  },
+  {
+    "id": "extras",
+    "name": "Extras",
+    "icon": "➕",
+    "items": [
+      {
+        "id": "extra-marshmallows",
+        "name": "Marshmallows",
+        "price": 0.5
+      },
+      {
+        "id": "extra-special-milk",
+        "name": "Special Milk",
+        "price": 0.5
+      },
+      {
+        "id": "extra-whipped-cream",
+        "name": "Whipped Cream",
+        "price": 0.5
+      },
+      {
+        "id": "any-extra-100",
+        "name": "Any Extra — £1.00",
+        "price": 1.0
+      },
+      {
+        "id": "any-extra-120",
+        "name": "Any Extra — £1.20",
+        "price": 1.2
+      },
+      {
+        "id": "any-extra-150",
+        "name": "Any Extra — £1.50",
+        "price": 1.5
+      },
+      {
+        "id": "any-extra-200",
+        "name": "Any Extra — £2.00",
+        "price": 2.0
+      },
+      {
+        "id": "any-extra-250",
+        "name": "Any Extra — £2.50",
+        "price": 2.5
+      },
+      {
+        "id": "any-extra-350",
+        "name": "Any Extra — £3.50",
+        "price": 3.5
+      },
+      {
+        "id": "any-extra-400",
+        "name": "Any Extra — £4.00",
+        "price": 4.0
+      }
+    ]
+  }
+]
