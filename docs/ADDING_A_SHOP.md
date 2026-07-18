@@ -120,10 +120,13 @@ others. In the Cloudflare dashboard:
 - **Environment variables (Production + Preview)**:
   - `SHOP_SLUG` = `<your-slug>`
   - `NODE_VERSION` = `20` (or whatever matches local dev)
-  - `NPM_FLAGS` = `--omit=dev` — skips installing the dev-only dependency
-    (wrangler), which Cloudflare doesn't need to build the site. The build
-    itself is pure Node built-ins, so this is safe and makes each build much
-    faster. **Set it on Production AND Preview.**
+  - `SKIP_DEPENDENCY_INSTALL` = `1` — skips `npm install` entirely. The build
+    is pure Node built-ins, so Cloudflare needs nothing from npm (not even
+    wrangler — Functions upload uses Cloudflare's own toolchain) and builds
+    get much faster. **Set it on Production AND Preview.**
+    (New projects run the v2 build system, which silently ignores the old
+    `NPM_FLAGS` = `--omit=dev` — that variable only still works on the v1-era
+    projects: ricos, food-station, mega-chippy.)
 
 ### b2) Build watch paths — only rebuild the shop that changed
 
