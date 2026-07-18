@@ -54,7 +54,8 @@ Pick a slug — lowercase, dashes only, no leading underscore (e.g. `bobs-burger
 - [ ] **Environment variables (Production + Preview)**:
   - [ ] `SHOP_SLUG` = `<slug>`
   - [ ] `NODE_VERSION` = `20`
-  - [ ] `NPM_FLAGS` = `--omit=dev` (skips the wrangler install → faster builds)
+  - [ ] `SKIP_DEPENDENCY_INSTALL` = `1` (skips npm install entirely → faster
+        builds; the v2 build system ignores the old `NPM_FLAGS` var)
 - [ ] **Build watch paths** (Settings → Builds & deployments): Include `*`;
       Exclude every OTHER shop's folder — e.g. `data/shops/<other-slug>/*` per
       existing shop. So a one-shop change only rebuilds that shop.

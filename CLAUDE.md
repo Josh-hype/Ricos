@@ -151,9 +151,13 @@ Each project (`ricos`, the Food Station project, and any future shop):
 - **Environment variables — set for BOTH Production and Preview:**
   - `SHOP_SLUG` = the shop's slug (`ricos`, `food-station`, …)
   - `NODE_VERSION` = `20`
-  - `NPM_FLAGS` = `--omit=dev` — skips installing wrangler (dev-only; Cloudflare
-    doesn't need it to build). The build is pure Node built-ins, so this is safe
-    and makes builds much faster.
+  - Skip the dependency install (the build is pure Node built-ins — Cloudflare
+    needs nothing from npm, not even wrangler). Which variable depends on the
+    project's build system: **new projects (v2 build system — the log says
+    "Using v2 root directory strategy") use `SKIP_DEPENDENCY_INSTALL` = `1`**;
+    the older v1 projects (ricos, food-station, mega-chippy) keep
+    `NPM_FLAGS` = `--omit=dev` (v2 silently ignores NPM_FLAGS — discovered on
+    the one-sip project, 2026-07-18).
 - **Build watch paths** (Settings → Builds & deployments): Include `*`, Exclude
   every OTHER shop's folder (`data/shops/<other-slug>/*`, one per shop). Without
   this, a one-shop change rebuilds **every** project. Each project excludes every
