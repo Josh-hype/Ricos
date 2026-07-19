@@ -3349,11 +3349,6 @@ function startCheckout() {
     alert('Just a moment — still loading the menu. Please try again in a second.');
     return;
   }
-  if (state.mode === 'deliver' && !state.postcode) {
-    alert('Please enter your postcode at the top of the page first.');
-    document.getElementById('postcode').focus();
-    return;
-  }
   // Delivery minimum backstop (the checkout button is also disabled while
   // under the minimum; this covers the sign-in/guest resume path).
   const dCfg = window.SHOP_CONFIG?.fulfillment?.delivery || {};
@@ -3487,18 +3482,18 @@ function renderCheckout() {
     body.innerHTML = `
       ${checkoutProgressHTML('address')}
       <h4 style="font-family:var(--display);font-size:1.1rem;margin:0 0 1rem">${state.mode === 'deliver' ? 'Delivery address' : 'Your address'}</h4>
-      ${state.mode === 'deliver' ? `<div class="notice ok">Delivering to <strong>${state.postcode}</strong></div>` : `
+      ${state.mode === 'deliver' && state.postcode ? `<div class="notice ok">Delivering to <strong>${state.postcode}</strong></div>` : ''}
       <div class="field">
         <label for="coPostcode">Postcode</label>
         <div style="display:flex;gap:8px">
-          <input id="coPostcode" type="text" value="${escapeHTML(checkoutData.postcode || '')}" autocomplete="postal-code" placeholder="e.g. YO24 3AQ" style="flex:1;min-width:0" />
+          <input id="coPostcode" type="text" value="${escapeHTML(state.mode === 'deliver' ? (state.postcode || '') : (checkoutData.postcode || ''))}" autocomplete="postal-code" placeholder="e.g. YO24 3AQ" style="flex:1;min-width:0" />
           ${(window.SHOP_CONFIG && window.SHOP_CONFIG.addressLookup && window.SHOP_CONFIG.addressLookup.enabled) ? '<button type="button" class="btn-form secondary" id="coPcFind" style="flex:0 0 auto;width:auto;padding:0 26px">Find</button>' : ''}
         </div>
-      </div>`}
+      </div>
       ${(window.SHOP_CONFIG && window.SHOP_CONFIG.addressLookup && window.SHOP_CONFIG.addressLookup.enabled) ? `
-      <div class="field" id="coFinderField"${state.mode === 'deliver' ? '' : ' hidden'}>
+      <div class="field" id="coFinderField"${state.mode === 'deliver' && state.postcode ? '' : ' hidden'}>
         <label for="coAddrFinder">Find your address</label>
-        <select id="coAddrFinder"><option value="">${state.mode === 'deliver' ? 'Looking up ' + escapeHTML(state.postcode) + '…' : ''}</option></select>
+        <select id="coAddrFinder"><option value="">${state.mode === 'deliver' && state.postcode ? 'Looking up ' + escapeHTML(state.postcode) + '…' : ''}</option></select>
       </div>` : ''}
       <div class="field">
         <label for="coLine1">Address line 1</label>
@@ -3508,19 +3503,10 @@ function renderCheckout() {
         <label for="coLine2">Address line 2 <span style="font-weight:400;color:var(--grey)">(optional)</span></label>
         <input id="coLine2" type="text" value="${escapeHTML(checkoutData.line2 || '')}" autocomplete="address-line2" placeholder="Flat / building / etc." />
       </div>
-      ${state.mode === 'deliver' ? `<div class="field-row">
-        <div class="field">
-          <label for="coCity">City</label>
-          <input id="coCity" type="text" value="${escapeHTML(checkoutData.city || '{{shopCity}}')}" autocomplete="address-level2" />
-        </div>
-        <div class="field">
-          <label for="coPostcode">Postcode</label>
-          <input id="coPostcode" type="text" value="${escapeHTML(state.postcode)}" autocomplete="postal-code" readonly style="background:var(--cream)" />
-        </div>
-      </div>` : `<div class="field">
+      <div class="field">
         <label for="coCity">City</label>
         <input id="coCity" type="text" value="${escapeHTML(checkoutData.city || '{{shopCity}}')}" autocomplete="address-level2" />
-      </div>`}
+      </div>
       <div class="field">
         <label for="coNotes">${state.mode === 'deliver' ? 'Delivery notes' : 'Notes'} <span style="font-weight:400;color:var(--grey)">(optional)</span></label>
         <textarea id="coNotes" rows="2" placeholder="${state.mode === 'deliver' ? 'Buzzer code, where to leave it, etc.' : 'Anything we should know?'}">${escapeHTML(checkoutData.notes || '')}</textarea>
@@ -3569,29 +3555,49 @@ function renderCheckout() {
           if (l2) l2.value = a.line2 || '';
           if (ci && a.city) ci.value = a.city;
         });
-        if (state.mode === 'deliver') {
-          runLookup(state.postcode);
-        } else {
-          const pcInput = document.getElementById('coPostcode');
-          const tryFind = () => {
-            const compact = (pcInput.value || '').trim().toUpperCase().replace(/\s+/g, '');
-            if (!/^[A-Z]{1,2}[0-9][A-Z0-9]?[0-9][A-Z]{2}$/.test(compact)) { alert('Please enter a valid postcode first.'); return; }
-            runLookup(compact.replace(/^(.*)([0-9][A-Z]{2})$/, '$1 $2'));
-          };
-          const findBtn = document.getElementById('coPcFind');
-          if (findBtn) findBtn.addEventListener('click', tryFind);
-          if (pcInput) pcInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); tryFind(); } });
-        }
+        const pcInput = document.getElementById('coPostcode');
+        const tryFind = () => {
+          const compact = (pcInput.value || '').trim().toUpperCase().replace(/\s+/g, '');
+          if (!/^[A-Z]{1,2}[0-9][A-Z0-9]?[0-9][A-Z]{2}$/.test(compact)) { alert('Please enter a valid postcode first.'); return; }
+          runLookup(compact.replace(/^(.*)([0-9][A-Z]{2})$/, '$1 $2'));
+        };
+        const findBtn = document.getElementById('coPcFind');
+        if (findBtn) findBtn.addEventListener('click', tryFind);
+        if (pcInput) pcInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); tryFind(); } });
+        if (state.mode === 'deliver' && state.postcode) runLookup(state.postcode);
       }
     }
 
-    document.getElementById('coNext').addEventListener('click', () => {
+    document.getElementById('coNext').addEventListener('click', async () => {
+      const nextBtn = document.getElementById('coNext');
       const line1 = document.getElementById('coLine1').value.trim();
       if (!line1) { alert('Please enter your address.'); return; }
-      if (state.mode !== 'deliver') {
-        let pc = document.getElementById('coPostcode').value.trim().toUpperCase().replace(/\s+/g, '');
-        if (!/^[A-Z]{1,2}[0-9][A-Z0-9]?[0-9][A-Z]{2}$/.test(pc)) { alert('Please enter a valid postcode.'); return; }
-        checkoutData.postcode = pc.replace(/^(.*)([0-9][A-Z]{2})$/, '$1 $2'); // canonical "YO24 3AQ" spacing
+      const compact = (document.getElementById('coPostcode').value || '').trim().toUpperCase().replace(/\s+/g, '');
+      if (!/^[A-Z]{1,2}[0-9][A-Z0-9]?[0-9][A-Z]{2}$/.test(compact)) { alert('Please enter a valid postcode.'); return; }
+      const pretty = compact.replace(/^(.*)([0-9][A-Z]{2})$/, '$1 $2'); // canonical "YO24 3AQ" spacing
+      if (state.mode === 'deliver') {
+        // Deliverability + fee — the same checks the top-bar postcode form runs,
+        // so entering (or changing) the postcode here is fully equivalent.
+        if ((state.postcode || '').replace(/\s+/g, '') !== compact) {
+          const d = window.SHOP_CONFIG?.fulfillment?.delivery;
+          nextBtn.disabled = true; const prevLabel = nextBtn.textContent; nextBtn.textContent = 'Checking postcode…';
+          let result;
+          if (needsServerQuote(d)) {
+            try {
+              const res = await fetch('/api/delivery-quote?postcode=' + encodeURIComponent(pretty));
+              result = await res.json();
+            } catch { result = { ok: false, reason: "Couldn't check that just now — please try again, or call the shop." }; }
+            if (result.ok) { state.postcode = result.postcode; state.deliveryFeeP = Number.isFinite(result.feePence) ? result.feePence : null; }
+          } else {
+            result = validatePostcode(pretty, 'deliver');
+            if (result.ok) { state.postcode = result.formatted; state.deliveryFeeP = null; }
+          }
+          nextBtn.disabled = false; nextBtn.textContent = prevLabel;
+          if (!result.ok) { alert(result.reason + (result.suggestCollection ? ' You can still switch to collection.' : '')); return; }
+          saveState(); refreshPCMessage(); renderCart(); // totals pick up the new delivery fee
+        }
+      } else {
+        checkoutData.postcode = pretty;
       }
       checkoutData.line1 = line1;
       checkoutData.line2 = document.getElementById('coLine2').value.trim();
