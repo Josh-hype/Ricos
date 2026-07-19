@@ -3487,11 +3487,18 @@ function renderCheckout() {
     body.innerHTML = `
       ${checkoutProgressHTML('address')}
       <h4 style="font-family:var(--display);font-size:1.1rem;margin:0 0 1rem">${state.mode === 'deliver' ? 'Delivery address' : 'Your address'}</h4>
-      ${state.mode === 'deliver' ? `<div class="notice ok">Delivering to <strong>${state.postcode}</strong></div>` : ''}
-      ${(state.mode === 'deliver' && window.SHOP_CONFIG && window.SHOP_CONFIG.addressLookup && window.SHOP_CONFIG.addressLookup.enabled) ? `
-      <div class="field" id="coFinderField">
+      ${state.mode === 'deliver' ? `<div class="notice ok">Delivering to <strong>${state.postcode}</strong></div>` : `
+      <div class="field">
+        <label for="coPostcode">Postcode</label>
+        <div style="display:flex;gap:8px">
+          <input id="coPostcode" type="text" value="${escapeHTML(checkoutData.postcode || '')}" autocomplete="postal-code" placeholder="e.g. YO24 3AQ" style="flex:1" />
+          ${(window.SHOP_CONFIG && window.SHOP_CONFIG.addressLookup && window.SHOP_CONFIG.addressLookup.enabled) ? '<button type="button" class="btn-form secondary" id="coPcFind" style="flex:0 0 auto;padding:0 20px">Find</button>' : ''}
+        </div>
+      </div>`}
+      ${(window.SHOP_CONFIG && window.SHOP_CONFIG.addressLookup && window.SHOP_CONFIG.addressLookup.enabled) ? `
+      <div class="field" id="coFinderField"${state.mode === 'deliver' ? '' : ' hidden'}>
         <label for="coAddrFinder">Find your address</label>
-        <select id="coAddrFinder"><option value="">Looking up ${escapeHTML(state.postcode)}…</option></select>
+        <select id="coAddrFinder"><option value="">${state.mode === 'deliver' ? 'Looking up ' + escapeHTML(state.postcode) + '…' : ''}</option></select>
       </div>` : ''}
       <div class="field">
         <label for="coLine1">Address line 1</label>
@@ -3501,16 +3508,19 @@ function renderCheckout() {
         <label for="coLine2">Address line 2 <span style="font-weight:400;color:var(--grey)">(optional)</span></label>
         <input id="coLine2" type="text" value="${escapeHTML(checkoutData.line2 || '')}" autocomplete="address-line2" placeholder="Flat / building / etc." />
       </div>
-      <div class="field-row">
+      ${state.mode === 'deliver' ? `<div class="field-row">
         <div class="field">
           <label for="coCity">City</label>
           <input id="coCity" type="text" value="${escapeHTML(checkoutData.city || '{{shopCity}}')}" autocomplete="address-level2" />
         </div>
         <div class="field">
           <label for="coPostcode">Postcode</label>
-          <input id="coPostcode" type="text" value="${escapeHTML(state.mode === 'deliver' ? state.postcode : (checkoutData.postcode || ''))}" autocomplete="postal-code" ${state.mode === 'deliver' ? 'readonly style="background:var(--cream)"' : 'placeholder="e.g. YO24 3AQ"'} />
+          <input id="coPostcode" type="text" value="${escapeHTML(state.postcode)}" autocomplete="postal-code" readonly style="background:var(--cream)" />
         </div>
-      </div>
+      </div>` : `<div class="field">
+        <label for="coCity">City</label>
+        <input id="coCity" type="text" value="${escapeHTML(checkoutData.city || '{{shopCity}}')}" autocomplete="address-level2" />
+      </div>`}
       <div class="field">
         <label for="coNotes">${state.mode === 'deliver' ? 'Delivery notes' : 'Notes'} <span style="font-weight:400;color:var(--grey)">(optional)</span></label>
         <textarea id="coNotes" rows="2" placeholder="Buzzer code, where to leave it, etc.">${escapeHTML(checkoutData.notes || '')}</textarea>
@@ -3523,26 +3533,32 @@ function renderCheckout() {
 
     document.getElementById('coBack').addEventListener('click', () => { checkoutStep = 'contact'; renderCheckout(); });
 
-    // Address finder — auto-looks up the already-validated postcode and lets the
-    // customer pick. Purely additive: any miss/error just leaves the manual
-    // fields. Delivery only — collection (collectAddress shops) types a
-    // postcode manually right here, so there's nothing to look up yet.
-    if (state.mode === 'deliver' && window.SHOP_CONFIG && window.SHOP_CONFIG.addressLookup && window.SHOP_CONFIG.addressLookup.enabled) {
+    // Address finder — the customer picks their address from a postcode lookup.
+    // Purely additive: any miss/error just leaves the manual fields. Delivery
+    // auto-runs with the service-bar postcode; collection (collectAddress
+    // shops) types a postcode right here, so it runs from the Find button (or
+    // Enter) once the postcode is valid.
+    if (window.SHOP_CONFIG && window.SHOP_CONFIG.addressLookup && window.SHOP_CONFIG.addressLookup.enabled) {
       const sel = document.getElementById('coAddrFinder');
       if (sel) {
         let list = [];
-        fetch('/api/address-lookup?postcode=' + encodeURIComponent(state.postcode))
-          .then(r => r.ok ? r.json() : null)
-          .then(d => {
-            if (!d || !d.ok || !Array.isArray(d.addresses) || !d.addresses.length) {
-              sel.innerHTML = '<option value="">No matches — please type your address below</option>';
-              return;
-            }
-            list = d.addresses;
-            sel.innerHTML = '<option value="">' + d.addresses.length + ' address' + (d.addresses.length === 1 ? '' : 'es') + ' found — pick yours…</option>' +
-              d.addresses.map((a, i) => '<option value="' + i + '">' + escapeHTML(a.label) + '</option>').join('');
-          })
-          .catch(() => { sel.innerHTML = '<option value="">Type your address below</option>'; });
+        const runLookup = (pc) => {
+          const field = document.getElementById('coFinderField');
+          if (field) field.hidden = false;
+          sel.innerHTML = '<option value="">Looking up ' + escapeHTML(pc) + '…</option>';
+          fetch('/api/address-lookup?postcode=' + encodeURIComponent(pc))
+            .then(r => r.ok ? r.json() : null)
+            .then(d => {
+              if (!d || !d.ok || !Array.isArray(d.addresses) || !d.addresses.length) {
+                sel.innerHTML = '<option value="">No matches — please type your address below</option>';
+                return;
+              }
+              list = d.addresses;
+              sel.innerHTML = '<option value="">' + d.addresses.length + ' address' + (d.addresses.length === 1 ? '' : 'es') + ' found — pick yours…</option>' +
+                d.addresses.map((a, i) => '<option value="' + i + '">' + escapeHTML(a.label) + '</option>').join('');
+            })
+            .catch(() => { sel.innerHTML = '<option value="">Type your address below</option>'; });
+        };
         sel.addEventListener('change', () => {
           const a = list[Number(sel.value)];
           if (!a) return;
@@ -3553,6 +3569,19 @@ function renderCheckout() {
           if (l2) l2.value = a.line2 || '';
           if (ci && a.city) ci.value = a.city;
         });
+        if (state.mode === 'deliver') {
+          runLookup(state.postcode);
+        } else {
+          const pcInput = document.getElementById('coPostcode');
+          const tryFind = () => {
+            const compact = (pcInput.value || '').trim().toUpperCase().replace(/\s+/g, '');
+            if (!/^[A-Z]{1,2}[0-9][A-Z0-9]?[0-9][A-Z]{2}$/.test(compact)) { alert('Please enter a valid postcode first.'); return; }
+            runLookup(compact.replace(/^(.*)([0-9][A-Z]{2})$/, '$1 $2'));
+          };
+          const findBtn = document.getElementById('coPcFind');
+          if (findBtn) findBtn.addEventListener('click', tryFind);
+          if (pcInput) pcInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); tryFind(); } });
+        }
       }
     }
 
