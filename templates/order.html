@@ -3431,7 +3431,7 @@ function runCheckout() {
 }
 
 function checkoutProgressHTML(active) {
-  const steps = state.mode === 'deliver'
+  const steps = (state.mode === 'deliver' || collectionNeedsAddress())
     ? ['contact','address','payment','done']
     : ['contact','payment','done'];
   const labels = { contact:'Contact', address:'Address', payment:'Payment', done:'Done' };
@@ -3491,8 +3491,8 @@ function renderCheckout() {
       <div class="field">
         <label for="coPostcode">Postcode</label>
         <div style="display:flex;gap:8px">
-          <input id="coPostcode" type="text" value="${escapeHTML(checkoutData.postcode || '')}" autocomplete="postal-code" placeholder="e.g. YO24 3AQ" style="flex:1" />
-          ${(window.SHOP_CONFIG && window.SHOP_CONFIG.addressLookup && window.SHOP_CONFIG.addressLookup.enabled) ? '<button type="button" class="btn-form secondary" id="coPcFind" style="flex:0 0 auto;padding:0 20px">Find</button>' : ''}
+          <input id="coPostcode" type="text" value="${escapeHTML(checkoutData.postcode || '')}" autocomplete="postal-code" placeholder="e.g. YO24 3AQ" style="flex:1;min-width:0" />
+          ${(window.SHOP_CONFIG && window.SHOP_CONFIG.addressLookup && window.SHOP_CONFIG.addressLookup.enabled) ? '<button type="button" class="btn-form secondary" id="coPcFind" style="flex:0 0 auto;width:auto;padding:0 26px">Find</button>' : ''}
         </div>
       </div>`}
       ${(window.SHOP_CONFIG && window.SHOP_CONFIG.addressLookup && window.SHOP_CONFIG.addressLookup.enabled) ? `
@@ -3523,7 +3523,7 @@ function renderCheckout() {
       </div>`}
       <div class="field">
         <label for="coNotes">${state.mode === 'deliver' ? 'Delivery notes' : 'Notes'} <span style="font-weight:400;color:var(--grey)">(optional)</span></label>
-        <textarea id="coNotes" rows="2" placeholder="Buzzer code, where to leave it, etc.">${escapeHTML(checkoutData.notes || '')}</textarea>
+        <textarea id="coNotes" rows="2" placeholder="${state.mode === 'deliver' ? 'Buzzer code, where to leave it, etc.' : 'Anything we should know?'}">${escapeHTML(checkoutData.notes || '')}</textarea>
       </div>
       <div style="display:flex;gap:0.6rem">
         <button class="btn-form secondary" id="coBack" style="flex:1">← Back</button>
