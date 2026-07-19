@@ -3032,6 +3032,16 @@ async function populateScheduleSelect() {
   }
 }
 
+/* Config-gated (fulfillment.collection.collectAddress): some shops want the
+   customer's address on COLLECTION orders too. When on, the checkout runs the
+   address step for collection as well — with an editable postcode field, since
+   the service bar only captures a postcode for delivery. /api/order enforces
+   it server-side for those shops. */
+function collectionNeedsAddress() {
+  const c = window.SHOP_CONFIG && window.SHOP_CONFIG.fulfillment && window.SHOP_CONFIG.fulfillment.collection;
+  return state.mode !== 'deliver' && !!(c && c.collectAddress);
+}
+
 /* Build the JSON request body for POST /api/order. The server is the
    source of truth for prices — we only send item ids + qty + flags. */
 function buildOrderRequest() {
@@ -3052,7 +3062,12 @@ function buildOrderRequest() {
       line2: checkoutData.line2 || '',
       postcode: state.postcode,
       notes: checkoutData.notes || '',
-    } : null,
+    } : (collectionNeedsAddress() ? {
+      line1: checkoutData.line1 || '',
+      line2: checkoutData.line2 || '',
+      postcode: checkoutData.postcode || '',
+      notes: checkoutData.notes || '',
+    } : null),
     schedule: checkoutData.schedule || document.getElementById('paySchedule')?.value || 'asap',
     customer: {
       name: checkoutData.name,
@@ -3463,7 +3478,7 @@ function renderCheckout() {
       checkoutData.name = name;
       checkoutData.phone = phone;
       checkoutData.email = email;
-      checkoutStep = state.mode === 'deliver' ? 'address' : 'payment';
+      checkoutStep = (state.mode === 'deliver' || collectionNeedsAddress()) ? 'address' : 'payment';
       renderCheckout();
     });
   }
@@ -3471,9 +3486,9 @@ function renderCheckout() {
   else if (checkoutStep === 'address') {
     body.innerHTML = `
       ${checkoutProgressHTML('address')}
-      <h4 style="font-family:var(--display);font-size:1.1rem;margin:0 0 1rem">Delivery address</h4>
-      <div class="notice ok">Delivering to <strong>${state.postcode}</strong></div>
-      ${(window.SHOP_CONFIG && window.SHOP_CONFIG.addressLookup && window.SHOP_CONFIG.addressLookup.enabled) ? `
+      <h4 style="font-family:var(--display);font-size:1.1rem;margin:0 0 1rem">${state.mode === 'deliver' ? 'Delivery address' : 'Your address'}</h4>
+      ${state.mode === 'deliver' ? `<div class="notice ok">Delivering to <strong>${state.postcode}</strong></div>` : ''}
+      ${(state.mode === 'deliver' && window.SHOP_CONFIG && window.SHOP_CONFIG.addressLookup && window.SHOP_CONFIG.addressLookup.enabled) ? `
       <div class="field" id="coFinderField">
         <label for="coAddrFinder">Find your address</label>
         <select id="coAddrFinder"><option value="">Looking up ${escapeHTML(state.postcode)}…</option></select>
@@ -3493,11 +3508,11 @@ function renderCheckout() {
         </div>
         <div class="field">
           <label for="coPostcode">Postcode</label>
-          <input id="coPostcode" type="text" value="${escapeHTML(state.postcode)}" autocomplete="postal-code" readonly style="background:var(--cream)" />
+          <input id="coPostcode" type="text" value="${escapeHTML(state.mode === 'deliver' ? state.postcode : (checkoutData.postcode || ''))}" autocomplete="postal-code" ${state.mode === 'deliver' ? 'readonly style="background:var(--cream)"' : 'placeholder="e.g. YO24 3AQ"'} />
         </div>
       </div>
       <div class="field">
-        <label for="coNotes">Delivery notes <span style="font-weight:400;color:var(--grey)">(optional)</span></label>
+        <label for="coNotes">${state.mode === 'deliver' ? 'Delivery notes' : 'Notes'} <span style="font-weight:400;color:var(--grey)">(optional)</span></label>
         <textarea id="coNotes" rows="2" placeholder="Buzzer code, where to leave it, etc.">${escapeHTML(checkoutData.notes || '')}</textarea>
       </div>
       <div style="display:flex;gap:0.6rem">
@@ -3509,8 +3524,10 @@ function renderCheckout() {
     document.getElementById('coBack').addEventListener('click', () => { checkoutStep = 'contact'; renderCheckout(); });
 
     // Address finder — auto-looks up the already-validated postcode and lets the
-    // customer pick. Purely additive: any miss/error just leaves the manual fields.
-    if (window.SHOP_CONFIG && window.SHOP_CONFIG.addressLookup && window.SHOP_CONFIG.addressLookup.enabled) {
+    // customer pick. Purely additive: any miss/error just leaves the manual
+    // fields. Delivery only — collection (collectAddress shops) types a
+    // postcode manually right here, so there's nothing to look up yet.
+    if (state.mode === 'deliver' && window.SHOP_CONFIG && window.SHOP_CONFIG.addressLookup && window.SHOP_CONFIG.addressLookup.enabled) {
       const sel = document.getElementById('coAddrFinder');
       if (sel) {
         let list = [];
@@ -3542,6 +3559,11 @@ function renderCheckout() {
     document.getElementById('coNext').addEventListener('click', () => {
       const line1 = document.getElementById('coLine1').value.trim();
       if (!line1) { alert('Please enter your address.'); return; }
+      if (state.mode !== 'deliver') {
+        let pc = document.getElementById('coPostcode').value.trim().toUpperCase().replace(/\s+/g, '');
+        if (!/^[A-Z]{1,2}[0-9][A-Z0-9]?[0-9][A-Z]{2}$/.test(pc)) { alert('Please enter a valid postcode.'); return; }
+        checkoutData.postcode = pc.replace(/^(.*)([0-9][A-Z]{2})$/, '$1 $2'); // canonical "YO24 3AQ" spacing
+      }
       checkoutData.line1 = line1;
       checkoutData.line2 = document.getElementById('coLine2').value.trim();
       checkoutData.city  = document.getElementById('coCity').value.trim();
@@ -4002,7 +4024,7 @@ function renderCheckout() {
     });
 
     document.getElementById('coBack').addEventListener('click', () => {
-      checkoutStep = state.mode === 'deliver' ? 'address' : 'contact';
+      checkoutStep = (state.mode === 'deliver' || collectionNeedsAddress()) ? 'address' : 'contact';
       renderCheckout();
     });
     document.getElementById('coPay').addEventListener('click', placeOrder);

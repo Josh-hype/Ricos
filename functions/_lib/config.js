@@ -28,7 +28,9 @@ export function getPublicConfig() {
       email: business.email,
     },
     fulfillment: {
-      collection: { enabled: collection.enabled },
+      // collectAddress: config-gated "take the customer's address on collection
+      // orders too" (the order page runs the address step for collection).
+      collection: { enabled: collection.enabled, collectAddress: collection.collectAddress === true },
       delivery: {
         enabled: delivery.enabled,
         mode: delivery.mode || 'outcode',
