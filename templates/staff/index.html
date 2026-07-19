@@ -5801,7 +5801,7 @@ function buildReceiptText(o, ctx) {
   out.push(light);
   out.push(mode + (who ? ' · ' + who : '') + ' · ' + fulfilWhen(o));
   if (o.customer && o.customer.phone) out.push('Tel ' + o.customer.phone);
-  if (o.fulfillment === 'delivery' && o.address) {
+  if (o.address) {
     if (o.address.line1) out.push(o.address.line1);
     if (o.address.line2) out.push(o.address.line2);
     if (o.address.postcode) out.push(o.address.postcode);
@@ -5868,7 +5868,7 @@ function buildKitchenTicket(o) {
   const out = [heavy, center('KITCHEN'), heavy, center(mode + (when ? '   ' + when : '')), center(fulfilWhen(o).toUpperCase()), center('Order ' + (o.orderNumber || o.id))];
   if (o.customer && o.customer.name && o.customer.name !== 'Walk-in') out.push(center(o.customer.name));
   if (o.customer && o.customer.phone) out.push(center(o.customer.phone));
-  if (o.fulfillment === 'delivery' && o.address) {
+  if (o.address) {
     out.push(light);
     if (o.address.line1) out.push(o.address.line1);
     if (o.address.line2) out.push(o.address.line2);
@@ -5973,7 +5973,7 @@ function buildReceiptDoc(o, ctx, kind) {
   ops.push({ t: 'text', s: mode + (who ? ' · ' + who : '') + ' · ' + fulfilWhen(o), size: SZ.body, bold: true });
   // Customer phone — essential for deliveries (the kitchen/driver calls the customer).
   if (phone) ops.push({ t: 'text', s: 'Tel ' + phone, size: SZ.body, bold: true });
-  if (o.fulfillment === 'delivery' && o.address) {
+  if (o.address) {
     if (o.address.line1) ops.push({ t: 'text', s: o.address.line1, size: SZ.body, bold: true });
     if (o.address.line2) ops.push({ t: 'text', s: o.address.line2, size: SZ.body, bold: true });
     if (o.address.postcode) ops.push({ t: 'text', s: o.address.postcode, size: SZ.body, bold: true });

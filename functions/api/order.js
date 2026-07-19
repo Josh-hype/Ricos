@@ -80,6 +80,22 @@ export const onRequestPost = async ({ request, env }) => {
       postcode: dq.postcode,
       notes: (input.deliveryAddress?.notes || '').trim().slice(0, 280),
     };
+  } else if (config.fulfillment?.collection?.collectAddress === true) {
+    // Config-gated: some shops want the customer's address on COLLECTION
+    // orders too (Mega Chippy asked for it). Required — enforced here so the
+    // checkout can't be bypassed. Other shops (flag absent) are untouched.
+    const line1 = (input.deliveryAddress?.line1 || '').trim();
+    const compact = (input.deliveryAddress?.postcode || '').trim().toUpperCase().replace(/\s+/g, '');
+    if (line1.length < 2) return errJson('Please enter your address.', 400);
+    if (!/^[A-Z]{1,2}[0-9][A-Z0-9]?[0-9][A-Z]{2}$/.test(compact)) return errJson('Please enter a valid postcode.', 400);
+    const postcode = compact.replace(/^(.*)([0-9][A-Z]{2})$/, '$1 $2'); // canonical "YO24 3AQ" spacing
+    address = {
+      line1,
+      line2: (input.deliveryAddress?.line2 || '').trim(),
+      city: config.business.address.city,
+      postcode,
+      notes: (input.deliveryAddress?.notes || '').trim().slice(0, 280),
+    };
   }
 
   // Schedule. 'asap' or an ISO timestamp string.
