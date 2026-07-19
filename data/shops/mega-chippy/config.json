@@ -81,7 +81,15 @@
         "YO10": 600,
         "YO31": 600
       },
-      "feePence": 600
+      "feePence": 600,
+      "_comment_lateStart": "TEMPORARY — no drivers before 3pm w/c 20 Jul 2026 (Mon-Fri). Delivery opens 15:00 on the listed dates; server rejects earlier delivery orders and the order page shows the banner. Self-expiring: Saturday 25th has no entry, so normal delivery hours resume automatically. Safe to delete this block after the 24th.",
+      "lateStart": {
+        "2026-07-20": "15:00",
+        "2026-07-21": "15:00",
+        "2026-07-22": "15:00",
+        "2026-07-23": "15:00",
+        "2026-07-24": "15:00"
+      }
     }
   },
   "_comment_serviceFee": "Per-order service charge in pence (shown at checkout). serviceFeePlatformPence is the platform's (Lumin Labs') cut taken as the Stripe application_fee; the rest stays with the shop. £1.00 charge = 50p platform + 50p shop.",
