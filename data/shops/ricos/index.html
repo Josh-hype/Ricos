@@ -314,8 +314,10 @@
     text-transform:uppercase;letter-spacing:.06em;line-height:1.2;max-width:108px;}
   @keyframes seal-pop{0%,100%{transform:rotate(8deg) scale(1);}50%{transform:rotate(8deg) scale(1.06);}}
   @media (prefers-reduced-motion:reduce){.promo-seal{animation:none;}}
-  @media (max-width:820px){.promo-seal{width:108px;height:108px;top:12px;right:12px;border-width:2px;}
-    .promo-seal-pct{font-size:2rem;}.promo-seal-off{font-size:.86rem;}.promo-seal-bot{font-size:.56rem;max-width:84px;margin-top:5px;}}
+  /* On mobile the wide hero tag runs under a corner-floated seal, so drop the
+     seal into the flow — centred above the copy — instead of overlapping it. */
+  @media (max-width:820px){.promo-seal{position:static;margin:2px auto 14px;width:124px;height:124px;border-width:2px;}
+    .promo-seal-pct{font-size:2.2rem;}.promo-seal-off{font-size:.9rem;}.promo-seal-bot{font-size:.58rem;max-width:92px;margin-top:5px;}}
 
   .hero-grid {
     position: relative;
