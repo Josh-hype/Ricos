@@ -200,9 +200,10 @@
   },
   "promo": {
     "autoOnlineDiscount": {
-      "enabled": true,
+      "enabled": false,
       "label": "10% off online orders",
-      "percent": 10
+      "percent": 10,
+      "_comment": "Disabled 2026-07-20 — Rico's now runs the 25% first-order welcome offer only (promo.firstOrders). Kept here (enabled:false) so it can be switched back on without re-adding it."
     },
     "firstOrders": {
       "enabled": true,
