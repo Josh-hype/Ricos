@@ -399,8 +399,10 @@ const firstOrders = config.promo?.firstOrders;
 const firstOrdersOn = !!(firstOrders && firstOrders.enabled);
 const firstOrdersLimit = Number(firstOrders?.limit) || 0;
 const firstOrdersPct = Number(firstOrders?.percent) || 0;
+// "first order" reads better than "first 1 order"; drop the count when it's 1.
+const firstNOrders = firstOrdersLimit === 1 ? 'order' : `${firstOrdersLimit} orders`;
 const firstOrderPromoText = firstOrdersOn
-  ? `${firstOrdersPct}% off your first ${firstOrdersLimit} order${firstOrdersLimit === 1 ? '' : 's'}`
+  ? `${firstOrdersPct}% off your first ${firstNOrders}`
   : '';
 const foBg = config.theme?.accent || '#f5b71e';
 const foFg = config.theme?.primaryDeep || config.theme?.primaryDark || '#1a1a1a';
@@ -417,7 +419,7 @@ const firstOrderPromoBadge = firstOrdersOn
   ? `<div class="promo-seal" role="img" aria-label="${firstOrderPromoText}">`
     + `<span class="promo-seal-pct">${firstOrdersPct}%</span>`
     + `<span class="promo-seal-off">OFF</span>`
-    + `<span class="promo-seal-bot">first ${firstOrdersLimit} order${firstOrdersLimit === 1 ? '' : 's'}</span>`
+    + `<span class="promo-seal-bot">first ${firstNOrders}</span>`
     + `</div>`
   : '';
 
