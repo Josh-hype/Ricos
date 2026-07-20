@@ -116,5 +116,15 @@
   "marketing": {
     "emailOptIn": true,
     "smsOptIn": true
+  },
+
+  "_comment_app": "OPTIONAL branded customer ordering app (iOS + Android) — see docs/ADDING_A_SHOP_APP.md. Leave enabled:false until the shop buys the app product. appId = reverse-DNS store bundle id derived from the shop's domain (permanent once published). deepLinkScheme = lowercase custom URL scheme, unique per shop. When enabling: add the shop's Firebase files + 1024x1024 icon.png under data/shops/<slug>/app/.",
+  "app": {
+    "enabled": false,
+    "appId": "uk.co.REPLACE_WITH_DOMAIN.orders",
+    "appName": "REPLACE WITH SHOP NAME",
+    "deepLinkScheme": "REPLACE-orders",
+    "ios": { "ascAppId": "" },
+    "android": { "playTrack": "internal" }
   }
 }

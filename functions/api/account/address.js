@@ -2,11 +2,11 @@
    signed-in customer's profile. Used when the customer ticks "save this
    address" or implicitly when an order is placed (see /api/order). */
 
-import { readCustomerSession } from '../../_lib/customer-auth.js';
+import { resolveCustomerSession } from '../../_lib/customer-auth.js';
 import { getCustomer, putCustomer, upsertAddress, publicProfile } from '../../_lib/customer.js';
 
 export const onRequestPost = async ({ request, env }) => {
-  const session = await readCustomerSession(request.headers.get('Cookie'), env);
+  const session = await resolveCustomerSession(request, env);
   if (!session) return errJson('Not signed in.', 401);
 
   let input;

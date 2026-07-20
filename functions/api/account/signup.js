@@ -6,10 +6,14 @@ import { normaliseContact, hashPassword, makeCustomerSession, customerCookieHead
 import { getCustomer, putCustomer, newCustomerId, publicProfile } from '../../_lib/customer.js';
 import { sendEmail, welcomeEmail } from '../../_lib/email.js';
 import { getConfig } from '../../_lib/config.js';
+import { rateLimit } from '../../_lib/rate-limit.js';
 
 export const onRequestPost = async ({ request, env }) => {
   if (!env.CUSTOMERS_KV) return errJson('Accounts are not configured yet.', 503);
   if (!env.SESSION_SECRET) return errJson('Session secret missing.', 503);
+
+  const limited = await rateLimit(env, 'signup', request, 10);
+  if (limited) return limited;
 
   let input;
   try { input = await request.json(); }
@@ -58,7 +62,9 @@ export const onRequestPost = async ({ request, env }) => {
   }
 
   const token = await makeCustomerSession(customer, env);
-  return new Response(JSON.stringify({ user: publicProfile(customer) }), {
+  // App clients get the token in the body (Bearer auth) — see signin.js.
+  const wantsToken = request.headers.get('X-Client') === 'app';
+  return new Response(JSON.stringify({ user: publicProfile(customer), ...(wantsToken ? { token } : {}) }), {
     status: 200,
     headers: {
       'Content-Type': 'application/json',

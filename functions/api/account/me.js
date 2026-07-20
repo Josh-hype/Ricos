@@ -2,11 +2,11 @@
    Returns 200 with { user: null } when no valid session, so the frontend
    can call this unconditionally on boot without treating it as an error. */
 
-import { readCustomerSession } from '../../_lib/customer-auth.js';
+import { resolveCustomerSession } from '../../_lib/customer-auth.js';
 import { getCustomer, publicProfile } from '../../_lib/customer.js';
 
 export const onRequestGet = async ({ request, env }) => {
-  const session = await readCustomerSession(request.headers.get('Cookie'), env);
+  const session = await resolveCustomerSession(request, env);
   if (!session) return Response.json({ user: null });
 
   const customer = await getCustomer(session.contact, env);

@@ -344,6 +344,33 @@ const config = JSON.parse(fs.readFileSync(path.join(activeDir, 'config.json'), '
   }
 }
 
+// Customer-app block (config.app) — consumed by app-customer/scripts/gen-shop.mjs
+// to generate this shop's branded iOS/Android ordering app. Optional; only
+// validated when enabled, and then it must be complete: a malformed appId
+// would surface much later as a broken store build, so fail loudly here.
+if (config.app?.enabled) {
+  const appErrs = [];
+  const appId = config.app.appId || '';
+  if (!/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(appId)) {
+    appErrs.push(`app.appId "${appId}" is not a valid reverse-DNS bundle id (e.g. uk.co.ricosyork.orders).`);
+  }
+  if (!String(config.app.appName || '').trim()) {
+    appErrs.push('app.appName is required (the name under the icon).');
+  } else if (String(config.app.appName).trim().length > 30) {
+    // Warn, don't fail: both stores cap the LISTING name at 30 chars; the
+    // on-device name can be longer but will ellipsise under the icon.
+    console.warn(`⚠️  build-shop: "${slug}" app.appName is ${String(config.app.appName).trim().length} chars — store listing names cap at 30.`);
+  }
+  if (config.app.deepLinkScheme && !/^[a-z][a-z0-9-]*$/.test(config.app.deepLinkScheme)) {
+    appErrs.push(`app.deepLinkScheme "${config.app.deepLinkScheme}" must be lowercase letters/digits/dashes.`);
+  }
+  if (appErrs.length) {
+    console.error(`build-shop: "${slug}" has app.enabled=true but an invalid app block:`);
+    for (const e of appErrs) console.error(`     - ${e}`);
+    process.exit(1);
+  }
+}
+
 // Optional per-shop CSS appended to the order page's <style> block. Lets a
 // shop layer on bespoke styling (e.g. Food Station's sticker buttons) without
 // forking the shared template. Absent for most shops -> empty -> no change.

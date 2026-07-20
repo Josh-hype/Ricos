@@ -1,0 +1,141 @@
+name: Publish CUSTOMER app OTA bundles (Capgo)
+
+# Auto-publish the customer ordering apps' web layer to Capgo whenever the
+# order/thank-you templates, the app-customer shims, or a shop's baked config
+# change on main. Each enabled shop is its own Capgo app (keyed on its appId
+# from the generated capacitor.config.json); installed apps pick the bundle up
+# on their next background→foreground.
+#
+# DELIBERATELY separate from ota-publish.yml (the till): different blast
+# radius, different approval gate. One push to main must never silently
+# fleet-deploy the tills AND every customer's phone under a single approval —
+# add required reviewers to BOTH environments (ota-production and
+# ota-customer-production) under repo Settings ▸ Environments.
+#
+# scripts/build-shop.js appears in both workflows' paths on purpose: it shapes
+# both bundles. templates/staff/** never triggers this; templates/order.html
+# never triggers the till. data/shops/** is included because per-shop tokens
+# (theme colours, phone, promo copy) are BAKED into the bundled pages — a
+# config edit must re-publish. (Menu edits ride the live API and wouldn't
+# strictly need it; the extra republish is harmless.)
+#
+# Requires repo secret CAPGO_TOKEN (same Capgo org key as the till). Until
+# it's set, the publish step skips cleanly (green) instead of failing.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'templates/order.html'
+      - 'templates/thank-you.html'
+      - 'app-customer/**'
+      - 'scripts/build-shop.js'
+      - 'data/shops/**'
+      - '.github/workflows/customer-ota.yml'
+  workflow_dispatch: {}   # publish current main on demand from the Actions tab
+
+concurrency:
+  group: customer-ota
+  cancel-in-progress: false
+
+jobs:
+  # Which shops have the app product enabled? (config.app.enabled === true)
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      shops: ${{ steps.list.outputs.shops }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: list
+        run: |
+          shops=$(node -e '
+            const fs = require("fs");
+            const shops = fs.readdirSync("data/shops")
+              .filter(s => !s.startsWith("_"))
+              .filter(s => { try { return JSON.parse(fs.readFileSync(`data/shops/${s}/config.json`, "utf8")).app?.enabled === true; } catch { return false; } });
+            console.log(JSON.stringify(shops));
+          ')
+          echo "shops=$shops" >> "$GITHUB_OUTPUT"
+          echo "App-enabled shops: $shops"
+
+  # Safety gate: what ships to customers' phones must pass the unit tests and
+  # build to pages whose emitted JS parses — same stance as the till's verify.
+  verify:
+    needs: discover
+    if: needs.discover.outputs.shops != '[]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Unit tests (money/logic libs + auth)
+        run: |
+          node --import ./tests/support/register.mjs --test tests/*.test.mjs
+          node --test test/*.test.mjs
+      - name: Shim tests (app-customer fetch shim)
+        working-directory: app-customer
+        run: |
+          node scripts/native-test.cjs
+          for f in web/*.js scripts/*.mjs; do node --check "$f"; done
+      - name: Build each enabled shop, run its gen+sync, syntax-check the bundle
+        run: |
+          fail=0
+          for slug in $(echo '${{ needs.discover.outputs.shops }}' | node -e 'console.log(JSON.parse(require("fs").readFileSync(0,"utf8")).join(" "))'); do
+            echo "── building $slug"
+            SHOP_SLUG=$slug npm run build
+            (cd app-customer && SHOP_SLUG=$slug node scripts/gen-shop.mjs && node scripts/sync-web.mjs) || { echo "::error::gen/sync failed for $slug"; fail=1; }
+            for f in public/order.inline*.js public/thank-you.inline*.js app-customer/www/*.inline*.js; do
+              node --check "$f" || { echo "::error::syntax error in $f ($slug)"; fail=1; }
+            done
+          done
+          test "$fail" = 0
+
+  publish:
+    needs: [discover, verify]
+    if: needs.discover.outputs.shops != '[]'
+    # Add required reviewers under Settings ▸ Environments ▸ ota-customer-production
+    # to force a manual approval before each customer-fleet publish.
+    environment: ota-customer-production
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shop: ${{ fromJson(needs.discover.outputs.shops) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build the shop site
+        run: SHOP_SLUG=${{ matrix.shop }} npm run build
+
+      - name: Generate app identity + bundle the web layer
+        working-directory: app-customer
+        env:
+          SHOP_SLUG: ${{ matrix.shop }}
+        run: |
+          node scripts/gen-shop.mjs
+          node scripts/sync-web.mjs
+
+      # Same versioning convention as the till, per app: manual store binaries
+      # are 1.0.x, OTA bundles 1.1.<run> — always newer, minor-only bumps.
+      - name: Publish to Capgo
+        working-directory: app-customer
+        env:
+          CAPGO_TOKEN: ${{ secrets.CAPGO_TOKEN }}
+          BUNDLE_VERSION: 1.1.${{ github.run_number }}
+        run: |
+          if [ -z "$CAPGO_TOKEN" ]; then
+            echo "::warning::CAPGO_TOKEN secret not set — skipping OTA publish for ${{ matrix.shop }}."
+            exit 0
+          fi
+          echo "Installing app deps (the Capgo CLI reads node_modules for its compatibility check)…"
+          npm install --no-audit --no-fund
+          echo "Publishing ${{ matrix.shop }} bundle $BUNDLE_VERSION to channel 'production'…"
+          npx --yes @capgo/cli@latest bundle upload \
+            --channel production \
+            --bundle "$BUNDLE_VERSION" \
+            --apikey "$CAPGO_TOKEN"
+          echo "### ✅ ${{ matrix.shop }}: published customer OTA \`$BUNDLE_VERSION\`" >> "$GITHUB_STEP_SUMMARY"

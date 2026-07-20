@@ -129,6 +129,11 @@ async function verifySessionToken(token, env) {
   try {
     if (!(await verify(payload, sig, env.SESSION_SECRET))) return null;
     const data = JSON.parse(dec.decode(b64urlDecode(payload)));
+    // Customer-issued tokens (sessions AND password-reset links, both carrying
+    // a `c` contact claim) are signed with the same SESSION_SECRET. They must
+    // never verify as a STAFF session — without this check an emailed reset
+    // token could be replayed as Authorization: Bearer against staff routes.
+    if (data.c) return null;
     if (Date.now() > data.exp) return null;
     return data;
   } catch { return null; }

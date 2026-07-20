@@ -1,0 +1,38 @@
+{
+  "name": "lumin-customer-app",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Branded CUSTOMER ordering app (Capacitor, iOS + Android) — one shared codebase, one binary per shop generated from data/shops/<slug>/config.json's app block (the app-layer mirror of SHOP_SLUG). Self-contained — does not affect the web build or the LumiPOS till app in app/.",
+  "type": "module",
+  "scripts": {
+    "test": "node scripts/native-test.cjs",
+    "gen": "node scripts/gen-shop.mjs",
+    "sync-web": "node scripts/sync-web.mjs",
+    "patch-android": "node scripts/patch-android.mjs",
+    "patch-ios": "node scripts/patch-ios.mjs",
+    "assets": "capacitor-assets generate || echo 'asset generation skipped (install @capacitor/assets or add icons manually)'",
+    "prepare:android": "npm run gen && npm run sync-web && cap add android && npm run patch-android && npm run assets",
+    "prepare:ios": "npm run gen && npm run sync-web && cap add ios && npm run patch-ios && npm run assets",
+    "sync": "npm run gen && npm run sync-web && cap sync && npm run patch-android",
+    "open:android": "cap open android",
+    "open:ios": "cap open ios",
+    "ota:login": "npx @capgo/cli@latest login",
+    "ota:setup": "npx @capgo/cli@latest app add",
+    "ota:publish": "npm run gen && npm run sync-web && npx @capgo/cli@latest bundle upload --channel production"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.1.0",
+    "@capacitor/browser": "^6.0.0",
+    "@capacitor/core": "^6.1.0",
+    "@capacitor/ios": "^6.1.0",
+    "@capacitor/preferences": "^6.0.0",
+    "@capacitor/push-notifications": "^6.0.0",
+    "@capgo/capacitor-updater": "lts-v6"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.0"
+  },
+  "optionalDependencies": {
+    "@capacitor/assets": "^3.0.5"
+  }
+}

@@ -9,7 +9,7 @@
    ID on the KV record; otherwise we return an empty list / 404. */
 
 import { getConfig } from '../../_lib/config.js';
-import { readCustomerSession } from '../../_lib/customer-auth.js';
+import { resolveCustomerSession } from '../../_lib/customer-auth.js';
 import { getCustomer } from '../../_lib/customer.js';
 import { listPaymentMethods, detachPaymentMethod } from '../../_lib/stripe.js';
 
@@ -24,7 +24,7 @@ function projection(pm) {
 }
 
 export const onRequestGet = async ({ request, env }) => {
-  const session = await readCustomerSession(request.headers.get('Cookie'), env);
+  const session = await resolveCustomerSession(request, env);
   if (!session) return Response.json({ cards: [] });
 
   const customer = await getCustomer(session.contact, env);
@@ -47,7 +47,7 @@ export const onRequestGet = async ({ request, env }) => {
 };
 
 export const onRequestDelete = async ({ request, env }) => {
-  const session = await readCustomerSession(request.headers.get('Cookie'), env);
+  const session = await resolveCustomerSession(request, env);
   if (!session) return errJson('Sign in required.', 401);
 
   const customer = await getCustomer(session.contact, env);

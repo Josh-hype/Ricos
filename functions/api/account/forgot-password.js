@@ -8,10 +8,17 @@ import { normaliseContact, makeResetToken } from '../../_lib/customer-auth.js';
 import { getCustomer } from '../../_lib/customer.js';
 import { sendEmail, passwordResetEmail } from '../../_lib/email.js';
 import { getConfig } from '../../_lib/config.js';
+import { rateLimit } from '../../_lib/rate-limit.js';
 
 export const onRequestPost = async ({ request, env, waitUntil }) => {
   // Generic OK response - leaks nothing about whether the contact exists.
   const ok = () => Response.json({ ok: true, message: "If we have an account for that contact and an email on file, we've sent you a reset link." });
+
+  // Limit BEFORE any lookup: this route triggers outbound email, so an
+  // unthrottled loop could spam a customer's inbox. A 429 leaks nothing about
+  // whether the contact is registered.
+  const limited = await rateLimit(env, 'forgot', request, 10);
+  if (limited) return limited;
 
   if (!env.CUSTOMERS_KV || !env.SESSION_SECRET) return ok();
 

@@ -85,6 +85,35 @@
     font-weight: 700;
   }
   a.btn.secondary { background: transparent; color: var(--ink); }
+  button.btn {
+    display: inline-block;
+    padding: 12px 22px;
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    background: var(--ink);
+    color: var(--yellow);
+    font-weight: 700;
+    font-size: 1rem;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  button.btn[disabled] { opacity: 0.6; cursor: default; }
+
+  /* App-mode live tracking (customer app only — the shim adds .app-mode to
+     <html>; none of this renders on the website). */
+  .track { list-style: none; margin: 18px auto 4px; padding: 0; text-align: left; max-width: 320px; }
+  .track li { position: relative; padding: 7px 0 7px 30px; color: #6b5e58; }
+  .track li::before {
+    content: ''; position: absolute; left: 8px; top: 13px;
+    width: 10px; height: 10px; border-radius: 50%; background: #d8cfc9;
+  }
+  .track li.done { color: var(--ink); font-weight: 600; }
+  .track li.done::before { background: var(--green); }
+  html.app-mode body {
+    padding-top: calc(24px + env(safe-area-inset-top));
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  }
+  html.app-mode .btn.home { display: none; } /* both buttons would reopen the same bundled order page */
 </style>
 </head>
 <body>
@@ -100,10 +129,15 @@
       <div class="ref" id="num">—</div>
       <p class="muted" style="margin-top:0">Reference: <span id="ref">—</span></p>
       <p>We'll email your <strong>order confirmation</strong> with the ready time as soon as the restaurant accepts your order — usually within ~5 minutes.</p>
+      <!-- App-only live tracking + push opt-in (populated by the app-mode
+           script below; stays hidden on the website). -->
+      <ol class="track" id="trackList" hidden></ol>
+      <button class="btn" id="pushOptIn" hidden>🔔 Notify me about this order</button>
+      <p class="muted" id="pushOk" hidden>You'll get a notification when your order is accepted and when it's ready.</p>
     </div>
     <p class="muted">Allergies? Call the restaurant on <a href="tel:{{shopPhoneTel}}" style="color:inherit;font-weight:600">{{shopPhone}}</a> before collecting.</p>
     <div class="links">
-      <a class="btn" href="/">Back to home</a>
+      <a class="btn home" href="/">Back to home</a>
       <a class="btn secondary" href="/order">Order again</a>
     </div>
   </main>
@@ -161,6 +195,84 @@
       })
       .catch(() => showSoft());
   }
+
+  /* ---------- App mode: live tracking + push opt-in ----------
+     Gated on window.LUMIN_APP (set by the customer app's shim before this
+     script runs) — none of this executes on the website. The shim stored
+     { orderId, statusToken } from POST /api/order in localStorage; the token
+     is a 48h capability for GET /api/order/:id/status (no account needed). */
+  (function () {
+    if (!window.LUMIN_APP || !ref) return;
+    let last = null;
+    try { last = JSON.parse(localStorage.getItem('{{shopSlug}}.lastOrder') || 'null'); } catch (e) {}
+    if (!last || last.orderId !== ref || !last.statusToken) return;
+    const statusToken = last.statusToken;
+
+    // Push opt-in — offered until granted once; after that the shim attaches
+    // the device token to every future order automatically.
+    const pushBtn = document.getElementById('pushOptIn');
+    const pushOk = document.getElementById('pushOk');
+    if (window.LuminNative && window.LuminNative.enableOrderPush) {
+      window.LuminNative.pushReady().then((on) => { if (!on) pushBtn.hidden = false; });
+      pushBtn.addEventListener('click', () => {
+        pushBtn.disabled = true;
+        window.LuminNative.enableOrderPush(ref, statusToken).then((r) => {
+          if (r && r.ok) { pushBtn.hidden = true; pushOk.hidden = false; }
+          else pushBtn.disabled = false; // e.g. permission denied — allow another go
+        });
+      });
+    }
+
+    // Live status timeline, polled while the screen is visible.
+    const list = document.getElementById('trackList');
+    function reachedIndex(status) {
+      if (status === 'pending_payment' || status === 'pending_accept') return 0;
+      if (status === 'accepted') return 1;
+      if (status === 'ready' || status === 'out_for_delivery') return 2;
+      if (status === 'completed') return 3;
+      return -1; // cancelled / unknown
+    }
+    function stepLabels(d) {
+      const delivery = d.fulfillment === 'delivery';
+      let accepted = 'Accepted by the kitchen';
+      if (d.readyAt) {
+        try {
+          const hhmm = new Date(d.readyAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+          accepted = 'Accepted — ready around ' + hhmm;
+        } catch (e) {}
+      }
+      return ['Order placed', accepted, delivery ? 'On its way' : 'Ready to collect', delivery ? 'Delivered' : 'Collected'];
+    }
+    function render(d) {
+      const idx = reachedIndex(d.status);
+      if (idx < 0) {
+        if (d.status === 'cancelled') {
+          tick.className = 'tick fail'; tick.textContent = '!';
+          title.textContent = 'Order cancelled';
+          lead.textContent = "Sorry — the restaurant couldn't take this order. Any card payment has been refunded.";
+          list.hidden = true;
+        }
+        return false; // terminal — stop polling
+      }
+      const labels = stepLabels(d);
+      list.innerHTML = labels.map((label, i) => `<li class="${i <= idx ? 'done' : ''}">${label}</li>`).join('');
+      list.hidden = false;
+      return idx < 3;
+    }
+    let timer = null;
+    async function poll() {
+      if (document.hidden) return;
+      try {
+        const r = await fetch(`/api/order/${encodeURIComponent(ref)}/status?t=${encodeURIComponent(statusToken)}`);
+        if (r.status === 401 || r.status === 404) { clearInterval(timer); return; }
+        const d = await r.json();
+        if (d && d.status && !render(d)) clearInterval(timer);
+      } catch (e) { /* transient — try again next tick */ }
+    }
+    poll();
+    timer = setInterval(poll, 30000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) poll(); });
+  })();
 </script>
 </body>
 </html>

@@ -4,6 +4,7 @@ import { requireStaff, resolveSession } from '../../../../_lib/auth.js';
 import { getConfig } from '../../../../_lib/config.js';
 import { getOrder, putOrder } from '../../../../_lib/kv.js';
 import { sendEmail, orderAcceptedEmail } from '../../../../_lib/email.js';
+import { sendOrderPush } from '../../../../_lib/push.js';
 
 export const onRequestPost = async ({ request, env, params }) => {
   const denied = await requireStaff(request, env);
@@ -41,6 +42,17 @@ export const onRequestPost = async ({ request, env, params }) => {
   const mail = orderAcceptedEmail(order, config);
   await sendEmail({ to: order.customer.email, subject: mail.subject, html: mail.html, fromName: mail.fromName }, env);
 
+  // Customer-app push (no-op unless the order carries an app device token).
+  // Best-effort like the email — an FCM hiccup must never fail the accept.
+  try {
+    await sendOrderPush(order, {
+      title: config.business?.shortName || config.business?.tradingName || 'Your order',
+      body: `Order accepted — ready around ${localHHMM(readyAt, config)}.`,
+    }, env);
+  } catch (e) {
+    console.warn('accept push failed', e);
+  }
+
   return Response.json({ order });
 };
 
@@ -48,4 +60,14 @@ function j(obj, status) {
   return new Response(JSON.stringify(obj), {
     status, headers: { 'Content-Type': 'application/json' },
   });
+}
+
+// ISO timestamp -> "18:45" in the shop's timezone for the push copy.
+function localHHMM(iso, config) {
+  try {
+    return new Intl.DateTimeFormat('en-GB', {
+      hour: '2-digit', minute: '2-digit', hour12: false,
+      timeZone: config.ordering?.timezone || 'Europe/London',
+    }).format(new Date(iso));
+  } catch { return ''; }
 }

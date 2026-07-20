@@ -37,7 +37,9 @@ export const onRequestPost = async ({ request, env }) => {
   await putCustomer(customer, env);
 
   const sessionToken = await makeCustomerSession(customer, env);
-  return new Response(JSON.stringify({ user: publicProfile(customer) }), {
+  // App clients get the token in the body (Bearer auth) — see signin.js.
+  const wantsToken = request.headers.get('X-Client') === 'app';
+  return new Response(JSON.stringify({ user: publicProfile(customer), ...(wantsToken ? { token: sessionToken } : {}) }), {
     status: 200,
     headers: {
       'Content-Type': 'application/json',

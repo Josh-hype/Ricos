@@ -17,10 +17,17 @@ import { putOrder, newOrderId, nextOrderNumber, recordOptIn, incrSlotCount, getS
 import { getOffMap } from '../_lib/availability.js';
 import { getOrderingPause } from '../_lib/ordering-pause.js';
 import { normalisePhoneE164UK } from '../_lib/sms.js';
-import { readCustomerSession } from '../_lib/customer-auth.js';
+import { resolveCustomerSession } from '../_lib/customer-auth.js';
 import { getCustomer, putCustomer, upsertAddress, updateContactDetails } from '../_lib/customer.js';
+import { makeOrderStatusToken } from '../_lib/order-token.js';
+import { rateLimit } from '../_lib/rate-limit.js';
 
 export const onRequestPost = async ({ request, env }) => {
+  // Generous per-IP cap (totals are recomputed server-side, so this is abuse
+  // damping, not a correctness control). 429s long before a card is charged.
+  const limited = await rateLimit(env, 'order', request, 20);
+  if (limited) return limited;
+
   let input;
   try { input = await request.json(); }
   catch { return errJson('Invalid JSON', 400); }
@@ -166,7 +173,7 @@ export const onRequestPost = async ({ request, env }) => {
   let session = null;
   let storedCustomer = null;
   try {
-    session = await readCustomerSession(request.headers.get('Cookie'), env);
+    session = await resolveCustomerSession(request, env); // cookie (web) or Bearer (customer app)
     if (session) storedCustomer = await getCustomer(session.contact, env);
   } catch (e) {
     console.warn('reading session failed', e);
@@ -229,6 +236,17 @@ export const onRequestPost = async ({ request, env }) => {
     },
     history: [{ at: createdAt, event: 'created' }],
   };
+
+  // Customer-app push registration (order-scoped, so it works for guests too):
+  // the app sends its FCM device token with the order and the kitchen's
+  // accept/ready/cancel transitions push to it. Transactional-only — nothing
+  // here opts the customer into marketing. Web orders never carry this field.
+  {
+    const pushToken = typeof input.push?.token === 'string' ? input.push.token.trim() : '';
+    if (pushToken && pushToken.length <= 512) {
+      order.push = { token: pushToken, platform: input.push.platform === 'ios' ? 'ios' : 'android' };
+    }
+  }
 
   // (storedCustomer was resolved above, before totals, for the first-orders promo.)
 
@@ -391,6 +409,9 @@ export const onRequestPost = async ({ request, env }) => {
     orderNumber: order.orderNumber,
     clientSecret: order.payment.clientSecret || null,
     status: order.status,
+    // Capability token for GET /api/order/:id/status (live tracking in the
+    // customer app's thank-you screen). Harmless extra field for the web.
+    statusToken: await makeOrderStatusToken(id, env),
     // For card orders the client needs to know what state the PI is in so
     // it can pick the right confirmation flow:
     //   succeeded         -> redirect to /thank-you immediately

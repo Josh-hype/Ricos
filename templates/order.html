@@ -104,6 +104,16 @@
     gap: 0.3rem;
   }
   .back-link:hover { color: var(--red); }
+
+  /* App mode — the customer app's native shim adds .app-mode to <html>
+     (app-customer/web/native.js). Inert on the website: the class never
+     appears there. The app has no website landing to go "back" to, and the
+     content must clear notches/home indicators. */
+  html.app-mode .back-link { display: none; }
+  html.app-mode body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
   .header-spacer { flex: 1; }
   .header-actions {
     display: flex;
@@ -2663,6 +2673,7 @@ function renderAccountModal() {
       <p style="margin-top:0">Signed in as <strong>${escapeHTML(state.user.name || state.user.contact)}</strong></p>
       <div class="notice ok">${addrCount ? `${addrCount} saved address${addrCount === 1 ? '' : 'es'} — we'll prefill your next order.` : "We'll save your delivery address after your first order."}</div>
       <button class="btn-form secondary" id="signOutBtn">Sign out</button>
+      <button class="btn-form secondary" id="deleteAccountBtn" style="margin-top:8px;color:#b3261e;border-color:#b3261e">Delete my account</button>
     `;
     document.getElementById('signOutBtn').addEventListener('click', async () => {
       try { await fetch('/api/account/signout', { method: 'POST' }); } catch {}
@@ -2671,6 +2682,19 @@ function renderAccountModal() {
       updateAccountButton();
       renderAccountModal();
       renderCart(); // signing out removes the first-orders discount preview
+    });
+    // Permanent account deletion (required in-app by Apple 5.1.1(v); offered on
+    // the web too — one shared template, and it's the right thing regardless).
+    document.getElementById('deleteAccountBtn').addEventListener('click', async () => {
+      if (!confirm('Delete your account? This removes your saved addresses and saved cards and cannot be undone. Past orders are unaffected.')) return;
+      let ok = false;
+      try { ok = (await fetch('/api/account/delete', { method: 'POST', credentials: 'same-origin' })).ok; } catch {}
+      if (!ok) { alert("Couldn't delete your account just now — please try again."); return; }
+      state.user = null;
+      saveState();
+      updateAccountButton();
+      renderAccountModal();
+      renderCart();
     });
     return;
   }
@@ -2945,6 +2969,9 @@ let expressElements = null;
 let walletsPrewarmed = false;
 function prewarmWallets() {
   if (walletsPrewarmed) return;
+  // Customer app: native wallet sheets (Apple Pay especially) don't work in the
+  // WebView shell — don't warm what can't render. Card + saved cards + cash stay.
+  if (window.LUMIN_APP) return;
   try {
     const pk   = window.SHOP_CONFIG?.stripe?.publishableKey;
     const acct = window.SHOP_CONFIG?.stripe?.connectedAccountId;
@@ -3840,6 +3867,7 @@ function renderCheckout() {
     const expressSection = document.getElementById('express-checkout-section');
     let expressAvailable = false;
     function mountExpressCheckout() {
+      if (window.LUMIN_APP) return; // no wallet buttons in the app shell (see prewarmWallets)
       if (!ensureStripe()) return;
       expressElements = stripeInstance.elements({
         mode: 'payment',

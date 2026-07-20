@@ -1,0 +1,27 @@
+{
+  "_comment": "TEMPLATE — gen-shop.mjs substitutes the double-brace tokens from the shop's config.json app block and writes capacitor.config.json (gitignored). Do not put a real appId here.",
+  "appId": "{{appId}}",
+  "appName": "{{appName}}",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false,
+    "backgroundColor": "{{bgColor}}"
+  },
+  "ios": {
+    "backgroundColor": "{{bgColor}}"
+  },
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    },
+    "CapacitorUpdater": {
+      "autoUpdate": true
+    },
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    }
+  }
+}

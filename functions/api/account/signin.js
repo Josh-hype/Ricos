@@ -4,6 +4,7 @@
 
 import { normaliseContact, verifyPassword, makeCustomerSession, customerCookieHeader } from '../../_lib/customer-auth.js';
 import { getCustomer, publicProfile } from '../../_lib/customer.js';
+import { rateLimit } from '../../_lib/rate-limit.js';
 
 // A throwaway PBKDF2 record so a missing account still costs one hash — keeps
 // the "no such account" path the same latency as a wrong-password one, so
@@ -17,6 +18,9 @@ const DUMMY_PW_RECORD = {
 export const onRequestPost = async ({ request, env }) => {
   if (!env.CUSTOMERS_KV) return errJson('Accounts are not configured yet.', 503);
   if (!env.SESSION_SECRET) return errJson('Session secret missing.', 503);
+
+  const limited = await rateLimit(env, 'signin', request, 10);
+  if (limited) return limited;
 
   let input;
   try { input = await request.json(); }
@@ -38,7 +42,12 @@ export const onRequestPost = async ({ request, env }) => {
   if (!credsOk) return errJson('Incorrect email/phone or password.', 401);
 
   const token = await makeCustomerSession(customer, env);
-  return new Response(JSON.stringify({ user: publicProfile(customer) }), {
+  // The customer app sends "X-Client: app" and stores the returned token to
+  // send as a Bearer header (its WebView can't use the cross-origin cookie).
+  // The web omits the header, so the token never appears in a browser body —
+  // the HttpOnly cookie stays the only credential there. Mirrors staff login.
+  const wantsToken = request.headers.get('X-Client') === 'app';
+  return new Response(JSON.stringify({ user: publicProfile(customer), ...(wantsToken ? { token } : {}) }), {
     status: 200,
     headers: {
       'Content-Type': 'application/json',

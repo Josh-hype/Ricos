@@ -111,15 +111,19 @@ export async function makeCustomerSession(customer, env) {
   return `${payload}.${sig}`;
 }
 
-export async function readCustomerSession(cookieHeader, env) {
-  if (!cookieHeader || !env.SESSION_SECRET) return null;
-  const m = cookieHeader.match(new RegExp(`(?:^|;\\s*)${SESSION_COOKIE}=([^;]+)`));
-  if (!m) return null;
-  const [payload, sig] = m[1].split('.');
+// Verify a raw customer session token ("<payload>.<sig>") and return
+// { contact } or null. Shared by the cookie path (web) and the Bearer path
+// (the customer app).
+export async function verifyCustomerToken(token, env) {
+  if (!token || !env.SESSION_SECRET) return null;
+  const [payload, sig] = String(token).split('.');
   if (!payload || !sig) return null;
   if (!(await verify(payload, sig, env.SESSION_SECRET))) return null;
   try {
-    const { c, fp, exp } = JSON.parse(dec.decode(b64urlDecode(payload)));
+    const { c, fp, exp, r } = JSON.parse(dec.decode(b64urlDecode(payload)));
+    // Password-RESET tokens (r:1) share this payload shape and are emailed to
+    // the customer — they must never act as a session.
+    if (r) return null;
     if (Date.now() > exp) return null;
     // Reject if the password changed since the session was issued (fp no longer
     // matches) or the token predates fp (legacy) — a reset logs out all other
@@ -128,6 +132,27 @@ export async function readCustomerSession(cookieHeader, env) {
     if (!customer || !fp || (customer.hash || '').slice(0, 16) !== fp) return null;
     return { contact: c };
   } catch { return null; }
+}
+
+export async function readCustomerSession(cookieHeader, env) {
+  if (!cookieHeader || !env.SESSION_SECRET) return null;
+  const m = cookieHeader.match(new RegExp(`(?:^|;\\s*)${SESSION_COOKIE}=([^;]+)`));
+  if (!m) return null;
+  return verifyCustomerToken(m[1], env);
+}
+
+// Resolve the customer session from EITHER the cu cookie (web) OR an
+// Authorization: Bearer token (the customer app, whose WebView origin is not
+// the shop domain so the SameSite=Lax cookie is never sent). Same signed token
+// either way, so the app path is no weaker than the web — mirrors the staff
+// resolveSession() in ./auth.js.
+export async function resolveCustomerSession(request, env) {
+  const fromCookie = await readCustomerSession(request.headers.get('Cookie'), env);
+  if (fromCookie) return fromCookie;
+  const auth = request.headers.get('Authorization') || '';
+  const m = auth.match(/^Bearer\s+(.+)$/i);
+  if (!m) return null;
+  return verifyCustomerToken(m[1].trim(), env);
 }
 
 export function customerCookieHeader(token) {
@@ -146,10 +171,14 @@ const RESET_TTL_MS = 60 * 60 * 1000;
 // password is changed (single-use without needing KV state). They also
 // expire after RESET_TTL_MS.
 export async function makeResetToken(customer, env) {
+  // r:1 marks this as a RESET token so it can never verify as a session
+  // (verifyCustomerToken rejects r) and a session can never verify as a
+  // reset token (verifyResetToken requires r).
   const payload = b64url(enc.encode(JSON.stringify({
     c: customer.contact,
     fp: customer.hash.slice(0, 16),
     exp: Date.now() + RESET_TTL_MS,
+    r: 1,
   })));
   const sig = await sign(payload, env.SESSION_SECRET);
   return `${payload}.${sig}`;
@@ -161,7 +190,8 @@ export async function verifyResetToken(token, env) {
   if (!payload || !sig) return null;
   if (!(await verify(payload, sig, env.SESSION_SECRET))) return null;
   try {
-    const { c, fp, exp } = JSON.parse(dec.decode(b64urlDecode(payload)));
+    const { c, fp, exp, r } = JSON.parse(dec.decode(b64urlDecode(payload)));
+    if (r !== 1) return null; // a session token must not reset passwords
     if (!c || !fp || !exp) return null;
     if (Date.now() > exp) return null;
     return { contact: c, fp };

@@ -9,6 +9,7 @@ import { getConfig } from '../../../../_lib/config.js';
 import { getOrder, putOrder, recordRefund, refundedSoFar } from '../../../../_lib/kv.js';
 import { sendEmail, orderRejectedEmail } from '../../../../_lib/email.js';
 import { createRefund } from '../../../../_lib/stripe.js';
+import { sendOrderPush } from '../../../../_lib/push.js';
 
 const ALLOWED = ['ready', 'out_for_delivery', 'completed', 'cancelled'];
 const REJECTABLE_FROM = new Set(['pending_payment', 'pending_accept', 'accepted']);
@@ -117,6 +118,25 @@ export const onRequestPost = async ({ request, env, params }) => {
       await sendEmail({ to: order.customer.email, subject: mail.subject, html: mail.html, fromName: mail.fromName }, env);
     } catch (e) {
       console.warn('rejection email failed', e);
+    }
+  }
+
+  // Customer-app push on the transitions the customer is waiting on (no-op
+  // unless the order carries an app device token; best-effort like the email).
+  const pushBody = status === 'ready'
+    ? (order.fulfillment === 'delivery' ? 'Your order is ready and will be with you soon.' : 'Your order is ready to collect!')
+    : status === 'out_for_delivery' ? 'Your order is on its way!'
+    : (status === 'cancelled' && wasRejectable) ? "Sorry — we couldn't take your order this time. Any card payment has been refunded."
+    : null;
+  if (pushBody) {
+    try {
+      const config = getConfig();
+      await sendOrderPush(order, {
+        title: config.business?.shortName || config.business?.tradingName || 'Your order',
+        body: pushBody,
+      }, env);
+    } catch (e) {
+      console.warn('status push failed', e);
     }
   }
 
