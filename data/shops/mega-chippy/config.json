@@ -104,12 +104,12 @@
     "ordersOnly": true
   },
   "hours": {
-    "_comment": "24-hour format. Source: owner-supplied. Sat 11:30-20:50; Sun & Mon 15:00-20:50; Tue-Fri 11:30-20:50. (8:50pm close = 20:50.)",
+    "_comment": "24-hour format. Sat 11:30-20:50; Sun 15:00-20:50; Mon-Fri 11:30-20:50. (8:50pm close = 20:50.) Monday was originally owner-supplied as 15:00 open; corrected to 11:30 on 2026-07-20 — shop confirmed they're open Monday daytime for collection (the site was showing 'closed' Monday lunchtime).",
     "monday": {
       "closed": false,
       "windows": [
         {
-          "open": "15:00",
+          "open": "11:30",
           "close": "20:50"
         }
       ]
