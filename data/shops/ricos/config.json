@@ -224,6 +224,8 @@
   },
   "marketing": {
     "emailOptIn": true,
-    "smsOptIn": true
+    "smsOptIn": true,
+    "_comment_metaPixelId": "Meta (Facebook) Pixel ID from Events Manager (a numeric string like \"1234567890123456\"). Set it to light up conversion tracking for Facebook/Instagram ads: PageView fires on every customer page and Purchase fires on the thank-you page with the order value. Leave empty to keep the pixel off (and the CSP tighter).",
+    "metaPixelId": "1093068575489545"
   }
 }
