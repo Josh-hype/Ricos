@@ -115,6 +115,8 @@
 
   "marketing": {
     "emailOptIn": true,
-    "smsOptIn": true
+    "smsOptIn": true,
+    "_comment_metaPixelId": "Meta (Facebook) Pixel ID from Events Manager (a numeric string). Set it to enable Facebook/Instagram ad conversion tracking: PageView on every customer page + Purchase on the thank-you page. Leave empty to keep the pixel off.",
+    "metaPixelId": ""
   }
 }

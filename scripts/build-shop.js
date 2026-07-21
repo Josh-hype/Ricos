@@ -596,6 +596,41 @@ function injectFavicon(html) {
   return html.replace(/<head([^>]*)>/i, (m) => `${m}\n  ${faviconTags}`);
 }
 
+/* ---------- Meta (Facebook) Pixel ----------
+   Opt-in per shop via config.marketing.metaPixelId (the numeric Pixel ID from
+   Meta Events Manager). Empty/absent → nothing is emitted and functions/
+   _middleware.js keeps the tighter CSP (connect.facebook.net is only allowed
+   when a pixel is configured). The base snippet + PageView is injected into the
+   <head> of every CUSTOMER-facing page (landing, order, thank-you, legal pages);
+   the staff till UI is deliberately excluded. The thank-you page additionally
+   fires a Purchase event with the real order value (see templates/thank-you.html).
+   The inline snippet is externalised to a same-origin .js like every other inline
+   script, so it runs under script-src 'self' without 'unsafe-inline'. */
+const metaPixelId = String(config.marketing?.metaPixelId || '').trim();
+const metaPixelOn = /^\d{6,20}$/.test(metaPixelId);
+if (metaPixelId && !metaPixelOn) {
+  console.warn(`⚠️  build-shop: marketing.metaPixelId "${metaPixelId}" is not a numeric Meta Pixel ID — pixel NOT emitted for "${slug}".`);
+}
+const metaPixelHead = metaPixelOn
+  ? `<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','${metaPixelId}');fbq('track','PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" alt=""
+src="https://www.facebook.com/tr?id=${metaPixelId}&ev=PageView&noscript=1"/></noscript>`
+  : '';
+if (metaPixelOn) console.log(`build-shop: Meta Pixel ${metaPixelId} enabled for "${slug}".`);
+
+function injectMetaPixel(html) {
+  if (!metaPixelHead) return html;
+  if (/connect\.facebook\.net/i.test(html)) return html; // already present — don't double-inject
+  return html.replace(/<head([^>]*)>/i, (m) => `${m}\n  ${metaPixelHead}`);
+}
+
 // Move each inline <script> into a same-origin .js file (token substitution has
 // already run, so the extracted JS is final) and replace it with <script src>.
 // This lets the CSP use script-src 'self' instead of 'unsafe-inline'. Only plain
@@ -636,7 +671,14 @@ for (const [tplRel, outRelRaw] of templatedFiles) {
   // to the new path. The (?<!\/api) lookbehind leaves every /api/staff/ API call
   // alone, so the till's backend calls keep working.
   if (isStaff && moveStaff) out = out.replace(/(?<!\/api)\/staff\//g, `/${STAFF_PATH}/`);
-  if (outRel.endsWith('.html')) out = externalizeInlineScripts(injectFavicon(out), outRel);
+  if (outRel.endsWith('.html')) {
+    // Favicon on every page; Meta Pixel on customer-facing pages only (never the
+    // internal staff till UI). Externalise inline scripts last, so the injected
+    // pixel snippet is moved out to a same-origin .js like the rest.
+    let page = injectFavicon(out);
+    if (!isStaff) page = injectMetaPixel(page);
+    out = externalizeInlineScripts(page, outRel);
+  }
   fs.mkdirSync(path.dirname(outFile), { recursive: true });
   fs.writeFileSync(outFile, out);
   console.log(`build-shop: templates/${tplRel} -> ${outRel} (${replaced} token(s))`);
@@ -662,7 +704,7 @@ for (const [tplRel, outRelRaw] of templatedFiles) {
       : src;
     const { out, replaced } = substitute(srcWithBar, label);
     const outFile = path.join(repoRoot, 'public', 'index.html');
-    fs.writeFileSync(outFile, externalizeInlineScripts(injectFavicon(out), 'public/index.html'));
+    fs.writeFileSync(outFile, externalizeInlineScripts(injectMetaPixel(injectFavicon(out)), 'public/index.html'));
     console.log(`build-shop: ${label} -> public/index.html (${replaced} token(s))`);
   } else {
     console.warn(`build-shop: no landing page found (shop or default); public/index.html left as-is`);
