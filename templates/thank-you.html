@@ -140,6 +140,21 @@
     okBlock.hidden = true;
   }
 
+  // Report a confirmed order to the Meta Pixel (if this shop runs one) so ad
+  // spend can be tied to real conversions. No-op when no pixel is on the page
+  // (window.fbq is undefined). Deduped per reference so a page refresh can't
+  // double-count the purchase.
+  function firePurchase(reference, totalP) {
+    if (typeof window.fbq !== 'function') return;
+    try {
+      const key = 'fb_purchase_' + reference;
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, '1');
+    } catch (_) { /* private mode: no storage — fire once for this view */ }
+    const value = Number(totalP) > 0 ? Number(totalP) / 100 : undefined;
+    fbq('track', 'Purchase', Object.assign({ currency: 'GBP' }, value ? { value } : {}));
+  }
+
   if (redirectStatus === 'failed') {
     showFailure();
   } else if (!ref) {
@@ -155,7 +170,7 @@
       .then(r => r.json().then(d => ({ ok: r.ok, d })))
       .then(({ ok, d }) => {
         if (!ok || !d || !d.status) { showSoft(); return; }      // 404 / unexpected → soft
-        if (PLACED.has(d.status)) showSuccess(d.orderNumber);
+        if (PLACED.has(d.status)) { showSuccess(d.orderNumber); firePurchase(ref, d.totalP); }
         else if (d.status === 'pending_payment') showFailure();  // payment didn't complete
         else showSoft();                                         // verify_failed etc. — webhook backstops
       })
