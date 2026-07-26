@@ -1765,6 +1765,22 @@ textarea.me-in{resize:vertical;font-family:inherit}
   </div>
 </div>
 
+<!-- Pause-online-orders confirmation: a PIN is required to take the shop offline
+     (a plain confirm was too easy to knock through with a stray double-tap).
+     Resuming needs no PIN — getting back online stays one tap. -->
+<div class="ovl" id="pausePinOvl" role="dialog" aria-modal="true" aria-labelledby="pausePinTitle">
+  <div class="modal">
+    <h2 id="pausePinTitle">Pause online orders?</h2>
+    <p id="pausePinSub" style="color:var(--muted);font-size:13.5px;font-weight:500;margin-bottom:14px;text-align:center">Enter your PIN to stop taking online orders for the rest of today. Counter sales are unaffected, and you can resume any time.</p>
+    <input type="number" inputmode="numeric" pattern="[0-9]*" class="pin-input" id="pausePinInput" maxlength="8" placeholder="••••" />
+    <div class="pin-error" id="pausePinError" aria-live="polite"></div>
+    <div class="row">
+      <button class="cancel" id="pausePinCancel" type="button">Cancel</button>
+      <button class="confirm" id="pausePinConfirm" type="button">Pause orders</button>
+    </div>
+  </div>
+</div>
+
 <!-- ============================== Staff code (per-order attribution)
      Shown when a sale mode is picked: the staff taking the order enter their code
      so the order is recorded against them, even though the till stays signed in. -->
@@ -2126,7 +2142,7 @@ function buildPinPad(input) {
     input.dispatchEvent(new Event('input', { bubbles: true }));
   });
 }
-['pinInput', 'mgrPin', 'authzPin', 'staffCodePin'].forEach(id => buildPinPad(document.getElementById(id)));
+['pinInput', 'mgrPin', 'authzPin', 'staffCodePin', 'pausePinInput'].forEach(id => buildPinPad(document.getElementById(id)));
 
 // Close any open card ⋮ menu when clicking elsewhere.
 document.addEventListener('click', (e) => {
@@ -3190,14 +3206,20 @@ function renderBackOffice() {
 // /api/config (banner + disabled checkout) and enforced by /api/order.
 async function toggleOrderingPause() {
   const paused = !!state.orderingPaused;
-  const msg = paused
-    ? 'Resume taking online orders now?'
-    : 'Stop taking online orders for the rest of today?\n\nCustomers will see that online ordering is paused and can\'t check out. Counter sales are unaffected, and you can resume any time (it also reopens automatically tomorrow).';
-  if (!confirm(msg)) return;
+  // PAUSING takes the shop offline, so it's PIN-gated (a stray double-tap used to
+  // punch through a plain confirm and knock a shop offline mid-service). RESUMING
+  // is not gated — getting back online should be instant.
+  let confirmPin = null;
+  if (paused) {
+    if (!confirm('Resume taking online orders now?')) return;
+  } else {
+    confirmPin = await askPausePin();
+    if (!confirmPin) return; // cancelled
+  }
   try {
     const res = await fetch('/api/staff/settings', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pauseOrdering: !paused }),
+      body: JSON.stringify({ pauseOrdering: !paused, ...(confirmPin ? { confirmPin } : {}) }),
     });
     if (res.status === 401) { $('#logoutBtn').click(); return; }
     const d = await res.json().catch(() => ({}));
@@ -3206,6 +3228,33 @@ async function toggleOrderingPause() {
     renderBackOffice();
   } catch (e) { alert('Network error — please try again.'); }
 }
+
+/* Collect the PIN needed to pause online ordering. Client-side format check only —
+   the server verifies it against the shop PIN before actually pausing. Resolves
+   with the PIN string, or null if cancelled. */
+function askPausePin() {
+  return new Promise((resolve) => {
+    state.pendingPausePin = { resolve };
+    $('#pausePinInput').value = '';
+    $('#pausePinError').textContent = '';
+    $('#pausePinOvl').classList.add('open');
+    setTimeout(() => $('#pausePinInput').focus(), 50);
+  });
+}
+function resolvePausePin(val) {
+  $('#pausePinOvl').classList.remove('open');
+  const p = state.pendingPausePin;
+  state.pendingPausePin = null;
+  if (p) p.resolve(val);
+}
+$('#pausePinCancel').addEventListener('click', () => resolvePausePin(null));
+$('#pausePinOvl').addEventListener('click', (e) => { if (e.target.id === 'pausePinOvl') resolvePausePin(null); });
+$('#pausePinInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#pausePinConfirm').click(); });
+$('#pausePinConfirm').addEventListener('click', () => {
+  const pin = $('#pausePinInput').value.trim();
+  if (!/^\d{4,8}$/.test(pin)) { $('#pausePinError').textContent = 'Enter your 4–8 digit PIN.'; return; }
+  resolvePausePin(pin);
+});
 
 function routingLabel(mode) {
   return mode === 'kds' ? 'Kitchen Display' : (mode === 'both' ? 'Print + Kitchen Display' : 'Print tickets');
