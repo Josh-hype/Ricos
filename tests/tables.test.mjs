@@ -77,3 +77,36 @@ test('ANON_MODES covers exactly the no-customer-details modes', () => {
   assert.equal(ANON_MODES.has('collection'), false);  // still needs name + phone
   assert.equal(ANON_MODES.has('delivery'), false);
 });
+
+/* Receipt wording is a live-kitchen contract: the printed ticket has always said
+   "WALK IN" (space) while the on-screen board says "Walk-in" (hyphen). The
+   hospitality change routes both through shared helpers, so pin the exact strings
+   here — collapsing them would silently alter every existing shop's receipts.
+   Mirrors SOURCE_LABELS / SOURCE_LABELS_PRINT in templates/staff/index.html. */
+const SOURCE_LABELS = { 'counter-walkin': 'Walk-in', 'counter-eatin': 'Eat in', 'counter-takeaway': 'Takeaway' };
+const SOURCE_LABELS_PRINT = { 'counter-walkin': 'WALK IN', 'counter-eatin': 'EAT IN', 'counter-takeaway': 'TAKEAWAY' };
+const screenLabel = (o) => (o.fulfillment === 'delivery' ? 'Delivery' : SOURCE_LABELS[o.source] || 'Collection');
+const printLabel = (o) => (o.fulfillment === 'delivery' ? 'DELIVERY' : SOURCE_LABELS_PRINT[o.source] || 'COLLECTION');
+
+test('printed receipt wording is unchanged for existing takeaway order shapes', () => {
+  const cases = [
+    [{ source: 'counter-walkin', fulfillment: 'collection' }, 'WALK IN', 'Walk-in'],
+    [{ source: 'counter-collection', fulfillment: 'collection' }, 'COLLECTION', 'Collection'],
+    [{ source: 'counter-delivery', fulfillment: 'delivery' }, 'DELIVERY', 'Delivery'],
+    [{ source: 'web', fulfillment: 'collection' }, 'COLLECTION', 'Collection'],
+    [{ source: 'web', fulfillment: 'delivery' }, 'DELIVERY', 'Delivery'],
+    [{ fulfillment: 'collection' }, 'COLLECTION', 'Collection'],   // pre-existing order, no source
+  ];
+  for (const [o, print, screen] of cases) {
+    assert.equal(printLabel(o), print, `print label for ${JSON.stringify(o)}`);
+    assert.equal(screenLabel(o), screen, `screen label for ${JSON.stringify(o)}`);
+  }
+  // "WALK IN" must NOT become "WALK-IN" — that was a real regression caught pre-merge.
+  assert.notEqual(printLabel({ source: 'counter-walkin', fulfillment: 'collection' }), 'WALK-IN');
+});
+
+test('the new hospitality modes get their own printed wording', () => {
+  assert.equal(printLabel({ source: 'counter-eatin', fulfillment: 'collection' }), 'EAT IN');
+  assert.equal(printLabel({ source: 'counter-takeaway', fulfillment: 'collection' }), 'TAKEAWAY');
+  assert.equal(screenLabel({ source: 'counter-eatin', fulfillment: 'collection' }), 'Eat in');
+});
