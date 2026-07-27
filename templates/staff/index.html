@@ -3859,7 +3859,7 @@ function renderReport(s, orders) {
           <div><b>${gbp(s.avgP)}</b><span>avg order</span></div>
           <div><b>${gbp(s.card.grossP)}</b><span>card (${s.card.count})</span></div>
           <div><b>${gbp(s.cash.grossP)}</b><span>cash (${s.cash.count})</span></div>
-          ${(s.eatIn || s.takeaway)
+          ${reportsDineIn(s)
             ? `<div><b>${s.eatIn || 0}</b><span>eat in</span></div>
           <div><b>${s.takeaway || 0}</b><span>takeaway</span></div>`
             : `<div><b>${s.collection}</b><span>collection</span></div>
@@ -3906,7 +3906,7 @@ function renderSummary(data) {
         <div class="k">${s.card.count} card · ${s.cash.count} cash</div>
       </div>
       <div class="stat split">
-        ${(s.eatIn || s.takeaway)
+        ${reportsDineIn(s)
           ? `<div class="row"><span>Eat in</span><b>${s.eatIn || 0}</b></div>
         <div class="row"><span>Takeaway</span><b>${s.takeaway || 0}</b></div>`
           : `<div class="row"><span>Collection</span><b>${s.collection}</b></div>
@@ -4753,6 +4753,14 @@ function saleModes() {
   // and leave the till with no way to start ANY sale. Fall back to the service
   // style's own set rather than shipping a dead screen.
   return known.length ? known : MODE_SETS[serviceStyle()];
+}
+/* Which fulfilment split the reports show. A hospitality shop always gets its own
+   Eat in / Takeaway rows (even on a quiet day where both are 0 — "Collection 0 ·
+   Delivery 0" would be nonsense at a coffee shop). The count check is the fallback
+   for a till whose config hasn't loaded: if the day contains dine-in sales, show
+   the dine-in split regardless. A takeaway shop matches neither and is unchanged. */
+function reportsDineIn(s) {
+  return serviceStyle() === 'hospitality' || !!(s && (s.eatIn || s.takeaway));
 }
 function shopTables() { return Array.isArray(posCfg().tables) ? posCfg().tables : []; }
 
@@ -6347,7 +6355,7 @@ function buildZReportDoc(s, rangeLabel) {
   ops.push(rowOp('Cash (' + (cash.count || 0) + ')', '£' + money(cash.grossP), SZ.body, true));
   ops.push(ruleOp());
   // A dine-in venue gets its own split; a takeaway shop prints exactly as before.
-  if (s.eatIn || s.takeaway) {
+  if (reportsDineIn(s)) {
     ops.push(rowOp('Eat in', String(s.eatIn || 0), SZ.body, true));
     ops.push(rowOp('Takeaway', String(s.takeaway || 0), SZ.body, true));
   } else {
