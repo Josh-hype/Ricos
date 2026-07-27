@@ -1,23 +1,7 @@
-# Cloudflare Pages headers config.
-# https://developers.cloudflare.com/pages/configuration/headers/
-
-# HTML / default: never edge-cache so deploys are immediately visible.
-# (Browsers can still cache for a few seconds; this just stops the CDN
-# from serving stale order.html for 5 min after every push.)
 /*
-  X-Robots-Tag: index, follow
+  X-Robots-Tag: noindex, nofollow, noarchive
   Cache-Control: no-store, must-revalidate
 
 /api/*
   Cache-Control: no-store
   X-Robots-Tag: noindex, nofollow
-
-/staff/*
-  X-Robots-Tag: noindex, nofollow, noarchive
-  Cache-Control: no-store
-
-/assets/*
-  Cache-Control: public, max-age=31536000, immutable
-
-/data/*
-  Cache-Control: public, max-age=60

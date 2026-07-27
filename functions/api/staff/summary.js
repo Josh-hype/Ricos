@@ -110,6 +110,11 @@ export const onRequestGet = async ({ request, env }) => {
   const cashGrossP = sum(takings, cashNetP);
   const grossP = cardGrossP + cashGrossP;
 
+  // Dine-in split (hospitality shops). Counted here so `otherSales` below can be
+  // derived as the exact remainder of takings.
+  const eatInCount = takings.filter(o => /^(counter|link)-eatin$/.test(o.source || '')).length;
+  const takeawayCount = takings.filter(o => /^(counter|link)-takeaway$/.test(o.source || '')).length;
+
   const summary = {
     from,
     to,
@@ -143,8 +148,13 @@ export const onRequestGet = async ({ request, env }) => {
     // "Collection". Derived from the sale mode in o.source; ADDITIVE, so the
     // existing collection/delivery figures are untouched and a takeaway shop
     // (which never produces these sources) reports 0 for both, exactly as before.
-    eatIn: takings.filter(o => /^(counter|link)-eatin$/.test(o.source || '')).length,
-    takeaway: takings.filter(o => /^(counter|link)-takeaway$/.test(o.source || '')).length,
+    eatIn: eatInCount,
+    takeaway: takeawayCount,
+    // Everything else in the day's takings (delivery, online, quick-charge, a
+    // legacy walk-in). Present so the dine-in split is EXHAUSTIVE: eatIn +
+    // takeaway + otherSales === orderCount, and a Z report whose rows don't add
+    // up to the order count is worse than no split at all.
+    otherSales: takings.length - eatInCount - takeawayCount,
     completed: orders.filter(o => o.status === 'completed').length,
     cancelled: orders.filter(o => o.status === 'cancelled').length,
     inProgress: live.filter(o => ['pending_accept', 'accepted', 'ready', 'out_for_delivery'].includes(o.status)).length,
