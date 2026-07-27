@@ -2677,8 +2677,10 @@ async function loadShopConfig() {
       if (res.ok) sale.config = await res.json();
     } catch (e) { /* receipts still print, just without the header */ }
     // Paint the sale modes for this shop's service style (Eat in / Takeaway on a
-    // coffee shop, Walk in / Collection / Delivery on a takeaway).
-    try { renderSaleModes(); } catch (e) {}
+    // coffee shop, Walk in / Collection / Delivery on a takeaway) — but only once
+    // the config actually loaded, so a failed fetch leaves the static markup alone
+    // rather than asserting the wrong service style.
+    if (sale.config) { try { renderSaleModes(); } catch (e) {} }
   }
   // Default the report range to the current TRADING day now that config (hence the
   // businessDayStartHour rollover) is available. Guarded so a user-picked range stays.
@@ -4728,7 +4730,11 @@ function serviceStyle() { return posCfg().serviceStyle === 'hospitality' ? 'hosp
 function saleModes() {
   const custom = posCfg().modes;
   const list = (Array.isArray(custom) && custom.length ? custom : MODE_SETS[serviceStyle()]);
-  return list.filter(m => MODE_DEFS[m]);
+  const known = list.filter(m => MODE_DEFS[m]);
+  // A pos.modes typo ("eat-in", "dinein") would otherwise filter down to nothing
+  // and leave the till with no way to start ANY sale. Fall back to the service
+  // style's own set rather than shipping a dead screen.
+  return known.length ? known : MODE_SETS[serviceStyle()];
 }
 function shopTables() { return Array.isArray(posCfg().tables) ? posCfg().tables : []; }
 
@@ -4851,6 +4857,12 @@ function setSaleStage(stage) {
 }
 
 async function pickSaleMode(mode) {
+  // Only ever start a sale in a mode this shop actually offers. The static markup
+  // still carries the takeaway buttons as a pre-config fallback, so without this a
+  // stale/leftover button could start e.g. a Delivery sale on a coffee shop.
+  const offered = saleModes();
+  if (offered.indexOf(mode) === -1) mode = offered[0];
+  if (!mode) return false;
   // Each order records who's taking it: staff enter their code at the start. In
   // legacy mode (no operators) askStaffCode resolves {skip:true} and we don't
   // prompt. Cancelling leaves them on the mode picker without starting a sale.
@@ -5034,8 +5046,14 @@ async function loadSaleData() {
     const cfg = configRes && configRes.ok ? await configRes.json() : null;
     sale.menu = Array.isArray(menu) ? menu : [];
     sale.visual = Array.isArray(visual) ? visual : [];
-    sale.config = cfg;
-    try { renderSaleModes(); } catch (e) {}
+    // Keep the last-known-good config if this fetch failed. Overwriting it with
+    // null would make serviceStyle() fall back to 'takeaway' and silently repaint
+    // a hospitality till's Eat in / Takeaway buttons as Walk in / Collection /
+    // Delivery — staff would then ring a seated customer up as a walk-in.
+    if (cfg) {
+      sale.config = cfg;
+      try { renderSaleModes(); } catch (e) {}
+    }
     // Counter sales don't charge the platform service fee (card-terminal processing
     // is absorbed instead) — keep it off the till total. Web orders still pay it,
     // and the server recomputes authoritatively (suppressServiceFee).
