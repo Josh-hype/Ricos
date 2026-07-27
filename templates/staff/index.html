@@ -1189,6 +1189,25 @@ textarea.me-in{resize:vertical;font-family:inherit}
 .mode-card .mode-name{font-size:18px;font-weight:800;letter-spacing:-.02em;margin-top:6px}
 .mode-card .mode-desc{font-size:13px;color:var(--muted);font-weight:500;line-height:1.4}
 
+/* Table picker (Eat in — hospitality shops only). A tappable grid of the shop's
+   tables, optionally grouped by area. Big touch targets for a busy floor. */
+.tables-wrap{display:flex;flex-direction:column;gap:20px;margin-top:4px}
+.table-area-name{
+  font-size:12px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:10px;
+}
+.table-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:12px}
+.table-btn{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
+  min-height:88px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  font-size:22px;font-weight:800;letter-spacing:-.02em;color:var(--ink);
+  box-shadow:var(--sh-sm);transition:.16s cubic-bezier(.4,0,.2,1);cursor:pointer;padding:10px;
+}
+.table-btn .tb-cap{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.table-btn:hover{transform:translateY(-2px);box-shadow:var(--sh);border-color:#CFE0F6}
+.table-btn:active{transform:translateY(0) scale(.97)}
+.tables-empty{color:var(--muted);font-size:14px;font-weight:500;text-align:center;padding:28px 0}
+
 /* Customer details form */
 .stage-form{max-width:520px}
 .stage-head{display:flex;align-items:center;gap:12px;position:relative}
@@ -1562,6 +1581,18 @@ textarea.me-in{resize:vertical;font-family:inherit}
               <span class="mode-desc">Send it out — needs address &amp; phone.</span>
             </button>
           </div>
+        </div>
+      </div>
+
+      <!-- Stage 1b: table picker (Eat in — hospitality shops only). Populated at
+           runtime from config.pos.tables; hidden entirely for takeaway shops. -->
+      <div class="sale-stage" id="saleStageTable" hidden>
+        <div class="stage-inner">
+          <div class="stage-head">
+            <button type="button" class="stage-back" id="saleTableBack">← Back</button>
+            <h1>Choose a table</h1>
+          </div>
+          <div class="tables-wrap" id="saleTables"></div>
         </div>
       </div>
 
@@ -2520,7 +2551,7 @@ $('#boIcon').addEventListener('click', async () => {
 $('#homeBtn').addEventListener('click', () => {
   if (state.view === 'sale' && sale.cart && sale.cart.length &&
       !confirm('Leave this sale? The items added will be cleared.')) return;
-  if (state.view === 'sale') { clearCart(); sale.customer = null; sale.deliveryFeeP = 0; }
+  if (state.view === 'sale') { clearCart(); sale.customer = null; sale.deliveryFeeP = 0; sale.table = null; }
   setView('live');
 });
 $('#refreshBtn').addEventListener('click', () => {
@@ -2645,6 +2676,9 @@ async function loadShopConfig() {
       const res = await fetch('/api/config', { cache: 'no-store' });
       if (res.ok) sale.config = await res.json();
     } catch (e) { /* receipts still print, just without the header */ }
+    // Paint the sale modes for this shop's service style (Eat in / Takeaway on a
+    // coffee shop, Walk in / Collection / Delivery on a takeaway).
+    try { renderSaleModes(); } catch (e) {}
   }
   // Default the report range to the current TRADING day now that config (hence the
   // businessDayStartHour rollover) is available. Guarded so a user-picked range stays.
@@ -2797,11 +2831,14 @@ function renderKds(orders, routing) {
   grid.innerHTML = orders.map(o => {
     const isNew = !kdsSeen.has(o.id);
     const isDelivery = o.fulfillment === 'delivery';
-    const type = isDelivery ? 'Delivery' : (o.source === 'counter-walkin' ? 'Walk-in' : 'Collection');
+    const type = orderTypeLabel(o);
     // Paid only when the money is actually in. Online cash-on-collection/delivery,
     // pay-later and part-paid all read as Not paid so the kitchen/driver knows.
     const paid = orderPaid(o);
-    const who = (o.customer && o.customer.name && o.customer.name !== 'Walk-in') ? `<div class="kc-who">${escapeHtml(o.customer.name)}</div>` : '';
+    const tbl = tableLabel(o);
+    const who = tbl
+      ? `<div class="kc-who">${escapeHtml(tbl)}</div>`
+      : ((o.customer && o.customer.name && o.customer.name !== 'Walk-in') ? `<div class="kc-who">${escapeHtml(o.customer.name)}</div>` : '');
     return `<article class="kds-card${isNew ? ' new' : ''}" data-id="${o.id}">
       <div class="kds-card-head">
         <div class="kc-hrow">
@@ -2985,6 +3022,18 @@ function handleOrders(orders) {
 
 // Board filter chips (All / Not paid / In-store / Online). Display-only — they
 // narrow the visible rows; counts + the alarm still run off the full list.
+/* Order type label + table tag. counter-<mode> in o.source carries the sale mode
+   (walkin / eatin / takeaway / collection / delivery); o.table is set on eat-in
+   orders. Kept in one place so the board, the KDS and the receipts agree. */
+const SOURCE_LABELS = { 'counter-walkin': 'Walk-in', 'counter-eatin': 'Eat in', 'counter-takeaway': 'Takeaway' };
+function orderTypeLabel(o) {
+  if (o.fulfillment === 'delivery') return 'Delivery';
+  return SOURCE_LABELS[o.source] || 'Collection';
+}
+function tableLabel(o) {
+  const t = o && o.table;
+  return t && t.label ? `Table ${t.label}` : '';
+}
 function orderIsInstore(o) { return typeof o.source === 'string' && o.source.indexOf('counter') === 0; }
 function orderMatchesFilter(o) {
   const f = state.boardFilter;
@@ -4033,7 +4082,7 @@ function renderRow(o, isNew) {
   const paidCls = orderPaid(o) ? 'pd' : 'np';
 
   const stLabel = { pending_accept: 'new', accepted: 'accepted', ready: 'ready', out_for_delivery: 'out', completed: 'completed', cancelled: 'cancelled' };
-  const fulf = o.fulfillment === 'delivery' ? 'Delivery' : (o.source === 'counter-walkin' ? 'Walk-in' : 'Collection');
+  const fulf = orderTypeLabel(o) + (tableLabel(o) ? ` · ${tableLabel(o)}` : '');
   let timeTxt = '';
   if (['accepted', 'ready', 'out_for_delivery'].includes(o.status) && am !== null) {
     timeTxt = am > 0 ? `${am} min` : (am === 0 ? 'now' : `${-am} min over`);
@@ -4632,13 +4681,118 @@ const sale = {
   cart: [],             // [{id, qty, spice, meal, modifiers, mealChoices, _key}]
   submitting: false,
   pay: { tenderedP: 0 },
-  stage: 'mode',        // 'mode' | 'form' | 'menu'
-  mode: 'walkin',       // 'walkin' | 'collection' | 'delivery'
+  stage: 'mode',        // 'mode' | 'table' | 'form' | 'menu'
+  mode: 'walkin',       // 'walkin' | 'collection' | 'delivery' | 'eatin' | 'takeaway'
+  table: null,          // {id,label,area} once picked (eat in only)
   customer: null,       // {name, phone, address?:{line1,line2,postcode,notes}} once captured
   deliveryFeeP: 0,      // resolved client-side from config.feeByOutcode for display (server is authoritative)
   takenBy: null,        // {id,name} of the staff who entered their code at the mode picker
   card: null,           // {readerId,paymentIntentId,orderId} while a card-reader charge is live
 };
+
+/* ---------- Sale modes ----------
+   Two service styles, one codebase. A takeaway (the default) keeps Walk in /
+   Collection / Delivery; a hospitality shop — coffee shop, restaurant — gets
+   Eat in / Takeaway instead, with a table grid behind Eat in. Which set a till
+   shows comes from config.pos.serviceStyle (optionally overridden by pos.modes),
+   so no shop sees modes it doesn't use and nothing changes for existing tills. */
+const MODE_DEFS = {
+  walkin:     { ic: '🚶', name: 'Walk in',    desc: 'Anonymous counter sale — no details needed.',   cls: '' },
+  collection: { ic: '🛍️', name: 'Collection',  desc: 'Customer collects later — take a name & phone.', cls: 'collection' },
+  delivery:   { ic: '🛵', name: 'Delivery',    desc: 'Send it out — needs address & phone.',          cls: 'delivery' },
+  eatin:      { ic: '🍽️', name: 'Eat in',      desc: 'Dining in — pick a table.',                     cls: 'eatin' },
+  takeaway:   { ic: '🥡', name: 'Takeaway',    desc: 'Grab and go — no details needed.',              cls: 'takeaway' },
+};
+const MODE_SETS = {
+  takeaway: ['walkin', 'collection', 'delivery'],
+  hospitality: ['eatin', 'takeaway'],
+};
+// Modes that skip the customer-details form (anonymous counter sale). Mirrors
+// ANON_MODES in functions/_lib/counter-totals.js — the server is authoritative.
+const ANON_MODES = ['walkin', 'eatin', 'takeaway'];
+
+function posCfg() { return (sale.config && sale.config.pos) || {}; }
+function serviceStyle() { return posCfg().serviceStyle === 'hospitality' ? 'hospitality' : 'takeaway'; }
+function saleModes() {
+  const custom = posCfg().modes;
+  const list = (Array.isArray(custom) && custom.length ? custom : MODE_SETS[serviceStyle()]);
+  return list.filter(m => MODE_DEFS[m]);
+}
+function shopTables() { return Array.isArray(posCfg().tables) ? posCfg().tables : []; }
+
+// Paint the mode picker cards + the board's mode bar from the shop's mode set.
+// Called once config is known; safe to call again (it fully re-renders).
+function renderSaleModes() {
+  const modes = saleModes();
+  const cards = $('#saleStageMode .mode-options');
+  if (cards) {
+    cards.innerHTML = modes.map(m => {
+      const d = MODE_DEFS[m];
+      return `<button type="button" class="mode-card" data-mode="${m}">
+        <span class="mode-ic" aria-hidden="true">${d.ic}</span>
+        <span class="mode-name">${escapeHtml(d.name)}</span>
+        <span class="mode-desc">${escapeHtml(d.desc)}</span>
+      </button>`;
+    }).join('');
+    $$('#saleStageMode .mode-card').forEach(b =>
+      b.addEventListener('click', () => pickSaleMode(b.dataset.mode)));
+  }
+  // The board's quick-start bar mirrors the same modes (the Pay button stays put).
+  const group = $('#modeBar .mode-group');
+  if (group) {
+    const pay = $('#payQuickBtn');
+    group.querySelectorAll('.mode-btn[data-mode]').forEach(b => b.remove());
+    const frag = document.createDocumentFragment();
+    for (const m of modes) {
+      const d = MODE_DEFS[m];
+      const b = document.createElement('button');
+      b.className = `mode-btn${d.cls ? ' ' + d.cls : ''}`;
+      b.dataset.mode = m;
+      b.innerHTML = `<span class="mb-ic" aria-hidden="true">${d.ic}</span> ${escapeHtml(d.name)}`;
+      b.addEventListener('click', async () => {
+        const who = await askStaffCode();
+        if (!who) return;
+        sale.pendingTakenBy = who;
+        setView('sale', m);
+      });
+      frag.appendChild(b);
+    }
+    group.insertBefore(frag, pay || null);
+  }
+}
+
+// Paint the table grid, grouped by area where the shop has set one.
+function renderSaleTables() {
+  const wrap = $('#saleTables');
+  if (!wrap) return;
+  const tables = shopTables();
+  if (!tables.length) {
+    wrap.innerHTML = '<div class="tables-empty">No tables are set up for this shop yet.</div>';
+    return;
+  }
+  const areas = [];
+  for (const t of tables) {
+    const key = t.area || '';
+    let a = areas.find(x => x.name === key);
+    if (!a) { a = { name: key, items: [] }; areas.push(a); }
+    a.items.push(t);
+  }
+  wrap.innerHTML = areas.map(a => `
+    <div>
+      ${a.name ? `<div class="table-area-name">${escapeHtml(a.name)}</div>` : ''}
+      <div class="table-grid">
+        ${a.items.map(t => `<button type="button" class="table-btn" data-table="${escapeHtml(t.id)}">
+          <span class="tb-cap">Table</span>${escapeHtml(t.label)}
+        </button>`).join('')}
+      </div>
+    </div>`).join('');
+  wrap.querySelectorAll('.table-btn').forEach(b => b.addEventListener('click', () => {
+    const t = shopTables().find(x => x.id === b.dataset.table);
+    if (!t) return;
+    sale.table = t;
+    setSaleStage('menu');
+  }));
+}
 
 // Spice options match the website (templates/order.html). The picker only
 // renders for items where visual.spicy === true, so shops that don't flag
@@ -4662,6 +4816,7 @@ async function initSaleView(mode) {
   sale.customer = null;
   sale.deliveryFeeP = 0;
   sale.takenBy = null;
+  sale.table = null;
   renderSaleCats();
   renderSaleProducts();
   renderSaleTicket();
@@ -4675,6 +4830,7 @@ async function initSaleView(mode) {
 function setSaleStage(stage) {
   sale.stage = stage;
   $('#saleStageMode').hidden = stage !== 'mode';
+  $('#saleStageTable').hidden = stage !== 'table';
   $('#saleStageForm').hidden = stage !== 'form';
   $('#saleCatalog').hidden = stage !== 'menu';
   $('#saleTicket').hidden = stage !== 'menu';
@@ -4691,7 +4847,16 @@ async function pickSaleMode(mode) {
   if (!who) return false;
   sale.takenBy = who.skip ? null : { id: who.id, name: who.name };
   sale.mode = mode;
-  if (mode === 'walkin') {
+  // Eat in: pick the table first, then straight to the menu (no customer details).
+  if (mode === 'eatin') {
+    sale.customer = null;
+    sale.deliveryFeeP = 0;
+    sale.table = null;
+    renderSaleTables();
+    setSaleStage('table');
+    return true;
+  }
+  if (ANON_MODES.indexOf(mode) !== -1) {
     sale.customer = null;
     sale.deliveryFeeP = 0;
     setSaleStage('menu');
@@ -4720,10 +4885,13 @@ async function pickSaleMode(mode) {
   return true;
 }
 
+// Mode cards are painted by renderSaleModes() once config is known (it binds the
+// click handlers). The static markup is only a fallback for a config-less boot.
 $$('#saleStageMode .mode-card').forEach(b =>
   b.addEventListener('click', () => pickSaleMode(b.dataset.mode))
 );
 
+$('#saleTableBack').addEventListener('click', () => setSaleStage('mode'));
 $('#saleFormBack').addEventListener('click', () => setView('live'));
 
 $('#saleForm').addEventListener('submit', async (e) => {
@@ -4830,6 +4998,8 @@ function lookupDeliveryFeeP(postcode) {
 
 function modeSubLine() {
   if (sale.mode === 'walkin') return 'Walk in';
+  if (sale.mode === 'eatin') return sale.table ? `Eat in — Table ${sale.table.label}` : 'Eat in';
+  if (sale.mode === 'takeaway') return 'Takeaway';
   const who = sale.customer?.name || '';
   if (sale.mode === 'collection') return `Collection — ${who}`;
   if (sale.mode === 'delivery') {
@@ -4853,6 +5023,7 @@ async function loadSaleData() {
     sale.menu = Array.isArray(menu) ? menu : [];
     sale.visual = Array.isArray(visual) ? visual : [];
     sale.config = cfg;
+    try { renderSaleModes(); } catch (e) {}
     // Counter sales don't charge the platform service fee (card-terminal processing
     // is absorbed instead) — keep it off the till total. Web orders still pay it,
     // and the server recomputes authoritatively (suppressServiceFee).
@@ -5834,8 +6005,8 @@ function buildReceiptText(o, ctx) {
   const heavy = '='.repeat(W), light = '-'.repeat(W);
   const center = (s) => { s = String(s); return s.length >= W ? s.slice(0, W) : ' '.repeat(Math.floor((W - s.length) / 2)) + s; };
   const row = (l, r) => { l = String(l); r = String(r); const g = W - l.length - r.length; return g > 0 ? l + ' '.repeat(g) + r : l + ' ' + r; };
-  const mode = o.fulfillment === 'delivery' ? 'DELIVERY' : (o.source === 'counter-walkin' ? 'WALK IN' : 'COLLECTION');
-  const who = (o.customer && o.customer.name && o.customer.name !== 'Walk-in') ? o.customer.name : '';
+  const mode = orderTypeLabel(o).toUpperCase();
+  const who = tableLabel(o) || ((o.customer && o.customer.name && o.customer.name !== 'Walk-in') ? o.customer.name : '');
   const tender = (ctx && ctx.tender === 'card') ? 'CARD' : 'CASH';
   let when = '';
   try { when = new Date(o.createdAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) {}
@@ -5911,10 +6082,11 @@ function buildKitchenTicket(o) {
   const t = o.totals || {};
   const center = (s) => { s = String(s); return s.length >= W ? s.slice(0, W) : ' '.repeat(Math.floor((W - s.length) / 2)) + s; };
   const heavy = '='.repeat(W), light = '-'.repeat(W);
-  const mode = o.fulfillment === 'delivery' ? 'DELIVERY' : (o.source === 'counter-walkin' ? 'WALK IN' : 'COLLECTION');
+  const mode = orderTypeLabel(o).toUpperCase();
   let when = '';
   try { when = new Date(o.createdAt).toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit' }); } catch (e) {}
   const out = [heavy, center('KITCHEN'), heavy, center(mode + (when ? '   ' + when : '')), center(fulfilWhen(o).toUpperCase()), center('Order ' + (o.orderNumber || o.id))];
+  if (tableLabel(o)) out.push(center(tableLabel(o).toUpperCase()));
   if (o.customer && o.customer.name && o.customer.name !== 'Walk-in') out.push(center(o.customer.name));
   if (o.customer && o.customer.phone) out.push(center(o.customer.phone));
   if (o.address) {
@@ -5991,8 +6163,8 @@ function buildReceiptDoc(o, ctx, kind) {
   const biz = (sale.config && sale.config.business) || {};
   const addr = biz.address || {};
   const money = (p) => ((p || 0) / 100).toFixed(2);
-  const mode = o.fulfillment === 'delivery' ? 'DELIVERY' : (o.source === 'counter-walkin' ? 'WALK IN' : 'COLLECTION');
-  const who = (o.customer && o.customer.name && o.customer.name !== 'Walk-in') ? o.customer.name : '';
+  const mode = orderTypeLabel(o).toUpperCase();
+  const who = tableLabel(o) || ((o.customer && o.customer.name && o.customer.name !== 'Walk-in') ? o.customer.name : '');
   let when = '';
   try { when = new Date(o.createdAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) {}
   // Payment line. Counter sales pass ctx.tender (PAID BY CASH/CARD + change/split);
@@ -6199,6 +6371,7 @@ function buildSalePayload(extra) {
         notes: c.notes || null,
       });
   const payload = Object.assign({ items, mode: sale.mode }, extra || {});
+  if (sale.mode === 'eatin' && sale.table) payload.tableId = sale.table.id;
   if (sale.takenBy) payload.takenBy = { id: sale.takenBy.id };
   if (sale.customer) {
     payload.customer = { name: sale.customer.name, phone: sale.customer.phone };

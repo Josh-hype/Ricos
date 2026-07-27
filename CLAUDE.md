@@ -124,6 +124,39 @@ till auto-updates on its next launch. Treat staff-UI pushes as fleet deploys.
 - `assets/` *(optional)* — photos copied to `public/assets/`
 - `order.css` *(optional)* — per-shop CSS appended to the order page
 
+### Till service style (takeaway vs hospitality)
+
+`config.json` → `pos.serviceStyle` decides which sale modes the till offers:
+
+| Value | Sale modes on the till |
+|-------|------------------------|
+| `takeaway` *(default — omit the key)* | Walk in · Collection · Delivery |
+| `hospitality` | Eat in · Takeaway |
+
+`hospitality` is for coffee shops and restaurants (One Sip is the first).
+**Eat in** shows a tappable table grid built from `pos.tables`; the chosen table
+is stored on the order (`order.table`), printed on the kitchen ticket and the
+receipt, and shown on the board. `pos.tables` takes either plain labels or
+objects with an `area` to group the grid:
+
+```json
+"pos": {
+  "serviceStyle": "hospitality",
+  "tables": [
+    { "label": "1", "area": "Inside" },
+    { "label": "7", "area": "Window" }
+  ]
+}
+```
+
+The server validates the table against this list, so an unknown table can never
+reach an order. `pos.modes` (optional) overrides the derived set outright — use
+it for a restaurant that also wants Collection/Delivery alongside Eat in.
+Takeaway shops that don't set `serviceStyle` are completely unaffected.
+
+Tables are **tag-and-charge-now** today (the table is recorded, payment is taken
+at the counter). Open tabs / pay-at-the-end is deliberately *not* built yet.
+
 ---
 
 ## Menu / item-options schema (dual file, linked by `id`)
