@@ -1,15 +1,16 @@
 {
-  "_comment": "ONE SIP — till-only venue (owner's aunt; LumiPOS provided free). NO customer website, NO online ordering, NO Stripe: both fulfillment modes are disabled (order page + /api/order refuse), card is taken on her own machine (pos.externalCardMachine). The Pages project exists only to serve /staff to her Windows till at the *.pages.dev URL. Menu transcribed from her old Epos Now till (account name 'Nazli') 2026-07-16. Went live on Cloudflare 2026-07-18 (project: one-sip, v2 build system). TODO before receipts go out: confirm address, phone, legal name and opening hours with the owner.",
+  "_comment": "ONE SIP — till-only venue (owner's aunt; LumiPOS provided free). NO customer website, NO online ordering, NO Stripe: both fulfillment modes are disabled (order page + /api/order refuse), card is taken on her own machine (pos.externalCardMachine). The Pages project exists only to serve /staff to her Windows till at the *.pages.dev URL. Menu transcribed from her old Epos Now till (account name 'Nazli') 2026-07-16. Went live on Cloudflare 2026-07-18 (project: one-sip, v2 build system). Address confirmed 2026-07-27 (8 Walmgate, York YO1 9TB) and prints on receipts. Ticket header is deliberately name + address ONLY — phone/email/domain stay empty so no extra line appears. STILL TODO: legal name (companyNumber if registered) and opening hours.",
   "business": {
     "tradingName": "One Sip",
     "_comment_shortName": "Conversational short form used in page headers, aria labels and the staff PWA name (e.g. 'Pizza Bob's' instead of 'Pizza Bob's Burgers Ltd').",
     "shortName": "One Sip",
     "legalName": "ONE SIP (TODO — confirm legal entity)",
     "companyNumber": "",
+    "_comment_address": "Confirmed by the owner 2026-07-27. This is what prints at the top of every till receipt: trading name, then line1, then \"city · postcode\". phone/email/domain are intentionally left empty so the ticket header stays name + address only — filling one in would add a line to every printed ticket.",
     "address": {
-      "line1": "TODO — confirm address",
-      "city": "TODO",
-      "postcode": "TODO",
+      "line1": "8 Walmgate",
+      "city": "York",
+      "postcode": "YO1 9TB",
       "country": "United Kingdom"
     },
     "phone": "",
