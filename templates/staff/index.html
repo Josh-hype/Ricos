@@ -3032,8 +3032,20 @@ function handleOrders(orders) {
    "Walk-in" on the board, "WALK IN" on the ticket — so they get separate tables.
    Keep them that way: collapsing them changes what prints on every existing
    shop's receipts, which is a live-kitchen regression, not a tidy-up. */
-const SOURCE_LABELS = { 'counter-walkin': 'Walk-in', 'counter-eatin': 'Eat in', 'counter-takeaway': 'Takeaway' };
-const SOURCE_LABELS_PRINT = { 'counter-walkin': 'WALK IN', 'counter-eatin': 'EAT IN', 'counter-takeaway': 'TAKEAWAY' };
+/* The `link-*` sources (pay-by-link) list ONLY the two hospitality modes on
+   purpose. link-walkin / link-collection / link-delivery have always fallen
+   through to Collection here, and every live shop's pay-link receipts read that
+   way today — adding them would silently change existing tickets. The two new
+   entries only fix a contradiction this change would otherwise introduce: an
+   eat-in order paid by link printing "COLLECTION" directly above "TABLE 4". */
+const SOURCE_LABELS = {
+  'counter-walkin': 'Walk-in', 'counter-eatin': 'Eat in', 'counter-takeaway': 'Takeaway',
+  'link-eatin': 'Eat in', 'link-takeaway': 'Takeaway',
+};
+const SOURCE_LABELS_PRINT = {
+  'counter-walkin': 'WALK IN', 'counter-eatin': 'EAT IN', 'counter-takeaway': 'TAKEAWAY',
+  'link-eatin': 'EAT IN', 'link-takeaway': 'TAKEAWAY',
+};
 function orderTypeLabel(o) {
   if (o.fulfillment === 'delivery') return 'Delivery';
   return SOURCE_LABELS[o.source] || 'Collection';
@@ -3847,8 +3859,11 @@ function renderReport(s, orders) {
           <div><b>${gbp(s.avgP)}</b><span>avg order</span></div>
           <div><b>${gbp(s.card.grossP)}</b><span>card (${s.card.count})</span></div>
           <div><b>${gbp(s.cash.grossP)}</b><span>cash (${s.cash.count})</span></div>
-          <div><b>${s.collection}</b><span>collection</span></div>
-          <div><b>${s.delivery}</b><span>delivery</span></div>
+          ${(s.eatIn || s.takeaway)
+            ? `<div><b>${s.eatIn || 0}</b><span>eat in</span></div>
+          <div><b>${s.takeaway || 0}</b><span>takeaway</span></div>`
+            : `<div><b>${s.collection}</b><span>collection</span></div>
+          <div><b>${s.delivery}</b><span>delivery</span></div>`}
           <div><b>${s.completed}</b><span>completed</span></div>
           <div><b>${s.cancelled}</b><span>cancelled</span></div>
           <div><b>${gbp(s.refundedP)}</b><span>refunded</span></div>
@@ -3891,8 +3906,11 @@ function renderSummary(data) {
         <div class="k">${s.card.count} card · ${s.cash.count} cash</div>
       </div>
       <div class="stat split">
-        <div class="row"><span>Collection</span><b>${s.collection}</b></div>
-        <div class="row"><span>Delivery</span><b>${s.delivery}</b></div>
+        ${(s.eatIn || s.takeaway)
+          ? `<div class="row"><span>Eat in</span><b>${s.eatIn || 0}</b></div>
+        <div class="row"><span>Takeaway</span><b>${s.takeaway || 0}</b></div>`
+          : `<div class="row"><span>Collection</span><b>${s.collection}</b></div>
+        <div class="row"><span>Delivery</span><b>${s.delivery}</b></div>`}
         <div class="k">delivery fees ${gbp(s.deliveryFeeP)}</div>
       </div>
       <div class="stat split">
@@ -6328,8 +6346,14 @@ function buildZReportDoc(s, rangeLabel) {
   ops.push(rowOp('Card (' + (card.count || 0) + ')', '£' + money(card.grossP), SZ.body, true));
   ops.push(rowOp('Cash (' + (cash.count || 0) + ')', '£' + money(cash.grossP), SZ.body, true));
   ops.push(ruleOp());
-  ops.push(rowOp('Collection', String(s.collection || 0), SZ.body, true));
-  ops.push(rowOp('Delivery', String(s.delivery || 0), SZ.body, true));
+  // A dine-in venue gets its own split; a takeaway shop prints exactly as before.
+  if (s.eatIn || s.takeaway) {
+    ops.push(rowOp('Eat in', String(s.eatIn || 0), SZ.body, true));
+    ops.push(rowOp('Takeaway', String(s.takeaway || 0), SZ.body, true));
+  } else {
+    ops.push(rowOp('Collection', String(s.collection || 0), SZ.body, true));
+    ops.push(rowOp('Delivery', String(s.delivery || 0), SZ.body, true));
+  }
   ops.push(rowOp('Completed', String(s.completed || 0), SZ.body, true));
   ops.push(rowOp('Cancelled', String(s.cancelled || 0), SZ.body, true));
   ops.push(ruleOp());

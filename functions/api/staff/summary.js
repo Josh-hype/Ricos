@@ -137,6 +137,14 @@ export const onRequestGet = async ({ request, env }) => {
     },
     collection: takings.filter(o => o.fulfillment === 'collection').length,
     delivery: takings.filter(o => o.fulfillment === 'delivery').length,
+    // Hospitality split (coffee shops / restaurants). Eat-in and takeaway sales
+    // both carry fulfillment 'collection', so the two counts above can't tell them
+    // apart — a dine-in venue would otherwise see its whole day filed under
+    // "Collection". Derived from the sale mode in o.source; ADDITIVE, so the
+    // existing collection/delivery figures are untouched and a takeaway shop
+    // (which never produces these sources) reports 0 for both, exactly as before.
+    eatIn: takings.filter(o => /^(counter|link)-eatin$/.test(o.source || '')).length,
+    takeaway: takings.filter(o => /^(counter|link)-takeaway$/.test(o.source || '')).length,
     completed: orders.filter(o => o.status === 'completed').length,
     cancelled: orders.filter(o => o.status === 'cancelled').length,
     inProgress: live.filter(o => ['pending_accept', 'accepted', 'ready', 'out_for_delivery'].includes(o.status)).length,
