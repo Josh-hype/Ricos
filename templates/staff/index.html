@@ -4275,7 +4275,12 @@ function renderAlarm(o, qlen) {
   $('#alarmRef').textContent = `#${o.id}`;
   $('#alarmQueue').textContent = qlen > 1 ? `${qlen} waiting` : 'new';
 
-  const fulfillment = o.fulfillment === 'delivery' ? 'Delivery' : 'Collection';
+  // Use the shared label so the alarm agrees with the board and the printed ticket.
+  // Safe for existing shops: only online / pay-link orders ever reach 'pending_accept'
+  // (a counter sale is stored 'accepted'), and web / link-walkin / link-collection all
+  // still resolve to 'Collection' exactly as this line did before.
+  const fulfillment = orderTypeLabel(o);
+  const table = tableLabel(o);
   const pay = orderPaid(o)
     ? (o.paymentMethod === 'split' ? 'Paid — split (cash + card)' : 'Paid by card')
     : 'NOT PAID';
@@ -4285,7 +4290,7 @@ function renderAlarm(o, qlen) {
     : '';
 
   $('#alarmBody').innerHTML = `
-    <div style="font-weight:700;margin-bottom:6px">${fulfillment}${sched} · ${pay}</div>
+    <div style="font-weight:700;margin-bottom:6px">${fulfillment}${table ? ' · ' + escapeHtml(table) : ''}${sched} · ${pay}</div>
     <ul class="lines">${lineItemsHtml(o)}</ul>
     <div class="totals">
       <div class="total"><span>Total</span><span>£${(o.totals.totalP/100).toFixed(2)}</span></div>
