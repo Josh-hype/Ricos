@@ -141,3 +141,40 @@ test('the shared mode + table sets carry the expected members', () => {
   assert.equal(MODES.has('banquet'), false);
   assert.deepEqual([...TABLE_MODES], ['eatin']);   // only dine-in needs a table
 });
+
+/* Reporting split. Eat-in and takeaway sales both carry fulfillment 'collection',
+   so the Z-report's collection/delivery counts can't tell them apart — a coffee
+   shop would file its whole day under "Collection". summary.js adds eatIn/takeaway
+   counts derived from o.source. The addition must be ADDITIVE: a takeaway shop
+   never produces those sources, so its figures stay exactly as they were. */
+const isEatIn = (o) => /^(counter|link)-eatin$/.test(o.source || '');
+const isTakeaway = (o) => /^(counter|link)-takeaway$/.test(o.source || '');
+
+test('the reporting split classifies hospitality sources and ignores takeaway ones', () => {
+  const day = [
+    { source: 'counter-eatin', fulfillment: 'collection' },
+    { source: 'link-eatin', fulfillment: 'collection' },
+    { source: 'counter-takeaway', fulfillment: 'collection' },
+    { source: 'counter-walkin', fulfillment: 'collection' },
+    { source: 'counter-collection', fulfillment: 'collection' },
+    { source: 'web', fulfillment: 'delivery' },
+    { fulfillment: 'collection' },                      // legacy order, no source
+  ];
+  assert.equal(day.filter(isEatIn).length, 2);
+  assert.equal(day.filter(isTakeaway).length, 1);
+  // The pre-existing buckets are untouched by the addition.
+  assert.equal(day.filter(o => o.fulfillment === 'collection').length, 6);
+  assert.equal(day.filter(o => o.fulfillment === 'delivery').length, 1);
+});
+
+test('a takeaway-only day reports zero eat-in/takeaway, so its Z-report is unchanged', () => {
+  const day = [
+    { source: 'counter-walkin', fulfillment: 'collection' },
+    { source: 'counter-collection', fulfillment: 'collection' },
+    { source: 'counter-delivery', fulfillment: 'delivery' },
+    { source: 'link-walkin', fulfillment: 'collection' },
+    { source: 'web', fulfillment: 'collection' },
+  ];
+  assert.equal(day.filter(isEatIn).length, 0);
+  assert.equal(day.filter(isTakeaway).length, 0);
+});

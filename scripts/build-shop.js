@@ -33,6 +33,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+// Reuse the REAL table normaliser the API and till use, so the deploy warning
+// below can't disagree with what actually renders on the device.
+import { normalizeTables } from '../functions/_lib/tables.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(__filename), '..');
@@ -336,6 +339,20 @@ const config = JSON.parse(fs.readFileSync(path.join(activeDir, 'config.json'), '
   const biz = config.business || {};
   for (const [k, v] of Object.entries({ legalName: biz.legalName, companyNumber: biz.companyNumber, email: biz.email, domain: biz.domain })) {
     if (typeof v === 'string' && /TODO|REPLACE/i.test(v)) warns.push(`business.${k} is still a placeholder ("${v}").`);
+  }
+  // A hospitality shop with no usable tables ships a till whose Eat in button
+  // dead-ends ("No tables are set up for this shop yet.") — staff can't take a
+  // dine-in order at all. Easy to cause by mis-keying the array, and otherwise
+  // silent, so say so loudly in the deploy log.
+  const pos = config.pos || {};
+  if (pos.serviceStyle === 'hospitality') {
+    const listed = Array.isArray(pos.tables) ? pos.tables.length : 0;
+    const usable = normalizeTables(pos.tables).length;
+    if (usable === 0) {
+      warns.push('pos.serviceStyle is "hospitality" but pos.tables has no usable entries — the till\'s "Eat in" will dead-end. Check the key name and that each entry has a label.');
+    } else if (usable < listed) {
+      warns.push(`pos.tables lists ${listed} entries but only ${usable} are usable (blank labels or duplicate ids are dropped) — the table grid will show ${usable}.`);
+    }
   }
   if (warns.length) {
     console.warn(`\n⚠️  build-shop: "${slug}" has unfilled config:`);
