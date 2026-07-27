@@ -17,7 +17,7 @@ import { requirePermission } from '../../_lib/permissions.js';
 import { getOperator } from '../../_lib/operators.js';
 import { logAudit } from '../../_lib/audit.js';
 import { getConfig } from '../../_lib/config.js';
-import { priceCounterSale, ANON_MODES } from '../../_lib/counter-totals.js';
+import { priceCounterSale, ANON_MODES, TABLE_MODES } from '../../_lib/counter-totals.js';
 import { findTable } from '../../_lib/tables.js';
 import { resolveMenu } from '../../_lib/menu-store.js';
 import { retrievePaymentIntent, capturePaymentIntent } from '../../_lib/stripe.js';
@@ -95,7 +95,7 @@ export const onRequestPost = async ({ request, env }) => {
   // Eat in: the order is tagged with a table off the shop's configured floor list.
   // Validated server-side so an unknown/blank table can never reach an order.
   let table = null;
-  if (mode === 'eatin') {
+  if (TABLE_MODES.has(mode)) {
     table = findTable(config, body.tableId);
     if (!table) return err('Please choose a table for this eat-in order.', 400);
   }

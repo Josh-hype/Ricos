@@ -14,11 +14,19 @@ import { resolveDelivery } from './delivery.js';
    the hospitality set (coffee shops, restaurants) — see config.pos.serviceStyle.
    Only `delivery` changes the maths; every other mode prices identically and is
    recorded as a collection-fulfilment counter sale, distinguished by order.source
-   (counter-eatin, counter-takeaway, …) plus order.table for eat-in. */
-const MODES = new Set(['walkin', 'collection', 'delivery', 'eatin', 'takeaway']);
+   (counter-eatin, counter-takeaway, …) plus order.table for eat-in.
+
+   EXPORTED because every endpoint that books a sale must agree on the mode list.
+   /api/staff/pay-link used to keep its own private copy and silently drifted when
+   eatin/takeaway were added (an eat-in order paid by link lost its table) — one
+   set, imported everywhere, is what stops that recurring. */
+export const MODES = new Set(['walkin', 'collection', 'delivery', 'eatin', 'takeaway']);
 
 // Modes that are an anonymous over-the-counter sale — no name/phone needed.
 export const ANON_MODES = new Set(['walkin', 'eatin', 'takeaway']);
+
+// Modes that must carry a table (config.pos.tables) — dine-in only.
+export const TABLE_MODES = new Set(['eatin']);
 
 // → { ok:true, mode, fulfillment, totals, address } | { ok:false, error }
 export async function priceCounterSale({ items, mode, address: rawAddress }, config, opts = {}) {

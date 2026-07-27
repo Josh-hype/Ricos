@@ -110,3 +110,34 @@ test('the new hospitality modes get their own printed wording', () => {
   assert.equal(printLabel({ source: 'counter-takeaway', fulfillment: 'collection' }), 'TAKEAWAY');
   assert.equal(screenLabel({ source: 'counter-eatin', fulfillment: 'collection' }), 'Eat in');
 });
+
+/* Mode-list drift guard. /api/staff/pay-link once kept a PRIVATE copy of the mode
+   whitelist; when eatin/takeaway were added it silently coerced an eat-in sale to
+   'walkin' and dropped the table, so a paid-by-link order reached the kitchen with
+   no table on it. Both endpoints now import the one set — assert they still do, and
+   that no endpoint re-declares its own. */
+import { readFileSync } from 'node:fs';
+import { MODES, TABLE_MODES } from '../functions/_lib/counter-totals.js';
+
+test('every sale endpoint imports the shared mode list instead of redeclaring one', () => {
+  for (const f of ['functions/api/staff/counter-order.js', 'functions/api/staff/pay-link.js']) {
+    const src = readFileSync(new URL('../' + f, import.meta.url), 'utf8');
+    assert.match(src, /from '\.\.\/\.\.\/_lib\/counter-totals\.js'/, `${f} must import counter-totals`);
+    assert.doesNotMatch(src, /const\s+MODES\s*=\s*new Set/, `${f} must NOT declare its own MODES set`);
+  }
+});
+
+test('pay-link validates the eat-in table and stores it on the order', () => {
+  const src = readFileSync(new URL('../functions/api/staff/pay-link.js', import.meta.url), 'utf8');
+  assert.match(src, /TABLE_MODES\.has\(mode\)/, 'pay-link must apply the table rule');
+  assert.match(src, /findTable\(config, body\.tableId\)/, 'pay-link must resolve the table');
+  assert.match(src, /\.\.\.\(table \? \{ table \} : \{\}\)/, 'pay-link must persist the table');
+});
+
+test('the shared mode + table sets carry the expected members', () => {
+  for (const m of ['walkin', 'collection', 'delivery', 'eatin', 'takeaway']) {
+    assert.equal(MODES.has(m), true, `${m} should be a valid mode`);
+  }
+  assert.equal(MODES.has('banquet'), false);
+  assert.deepEqual([...TABLE_MODES], ['eatin']);   // only dine-in needs a table
+});
