@@ -4,6 +4,7 @@
    its own SHOP_SLUG env var. */
 import config from '../../data/_active/config.json';
 import { activeClosure } from './hours.js';
+import { normalizeTables } from './tables.js';
 
 export function getConfig() {
   return config;
@@ -81,6 +82,13 @@ export function getPublicConfig() {
       // shop): the till receives/accepts/prints online orders and keeps the full
       // back office, but hides the in-person EPOS (counter sale + card reader).
       ordersOnly: !!pos.ordersOnly,
+      // Service style drives the till's sale modes: 'takeaway' (default) keeps
+      // Walk in / Collection / Delivery; 'hospitality' swaps to Eat in / Takeaway
+      // for coffee shops + restaurants. `modes` overrides the derived set, and
+      // `tables` is the dine-in floor list (Eat in shows a table grid).
+      serviceStyle: pos.serviceStyle === 'hospitality' ? 'hospitality' : 'takeaway',
+      modes: Array.isArray(pos.modes) ? pos.modes.slice(0, 6).map(String) : null,
+      tables: normalizeTables(pos.tables),
     },
     allergens: config.allergens,
     marketing: config.marketing,

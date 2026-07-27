@@ -10,7 +10,15 @@
 import { computeTotals } from './totals.js';
 import { resolveDelivery } from './delivery.js';
 
-const MODES = new Set(['walkin', 'collection', 'delivery']);
+/* Sale modes. walkin/collection/delivery are the takeaway set; eatin/takeaway are
+   the hospitality set (coffee shops, restaurants) — see config.pos.serviceStyle.
+   Only `delivery` changes the maths; every other mode prices identically and is
+   recorded as a collection-fulfilment counter sale, distinguished by order.source
+   (counter-eatin, counter-takeaway, …) plus order.table for eat-in. */
+const MODES = new Set(['walkin', 'collection', 'delivery', 'eatin', 'takeaway']);
+
+// Modes that are an anonymous over-the-counter sale — no name/phone needed.
+export const ANON_MODES = new Set(['walkin', 'eatin', 'takeaway']);
 
 // → { ok:true, mode, fulfillment, totals, address } | { ok:false, error }
 export async function priceCounterSale({ items, mode, address: rawAddress }, config, opts = {}) {

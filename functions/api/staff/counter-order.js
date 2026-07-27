@@ -17,7 +17,8 @@ import { requirePermission } from '../../_lib/permissions.js';
 import { getOperator } from '../../_lib/operators.js';
 import { logAudit } from '../../_lib/audit.js';
 import { getConfig } from '../../_lib/config.js';
-import { priceCounterSale } from '../../_lib/counter-totals.js';
+import { priceCounterSale, ANON_MODES } from '../../_lib/counter-totals.js';
+import { findTable } from '../../_lib/tables.js';
 import { resolveMenu } from '../../_lib/menu-store.js';
 import { retrievePaymentIntent, capturePaymentIntent } from '../../_lib/stripe.js';
 import { putOrder, newOrderId, nextOrderNumber } from '../../_lib/kv.js';
@@ -82,12 +83,22 @@ export const onRequestPost = async ({ request, env }) => {
   if (!priced.ok) return err(priced.error, 400);
   const { mode, fulfillment, totals, address } = priced;
 
-  // Customer. Walk-ins get a placeholder; collection / delivery need a name + phone.
+  // Customer. Anonymous counter modes (walk in / eat in / takeaway) get a
+  // placeholder; collection / delivery need a name + phone.
+  const anon = ANON_MODES.has(mode);
   const rawName = String(body.customer?.name || '').trim().slice(0, 60);
   const rawPhone = String(body.customer?.phone || '').trim().slice(0, 30);
-  const name = rawName || (mode === 'walkin' ? 'Walk-in' : '');
-  if (mode !== 'walkin' && name.length < 2) return err('Customer name is required.', 400);
-  if (mode !== 'walkin' && rawPhone.length < 6) return err('Customer phone is required.', 400);
+  const name = rawName || (anon ? 'Walk-in' : '');
+  if (!anon && name.length < 2) return err('Customer name is required.', 400);
+  if (!anon && rawPhone.length < 6) return err('Customer phone is required.', 400);
+
+  // Eat in: the order is tagged with a table off the shop's configured floor list.
+  // Validated server-side so an unknown/blank table can never reach an order.
+  let table = null;
+  if (mode === 'eatin') {
+    table = findTable(config, body.tableId);
+    if (!table) return err('Please choose a table for this eat-in order.', 400);
+  }
 
   // Card: verify the Terminal authorisation, then capture. The order id is the one
   // the PI metadata points at (minted by /terminal/charge) so the link is consistent.
@@ -178,6 +189,7 @@ export const onRequestPost = async ({ request, env }) => {
     readyAt,
     customer: { name, email: '', phone: rawPhone },
     address,
+    ...(table ? { table } : {}),
     totals,
     paymentMethod: tender === 'card' ? 'counter_card'
       : tender === 'unpaid' ? 'unpaid'
@@ -202,7 +214,7 @@ export const onRequestPost = async ({ request, env }) => {
     op: takenBy?.id || ctx.operator?.id || null,
     opName: takenBy?.name || ctx.operator?.name || sess?.name || null,
     action: 'counter_sale', target: id,
-    details: { mode, tender, totalP: totals.totalP, takenBy: takenBy?.name || null, ...(cardExternal ? { external: true } : {}) },
+    details: { mode, tender, totalP: totals.totalP, takenBy: takenBy?.name || null, ...(table ? { table: table.label } : {}), ...(cardExternal ? { external: true } : {}) },
   });
   return Response.json({ order });
 };
