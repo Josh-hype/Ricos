@@ -3861,7 +3861,8 @@ function renderReport(s, orders) {
           <div><b>${gbp(s.cash.grossP)}</b><span>cash (${s.cash.count})</span></div>
           ${reportsDineIn(s)
             ? `<div><b>${s.eatIn || 0}</b><span>eat in</span></div>
-          <div><b>${s.takeaway || 0}</b><span>takeaway</span></div>`
+          <div><b>${s.takeaway || 0}</b><span>takeaway</span></div>${s.otherSales ? `
+          <div><b>${s.otherSales}</b><span>other</span></div>` : ''}`
             : `<div><b>${s.collection}</b><span>collection</span></div>
           <div><b>${s.delivery}</b><span>delivery</span></div>`}
           <div><b>${s.completed}</b><span>completed</span></div>
@@ -3908,7 +3909,8 @@ function renderSummary(data) {
       <div class="stat split">
         ${reportsDineIn(s)
           ? `<div class="row"><span>Eat in</span><b>${s.eatIn || 0}</b></div>
-        <div class="row"><span>Takeaway</span><b>${s.takeaway || 0}</b></div>`
+        <div class="row"><span>Takeaway</span><b>${s.takeaway || 0}</b></div>${s.otherSales ? `
+        <div class="row"><span>Other</span><b>${s.otherSales}</b></div>` : ''}`
           : `<div class="row"><span>Collection</span><b>${s.collection}</b></div>
         <div class="row"><span>Delivery</span><b>${s.delivery}</b></div>`}
         <div class="k">delivery fees ${gbp(s.deliveryFeeP)}</div>
@@ -6358,6 +6360,9 @@ function buildZReportDoc(s, rangeLabel) {
   if (reportsDineIn(s)) {
     ops.push(rowOp('Eat in', String(s.eatIn || 0), SZ.body, true));
     ops.push(rowOp('Takeaway', String(s.takeaway || 0), SZ.body, true));
+    // Delivery / online / quick-charge takings, so the rows reconcile with the
+    // order count printed above. Omitted when there are none.
+    if (s.otherSales) ops.push(rowOp('Other', String(s.otherSales), SZ.body, true));
   } else {
     ops.push(rowOp('Collection', String(s.collection || 0), SZ.body, true));
     ops.push(rowOp('Delivery', String(s.delivery || 0), SZ.body, true));

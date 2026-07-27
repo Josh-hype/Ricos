@@ -178,3 +178,26 @@ test('a takeaway-only day reports zero eat-in/takeaway, so its Z-report is uncha
   assert.equal(day.filter(isEatIn).length, 0);
   assert.equal(day.filter(isTakeaway).length, 0);
 });
+
+/* The dine-in split must be EXHAUSTIVE. eatIn/takeaway only count the two dine-in
+   sources, but a hospitality shop can also book delivery, online and Quick-Pay
+   takings. Without an "other" remainder the Z-report rows wouldn't add up to the
+   order count printed above them — an accounting figure that doesn't reconcile is
+   worse than no split at all. Mirrors summary.js. */
+test('eatIn + takeaway + otherSales always equals the taking count', () => {
+  const days = [
+    [{ source: 'counter-eatin' }, { source: 'counter-takeaway' }],
+    [{ source: 'counter-eatin' }, { source: 'quick-charge' }, { source: 'web' }],
+    [{ source: 'link-eatin' }, { source: 'link-takeaway' }, { source: 'counter-delivery' }],
+    [{ source: 'counter-walkin' }, { source: 'web' }],           // takeaway-only day
+    [],                                                           // no takings
+  ];
+  for (const takings of days) {
+    const eatIn = takings.filter(o => /^(counter|link)-eatin$/.test(o.source || '')).length;
+    const takeaway = takings.filter(o => /^(counter|link)-takeaway$/.test(o.source || '')).length;
+    const otherSales = takings.length - eatIn - takeaway;
+    assert.ok(otherSales >= 0, 'otherSales must never go negative');
+    assert.equal(eatIn + takeaway + otherSales, takings.length,
+      `split must reconcile for ${JSON.stringify(takings.map(t => t.source))}`);
+  }
+});
