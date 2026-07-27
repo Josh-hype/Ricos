@@ -27,8 +27,11 @@ import { resolveDelivery } from '../../_lib/delivery.js';
 import { createCheckoutSession } from '../../_lib/stripe.js';
 import { putOrder, newOrderId, nextOrderNumber } from '../../_lib/kv.js';
 import { sendSms, normalisePhoneE164UK } from '../../_lib/sms.js';
+import { MODES, ANON_MODES, TABLE_MODES } from '../../_lib/counter-totals.js';
+import { findTable } from '../../_lib/tables.js';
 
-const MODES = new Set(['walkin', 'collection', 'delivery']);
+// Mode list + anon/table rules come from _lib/counter-totals.js — the ONE place
+// they're defined, so this endpoint can't drift from the counter-sale path again.
 
 export const onRequestPost = async ({ request, env }) => {
   // Booking real (pending) revenue — gate on `sell` and audit it, like a counter sale.
@@ -48,11 +51,20 @@ export const onRequestPost = async ({ request, env }) => {
   const mode = MODES.has(body.mode) ? body.mode : 'walkin';
   const fulfillment = mode === 'delivery' ? 'delivery' : 'collection';
 
+  // Eat in must carry a table, same as the counter-sale path — an order the
+  // kitchen can't route is worse than a rejected one.
+  let table = null;
+  if (TABLE_MODES.has(mode)) {
+    table = findTable(config, body.tableId);
+    if (!table) return err('Please choose a table for this eat-in order.', 400);
+  }
+
   // The link is texted, so a UK mobile is REQUIRED for every mode (a walk-in has
   // no other contact). Name is required for collection / delivery, like a counter sale.
   const rawName = String(body.customer?.name || '').trim().slice(0, 60);
-  const name = rawName || (mode === 'walkin' ? 'Walk-in' : '');
-  if (mode !== 'walkin' && name.length < 2) return err('Customer name is required.', 400);
+  const anon = ANON_MODES.has(mode);
+  const name = rawName || (anon ? 'Walk-in' : '');
+  if (!anon && name.length < 2) return err('Customer name is required.', 400);
   const phone = normalisePhoneE164UK(body.customer?.phone || '');
   if (!phone) return err('A UK mobile number is required to text the payment link.', 400);
 
@@ -136,6 +148,7 @@ export const onRequestPost = async ({ request, env }) => {
     schedule: 'asap',
     customer: { name, email: '', phone },
     address,
+    ...(table ? { table } : {}),
     totals,
     paymentMethod: 'card',
     payment: {
