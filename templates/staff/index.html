@@ -3024,11 +3024,23 @@ function handleOrders(orders) {
 // narrow the visible rows; counts + the alarm still run off the full list.
 /* Order type label + table tag. counter-<mode> in o.source carries the sale mode
    (walkin / eatin / takeaway / collection / delivery); o.table is set on eat-in
-   orders. Kept in one place so the board, the KDS and the receipts agree. */
+   orders. Kept in one place so the board, the KDS and the receipts agree.
+
+   The screen and the printer have ALWAYS spelled a counter walk-in differently —
+   "Walk-in" on the board, "WALK IN" on the ticket — so they get separate tables.
+   Keep them that way: collapsing them changes what prints on every existing
+   shop's receipts, which is a live-kitchen regression, not a tidy-up. */
 const SOURCE_LABELS = { 'counter-walkin': 'Walk-in', 'counter-eatin': 'Eat in', 'counter-takeaway': 'Takeaway' };
+const SOURCE_LABELS_PRINT = { 'counter-walkin': 'WALK IN', 'counter-eatin': 'EAT IN', 'counter-takeaway': 'TAKEAWAY' };
 function orderTypeLabel(o) {
   if (o.fulfillment === 'delivery') return 'Delivery';
   return SOURCE_LABELS[o.source] || 'Collection';
+}
+// Printed form. Byte-identical to the pre-existing receipt wording for every
+// takeaway order shape; only the two new hospitality modes are additions.
+function orderTypePrint(o) {
+  if (o.fulfillment === 'delivery') return 'DELIVERY';
+  return SOURCE_LABELS_PRINT[o.source] || 'COLLECTION';
 }
 function tableLabel(o) {
   const t = o && o.table;
@@ -6005,7 +6017,7 @@ function buildReceiptText(o, ctx) {
   const heavy = '='.repeat(W), light = '-'.repeat(W);
   const center = (s) => { s = String(s); return s.length >= W ? s.slice(0, W) : ' '.repeat(Math.floor((W - s.length) / 2)) + s; };
   const row = (l, r) => { l = String(l); r = String(r); const g = W - l.length - r.length; return g > 0 ? l + ' '.repeat(g) + r : l + ' ' + r; };
-  const mode = orderTypeLabel(o).toUpperCase();
+  const mode = orderTypePrint(o);
   const who = tableLabel(o) || ((o.customer && o.customer.name && o.customer.name !== 'Walk-in') ? o.customer.name : '');
   const tender = (ctx && ctx.tender === 'card') ? 'CARD' : 'CASH';
   let when = '';
@@ -6082,7 +6094,7 @@ function buildKitchenTicket(o) {
   const t = o.totals || {};
   const center = (s) => { s = String(s); return s.length >= W ? s.slice(0, W) : ' '.repeat(Math.floor((W - s.length) / 2)) + s; };
   const heavy = '='.repeat(W), light = '-'.repeat(W);
-  const mode = orderTypeLabel(o).toUpperCase();
+  const mode = orderTypePrint(o);
   let when = '';
   try { when = new Date(o.createdAt).toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit' }); } catch (e) {}
   const out = [heavy, center('KITCHEN'), heavy, center(mode + (when ? '   ' + when : '')), center(fulfilWhen(o).toUpperCase()), center('Order ' + (o.orderNumber || o.id))];
@@ -6163,7 +6175,7 @@ function buildReceiptDoc(o, ctx, kind) {
   const biz = (sale.config && sale.config.business) || {};
   const addr = biz.address || {};
   const money = (p) => ((p || 0) / 100).toFixed(2);
-  const mode = orderTypeLabel(o).toUpperCase();
+  const mode = orderTypePrint(o);
   const who = tableLabel(o) || ((o.customer && o.customer.name && o.customer.name !== 'Walk-in') ? o.customer.name : '');
   let when = '';
   try { when = new Date(o.createdAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) {}
