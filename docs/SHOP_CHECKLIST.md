@@ -154,6 +154,16 @@ Walk through on the live URL with a real card (you'll refund after):
 - [ ] Send them their Stripe dashboard URL so they can see live orders
       and payouts
 
+## Phase 10 — SEO (~45 min, you + 15 min from the owner)
+
+The site being live doesn't mean anyone can find it. Run
+[`SEO_CHECKLIST.md`](SEO_CHECKLIST.md) end to end — the Google Business Profile
+step matters more to this shop's orders than anything in Phases 1–9.
+
+- [ ] Work through [`SEO_CHECKLIST.md`](SEO_CHECKLIST.md)
+- [ ] Record the shop's starting position for `<cuisine> <town>` so there's a
+      baseline to measure against
+
 ---
 
 ## Common gotchas
