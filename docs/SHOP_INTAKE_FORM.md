@@ -184,3 +184,37 @@ about 10 minutes and you'll just need your bank details to hand.
 On collection:    ☐ Yes    ☐ No
 
 On delivery:    ☐ Yes    ☐ No
+
+## 8. Getting you found on Google
+
+This is how customers actually find you, so it's worth two minutes.
+
+**Your social pages** — paste the links (leave blank if you don't have one):
+
+Facebook: ______________________________________________
+
+Instagram: _____________________________________________
+
+TikTok: ________________________________________________
+
+**Google Business Profile** — the listing that shows your shop on Google Maps
+with your hours, photos and reviews.
+
+Do you already have one?    ☐ Yes    ☐ No    ☐ Not sure
+
+If yes, please add us as a **Manager** so we can keep your hours, menu link and
+photos up to date: Google Business Profile → Settings → Managers → Add.
+If no, we'll create one for you — Google posts a code to the shop to verify it,
+which takes about five days.
+
+**Photos** — please send 5–10: the shopfront, inside, and your best dishes.
+Phone photos are fine.
+
+**Which three dishes do you most want to be known for?**
+
+1. ______________________  2. ______________________  3. ______________________
+
+**Which areas do you deliver to?** Use the names locals use (e.g. "Acomb",
+"Bishopthorpe") rather than postcodes.
+
+_______________________________________________________
