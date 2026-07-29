@@ -11,6 +11,8 @@ export function getConfig() {
 }
 
 /* Public-safe slice for the browser. Drops anything operational. */
+import { MAX_SAVED_ADDRESSES } from './customer.js';
+
 export function getPublicConfig() {
   // Defensive reads: an incomplete shop config should not 500 /api/config for
   // the whole site. Missing sections degrade to sensible empties.
@@ -21,6 +23,9 @@ export function getPublicConfig() {
   const payments = config.payments || {};
   const pos = config.pos || {};
   return {
+    // How many addresses an account keeps. Published so the checkout warns at the
+    // real limit rather than hard-coding a number that could drift from the server.
+    maxSavedAddresses: MAX_SAVED_ADDRESSES,
     business: {
       tradingName: business.tradingName,
       shortName: business.shortName,
