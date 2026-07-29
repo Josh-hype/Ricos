@@ -2,7 +2,9 @@
    normalised contact (lowercase email or +44... phone) so signin can look up
    directly without needing a secondary index. */
 
-const MAX_SAVED_ADDRESSES = 5;
+// Exported so the API and the order page agree on the cap — the checkout warns
+// the customer when they're at it, and must not invent its own number.
+export const MAX_SAVED_ADDRESSES = 5;
 
 export async function getCustomer(contact, env) {
   if (!env.CUSTOMERS_KV) return null;
@@ -62,6 +64,18 @@ export function updateContactDetails(customer, { email, phone }) {
 // Add (or refresh) an address on a customer's record. Dedupes by lowercased
 // line1+postcode so re-ordering to the same place doesn't make duplicate
 // entries. Caller is responsible for persisting via putCustomer.
+/* Remove one saved address. Identified the same way upsertAddress dedupes —
+   line1 + postcode, both normalised — because saved addresses carry no id. */
+export function removeAddress(customer, addr) {
+  if (!customer || !addr || !addr.line1 || !addr.postcode) return customer;
+  const line = (addr.line1 || '').trim().toLowerCase();
+  const pc = (addr.postcode || '').trim().toUpperCase().replace(/\s+/g, '');
+  customer.addresses = (customer.addresses || []).filter(a =>
+    !((a.line1 || '').trim().toLowerCase() === line &&
+      (a.postcode || '').trim().toUpperCase().replace(/\s+/g, '') === pc));
+  return customer;
+}
+
 export function upsertAddress(customer, addr) {
   if (!addr || !addr.line1 || !addr.postcode) return customer;
   const normLine1 = addr.line1.trim().toLowerCase();

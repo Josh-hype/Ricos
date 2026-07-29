@@ -1360,6 +1360,16 @@
      tap one-handed on a phone; the chosen one is marked with a filled dot as well
      as a border, so it reads without relying on colour alone. */
   .saved-addrs { display: flex; flex-direction: column; gap: 6px; margin: 2px 0; }
+  .saved-addr-row { display: flex; align-items: stretch; gap: 6px; }
+  .saved-addr-row .saved-addr { flex: 1 1 auto; min-width: 0; }
+  /* Delete is deliberately quiet and a separate target, so a mis-tap picks the
+     address rather than removing it. */
+  .saved-addr-del {
+    flex: 0 0 auto; width: 40px; background: transparent; color: inherit; opacity: .5;
+    border: 2px solid rgba(0,0,0,.14); border-radius: 10px; font-size: 1.15rem;
+    line-height: 1; cursor: pointer; font-family: inherit;
+  }
+  .saved-addr-del:hover { opacity: 1; border-color: var(--error); color: var(--error); }
   .saved-addr {
     display: flex; align-items: flex-start; gap: 9px; width: 100%; text-align: left;
     background: rgba(255,255,255,.6); border: 2px solid rgba(0,0,0,.14); border-radius: 10px;
@@ -3033,6 +3043,50 @@ function oneLineAddress(a) {
    re-quotes the delivery fee because the postcode no longer matches the one on
    `state`, so switching to an address in a different band is priced correctly
    rather than inheriting the last order's fee. */
+/* The account cap, published by /api/config so this can't drift from the server. */
+function maxSavedAddresses() {
+  const n = Number(window.SHOP_CONFIG && window.SHOP_CONFIG.maxSavedAddresses);
+  return Number.isFinite(n) && n > 0 ? n : 5;
+}
+/* Delete a saved address. Signed-in customers are removed server-side (so it's
+   gone on their other devices too) and we re-render from the profile the API
+   returns rather than assuming; guests are removed from this browser's list. */
+async function deleteSavedAddress(i) {
+  const a = savedAddressList()[i];
+  if (!a) return;
+  if (!confirm('Remove this address?\n\n' + oneLineAddress(a))) return;
+  const wasCurrent = addressIsCurrent(a);
+  const signedIn = !!(state.user && Array.isArray(state.user.addresses) && state.user.addresses.length);
+  if (signedIn) {
+    try {
+      const res = await fetch('/api/account/address', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ line1: a.line1, postcode: a.postcode }),
+      });
+      const body = await res.json().catch(() => null);
+      if (!res.ok) { alert((body && body.error) || "Couldn't remove that address."); return; }
+      if (body && body.user) state.user = body.user;
+    } catch (e) { alert('Network error — please try again.'); return; }
+  }
+  // Always drop it locally too: a guest keeps only this list, and a signed-in
+  // customer may have the same address cached here from an earlier order.
+  const key = (x) => ((x.line1 || '').trim().toLowerCase() + '|' + (x.postcode || '').toUpperCase().replace(/\s+/g, ''));
+  state.savedList = (Array.isArray(state.savedList) ? state.savedList : []).filter(x => key(x) !== key(a));
+  if (state.saved && key(state.saved) === key(a)) state.saved = null;
+  saveState();
+
+  // If they deleted the one in use, fall back to whatever is left rather than
+  // leaving the form pointing at an address that no longer exists.
+  const rest = savedAddressList();
+  if (wasCurrent) {
+    if (rest.length) { useSavedAddress(0); return; }
+    forgetSavedAddress();
+    if (state.mode === 'deliver') { state.postcode = null; state.deliveryFeeP = null; saveState(); }
+  }
+  renderCheckout();
+}
 function useSavedAddress(i) {
   const a = savedAddressList()[i];
   if (!a) return;
@@ -3631,15 +3685,23 @@ function renderCheckout() {
         // One address: confirm it. Several: let them pick, with the one in use ticked.
         const rows = list.map((a, i) => {
           const on = addressIsCurrent(a);
-          return `<button type="button" class="saved-addr${on ? ' sel' : ''}" data-addr="${i}">
-            <span class="saved-addr-tick">${on ? '●' : '○'}</span>
-            <span>${escapeHTML(oneLineAddress(a))}</span>
-          </button>`;
+          // Select and delete are siblings, not nested — a <button> inside a
+          // <button> is invalid and the inner one swallows the outer's taps.
+          return `<div class="saved-addr-row">
+            <button type="button" class="saved-addr${on ? ' sel' : ''}" data-addr="${i}">
+              <span class="saved-addr-tick">${on ? '●' : '○'}</span>
+              <span>${escapeHTML(oneLineAddress(a))}</span>
+            </button>
+            <button type="button" class="saved-addr-del" data-del="${i}" aria-label="Delete ${escapeHTML(oneLineAddress(a))}" title="Delete this address">&times;</button>
+          </div>`;
         }).join('');
         return `<div class="notice ok" style="text-align:left">
           <div style="font-size:0.8rem;opacity:.75;margin-bottom:6px">${list.length > 1 ? 'Deliver to which address?' : savedAddressLabel()}</div>
           ${list.length > 1 ? `<div class="saved-addrs">${rows}</div>`
             : `<div style="font-weight:700;line-height:1.45">${[checkoutData.line1, checkoutData.line2, checkoutData.city, savedPostcode()].filter(Boolean).map(escapeHTML).join('<br>')}</div>`}
+          ${list.length >= maxSavedAddresses() ? `<div style="font-size:0.8rem;opacity:.8;margin-top:8px">
+            You've saved the maximum of ${maxSavedAddresses()} addresses. Saving a new one replaces the oldest — or delete one above.
+          </div>` : ''}
           <button type="button" id="coNewAddr" class="btn-form secondary" style="width:auto;padding:6px 14px;font-size:0.85rem;margin:10px 0 0">Use a new address</button>
         </div>`;
       })() : ''}
@@ -3681,6 +3743,9 @@ function renderCheckout() {
 
     document.querySelectorAll('#checkoutBody .saved-addr').forEach(btn => {
       btn.addEventListener('click', () => useSavedAddress(Number(btn.dataset.addr)));
+    });
+    document.querySelectorAll('#checkoutBody .saved-addr-del').forEach(btn => {
+      btn.addEventListener('click', () => deleteSavedAddress(Number(btn.dataset.del)));
     });
     document.getElementById('coNewAddr')?.addEventListener('click', () => {
       forgetSavedAddress();
