@@ -1799,6 +1799,31 @@ textarea.me-in{resize:vertical;font-family:inherit}
 <!-- Pause-online-orders confirmation: a PIN is required to take the shop offline
      (a plain confirm was too easy to knock through with a stray double-tap).
      Resuming needs no PIN — getting back online stays one tap. -->
+<!-- Why is this order being rejected? The chosen text is sent to the customer
+     ("Reason: …" in the rejection email) and recorded on the order + audit log, so
+     the wording here is customer-facing, not staff shorthand. -->
+<div class="ovl" id="rejectOvl" role="dialog" aria-modal="true" aria-labelledby="rejectTitle">
+  <div class="modal">
+    <h2 id="rejectTitle">Why are you rejecting this order?</h2>
+    <p style="color:var(--muted);font-size:13.5px;font-weight:500;margin-bottom:14px;text-align:center">The customer is told the reason, and any card payment is refunded automatically.</p>
+    <div class="routing-opts" id="rejectOpts">
+      <button class="routing-opt" data-reason="Your address is outside our delivery area" type="button"><b>🛵 Out of delivery area</b><span>The address is too far for us to deliver</span></button>
+      <button class="routing-opt" data-reason="We are too busy to take any more orders right now" type="button"><b>🔥 Too busy</b><span>The kitchen is at capacity</span></button>
+      <button class="routing-opt" data-reason="We have closed for the day" type="button"><b>🌙 Shop is closed</b><span>Past last orders or closing up</span></button>
+      <button class="routing-opt" data-reason="__other__" type="button"><b>✏️ Something else</b><span>Type your own reason</span></button>
+    </div>
+    <label class="field" id="rejectOtherField" hidden style="margin-top:10px">
+      <span>Reason for the customer</span>
+      <input type="text" id="rejectOtherText" maxlength="200" placeholder="e.g. we have sold out of fish" />
+    </label>
+    <div class="pin-error" id="rejectError" aria-live="polite"></div>
+    <div class="row">
+      <button class="cancel" id="rejectCancel" type="button">Back</button>
+      <button class="confirm" id="rejectConfirm" type="button">Reject order</button>
+    </div>
+  </div>
+</div>
+
 <div class="ovl" id="pausePinOvl" role="dialog" aria-modal="true" aria-labelledby="pausePinTitle">
   <div class="modal">
     <h2 id="pausePinTitle">Pause online orders?</h2>
@@ -2219,6 +2244,8 @@ const state = {
   printOnAccept: true,     // derived: does the till print the kitchen ticket on accept?
   printCounter: true,      // does the till auto-print for COUNTER sales? (online always follows printOnAccept)
   printerLast: null,       // { ok, at, reason } — last print attempt, shown on the Printer tile
+  pendingReject: null,     // in-flight rejection-reason prompt
+  rejectChoice: null,      // the reason button currently selected
   orderingPaused: false,   // back-office toggle: online ordering paused for the rest of today
 };
 
@@ -3307,6 +3334,49 @@ async function toggleOrderingPause() {
   } catch (e) { alert('Network error — please try again.'); }
 }
 
+/* Collect the rejection reason. Resolves with the customer-facing text, or null if
+   the operator backs out. The server already accepts and stores `reason` (it goes
+   into the rejection email and the audit log) — until now the till simply never
+   asked, so every rejection reached the customer with no explanation. */
+function askRejectReason() {
+  return new Promise((resolve) => {
+    state.pendingReject = { resolve };
+    state.rejectChoice = null;
+    $('#rejectOtherText').value = '';
+    $('#rejectOtherField').hidden = true;
+    $('#rejectError').textContent = '';
+    $$('#rejectOpts .routing-opt').forEach(b => b.classList.remove('sel'));
+    $('#rejectOvl').classList.add('open');
+  });
+}
+function resolveReject(val) {
+  $('#rejectOvl').classList.remove('open');
+  const p = state.pendingReject;
+  state.pendingReject = null;
+  if (p) p.resolve(val);
+}
+$$('#rejectOpts .routing-opt').forEach(b => b.addEventListener('click', () => {
+  $$('#rejectOpts .routing-opt').forEach(x => x.classList.remove('sel'));
+  b.classList.add('sel');
+  state.rejectChoice = b.dataset.reason;
+  const other = state.rejectChoice === '__other__';
+  $('#rejectOtherField').hidden = !other;
+  $('#rejectError').textContent = '';
+  if (other) setTimeout(() => $('#rejectOtherText').focus(), 50);
+}));
+$('#rejectCancel').addEventListener('click', () => resolveReject(null));
+$('#rejectOvl').addEventListener('click', (e) => { if (e.target.id === 'rejectOvl') resolveReject(null); });
+$('#rejectConfirm').addEventListener('click', () => {
+  const choice = state.rejectChoice;
+  if (!choice) { $('#rejectError').textContent = 'Pick a reason first.'; return; }
+  if (choice === '__other__') {
+    const t = $('#rejectOtherText').value.trim();
+    if (t.length < 3) { $('#rejectError').textContent = 'Type a short reason for the customer.'; return; }
+    return resolveReject(t);
+  }
+  resolveReject(choice);
+});
+
 /* Collect the PIN needed to pause online ordering. Client-side format check only —
    the server verifies it against the shop PIN before actually pausing. Resolves
    with the PIN string, or null if cancelled. */
@@ -4370,12 +4440,15 @@ $('#alarmAccept').addEventListener('click', async () => {
 $('#alarmReject').addEventListener('click', async () => {
   const id = state.alarmId;
   if (!id) return;
-  if (!confirm('Reject this order? The customer is notified and any card payment is refunded automatically.')) return;
+  // Ask WHY first: the reason reaches the customer, so a blank rejection leaves
+  // them with a refund and no explanation.
+  const reason = await askRejectReason();
+  if (!reason) return;
   const authToken = await requirePerm('void', id);
   if (authToken === false) return;
   $('#alarmReject').disabled = true;
   try {
-    const r = await sendStatus(id, 'cancelled', undefined, authToken);
+    const r = await sendStatus(id, 'cancelled', reason, authToken);
     state.alarmId = null;
     await poll();
     noteRefund(r);
@@ -4663,13 +4736,15 @@ async function cancelOrder(id) {
   // the prompt would be an impossible dead-end (no PIN can satisfy /authorize) —
   // there we proceed without a token. requirePerm resolves: a token / 'owner'
   // sentinel / null (allowed, no token needed) → proceed; false → dismissed.
+  const reason = await askRejectReason();
+  if (!reason) return;
   const token = await requirePerm('void', id, state.operatorsEnabled);
   if (token === false) return;
-  doCancel(id, token || undefined);
+  doCancel(id, token || undefined, reason);
 }
-async function doCancel(id, token) {
+async function doCancel(id, token, reason) {
   try {
-    const r = await sendStatus(id, 'cancelled', undefined, token);
+    const r = await sendStatus(id, 'cancelled', reason, token);
     noteRefund(r);
     poll();
     if (state.boardTab === 'completed') loadCompleted();
