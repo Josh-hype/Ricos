@@ -23,6 +23,15 @@ https://www.ricosyork.co.uk/*  https://ricosyork.co.uk/:splat  301
 https://ricosyork.com/*      https://ricosyork.co.uk/:splat  301
 https://www.ricosyork.com/*  https://ricosyork.co.uk/:splat  301
 
+# Mega Chippy: acombmegachippy.uk is canonical (it matches the Google Business
+# Profile and the name people actually search, "Acomb Mega Chippy"; plain "mega
+# chippy" is unwinnable against the viral Australian one). megachippy.co.uk stays
+# registered and 301s here so its links/authority transfer. Host-scoped, so these
+# are no-ops on every other shop's deploy.
+https://megachippy.co.uk/*       https://acombmegachippy.uk/:splat  301
+https://www.megachippy.co.uk/*   https://acombmegachippy.uk/:splat  301
+https://www.acombmegachippy.uk/* https://acombmegachippy.uk/:splat  301
+
 # Friendly URLs.
 /menu     /order   302
 /book     /order   302
