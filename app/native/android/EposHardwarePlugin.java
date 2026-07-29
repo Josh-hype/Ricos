@@ -70,6 +70,13 @@ public class EposHardwarePlugin extends Plugin {
     // ZCS SmartPos. `zcsPrinter` stays null on non-ZCS hardware (sdkInit fails or the
     // classes aren't backed by a device), which is how we fall through to Sunmi.
     private Printer zcsPrinter = null;
+    // How many times we've tried to bring the ZCS SDK up. Bounded, because the
+    // retry costs a sysPowerOn + a 1s sleep: without this every print on a
+    // NON-ZCS till (a Sunmi T2, say) paid that cost again and it looked like the
+    // printer was hanging. Two attempts covers the cold-boot case where the SDK
+    // starts just after we do; after that the answer is settled.
+    private int zcsAttempts = 0;
+    private static final int ZCS_MAX_ATTEMPTS = 2;
 
     private final InnerPrinterCallback printerCallback = new InnerPrinterCallback() {
         @Override
@@ -93,23 +100,32 @@ public class EposHardwarePlugin extends Plugin {
      *  because on non-ZCS hardware the native layer can raise UnsatisfiedLinkError /
      *  NoClassDefFoundError, which must not take the whole plugin down. */
     private void initZcs() {
+        if (zcsAttempts >= ZCS_MAX_ATTEMPTS) return;   // settled — don't pay the cost again
+        zcsAttempts++;
         try {
             DriverManager dm = DriverManager.getInstance();
             Sys sys = dm.getBaseSysDevice();
             int st = sys.sdkInit();
             if (st != SdkResult.SDK_OK) {
+                // Only worth powering the board and waiting when the SDK is actually
+                // present but not ready. On hardware that has no ZCS board at all the
+                // calls above throw, so we never reach this sleep.
                 sys.sysPowerOn();
                 try { Thread.sleep(1000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
                 st = sys.sdkInit();
             }
             zcsPrinter = (st == SdkResult.SDK_OK) ? dm.getPrinter() : null;
         } catch (Throwable t) {
+            // No ZCS board (UnsatisfiedLinkError / NoClassDefFoundError) — settle
+            // immediately rather than retrying, so a Sunmi till never pays for this.
             zcsPrinter = null;
+            zcsAttempts = ZCS_MAX_ATTEMPTS;
         }
     }
 
-    /** ZCS printer if this device has one AND it's ready. Re-inits once if the SDK
-     *  came up after us (cold boot ordering), so a till isn't stuck "no printer". */
+    /** ZCS printer if this device has one AND it's ready. Retries only while under
+     *  ZCS_MAX_ATTEMPTS, so the cold-boot case is covered without charging every
+     *  later print for a decision already made. */
     private Printer zcs() {
         if (zcsPrinter == null) initZcs();
         return zcsPrinter;
