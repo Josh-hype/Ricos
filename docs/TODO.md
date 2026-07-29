@@ -2,44 +2,37 @@
 
 Running list of agreed follow-ups. Newest at the top.
 
-## Mega Chippy — migrate fully to `acombmegachippy.uk`, retire `megachippy.co.uk`
-Owner is **reselling `megachippy.co.uk`**, so it must be taken out of the system
-entirely — everything moves to `acombmegachippy.uk`. This is a full migration;
-`megachippy.co.uk` is baked into several places. **Do the steps IN ORDER — the
-till is currently hard-wired to `megachippy.co.uk`, so pulling it early breaks
-the shop (this exact thing took the till down on 2026-07-14).**
+## Mega Chippy — migrate fully to `acombmegachippy.uk`  ✅ DONE 2026-07-29
+Completed. `acombmegachippy.uk` is the shop's only domain; `megachippy.co.uk` has
+been detached from the Pages project and is free to be resold.
 
-- [ ] **PREREQUISITE — make `acombmegachippy.uk` actually work first.** Its
-      checkout is currently broken: the page loads but `/api/*` doesn't serve on
-      that hostname (`/api/config` returns nothing). Attach `acombmegachippy.uk`
-      as a **Custom Domain on the `mega-chippy` Pages project** (Workers & Pages →
-      mega-chippy → Custom domains), wait for Active, then confirm
-      `https://acombmegachippy.uk/api/config` returns the same JSON as
-      megachippy.co.uk **and a test order completes**. Nothing else proceeds until
-      this passes.
-- [ ] **Re-register the wallet domain** for the new host: log into
-      `https://acombmegachippy.uk/staff` and hit `/api/staff/wallet-domain`
-      (expect `applePay/googlePay: active`). Apple/Google Pay register against the
-      exact host, so the megachippy.co.uk registration won't cover the new domain.
-- [ ] **Email:** verify `acombmegachippy.uk` in Resend (SPF/DKIM DNS) and set
-      `RESEND_FROM_EMAIL` = `orders@acombmegachippy.uk` on the mega-chippy Pages
-      project. (Confirmation emails currently send from `orders@megachippy.co.uk`.)
-- [ ] **Canonical/SEO:** set `data/shops/mega-chippy/config.json` `business.domain`
-      back to `acombmegachippy.uk` (it was reverted to megachippy.co.uk on
-      2026-07-14 because ordering was broken there). Rebuild + deploy.
-- [ ] **Move the TILL to the new backend** — `app/web/provision.js` `DIRECTORY`
-      maps Restaurant ID `318181` → `https://megachippy.co.uk`. Change it to the
-      new host (use the live host, not a bare apex that 301-redirects). This is a
-      staff/app change → **OTA**: it publishes a new LumiPOS bundle. After the
-      OTA, the till must **re-provision** (Restaurant ID + setup password) OR the
-      stored `epos_api_base` must be updated, so it talks to the new domain.
-      **Verify the till logs in on the new domain BEFORE removing the old one.**
-- [ ] **Only now: remove `megachippy.co.uk`** as a Custom Domain on the Pages
-      project, so the resold domain no longer touches this shop.
-- [ ] **Heads-up on Google:** the Google Business Profile / search presence is on
-      `megachippy.co.uk`. Reselling it means that presence can't be redirected
-      long-term — plan to update the Google Business Profile website + rebuild SEO
-      on `acombmegachippy.uk`.
+- [x] **`acombmegachippy.uk` serves properly** — `/api/config` returns, a test
+      order completed, and the shop took real orders on it.
+- [x] **Canonical/SEO** — `business.domain` is `acombmegachippy.uk`, so the
+      canonical tag, JSON-LD, sitemap and OG tags all match the Google listing.
+- [x] **TILL moved** — `provision.js` Restaurant ID `318181` →
+      `https://acombmegachippy.uk`; the shop's device was re-provisioned via the
+      "use a site address" route.
+- [x] **Email** — `acombmegachippy.uk` verified in Resend, Email Routing set up,
+      `RESEND_FROM_EMAIL` = `orders@acombmegachippy.uk`, `business.email` updated.
+- [x] **`megachippy.co.uk` removed** from the Pages project; its redirect rules
+      and every config reference have been stripped from the repo.
+- [x] **Google Business Profile** now points at `acombmegachippy.uk`.
+- [ ] **Re-register the wallet domain** — log into
+      `https://acombmegachippy.uk/staff`, then hit `/api/staff/wallet-domain`
+      (expect `applePay` / `googlePay: active`). Apple and Google Pay register
+      against the EXACT host, so the old registration doesn't carry over and the
+      wallet buttons stay hidden at checkout until this is run. It must go through
+      that endpoint: Connect direct-charge accounts can't register a domain from
+      the Stripe Dashboard. Idempotent — safe to re-run.
+
+### Still outstanding for this shop
+- [ ] **Submit `acombmegachippy.uk` to Google Search Console** + the sitemap. The
+      old agency sites (`acombmegachippy.com`, `acombmegachippyyork.co.uk`) are not
+      ours and can't be redirected, so ranking is rebuilt via the Business Profile.
+- [ ] **Signed APK.** The Z93 currently runs a debug build, so updates are tied to
+      the one MacBook that produced it. Build once via *Generate Signed App Bundle
+      / APK*, keep `lumipos-release.jks` safe, and any machine can update the tills.
 
 ## Payments — split / part payment
 - [x] **Refund an in-person counter-card sale.** `refund.js` + `status.js` now
