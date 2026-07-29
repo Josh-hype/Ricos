@@ -3478,6 +3478,13 @@ function runCheckout() {
       checkoutData.line2 = pick.line2;
       checkoutData.city  = pick.city;
       checkoutData.notes = pick.notes;
+      // The postcode belongs to the saved address too. Delivery hides this omission
+      // (that field reads state.postcode, captured before checkout), but a
+      // collection shop that captures an address — fulfillment.collection
+      // .collectAddress, e.g. Mega Chippy — reads checkoutData.postcode, so leaving
+      // it unset showed a prefilled address with an empty postcode and refused to
+      // continue with "Please enter a valid postcode".
+      checkoutData.postcode = pick.postcode || checkoutData.postcode || '';
       // Came from their ACCOUNT, so it follows them across devices — worth saying
       // so, and it means the "Use a new address" control must show here too.
       checkoutData.addrSource = 'account';
