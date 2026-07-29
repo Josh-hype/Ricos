@@ -10,6 +10,17 @@ import com.sunmi.peripheral.printer.InnerPrinterCallback;
 import com.sunmi.peripheral.printer.InnerPrinterManager;
 import com.sunmi.peripheral.printer.SunmiPrinterService;
 
+// ZCS SmartPos SDK (app/native/android/libs/SmartPos_*.aar) — drives the built-in
+// printer on ZCS terminals (Z90/Z91/Z92/Z93…). Verified against SmartPos 2.0.6.
+import com.zcs.sdk.DriverManager;
+import com.zcs.sdk.Printer;
+import com.zcs.sdk.SdkResult;
+import com.zcs.sdk.Sys;
+import com.zcs.sdk.print.PrnStrFormat;
+import com.zcs.sdk.print.PrnTextFont;
+import com.zcs.sdk.print.PrnTextStyle;
+import android.text.Layout;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import org.json.JSONObject;
@@ -38,15 +49,27 @@ import java.net.URL;
  *   { t:"feed",  n }                             blank lines
  *   { t:"cut" }                                  cut the paper
  *
- * Printer + drawer use Sunmi's inner-printer (woyou) service via
- * com.sunmi:printerlibrary (Maven Central). Binds in load(); degrades to { ok:false }
- * on a non-Sunmi device. Auto-injected by app/scripts/inject-native.mjs. Can't be
- * compiled/tested in the cloud sandbox — smoke-test on the device.
+ * TWO printer backends, picked at RUNTIME so one APK serves the whole fleet:
+ *   Sunmi  — inner-printer (woyou) service, com.sunmi:printerlibrary (Maven Central).
+ *            Binds asynchronously in load(); used by the T2 tills.
+ *   ZCS    — SmartPos SDK (bundled .aar), used by the Z93 and its siblings.
+ * Neither present (e.g. a plain Android tablet) ⇒ { ok:false, reason:"printer-not-connected" }
+ * exactly as before, which the web layer now surfaces to staff.
+ *
+ * Detection is per CALL, not once at load: Sunmi binds asynchronously, so a decision
+ * taken in load() would wrongly pin "no printer" on a T2 that simply hadn't bound yet.
+ *
+ * Auto-injected by app/scripts/inject-native.mjs. Can't be compiled/tested in the
+ * cloud sandbox — smoke-test on the device.
  */
 @CapacitorPlugin(name = "EposHardware")
 public class EposHardwarePlugin extends Plugin {
 
     private SunmiPrinterService printer = null;
+
+    // ZCS SmartPos. `zcsPrinter` stays null on non-ZCS hardware (sdkInit fails or the
+    // classes aren't backed by a device), which is how we fall through to Sunmi.
+    private Printer zcsPrinter = null;
 
     private final InnerPrinterCallback printerCallback = new InnerPrinterCallback() {
         @Override
@@ -62,6 +85,58 @@ public class EposHardwarePlugin extends Plugin {
         } catch (Exception e) {
             printer = null;
         }
+        initZcs();
+    }
+
+    /** Bring up the ZCS SmartPos SDK. Mirrors the vendor demo: sdkInit(), and if that
+     *  fails power the board on and try once more. Wrapped in Throwable (not Exception)
+     *  because on non-ZCS hardware the native layer can raise UnsatisfiedLinkError /
+     *  NoClassDefFoundError, which must not take the whole plugin down. */
+    private void initZcs() {
+        try {
+            DriverManager dm = DriverManager.getInstance();
+            Sys sys = dm.getBaseSysDevice();
+            int st = sys.sdkInit();
+            if (st != SdkResult.SDK_OK) {
+                sys.sysPowerOn();
+                try { Thread.sleep(1000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                st = sys.sdkInit();
+            }
+            zcsPrinter = (st == SdkResult.SDK_OK) ? dm.getPrinter() : null;
+        } catch (Throwable t) {
+            zcsPrinter = null;
+        }
+    }
+
+    /** ZCS printer if this device has one AND it's ready. Re-inits once if the SDK
+     *  came up after us (cold boot ordering), so a till isn't stuck "no printer". */
+    private Printer zcs() {
+        if (zcsPrinter == null) initZcs();
+        return zcsPrinter;
+    }
+
+    /** Map a ZCS status code to our reason string, or null when it's good to print. */
+    private String zcsFault(Printer pr) {
+        try {
+            int st = pr.getPrinterStatus();
+            if (st == SdkResult.SDK_PRN_STATUS_PAPEROUT) return "printer-out-of-paper";
+            if (st == SdkResult.SDK_PRN_STATUS_FAULT) return "printer-fault";
+            if (st == SdkResult.SDK_PRN_STATUS_TOOHEAT) return "printer-overheated";
+        } catch (Throwable t) {
+            return "printer-status-error";
+        }
+        return null;
+    }
+
+    private PrnStrFormat zcsFormat(int size, String align, boolean bold) {
+        PrnStrFormat f = new PrnStrFormat();
+        f.setTextSize(size);
+        f.setAli("center".equals(align) ? Layout.Alignment.ALIGN_CENTER
+               : "right".equals(align) ? Layout.Alignment.ALIGN_OPPOSITE
+               : Layout.Alignment.ALIGN_NORMAL);
+        f.setStyle(bold ? PrnTextStyle.BOLD : PrnTextStyle.NORMAL);
+        f.setFont(PrnTextFont.SANS_SERIF);
+        return f;
     }
 
     @Override
@@ -76,10 +151,12 @@ public class EposHardwarePlugin extends Plugin {
      *  the whole print. The printer state (align/size/bold) is reset at the end. */
     @PluginMethod
     public void printDoc(PluginCall call) {
-        SunmiPrinterService svc = printer;
-        if (svc == null) { resolveNotWired(call, "printer-not-connected"); return; }
         JSArray ops = call.getArray("ops");
         if (ops == null) { resolveNotWired(call, "no-ops"); return; }
+        Printer zp = zcs();
+        if (zp != null) { printDocZcs(call, zp, ops); return; }
+        SunmiPrinterService svc = printer;
+        if (svc == null) { resolveNotWired(call, "printer-not-connected"); return; }
         try {
             for (int i = 0; i < ops.length(); i++) {
                 JSONObject op;
@@ -121,6 +198,8 @@ public class EposHardwarePlugin extends Plugin {
     @PluginMethod
     public void printReceipt(PluginCall call) {
         String text = call.getString("text", "");
+        Printer zp = zcs();
+        if (zp != null) { printTextZcs(call, zp, text); return; }
         SunmiPrinterService svc = printer;
         if (svc == null) { resolveNotWired(call, "printer-not-connected"); return; }
         try {
@@ -150,6 +229,67 @@ public class EposHardwarePlugin extends Plugin {
     public void collectCardPayment(PluginCall call) {
         // Phase 3 — Stripe Terminal (WisePOS E reader). See docs/PHASE3_TERMINAL.md.
         resolveNotWired(call, "terminal-not-wired");
+    }
+
+    // ── ZCS SmartPos rendering ───────────────────────────────────────────────────
+    /** Same op vocabulary as the Sunmi path, so the receipt design stays entirely in
+     *  the web layer and remains OTA-tweakable on both hardware families.
+     *  ZCS buffers the whole document then commits it with setPrintStart(). */
+    private void printDocZcs(PluginCall call, Printer pr, JSArray ops) {
+        String fault = zcsFault(pr);
+        if (fault != null) { resolveNotWired(call, fault); return; }
+        try {
+            for (int i = 0; i < ops.length(); i++) {
+                JSONObject op;
+                try { op = ops.getJSONObject(i); } catch (Exception e) { continue; }
+                String t = op.optString("t", "text");
+                try {
+                    if ("image".equals(t)) {
+                        Bitmap bmp = downloadBitmap(op.optString("url", ""));
+                        if (bmp != null) pr.setPrintAppendBitmap(bmp, Layout.Alignment.ALIGN_CENTER);
+                    } else if ("rule".equals(t)) {
+                        pr.setPrintAppendString("--------------------------------", zcsFormat(24, "left", false));
+                    } else if ("feed".equals(t)) {
+                        int n = op.optInt("n", 1);
+                        for (int k = 0; k < n; k++) pr.setPrintAppendString(" ", zcsFormat(24, "left", false));
+                    } else if ("cut".equals(t)) {
+                        // The Z93 has no cutter — feed instead so the ticket clears the head.
+                        pr.setPrintAppendString(" ", zcsFormat(24, "left", false));
+                    } else if ("row".equals(t)) {
+                        pr.setPrintAppendString(rowText(op.optString("l", ""), op.optString("r", "")),
+                                                zcsFormat(24, "left", op.optBoolean("bold", false)));
+                    } else { // text
+                        pr.setPrintAppendString(op.optString("s", ""),
+                                                zcsFormat((int) op.optDouble("size", 24),
+                                                          op.optString("align", "left"),
+                                                          op.optBoolean("bold", false)));
+                    }
+                } catch (Exception e) { /* skip a bad op, keep going */ }
+            }
+            int st = pr.setPrintStart();
+            if (st == SdkResult.SDK_OK) resolveOk(call);
+            else resolveNotWired(call, "print-failed:" + st);
+        } catch (Throwable t) {
+            resolveNotWired(call, "print-error:" + t.getMessage());
+        }
+    }
+
+    private void printTextZcs(PluginCall call, Printer pr, String text) {
+        String fault = zcsFault(pr);
+        if (fault != null) { resolveNotWired(call, fault); return; }
+        try {
+            PrnStrFormat f = zcsFormat(24, "left", false);
+            for (String line : (text == null ? "" : text).split("\\n", -1)) {
+                pr.setPrintAppendString(line.isEmpty() ? " " : line, f);
+            }
+            pr.setPrintAppendString(" ", f);
+            pr.setPrintAppendString(" ", f);
+            int st = pr.setPrintStart();
+            if (st == SdkResult.SDK_OK) resolveOk(call);
+            else resolveNotWired(call, "print-failed:" + st);
+        } catch (Throwable t) {
+            resolveNotWired(call, "printer-error:" + t.getMessage());
+        }
     }
 
     // ── helpers ──────────────────────────────────────────────────────────────────
