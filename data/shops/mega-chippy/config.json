@@ -1,5 +1,5 @@
 {
-  "_comment": "Mega Chippy, Acomb (York) — LumiWEB customer, LIVE. Branding modelled on the reference site (Poppies Fish & Chips): indigo + teal on a clean light palette, heavy display type over Montserrat body. Legal entity: AYAZ LARA LTD (14372361). Live at megachippy.co.uk; Stripe Connect acct set; card + cash (collection & delivery) enabled. Reminder for future deploys: use Cloudflare 'Create deployment' (builds latest main) — a 'Retry' rebuilds an OLD commit and can ship stale config (e.g. cash flags).",
+  "_comment": "Mega Chippy, Acomb (York) — LumiWEB customer, LIVE. Branding modelled on the reference site (Poppies Fish & Chips): indigo + teal on a clean light palette, heavy display type over Montserrat body. Legal entity: AYAZ LARA LTD (14372361). Live at acombmegachippy.uk (megachippy.co.uk 301s to it); Stripe Connect acct set; card + cash (collection & delivery) enabled. Reminder for future deploys: use Cloudflare 'Create deployment' (builds latest main) — a 'Retry' rebuilds an OLD commit and can ship stale config (e.g. cash flags).",
   "business": {
     "tradingName": "Mega Chippy",
     "_comment_shortName": "Conversational short form used in page headers, aria labels and the staff PWA name.",
@@ -15,8 +15,8 @@
     "phone": "01904 793511",
     "_comment_todo": "Domain registered: megachippy.co.uk (GoDaddy registration, Cloudflare DNS). For receipt emails to actually SEND from orders@megachippy.co.uk, verify the domain in Resend (SPF/DKIM) and set RESEND_FROM_EMAIL=orders@megachippy.co.uk in Cloudflare; recommend Cloudflare Email Routing to forward orders@ to the shop's inbox so replies are received.",
     "email": "orders@megachippy.co.uk",
-    "_comment_domain": "Primary/official domain (canonical URL, sitemap, JSON-LD, social meta). Kept on megachippy.co.uk because that is the domain whose checkout/API works. acombmegachippy.uk was tried as primary but ordering fails there — its Pages Functions/API aren't serving correctly on that hostname (it must be attached as a Custom Domain on the mega-chippy Pages project and fully Active). Do NOT point the canonical at acombmegachippy.uk until https://acombmegachippy.uk/api/config returns the same JSON as megachippy.co.uk and a test order completes.",
-    "domain": "megachippy.co.uk"
+    "_comment_domain": "acombmegachippy.uk is the CANONICAL domain (canonical tag, JSON-LD url, sitemap, OG). Switched 2026-07-28 after verifying it properly: /api/config serves, a test order completed, and the shop took 4 real orders on it. It is also what the Google Business Profile points at — canonical MUST match the GBP link or Google is told the real page lives elsewhere. megachippy.co.uk is kept registered and 301s here (public/_redirects) so its authority transfers; it is also still the verified Resend sending domain, which is why business.email stays on it. The old agency sites (acombmegachippy.com, acombmegachippyyork.co.uk) are NOT ours, cannot be redirected, and are outranked over time via the Business Profile.",
+    "domain": "acombmegachippy.uk"
   },
   "_comment_seo": "Search-engine extras used to build the landing page's JSON-LD Restaurant schema + social meta. Purely for search engines — doesn't change the page visually.",
   "seo": {
