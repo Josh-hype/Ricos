@@ -13,7 +13,7 @@
       "country": "United Kingdom"
     },
     "phone": "01904 793511",
-    "_comment_todo": "Domain registered: megachippy.co.uk (GoDaddy registration, Cloudflare DNS). For receipt emails to actually SEND from orders@megachippy.co.uk, verify the domain in Resend (SPF/DKIM) and set RESEND_FROM_EMAIL=orders@megachippy.co.uk in Cloudflare; recommend Cloudflare Email Routing to forward orders@ to the shop's inbox so replies are received.",
+    "_comment_todo": "EMAIL STILL ON THE OLD DOMAIN. Sending is orders@megachippy.co.uk (RESEND_FROM_EMAIL in Cloudflare; Resend SPF/DKIM live in megachippy.co.uk DNS), so that domain must stay registered and its DNS intact until email moves. TO FINISH THE MIGRATION: verify acombmegachippy.uk in Resend, add Cloudflare Email Routing orders@acombmegachippy.uk -> the shop inbox, set RESEND_FROM_EMAIL=orders@acombmegachippy.uk, test an order email arrives, THEN change business.email below and only then detach megachippy.co.uk from the Pages project.",
     "email": "orders@megachippy.co.uk",
     "_comment_domain": "acombmegachippy.uk is the CANONICAL domain (canonical tag, JSON-LD url, sitemap, OG). Switched 2026-07-28 after verifying it properly: /api/config serves, a test order completed, and the shop took 4 real orders on it. It is also what the Google Business Profile points at — canonical MUST match the GBP link or Google is told the real page lives elsewhere. megachippy.co.uk is kept registered and 301s here (public/_redirects) so its authority transfers; it is also still the verified Resend sending domain, which is why business.email stays on it. The old agency sites (acombmegachippy.com, acombmegachippyyork.co.uk) are NOT ours, cannot be redirected, and are outranked over time via the Business Profile.",
     "domain": "acombmegachippy.uk"
@@ -81,15 +81,7 @@
         "YO10": 600,
         "YO31": 600
       },
-      "feePence": 600,
-      "_comment_lateStart": "TEMPORARY — no drivers before 3pm w/c 20 Jul 2026 (Mon-Fri). Delivery opens 15:00 on the listed dates; server rejects earlier delivery orders and the order page shows the banner. Self-expiring: Saturday 25th has no entry, so normal delivery hours resume automatically. Safe to delete this block after the 24th.",
-      "lateStart": {
-        "2026-07-20": "15:00",
-        "2026-07-21": "15:00",
-        "2026-07-22": "15:00",
-        "2026-07-23": "15:00",
-        "2026-07-24": "15:00"
-      }
+      "feePence": 600
     }
   },
   "_comment_serviceFee": "Per-order service charge in pence (shown at checkout). serviceFeePlatformPence is the platform's (Lumin Labs') cut taken as the Stripe application_fee; the rest stays with the shop. £1.00 charge = 50p platform + 50p shop.",
