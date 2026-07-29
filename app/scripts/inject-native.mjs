@@ -8,7 +8,7 @@
 
    android/ is generated (gitignored) and recreated by every `cap add android`, so
    this runs as part of prepare:android / sync. Idempotent; fails loud. Run from app/. */
-import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -101,6 +101,37 @@ if (!existsSync(appGradle)) {
       writeFileSync(appGradle, g);
       console.log('✓ inject-native: added ' + SUNMI_DEP);
     }
+  }
+
+  // 4) ZCS SmartPos SDK ---------------------------------------------------------
+  // Vendor .aar (not on Maven), so it is committed under app/native/android/libs/
+  // and copied into the generated Android project. One APK then drives BOTH the
+  // Sunmi T2 (woyou service) and ZCS terminals like the Z93 — the plugin picks the
+  // backend at runtime, so a till only needs the right hardware, not its own build.
+  const libsSrc = resolve(here, '..', 'native', 'android', 'libs');
+  const libsDst = resolve(androidDir, 'app', 'libs');
+  if (existsSync(libsSrc)) {
+    mkdirSync(libsDst, { recursive: true });
+    let copied = 0;
+    for (const f of readdirSync(libsSrc)) {
+      if (!/\.(aar|jar)$/i.test(f)) continue;
+      copyFileSync(resolve(libsSrc, f), resolve(libsDst, f));
+      copied++;
+    }
+    let g2 = readFileSync(appGradle, 'utf8');
+    if (!g2.includes("fileTree(dir: 'libs'")) {
+      const m2 = g2.match(/dependencies\s*\{/);
+      if (m2) {
+        const at2 = m2.index + m2[0].length;
+        g2 = g2.slice(0, at2) +
+          `\n    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar']) // ZCS SmartPos SDK (Z93 printer)` +
+          g2.slice(at2);
+        writeFileSync(appGradle, g2);
+      }
+    }
+    console.log(`✓ inject-native: copied ${copied} vendor lib(s) + wired libs/ fileTree`);
+  } else {
+    console.log('• inject-native: no app/native/android/libs — skipping vendor SDKs');
   }
 }
 
