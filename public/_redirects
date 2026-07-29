@@ -28,9 +28,19 @@ https://www.ricosyork.com/*  https://ricosyork.co.uk/:splat  301
 # chippy" is unwinnable against the viral Australian one). megachippy.co.uk stays
 # registered and 301s here so its links/authority transfer. Host-scoped, so these
 # are no-ops on every other shop's deploy.
-https://megachippy.co.uk/*       https://acombmegachippy.uk/:splat  301
-https://www.megachippy.co.uk/*   https://acombmegachippy.uk/:splat  301
-https://www.acombmegachippy.uk/* https://acombmegachippy.uk/:splat  301
+# NOTE: page paths ONLY — deliberately NOT /* . A blanket splat would also catch
+# /api/* and /staff/*, and a 301 on an API POST breaks it (same trap as the apex
+# hosts noted above). The Mega Chippy till is provisioned to megachippy.co.uk and
+# must keep reaching its API on that host until it is re-provisioned.
+https://megachippy.co.uk/               https://acombmegachippy.uk/               301
+https://megachippy.co.uk/order          https://acombmegachippy.uk/order          301
+https://megachippy.co.uk/menu           https://acombmegachippy.uk/order          301
+https://megachippy.co.uk/privacy        https://acombmegachippy.uk/privacy        301
+https://megachippy.co.uk/terms          https://acombmegachippy.uk/terms          301
+https://megachippy.co.uk/allergy-info   https://acombmegachippy.uk/allergy-info   301
+https://www.megachippy.co.uk/           https://acombmegachippy.uk/               301
+https://www.megachippy.co.uk/order      https://acombmegachippy.uk/order          301
+https://www.acombmegachippy.uk/         https://acombmegachippy.uk/               301
 
 # Friendly URLs.
 /menu     /order   302
