@@ -1370,6 +1370,19 @@
     line-height: 1; cursor: pointer; font-family: inherit;
   }
   .saved-addr-del:hover { opacity: 1; border-color: var(--error); color: var(--error); }
+  .saved-addr-del svg { display: block; margin: 0 auto; }
+  /* Inline "Remove ...?" row — replaces window.confirm(), which a browser can
+     suppress for the whole session once the customer dismisses one dialog. */
+  .saved-addr-confirm {
+    align-items: center; gap: 8px; background: rgba(255,255,255,.9);
+    border: 2px solid var(--error); border-radius: 10px; padding: 8px 10px;
+  }
+  .saved-addr-yes, .saved-addr-no {
+    flex: 0 0 auto; padding: 7px 13px; border-radius: 8px; font: inherit;
+    font-size: .82rem; font-weight: 800; cursor: pointer;
+  }
+  .saved-addr-yes { background: var(--error); color: #fff; border: 2px solid var(--error); }
+  .saved-addr-no  { background: transparent; color: inherit; border: 2px solid rgba(0,0,0,.2); }
   .saved-addr {
     display: flex; align-items: flex-start; gap: 9px; width: 100%; text-align: left;
     background: rgba(255,255,255,.6); border: 2px solid rgba(0,0,0,.14); border-radius: 10px;
@@ -3044,6 +3057,8 @@ function oneLineAddress(a) {
    `state`, so switching to an address in a different band is priced correctly
    rather than inheriting the last order's fee. */
 /* The account cap, published by /api/config so this can't drift from the server. */
+let pendingDeleteIdx = null;   // which row is showing its inline "Remove?" prompt
+
 function maxSavedAddresses() {
   const n = Number(window.SHOP_CONFIG && window.SHOP_CONFIG.maxSavedAddresses);
   return Number.isFinite(n) && n > 0 ? n : 5;
@@ -3054,7 +3069,7 @@ function maxSavedAddresses() {
 async function deleteSavedAddress(i) {
   const a = savedAddressList()[i];
   if (!a) return;
-  if (!confirm('Remove this address?\n\n' + oneLineAddress(a))) return;
+  pendingDeleteIdx = null;              // the inline row already confirmed it
   const wasCurrent = addressIsCurrent(a);
   const signedIn = !!(state.user && Array.isArray(state.user.addresses) && state.user.addresses.length);
   if (signedIn) {
@@ -3523,6 +3538,7 @@ document.getElementById('mCheckoutBtn').addEventListener('click', () => {
 function startCheckout() {
   if (CLOSURE) { openModal('closedOverlay'); return; } // closed today — no ordering
   seedCheckoutFromSaved();  // prefill from their last order before any step renders
+  pendingDeleteIdx = null;  // never open with a delete prompt left armed
   if (state.cart.length === 0) {
     alert('Your cart is empty.');
     return;
@@ -3687,12 +3703,24 @@ function renderCheckout() {
           const on = addressIsCurrent(a);
           // Select and delete are siblings, not nested — a <button> inside a
           // <button> is invalid and the inner one swallows the outer's taps.
+          // Confirmation is INLINE, not window.confirm(): a customer who has ever
+          // tapped "Suppress Alerts" on this site gets false back from confirm()
+          // for the rest of the session, which silently swallowed the delete.
+          if (pendingDeleteIdx === i) {
+            return `<div class="saved-addr-row saved-addr-confirm">
+              <span style="flex:1 1 auto;min-width:0;font-size:.88rem;font-weight:700">Remove ${escapeHTML(oneLineAddress(a))}?</span>
+              <button type="button" class="saved-addr-yes" data-delyes="${i}">Delete</button>
+              <button type="button" class="saved-addr-no" data-delno="1">Keep</button>
+            </div>`;
+          }
           return `<div class="saved-addr-row">
             <button type="button" class="saved-addr${on ? ' sel' : ''}" data-addr="${i}">
               <span class="saved-addr-tick">${on ? '●' : '○'}</span>
               <span>${escapeHTML(oneLineAddress(a))}</span>
             </button>
-            <button type="button" class="saved-addr-del" data-del="${i}" aria-label="Delete ${escapeHTML(oneLineAddress(a))}" title="Delete this address">&times;</button>
+            <button type="button" class="saved-addr-del" data-del="${i}" aria-label="Delete ${escapeHTML(oneLineAddress(a))}" title="Delete this address">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            </button>
           </div>`;
         }).join('');
         return `<div class="notice ok" style="text-align:left">
@@ -3745,7 +3773,13 @@ function renderCheckout() {
       btn.addEventListener('click', () => useSavedAddress(Number(btn.dataset.addr)));
     });
     document.querySelectorAll('#checkoutBody .saved-addr-del').forEach(btn => {
-      btn.addEventListener('click', () => deleteSavedAddress(Number(btn.dataset.del)));
+      btn.addEventListener('click', () => { pendingDeleteIdx = Number(btn.dataset.del); renderCheckout(); });
+    });
+    document.querySelectorAll('#checkoutBody .saved-addr-yes').forEach(btn => {
+      btn.addEventListener('click', () => deleteSavedAddress(Number(btn.dataset.delyes)));
+    });
+    document.querySelectorAll('#checkoutBody .saved-addr-no').forEach(btn => {
+      btn.addEventListener('click', () => { pendingDeleteIdx = null; renderCheckout(); });
     });
     document.getElementById('coNewAddr')?.addEventListener('click', () => {
       forgetSavedAddress();
