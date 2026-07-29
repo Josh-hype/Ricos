@@ -2840,11 +2840,15 @@ function renderAccountTab() {
   if (accountTab === 'forgot') {
     tb.innerHTML = `
       <p style="margin:0 0 0.8rem;font-size:0.92rem">
-        Enter the email address on your account. We'll send you a link to choose a new password.
+        Enter the email or mobile number on your account. We'll send you a link to choose a new password —
+        by email if we have one, otherwise by text.
       </p>
       <div class="field">
-        <label for="forgotContact">Email</label>
-        <input id="forgotContact" type="email" placeholder="you@example.com" autocomplete="email" />
+        <label for="forgotContact">Email or mobile</label>
+        <!-- type="text", not "email": accounts can be registered with a phone
+             number, and an email input rejects one outright — which left those
+             customers unable to even ask for a reset. -->
+        <input id="forgotContact" type="text" placeholder="you@example.com or 07…" autocomplete="username" />
       </div>
       <button class="btn-form" id="doForgot">Send reset link</button>
       <div id="forgotMsg" style="display:none;margin-top:0.6rem;font-size:0.88rem"></div>
@@ -2862,7 +2866,7 @@ function renderAccountTab() {
       const msg = document.getElementById('forgotMsg');
       const contact = document.getElementById('forgotContact').value.trim();
       if (!contact) {
-        msg.textContent = 'Please enter your email.';
+        msg.textContent = 'Please enter your email or mobile number.';
         msg.style.color = 'var(--error)';
         msg.style.display = 'block';
         return;
