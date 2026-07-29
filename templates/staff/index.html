@@ -2218,6 +2218,7 @@ const state = {
   routing: 'print',        // order routing mode: 'print' | 'kds' | 'both'
   printOnAccept: true,     // derived: does the till print the kitchen ticket on accept?
   printCounter: true,      // does the till auto-print for COUNTER sales? (online always follows printOnAccept)
+  printerLast: null,       // { ok, at, reason } — last print attempt, shown on the Printer tile
   orderingPaused: false,   // back-office toggle: online ordering paused for the rest of today
 };
 
@@ -3259,6 +3260,7 @@ function renderBackOffice() {
   tiles.push({ k: 'audit', ic: 'ink', svg: ICON.audit, tl: 'Activity Log', ds: 'Refunds, voids, sign-ins &amp; overrides' });
   if (!state.ordersOnly) tiles.push({ k: 'reader', ic: 'blue', svg: ICON.reader, tl: 'Card Reader', ds: 'Register the WisePOS card terminal' });
   tiles.push({ k: 'routing', ic: 'green', svg: ICON.routing, tl: 'Order routing', ds: 'Currently: <b>' + routingLabel(state.routing) + '</b> — tap to change' });
+  tiles.push({ k: 'testprint', ic: 'orange', svg: ICON.routing, tl: 'Test print', ds: printerTileDesc() });
   $('#grid').innerHTML = '<div class="bo-wrap"><div class="bo-grid">' +
     tiles.map(t => `<button class="bo-tile" data-bo="${t.k}"><div class="ic ${t.ic}">${t.svg}</div><div class="tl">${t.tl}</div><div class="ds">${t.ds}</div></button>`).join('') +
     '</div></div>';
@@ -3272,6 +3274,7 @@ function renderBackOffice() {
     else if (k === 'audit') openAuditModal();
     else if (k === 'reader') openReaderModal();
     else if (k === 'routing') openRouting();
+    else if (k === 'testprint') runTestPrint();
     else if (k === 'pause') toggleOrderingPause();
   }));
 }
@@ -6414,21 +6417,81 @@ function printTo(kind, o, pctx) {
       Promise.resolve(window.EPOSNative.printDoc({ ops }))
         .then((r) => {
           try { console.log('[print] ' + kind + (r && r.ok ? ' ok' : ' ' + JSON.stringify(r))); } catch (e) {}
-          // not-in-app = native has no printDoc (APK older than the printDoc build) → text.
-          if (!(r && r.ok) && r && r.reason === 'not-in-app') printToText(kind, o, ctx);
+          if (r && r.ok) { state.printerLast = { ok: true, at: Date.now() }; return; }
+          // ANY failure falls back to the plain-text path — not just 'not-in-app'.
+          // The old check only retried on that one reason, so a device whose printer
+          // service isn't the one we bind to (e.g. a non-Sunmi till returning
+          // 'printer-not-connected', or a missing plugin returning 'no-plugin')
+          // silently produced nothing at all: no ticket, no error, no clue.
+          printToText(kind, o, ctx, (r && r.reason) || 'unknown');
         })
-        .catch(() => printToText(kind, o, ctx));
-    } catch (e) { printToText(kind, o, ctx); }
+        .catch((e) => printToText(kind, o, ctx, 'printDoc-threw'));
+    } catch (e) { printToText(kind, o, ctx, 'printDoc-threw'); }
   } else {
-    printToText(kind, o, ctx);
+    printToText(kind, o, ctx, 'no-bridge');
   }
 }
-function printToText(kind, o, ctx) {
-  if (!(window.EPOSNative && window.EPOSNative.printReceipt)) { try { console.log('[print] no printer'); } catch (e) {} return; }
+function printToText(kind, o, ctx, why) {
+  const fail = (reason) => {
+    state.printerLast = { ok: false, at: Date.now(), reason: reason };
+    try { console.log('[print] ' + kind + ' FAILED ' + reason); } catch (e) {}
+    // A till that silently stops printing is the dangerous failure: the kitchen
+    // just never gets tickets and nobody notices. Say so on screen.
+    notePrintFailure(kind, reason);
+  };
+  if (!(window.EPOSNative && window.EPOSNative.printReceipt)) return fail(why || 'no-printer');
   const text = buildReceiptText(o, ctx); // kitchen + customer copies share the receipt layout
   Promise.resolve(window.EPOSNative.printReceipt({ text }))
-    .then((r) => { try { console.log('[print] ' + kind + ' (text) ' + JSON.stringify(r)); } catch (e) {} })
-    .catch((e) => { try { console.log('[print] ' + kind + ' text err ' + (e && e.message)); } catch (e2) {} });
+    .then((r) => {
+      try { console.log('[print] ' + kind + ' (text) ' + JSON.stringify(r)); } catch (e) {}
+      if (r && r.ok) { state.printerLast = { ok: true, at: Date.now() }; return; }
+      fail((r && r.reason) || why || 'unknown');
+    })
+    .catch((e) => fail('text-threw'));
+}
+/* Back Office > Test print. Prints a short slip AND reports the exact reason on
+   failure, so a new device can be verified during setup instead of discovering on
+   a Friday night that it never printed. The reason string is the native plugin's
+   own: 'printer-not-connected' means the till's printer service isn't the one this
+   build binds to (e.g. a non-Sunmi device), 'no-plugin' means the APK has no
+   hardware plugin at all, and 'no-bridge' means we're in a plain browser. */
+function printerTileDesc() {
+  const p = state.printerLast;
+  if (!p) return 'Check the printer works — prints a test slip';
+  if (p.ok) return 'Last print: <b>OK</b> — tap to test again';
+  return 'Last print <b>FAILED</b> (' + escapeHtml(String(p.reason || 'unknown')) + ') — tap to retry';
+}
+function runTestPrint() {
+  const at = new Date().toISOString();
+  const o = {
+    id: 'test', orderNumber: 0, createdAt: at, status: 'accepted',
+    source: 'counter-walkin', fulfillment: 'collection', schedule: 'asap',
+    customer: { name: 'Test print', phone: '' },
+    paymentMethod: 'counter_cash', payment: { state: 'paid', tender: 'cash' },
+    totals: { subtotalP: 0, discountP: 0, deliveryFeeP: 0, serviceFeeP: 0, totalP: 0,
+              lines: [{ name: 'Printer test — if you can read this, printing works', qty: 1, lineTotalP: 0 }] },
+  };
+  toast('Sending test print…');
+  const before = state.printerLast;
+  printTo('kitchen', o, null);
+  // printTo is async; report whatever it recorded a moment later.
+  setTimeout(() => {
+    const p = state.printerLast;
+    if (p && p !== before && p.ok) toast('✅ Test print sent — check the paper');
+    else if (p && p !== before) alert('Printer not available.\n\nReason: ' + (p.reason || 'unknown') +
+      '\n\nprinter-not-connected = this device\'s printer is not the type this app build supports.' +
+      '\nno-plugin = the installed app has no printer support built in.');
+    if (state.view === 'backoffice') renderBackOffice();
+  }, 1500);
+}
+
+/* Surface a print failure once per minute. Rate-limited so a broken printer during
+   a rush warns the staff without burying the order board in toasts. */
+function notePrintFailure(kind, reason) {
+  const now = Date.now();
+  if (notePrintFailure._last && now - notePrintFailure._last < 60000) return;
+  notePrintFailure._last = now;
+  try { toast('⚠ Printer not available — the ' + (kind === 'kitchen' ? 'kitchen ticket' : 'receipt') + ' did NOT print'); } catch (e) {}
 }
 
 // Collect the cart + sale context into the counter-order payload (shared by the
