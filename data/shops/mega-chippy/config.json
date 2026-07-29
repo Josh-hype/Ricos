@@ -29,7 +29,11 @@
     "priceRange": "££",
     "addressRegion": "North Yorkshire",
     "description": "Mega Chippy — proper fish and chips in Acomb, York. Freshly fried cod & haddock, chunky chips, chippy classics and kids' boxes. Order online for collection.",
-    "sameAs": []
+    "_comment_sameAs": "Social profiles, emitted as schema.org sameAs. This is how Google ties the website, the social pages and the Google Business Profile together as ONE business entity, which is why it matters for local search. Found from public listings 2026-07-28 — if either link is not the shop's real page, correct it, because pointing at the wrong profile is worse than none.",
+    "sameAs": [
+      "https://www.facebook.com/AcombMegaChippy/",
+      "https://www.instagram.com/acombmegachippy/"
+    ]
   },
   "_comment_theme": "Palette + type taken from the customer's reference brand (Poppies Fish & Chips): CREAM background #FFF7E8 (never a cold white), indigo #3E46BA = primary (the pill buttons, headings, links), teal #54C2CC = secondary accent, and a warm heritage red #E23A2E for highlights (script wordmark / stars, echoing Poppies' red script logo). Type per the reference: headings = Rockwell Bold ('RockwellStdBold') → Rokkitt, its closest Google Fonts clone; UI caps (nav/buttons) = Heavitas → Montserrat ExtraBold uppercase; body = Montserrat; script accents = Pacifico (stand-in for the red brush-script logo). The shared order template puts light text on the primary colour, so primary stays dark enough for white text.",
   "theme": {
