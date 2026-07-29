@@ -2942,6 +2942,7 @@ function seedCheckoutFromSaved() {
   for (const k of ['name', 'phone', 'email', 'line1', 'line2', 'city', 'postcode', 'notes']) {
     if (checkoutData[k] === undefined && sv[k]) checkoutData[k] = sv[k];
   }
+  if (sv.line1) checkoutData.addrSource = 'device';
 }
 function rememberCheckout() {
   try {
@@ -2964,14 +2965,19 @@ function rememberCheckout() {
 function forgetSavedAddress() {
   for (const k of ['line1', 'line2', 'notes']) checkoutData[k] = '';
   checkoutData.postcode = '';
+  checkoutData.addrSource = null;
   if (state.saved) {
     state.saved = { ...state.saved, line1: '', line2: '', postcode: '', notes: '' };
     saveState();
   }
 }
 function hasSavedAddress() {
-  const sv = state.saved;
-  return !!(sv && sv.line1);
+  return !!(checkoutData.addrSource && checkoutData.line1);
+}
+function savedAddressLabel() {
+  return checkoutData.addrSource === 'account'
+    ? 'Using the address saved to your account'
+    : 'Using your saved address';
 }
 
 /* Stripe instance + Elements are reused across re-renders of the payment
@@ -3472,6 +3478,9 @@ function runCheckout() {
       checkoutData.line2 = pick.line2;
       checkoutData.city  = pick.city;
       checkoutData.notes = pick.notes;
+      // Came from their ACCOUNT, so it follows them across devices — worth saying
+      // so, and it means the "Use a new address" control must show here too.
+      checkoutData.addrSource = 'account';
     }
   }
   renderCheckout();
@@ -3537,7 +3546,7 @@ function renderCheckout() {
       <h4 style="font-family:var(--display);font-size:1.1rem;margin:0 0 1rem">${state.mode === 'deliver' ? 'Delivery address' : 'Your address'}</h4>
       ${state.mode === 'deliver' && state.postcode ? `<div class="notice ok">Delivering to <strong>${state.postcode}</strong></div>` : ''}
       ${hasSavedAddress() ? `<div class="notice" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between">
-        <span>Using your saved address — <strong>${escapeHTML(state.saved.line1)}</strong></span>
+        <span>${savedAddressLabel()} — <strong>${escapeHTML(checkoutData.line1 || '')}</strong></span>
         <button type="button" id="coNewAddr" class="btn-form secondary" style="width:auto;padding:6px 14px;font-size:0.85rem;margin:0">Use a new address</button>
       </div>` : ''}
       <div class="field">
