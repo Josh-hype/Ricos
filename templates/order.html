@@ -1356,6 +1356,20 @@
   .notice.error { background: #fdecea; border: 1.5px solid var(--error); color: var(--red-dark); }
   .notice.ok    { background: #e9f7ee; border: 1.5px solid var(--success); color: #155c2a; }
 
+  /* Saved-address picker (checkout > address). Full-width rows so they're easy to
+     tap one-handed on a phone; the chosen one is marked with a filled dot as well
+     as a border, so it reads without relying on colour alone. */
+  .saved-addrs { display: flex; flex-direction: column; gap: 6px; margin: 2px 0; }
+  .saved-addr {
+    display: flex; align-items: flex-start; gap: 9px; width: 100%; text-align: left;
+    background: rgba(255,255,255,.6); border: 2px solid rgba(0,0,0,.14); border-radius: 10px;
+    padding: 10px 12px; font: inherit; font-size: .92rem; font-weight: 600;
+    color: inherit; cursor: pointer;
+  }
+  .saved-addr:hover { border-color: rgba(0,0,0,.32); }
+  .saved-addr.sel { border-color: currentColor; background: rgba(255,255,255,.95); font-weight: 800; }
+  .saved-addr-tick { flex: 0 0 auto; line-height: 1.3; }
+
   /* Temporary delivery late-start strip under the header (gated by config). */
   .ls-banner { background: var(--yellow); color: var(--ink); border-bottom: 4px solid var(--yellow-deep); box-shadow: var(--shadow-md); }
   .ls-banner .wrap { display: flex; align-items: center; justify-content: center; gap: 13px;
@@ -2944,6 +2958,16 @@ function seedCheckoutFromSaved() {
   }
   if (sv.line1) checkoutData.addrSource = 'device';
 }
+/* Keep the last few addresses this browser has ordered to, so a guest gets the
+   same choice a signed-in customer does. Mirrors the server's upsertAddress:
+   dedupe on line1 + postcode, newest first, capped. */
+const MAX_LOCAL_ADDRESSES = 5;
+function rememberLocalAddress(addr) {
+  if (!addr || !addr.line1 || !addr.postcode) return;
+  const key = (a) => ((a.line1 || '').trim().toLowerCase() + '|' + (a.postcode || '').toUpperCase().replace(/\s+/g, ''));
+  const list = Array.isArray(state.savedList) ? state.savedList : [];
+  state.savedList = [addr, ...list.filter(a => key(a) !== key(addr))].slice(0, MAX_LOCAL_ADDRESSES);
+}
 function rememberCheckout() {
   try {
     state.saved = {
@@ -2957,6 +2981,10 @@ function rememberCheckout() {
       postcode: (state.mode === 'deliver' ? state.postcode : checkoutData.postcode) || '',
       notes: checkoutData.notes || '',
     };
+    rememberLocalAddress({
+      line1: state.saved.line1, line2: state.saved.line2,
+      city: state.saved.city, postcode: state.saved.postcode, notes: state.saved.notes,
+    });
     saveState();
   } catch (e) {}
 }
@@ -2978,6 +3006,40 @@ function forgetSavedAddress() {
 function savedPostcode() {
   if (state.mode === 'deliver') return state.postcode || checkoutData.postcode || '';
   return checkoutData.postcode || '';
+}
+/* Every address we can offer. A signed-in customer's account list wins — it's
+   server-side, deduped and ordered by last use, and follows them between devices.
+   A guest falls back to what this browser has ordered to before. */
+function savedAddressList() {
+  const acct = (state.user && Array.isArray(state.user.addresses)) ? state.user.addresses : [];
+  if (acct.length) return acct.filter(a => a && a.line1);
+  const local = Array.isArray(state.savedList) ? state.savedList : [];
+  if (local.length) return local.filter(a => a && a.line1);
+  return (state.saved && state.saved.line1) ? [state.saved] : [];
+}
+function addressIsCurrent(a) {
+  const norm = (v) => (v || '').trim().toLowerCase();
+  const pc = (v) => (v || '').toUpperCase().replace(/\s+/g, '');
+  return norm(a.line1) === norm(checkoutData.line1) && pc(a.postcode) === pc(savedPostcode());
+}
+function oneLineAddress(a) {
+  return [a.line1, a.line2, a.city, a.postcode].filter(Boolean).join(', ');
+}
+/* Apply a chosen address. Only touches the fields — the Continue handler then
+   re-quotes the delivery fee because the postcode no longer matches the one on
+   `state`, so switching to an address in a different band is priced correctly
+   rather than inheriting the last order's fee. */
+function useSavedAddress(i) {
+  const a = savedAddressList()[i];
+  if (!a) return;
+  checkoutData.line1 = a.line1 || '';
+  checkoutData.line2 = a.line2 || '';
+  checkoutData.city = a.city || '';
+  checkoutData.notes = a.notes || checkoutData.notes || '';
+  checkoutData.postcode = a.postcode || '';
+  checkoutData.addrSource = (state.user && Array.isArray(state.user.addresses) && state.user.addresses.length) ? 'account' : 'device';
+  if (state.mode === 'deliver') { state.postcode = null; state.deliveryFeeP = null; saveState(); }
+  renderCheckout();
 }
 function hasSavedAddress() {
   return !!(checkoutData.addrSource && checkoutData.line1);
@@ -3560,11 +3622,23 @@ function renderCheckout() {
       ${checkoutProgressHTML('address')}
       <h4 style="font-family:var(--display);font-size:1.1rem;margin:0 0 1rem">${state.mode === 'deliver' ? 'Delivery address' : 'Your address'}</h4>
       ${state.mode === 'deliver' && state.postcode ? `<div class="notice ok">Delivering to <strong>${state.postcode}</strong></div>` : ''}
-      ${hasSavedAddress() ? `<div class="notice ok" style="text-align:left">
-        <div style="font-size:0.8rem;opacity:.75;margin-bottom:4px">${savedAddressLabel()}</div>
-        <div style="font-weight:700;line-height:1.45">${[checkoutData.line1, checkoutData.line2, checkoutData.city, savedPostcode()].filter(Boolean).map(escapeHTML).join('<br>')}</div>
-        <button type="button" id="coNewAddr" class="btn-form secondary" style="width:auto;padding:6px 14px;font-size:0.85rem;margin:10px 0 0">Use a new address</button>
-      </div>` : ''}
+      ${hasSavedAddress() ? (() => {
+        const list = savedAddressList();
+        // One address: confirm it. Several: let them pick, with the one in use ticked.
+        const rows = list.map((a, i) => {
+          const on = addressIsCurrent(a);
+          return `<button type="button" class="saved-addr${on ? ' sel' : ''}" data-addr="${i}">
+            <span class="saved-addr-tick">${on ? '●' : '○'}</span>
+            <span>${escapeHTML(oneLineAddress(a))}</span>
+          </button>`;
+        }).join('');
+        return `<div class="notice ok" style="text-align:left">
+          <div style="font-size:0.8rem;opacity:.75;margin-bottom:6px">${list.length > 1 ? 'Deliver to which address?' : savedAddressLabel()}</div>
+          ${list.length > 1 ? `<div class="saved-addrs">${rows}</div>`
+            : `<div style="font-weight:700;line-height:1.45">${[checkoutData.line1, checkoutData.line2, checkoutData.city, savedPostcode()].filter(Boolean).map(escapeHTML).join('<br>')}</div>`}
+          <button type="button" id="coNewAddr" class="btn-form secondary" style="width:auto;padding:6px 14px;font-size:0.85rem;margin:10px 0 0">Use a new address</button>
+        </div>`;
+      })() : ''}
       <div id="coAddrFields"${hasSavedAddress() ? ' hidden' : ''}>
       <div class="field">
         <label for="coPostcode">Postcode</label>
@@ -3601,6 +3675,9 @@ function renderCheckout() {
       </div>
     `;
 
+    document.querySelectorAll('#checkoutBody .saved-addr').forEach(btn => {
+      btn.addEventListener('click', () => useSavedAddress(Number(btn.dataset.addr)));
+    });
     document.getElementById('coNewAddr')?.addEventListener('click', () => {
       forgetSavedAddress();
       if (state.mode === 'deliver') { state.postcode = null; state.deliveryFeeP = null; saveState(); }
