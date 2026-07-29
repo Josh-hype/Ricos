@@ -27,7 +27,11 @@
     "priceRange": "££",
     "addressRegion": "North Yorkshire",
     "description": "Rico's Peri Peri — flame-grilled peri-peri chicken, pizza and burgers in York. Order online for collection or delivery.",
-    "sameAs": []
+    "_comment_sameAs": "Social profiles, emitted as schema.org sameAs. This is how Google ties the website, the social pages and the Google Business Profile together as ONE business entity, which is why it matters for local search. Found from public listings 2026-07-28 — if either link is not the shop's real page, correct it, because pointing at the wrong profile is worse than none.",
+    "sameAs": [
+      "https://www.facebook.com/440576412470650/",
+      "https://www.instagram.com/ricos.york/"
+    ]
   },
   "_comment_theme": "Brand colours used across all pages and the email templates. 'primary' is the dominant brand colour (currently red); 'primaryDark' and 'primaryDeep' are used for hover/active states - keep them progressively darker shades of primary. 'accent' is the secondary highlight (yellow). 'background' is the page wash, 'surface' is the panel/card background.",
   "theme": {
