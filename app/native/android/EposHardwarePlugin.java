@@ -169,10 +169,16 @@ public class EposHardwarePlugin extends Plugin {
     public void printDoc(PluginCall call) {
         JSArray ops = call.getArray("ops");
         if (ops == null) { resolveNotWired(call, "no-ops"); return; }
-        Printer zp = zcs();
-        if (zp != null) { printDocZcs(call, zp, ops); return; }
         SunmiPrinterService svc = printer;
-        if (svc == null) { resolveNotWired(call, "printer-not-connected"); return; }
+        if (svc == null) {
+            // No Sunmi service on this device — try ZCS. Checking Sunmi FIRST matters:
+            // the ZCS probe costs a sysPowerOn + 1s sleep on hardware that has no ZCS
+            // board, and a Sunmi T2 would otherwise pay it on its first prints.
+            Printer zp = zcs();
+            if (zp != null) { printDocZcs(call, zp, ops); return; }
+            resolveNotWired(call, "printer-not-connected");
+            return;
+        }
         try {
             for (int i = 0; i < ops.length(); i++) {
                 JSONObject op;
@@ -214,10 +220,13 @@ public class EposHardwarePlugin extends Plugin {
     @PluginMethod
     public void printReceipt(PluginCall call) {
         String text = call.getString("text", "");
-        Printer zp = zcs();
-        if (zp != null) { printTextZcs(call, zp, text); return; }
         SunmiPrinterService svc = printer;
-        if (svc == null) { resolveNotWired(call, "printer-not-connected"); return; }
+        if (svc == null) {
+            Printer zp = zcs();                       // Sunmi first — see printDoc
+            if (zp != null) { printTextZcs(call, zp, text); return; }
+            resolveNotWired(call, "printer-not-connected");
+            return;
+        }
         try {
             svc.setAlignment(0, null); svc.setFontSize(24f, null);
             svc.printText(text.endsWith("\n") ? text : text + "\n", null);
