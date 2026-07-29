@@ -1674,6 +1674,10 @@ function loadState() {
     deliveryFeeP: null,
     user: null,
     activeCategory: null,
+    // Last-used checkout details, so a returning customer isn't retyping their
+    // name, phone and address on every order. Their own browser only — nothing
+    // is sent anywhere it wasn't already, and "Use a new address" clears it.
+    saved: null,
   };
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -2927,6 +2931,49 @@ document.getElementById('openCartMobile').addEventListener('click', () => openMo
 let checkoutStep = 'contact';   // contact → address → payment → success
 let checkoutData = {};
 
+/* ---------- Remembered checkout details ----------
+   The postcode already survived a reload (it lives in `state`), but the name,
+   phone, email and street address sat in `checkoutData`, which is wiped on every
+   page load — so a regular customer retyped the lot each time. These persist it
+   in the same localStorage record the cart uses. */
+function seedCheckoutFromSaved() {
+  const sv = state.saved;
+  if (!sv) return;
+  for (const k of ['name', 'phone', 'email', 'line1', 'line2', 'city', 'postcode', 'notes']) {
+    if (checkoutData[k] === undefined && sv[k]) checkoutData[k] = sv[k];
+  }
+}
+function rememberCheckout() {
+  try {
+    state.saved = {
+      name: checkoutData.name || '',
+      phone: checkoutData.phone || '',
+      email: checkoutData.email || '',
+      line1: checkoutData.line1 || '',
+      line2: checkoutData.line2 || '',
+      city: checkoutData.city || '',
+      // Delivery reads the postcode off `state`; collection keeps its own.
+      postcode: (state.mode === 'deliver' ? state.postcode : checkoutData.postcode) || '',
+      notes: checkoutData.notes || '',
+    };
+    saveState();
+  } catch (e) {}
+}
+/* "Use a new address" — drop the remembered ADDRESS but keep who they are, since
+   the name and phone rarely change even when the delivery address does. */
+function forgetSavedAddress() {
+  for (const k of ['line1', 'line2', 'notes']) checkoutData[k] = '';
+  checkoutData.postcode = '';
+  if (state.saved) {
+    state.saved = { ...state.saved, line1: '', line2: '', postcode: '', notes: '' };
+    saveState();
+  }
+}
+function hasSavedAddress() {
+  const sv = state.saved;
+  return !!(sv && sv.line1);
+}
+
 /* Stripe instance + Elements are reused across re-renders of the payment
    step so the customer doesn't lose what they've typed. */
 let stripeInstance = null;
@@ -3146,6 +3193,7 @@ async function placeExpressOrder(event) {
       if (errEl) errEl.textContent = error.message || 'Payment failed.';
       return;
     }
+    rememberCheckout();   // so the next order is prefilled
     state.cart = [];
     saveState();
     window.location.href = `/thank-you?ref=${encodeURIComponent(data.orderId)}`;
@@ -3227,7 +3275,8 @@ async function placeOrder() {
 
     if (!isCard) {
       // Cash flow: we're done, redirect to confirmation.
-      state.cart = [];
+    rememberCheckout();   // so the next order is prefilled
+    state.cart = [];
       saveState();
       window.location.href = `/thank-you?ref=${encodeURIComponent(data.orderId)}`;
       return;
@@ -3250,7 +3299,8 @@ async function placeOrder() {
     //     case the PI is already complete.
     if (savedPmId) {
       if (data.piStatus === 'succeeded') {
-        state.cart = [];
+    rememberCheckout();   // so the next order is prefilled
+    state.cart = [];
         saveState();
         window.location.href = `/thank-you?ref=${encodeURIComponent(data.orderId)}`;
         return;
@@ -3273,7 +3323,8 @@ async function placeOrder() {
         payBtn.textContent = `Pay ${fmt(cartTotals().total)}`;
         return;
       }
-      state.cart = [];
+    rememberCheckout();   // so the next order is prefilled
+    state.cart = [];
       saveState();
       window.location.href = `/thank-you?ref=${encodeURIComponent(data.orderId)}`;
       return;
@@ -3317,6 +3368,7 @@ async function placeOrder() {
       return;
     }
     // Payment succeeded without a redirect (Apple Pay etc.) — go ourselves.
+    rememberCheckout();   // so the next order is prefilled
     state.cart = [];
     saveState();
     window.location.href = `/thank-you?ref=${encodeURIComponent(data.orderId)}`;
@@ -3336,6 +3388,7 @@ document.getElementById('mCheckoutBtn').addEventListener('click', () => {
 
 function startCheckout() {
   if (CLOSURE) { openModal('closedOverlay'); return; } // closed today — no ordering
+  seedCheckoutFromSaved();  // prefill from their last order before any step renders
   if (state.cart.length === 0) {
     alert('Your cart is empty.');
     return;
@@ -3483,6 +3536,10 @@ function renderCheckout() {
       ${checkoutProgressHTML('address')}
       <h4 style="font-family:var(--display);font-size:1.1rem;margin:0 0 1rem">${state.mode === 'deliver' ? 'Delivery address' : 'Your address'}</h4>
       ${state.mode === 'deliver' && state.postcode ? `<div class="notice ok">Delivering to <strong>${state.postcode}</strong></div>` : ''}
+      ${hasSavedAddress() ? `<div class="notice" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between">
+        <span>Using your saved address — <strong>${escapeHTML(state.saved.line1)}</strong></span>
+        <button type="button" id="coNewAddr" class="btn-form secondary" style="width:auto;padding:6px 14px;font-size:0.85rem;margin:0">Use a new address</button>
+      </div>` : ''}
       <div class="field">
         <label for="coPostcode">Postcode</label>
         <div style="display:flex;gap:8px">
@@ -3517,6 +3574,12 @@ function renderCheckout() {
       </div>
     `;
 
+    document.getElementById('coNewAddr')?.addEventListener('click', () => {
+      forgetSavedAddress();
+      if (state.mode === 'deliver') { state.postcode = null; state.deliveryFeeP = null; saveState(); }
+      renderCheckout();                       // redraw with the address fields empty
+      document.getElementById('coPostcode')?.focus();
+    });
     document.getElementById('coBack').addEventListener('click', () => { checkoutStep = 'contact'; renderCheckout(); });
 
     // Address finder — the customer picks their address from a postcode lookup.
