@@ -193,6 +193,7 @@ button{cursor:pointer;border:0;background:none}
 .sf-msg.err{color:var(--red)} .sf-msg.ok{color:var(--green)}
 
 /* Activity log (audit) */
+#rejectOvl{z-index:80} /* opened from the alarm (60) — must sit above it, but below the authz PIN */
 #authzOvl{z-index:90}
 #cardOvl{z-index:95} /* above the pay modal it opens from */
 .audit-list{display:flex;flex-direction:column;gap:6px;max-height:54vh;overflow:auto;margin-bottom:14px}
@@ -4444,7 +4445,7 @@ $('#alarmReject').addEventListener('click', async () => {
   // them with a refund and no explanation.
   const reason = await askRejectReason();
   if (!reason) return;
-  const authToken = await requirePerm('void', id);
+  const authToken = await requirePerm('void', id, true);   // always PIN-gated
   if (authToken === false) return;
   $('#alarmReject').disabled = true;
   try {
@@ -4658,7 +4659,7 @@ $('#refundConfirm').addEventListener('click', async () => {
   if (!confirm(`Refund £${(amt / 100).toFixed(2)} to the customer's card?`)) return;
   // Refunds need the 'refund' permission; if this operator lacks it, a manager
   // approves with their PIN and we replay their one-action token on the request.
-  const authToken = await requirePerm('refund', c.id);
+  const authToken = await requirePerm('refund', c.id, true);   // always PIN-gated
   if (authToken === false) return;
   $('#refundConfirm').disabled = true;
   try {
@@ -4731,14 +4732,16 @@ async function cancelOrder(id) {
   // Cancelling needs the 'void' permission. In per-operator mode we FORCE the
   // manager-PIN prompt every time (even for an operator who holds 'void'), so a
   // cancellation always takes a deliberate owner/manager PIN. In legacy
-  // (shared-PIN, no operators) mode there are no operators to authorise against
-  // and the server already permits the void on a valid staff session, so forcing
-  // the prompt would be an impossible dead-end (no PIN can satisfy /authorize) —
-  // there we proceed without a token. requirePerm resolves: a token / 'owner'
-  // sentinel / null (allowed, no token needed) → proceed; false → dismissed.
+  // (shared-PIN, no operators) mode this used to be skipped: /api/staff/authorize
+  // resolved PINs only against the operator store, so no PIN could satisfy it and
+  // forcing the prompt was an impossible dead-end. That endpoint now accepts the
+  // shop's MANAGER pin there (falling back to the staff pin when no manager pin is
+  // set), so cancelling is PIN-gated on every shop, not just the ones running
+  // named operators. requirePerm resolves: a token / 'owner' sentinel / null
+  // (allowed, no token needed) → proceed; false → dismissed.
   const reason = await askRejectReason();
   if (!reason) return;
-  const token = await requirePerm('void', id, state.operatorsEnabled);
+  const token = await requirePerm('void', id, true);   // always PIN-gated
   if (token === false) return;
   doCancel(id, token || undefined, reason);
 }
@@ -7127,7 +7130,9 @@ function requirePerm(perm, orderId, force) {
     // lets the owner session through, so this is never used as a real auth token.
     if (force && state.fullAccess && can(perm)) { resolve('owner'); return; }
     state.pendingAuth = { perm, orderId: orderId || null, resolve };
-    $('#authzSub').innerHTML = `A manager PIN is needed to <b>${PERM_LABELS[perm] || perm}</b>.`;
+    $('#authzSub').innerHTML = state.operatorsEnabled
+      ? `A manager PIN is needed to <b>${PERM_LABELS[perm] || perm}</b>.`
+      : `Enter the manager PIN to <b>${PERM_LABELS[perm] || perm}</b>.`;
     $('#authzPin').value = '';
     $('#authzError').textContent = '';
     $('#authzOvl').classList.add('open');
