@@ -2971,6 +2971,14 @@ function forgetSavedAddress() {
     saveState();
   }
 }
+/* The postcode to show. Delivery normally carries it on `state` (captured before
+   checkout); collection shops keep it on checkoutData. A saved address supplies it
+   in BOTH cases — without this fallback the field rendered blank on delivery even
+   though the rest of the address had prefilled, and checkout refused to continue. */
+function savedPostcode() {
+  if (state.mode === 'deliver') return state.postcode || checkoutData.postcode || '';
+  return checkoutData.postcode || '';
+}
 function hasSavedAddress() {
   return !!(checkoutData.addrSource && checkoutData.line1);
 }
@@ -3552,14 +3560,16 @@ function renderCheckout() {
       ${checkoutProgressHTML('address')}
       <h4 style="font-family:var(--display);font-size:1.1rem;margin:0 0 1rem">${state.mode === 'deliver' ? 'Delivery address' : 'Your address'}</h4>
       ${state.mode === 'deliver' && state.postcode ? `<div class="notice ok">Delivering to <strong>${state.postcode}</strong></div>` : ''}
-      ${hasSavedAddress() ? `<div class="notice" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between">
-        <span>${savedAddressLabel()} — <strong>${escapeHTML(checkoutData.line1 || '')}</strong></span>
-        <button type="button" id="coNewAddr" class="btn-form secondary" style="width:auto;padding:6px 14px;font-size:0.85rem;margin:0">Use a new address</button>
+      ${hasSavedAddress() ? `<div class="notice ok" style="text-align:left">
+        <div style="font-size:0.8rem;opacity:.75;margin-bottom:4px">${savedAddressLabel()}</div>
+        <div style="font-weight:700;line-height:1.45">${[checkoutData.line1, checkoutData.line2, checkoutData.city, savedPostcode()].filter(Boolean).map(escapeHTML).join('<br>')}</div>
+        <button type="button" id="coNewAddr" class="btn-form secondary" style="width:auto;padding:6px 14px;font-size:0.85rem;margin:10px 0 0">Use a new address</button>
       </div>` : ''}
+      <div id="coAddrFields"${hasSavedAddress() ? ' hidden' : ''}>
       <div class="field">
         <label for="coPostcode">Postcode</label>
         <div style="display:flex;gap:8px">
-          <input id="coPostcode" type="text" value="${escapeHTML(state.mode === 'deliver' ? (state.postcode || '') : (checkoutData.postcode || ''))}" autocomplete="postal-code" placeholder="e.g. YO24 3AQ" style="flex:1;min-width:0" />
+          <input id="coPostcode" type="text" value="${escapeHTML(savedPostcode())}" autocomplete="postal-code" placeholder="e.g. YO24 3AQ" style="flex:1;min-width:0" />
           ${(window.SHOP_CONFIG && window.SHOP_CONFIG.addressLookup && window.SHOP_CONFIG.addressLookup.enabled) ? '<button type="button" class="btn-form secondary" id="coPcFind" style="flex:0 0 auto;width:auto;padding:0 26px">Find</button>' : ''}
         </div>
       </div>
@@ -3579,6 +3589,7 @@ function renderCheckout() {
       <div class="field">
         <label for="coCity">City</label>
         <input id="coCity" type="text" value="${escapeHTML(checkoutData.city || '{{shopCity}}')}" autocomplete="address-level2" />
+      </div>
       </div>
       <div class="field">
         <label for="coNotes">${state.mode === 'deliver' ? 'Delivery notes' : 'Notes'} <span style="font-weight:400;color:var(--grey)">(optional)</span></label>
