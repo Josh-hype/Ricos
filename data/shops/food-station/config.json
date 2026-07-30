@@ -4,7 +4,7 @@
     "tradingName": "Big Bites",
     "_comment_shortName": "Conversational short form used in page headers, aria labels and the staff PWA name.",
     "shortName": "Big Bites",
-    "_comment_todo": "REBRAND STAGED ON DEV — Food Station is becoming Big Bites. Go-live steps (in order): 1) buy bigbiteseasingwold.uk (named in the brand guidelines p9) and attach as a SECOND custom domain on this Pages project; 2) confirm /api/config + a test order on the new host; 3) re-register wallet domain (Apple/Google Pay); 4) verify the new domain in Resend and switch RESEND_FROM_EMAIL; 5) flip business.domain/email below; 6) 301 the old foodstationyork.uk zone to the new domain (keep 6-12 months); 7) rename the Google Business Profile (EDIT, never re-create). CHECK FIRST: brand guidelines list Tel 01347 820820 but this config has 01347 824522 — confirm with the owner which is right. legalName stays FOOD STATION 56 LTD unless the company itself renames at Companies House.",
+    "_comment_todo": "REBRAND STAGED ON DEV — Food Station is becoming Big Bites. bigbiteseasingwold.uk is bought (external registrar, 2026-07-30); its nameservers are being pointed at Cloudflare so the zone can be added to this Pages project. Remaining go-live steps IN ORDER — each one depends on the one before, so do not jump ahead: 1) add bigbiteseasingwold.uk + www as a SECOND custom domain on this Pages project (do NOT detach foodstationyork.uk); 2) confirm /api/config serves and a test order completes on the new host; 3) merge dev -> main so the new domain actually serves Big Bites (custom domains serve the PRODUCTION branch, so until this merge the new domain shows the old Food Station site); 4) re-register the wallet domain for the new host via /api/staff/wallet-domain (Apple/Google Pay register per exact hostname, so this does NOT carry over — same trap that left Mega Chippy without wallet buttons); 5) verify the new domain in Resend and switch RESEND_FROM_EMAIL, plus Cloudflare Email Routing for orders@; 6) flip business.domain/email below; 7) repoint the till: app/web/provision.js Restaurant ID 833541 still maps to www.foodstationyork.uk; 8) 301 the old foodstationyork.uk zone to the new domain (keep 6-12 months) — STRICTLY LAST, and never blanket /* (it would break /api and /staff on the live till); 9) rename the Google Business Profile (EDIT, never re-create — re-creating loses the reviews); 10) delete the closures \"*\" entry to reopen ordering. Phone resolved 2026-07-30 (see _comment_phone). legalName stays FOOD STATION 56 LTD unless the company itself renames at Companies House.",
     "legalName": "FOOD STATION 56 LTD",
     "companyNumber": "15387417",
     "address": {
@@ -13,7 +13,8 @@
       "postcode": "YO61 3HT",
       "country": "United Kingdom"
     },
-    "phone": "01347 824522",
+    "_comment_phone": "Owner confirmed 2026-07-30: 01347 820820 is the correct number (the one printed in the Big Bites brand guidelines). The old Food Station number 01347 824522 was carried over in error. This feeds the landing page call buttons, the JSON-LD telephone, the order confirmation and the Google Business Profile — they must all match.",
+    "phone": "01347 820820",
     "email": "sales@foodstationyork.uk",
     "domain": "www.foodstationyork.uk"
   },
