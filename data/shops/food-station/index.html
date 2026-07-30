@@ -13,7 +13,10 @@
   /* Big Bites brand system — yellow #F7C61A leads, red #E32619 fires it up,
      charcoal #0C0C0C grounds it, cream #FBF3DE softens. 60/30/10 mix. */
   :root{ --yellow:#F7C61A; --red:#E32619; --deepred:#A81409; --char:#0C0C0C;
-         --coal:#141210; --cream:#FBF3DE; --off:#FFFDF7; --ink:#0C0C0C;
+         /* True black page. The hero photograph is lit on pure black, so any
+            charcoal behind it left a faint rectangle where the two met. --char
+            stays #0C0C0C for ink, borders and keylines. */
+         --bg:#000000; --coal:#0A0A0A; --cream:#FBF3DE; --off:#FFFDF7; --ink:#0C0C0C;
          --line:rgba(247,198,26,.18); --muted:#b9b0a0; }
   *{box-sizing:border-box;} html,body{margin:0;} html{scroll-behavior:smooth;}
   /* The off-canvas nav is position:fixed and parked off-screen when closed, and
@@ -25,7 +28,7 @@
   /* No overflow-x on body: setting it forces overflow-y to auto, which makes
      body a scroll container and stops the sticky header from sticking. The
      clipping is handled on html above. */
-  body{font-family:'Montserrat',system-ui,sans-serif;color:var(--off);background:var(--char);
+  body{font-family:'Montserrat',system-ui,sans-serif;color:var(--off);background:var(--bg);
        line-height:1.55;-webkit-font-smoothing:antialiased;}
   /* height:auto is load-bearing. The width/height attributes on the <img>s are
      there so the browser can reserve space and avoid layout shift, but they also
@@ -44,10 +47,9 @@
      shells. This keeps [hidden] authoritative. */
   [hidden]{display:none !important;}
 
-  /* halftone glow — subtle dot texture on dark panels (brand toolkit) */
-  .halftone{background-color:var(--char);
-    background-image:radial-gradient(rgba(247,198,26,.14) 1.5px, transparent 1.5px);
-    background-size:22px 22px;}
+  /* Was the brand toolkit's halftone dot texture. Dots dropped at the owner's
+     request — on a true-black page they read as noise behind the photography. */
+  .halftone{background-color:var(--bg);}
 
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-weight:800;
        font-size:1rem;padding:15px 28px;border:3px solid var(--char);border-radius:14px;
@@ -139,10 +141,7 @@
   }
 
   /* ── Hero ─────────────────────────────────────────────────────────────── */
-  .hero{position:relative;overflow:hidden;padding:56px 0 40px;
-        background:radial-gradient(120% 90% at 72% 42%, #2a2118 0%, #141210 42%, #0a0a0a 100%);}
-  .hero::after{content:"";position:absolute;inset:0;pointer-events:none;
-    background-image:radial-gradient(rgba(247,198,26,.10) 1.5px, transparent 1.5px);background-size:24px 24px;}
+  .hero{position:relative;overflow:hidden;padding:56px 0 40px;background:var(--bg);}
   .hero .wrap{position:relative;z-index:2;display:grid;grid-template-columns:1.02fr .98fr;
               gap:40px;align-items:center;}
   .hero h1{font-size:clamp(2.6rem,6.4vw,5.1rem);margin:18px 0 0;color:var(--off);
@@ -314,6 +313,9 @@
   .foot-col h4{font-family:'Luckiest Guy',system-ui,sans-serif;font-weight:400;color:var(--yellow);font-size:1.25rem;letter-spacing:1px;margin:0 0 14px;text-transform:uppercase;}
   .foot-col p{margin:0 0 10px;font-size:.95rem;line-height:1.65;}
   .foot-col a{color:var(--yellow);font-weight:700;}
+  /* .foot-col a out-specifies .btn, so without this the footer's yellow Order
+     button rendered yellow-on-yellow and was completely invisible. */
+  .foot-col a.btn{color:var(--char);margin-top:6px;box-shadow:3px 3px 0 rgba(247,198,26,.45);}
   .foot-bottom{border-top:2px solid var(--line);display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;max-width:1240px;margin:0 auto;padding:16px 22px;font-size:.82rem;}
   .foot-bottom a{color:var(--yellow);font-weight:600;}
   @media(max-width:720px){
