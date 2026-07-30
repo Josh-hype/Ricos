@@ -163,15 +163,23 @@
 
   /* Food stack. The plate is a soft warm glow behind the food so the cut-outs
      read as lit rather than pasted onto flat black. */
-  .foodstack{position:relative;min-height:clamp(320px,42vw,520px);}
-  .foodstack .glow{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);
-    width:86%;aspect-ratio:1;border-radius:50%;
-    background:radial-gradient(circle,rgba(247,198,26,.30) 0%,rgba(227,38,25,.14) 42%,transparent 68%);
-    filter:blur(14px);}
-  .foodstack img{position:absolute;filter:drop-shadow(0 26px 30px rgba(0,0,0,.72));}
-  .foodstack .f-burger{width:78%;left:8%;top:12%;z-index:3;}
-  .foodstack .f-pizza{width:44%;right:-4%;bottom:2%;z-index:2;transform:rotate(-9deg);}
-  .foodstack .f-wrap{width:42%;left:-6%;bottom:6%;z-index:1;transform:rotate(9deg);}
+  /* Hero photograph. The shot is already lit on a near-black ground (its edges
+     measure 0,0,0–19,10,4 against the page's #0C0C0C), so instead of boxing it
+     in we feather the left and bottom edges away and let it sit directly on the
+     page. No border, no card — it reads as one continuous scene. */
+  .foodstack{position:relative;}
+  /* Oversized and bled off the right of the viewport, so the only edges that can
+     show are the ones we feather. Safe to overflow because html is overflow-x:
+     clip. The three faded edges are left, top and bottom; the right simply runs
+     off-screen, which also keeps the branded fries carton and the chicken from
+     being cut into by a mask. */
+  .foodstack .shot{width:132%;max-width:none;height:auto;
+    -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 20%),
+                       linear-gradient(to bottom,transparent 0%,#000 14%,#000 80%,transparent 100%);
+    -webkit-mask-composite:source-in;
+            mask-image:linear-gradient(to right,transparent 0%,#000 20%),
+                       linear-gradient(to bottom,transparent 0%,#000 14%,#000 80%,transparent 100%);
+            mask-composite:intersect;}
 
   /* Offer card */
   .offer{position:absolute;right:0;top:-6%;z-index:5;width:min(300px,74%);
@@ -189,15 +197,17 @@
   @media(max-width:980px){
     .hero .wrap{grid-template-columns:1fr;gap:8px;}
     .hero{padding:40px 0 30px;}
-    .foodstack{min-height:300px;margin-top:18px;}
+    .foodstack{margin-top:22px;}
+    .foodstack .shot{width:100%;}
     .offer{position:static;width:100%;margin:18px auto 0;}
     .hero-cta .btn{flex:1 1 100%;}
     .trust3{gap:16px;}
   }
   @media(max-width:420px){
     .trust3{flex-direction:column;gap:12px;}
-    .foodstack{min-height:230px;}
-    .foodstack .f-burger{width:84%;left:8%;}
+    /* Narrow phones: crop in on the burger rather than shrinking the whole
+       scene until the food is unreadable. */
+    .foodstack .shot{aspect-ratio:4/3;object-fit:cover;object-position:38% 50%;}
   }
 
   /* ── Category rail ────────────────────────────────────────────────────── */
@@ -421,10 +431,16 @@
       </div>
 
       <div class="foodstack">
-        <span class="glow" aria-hidden="true"></span>
-        <img class="f-burger" src="assets/burger.png" alt="Stacked Big Bites cheeseburger" width="460" height="338" />
-        <img class="f-pizza"  src="assets/pizza.png"  alt="Freshly baked loaded pizza" width="489" height="489" />
-        <img class="f-wrap"   src="assets/wrap.png"   alt="Loaded doner wrap" width="502" height="316" />
+        <picture>
+          <source type="image/webp"
+                  srcset="assets/hero-800.webp 800w, assets/hero.webp 1536w"
+                  sizes="(max-width:980px) 100vw, 50vw" />
+          <img class="shot" src="assets/hero.jpg"
+               srcset="assets/hero-800.jpg 800w, assets/hero.jpg 1536w"
+               sizes="(max-width:980px) 100vw, 50vw"
+               width="1536" height="1024" fetchpriority="high" decoding="async"
+               alt="A stacked Big Bites cheeseburger with bacon, melted cheese and red onion, beside a carton of fries and southern fried chicken" />
+        </picture>
         <aside class="offer" id="offerCard" hidden></aside>
       </div>
     </div>
