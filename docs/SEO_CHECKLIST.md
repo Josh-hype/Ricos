@@ -154,15 +154,35 @@ Same name / address / phone as `config.json` everywhere:
 These are shared-code changes — not per-shop work. Ticking one here upgrades
 every existing and future shop on the next deploy.
 
-- [ ] `geo` (lat/lng) in the Restaurant schema — we already geocode postcodes
-      via postcodes.io for radius delivery, so the data is available.
-- [ ] `areaServed` from the delivery config.
-- [ ] `potentialAction` / `OrderAction` so Google can surface an "Order online"
-      button.
+- [x] `geo` (lat/lng) in the Restaurant schema — **support shipped**, but it is a
+      per-shop value, not automatic. The build has no network (pure Node
+      built-ins) so it can't geocode at deploy time. Set it per shop: open
+      `https://api.postcodes.io/postcodes/<POSTCODE>` in a browser and paste the
+      numbers into `seo.geo` as `{"lat": …, "lng": …}`. Don't guess them.
+- [x] `areaServed` from the delivery config — a `GeoCircle` for radius shops
+      (needs `seo.geo` to be set) and `PostalCodeRangeSpecification` entries for
+      outcode shops. Live on Rico's and Mega Chippy.
+- [x] `potentialAction` / `OrderAction` so Google can surface an "Order online"
+      button. Declares only the fulfilment methods the shop actually offers.
 - [ ] Structured `Menu` / `MenuItem` data generated from `menu.json`.
 - [ ] `FAQPage` schema for delivery area, opening times and allergens.
-- [ ] `og:image` from a food photo rather than the logo — logos preview badly
-      when a link is shared on WhatsApp or Facebook.
+- [x] `og:image` from a food photo rather than the logo — logos preview badly
+      when a link is shared on WhatsApp or Facebook. Set `seo.ogImage` to a
+      1200×630 image (relative to the site root); the card upgrades to
+      `summary_large_image` automatically. Falls back to the logo when unset.
+- [x] `og:title` carries the town (`Big Bites — Easingwold`), because people
+      search and share the brand *with* its location and a bare trading name is
+      ambiguous across towns.
+- [x] `{{seoHead}}` added to `templates/landing-default.html`, so a new shop
+      scaffolded without a bespoke landing page gets schema, canonical and OG
+      tags automatically instead of none. Shops with no `business.domain` emit
+      nothing rather than a broken `https:///` canonical.
+
+**Still missing it:** `data/shops/grub-hub/index.html` has its own landing page
+with **zero** `{{tokens}}`, so it emits no schema, no canonical and no OG tags.
+Adding `{{seoHead}}` is a one-line fix, but do it *after* correcting
+`seo.sameAs` — it still points at the previous brand's socials, and publishing
+those would tell Google the wrong profiles belong to the shop.
 
 Anything added here ships to all shops at once, so test on more than one
 (see the golden rules in `CLAUDE.md`).

@@ -457,6 +457,10 @@ function buildSeoHead() {
   const b = config.business || {};
   const seo = config.seo || {};
   const domain = b.domain || '';
+  // No domain means no canonical URL to point at. A till-only venue (One Sip)
+  // has none, and emitting the block anyway would publish `https:///` as the
+  // canonical, og:url and every schema URL — worse than emitting nothing.
+  if (!domain) return '';
   const url = `https://${domain}/`;
   const img = `${url}logo.png`;
   const name = b.tradingName || '';
@@ -464,6 +468,38 @@ function buildSeoHead() {
   const DAYS = { monday: 'Monday', tuesday: 'Tuesday', wednesday: 'Wednesday', thursday: 'Thursday', friday: 'Friday', saturday: 'Saturday', sunday: 'Sunday' };
   // "25:00" (after-midnight close) → "01:00"; everything else stays HH:MM.
   const fixTime = (t) => { const [h, m] = String(t).split(':').map(Number); return String(((h % 24) + 24) % 24).padStart(2, '0') + ':' + String(m || 0).padStart(2, '0'); };
+  // Optional coordinates: { "geo": { "lat": 54.12, "lng": -1.19 } } under seo.
+  const g = seo.geo || {};
+  const geoPoint = (Number.isFinite(Number(g.lat)) && Number.isFinite(Number(g.lng)))
+    ? { lat: Number(g.lat), lng: Number(g.lng) } : null;
+
+  // Service area, derived from the delivery config rather than restated by hand:
+  // a radius shop advertises a circle around the shop, an outcode shop advertises
+  // the postcode districts it actually serves.
+  const del = (config.fulfillment || {}).delivery || {};
+  const areaServed = [];
+  if (del.enabled) {
+    const miles = Number(del.maxMiles) || Number((del.radius || {}).maxMiles) || 0;
+    if (miles > 0 && geoPoint) {
+      areaServed.push({
+        '@type': 'GeoCircle',
+        geoMidpoint: { '@type': 'GeoCoordinates', latitude: geoPoint.lat, longitude: geoPoint.lng },
+        // schema.org wants metres; the config is in miles.
+        geoRadius: Math.round(miles * 1609.34),
+      });
+    }
+    for (const oc of (del.allowedOutcodes || [])) {
+      areaServed.push({ '@type': 'PostalCodeRangeSpecification', postalCodeBegin: oc, postalCodeEnd: oc });
+    }
+  }
+
+  // Only claim the fulfilment methods the shop actually offers.
+  const deliveryMethods = [];
+  if (del.enabled) deliveryMethods.push('http://purl.org/goodrelations/v1#DeliveryModeOwnFleet');
+  if (((config.fulfillment || {}).collection || {}).enabled) {
+    deliveryMethods.push('http://purl.org/goodrelations/v1#DeliveryModePickUp');
+  }
+
   const openingHoursSpecification = [];
   const hours = config.hours || {};
   for (const k of Object.keys(DAYS)) {
@@ -490,22 +526,55 @@ function buildSeoHead() {
     acceptsReservations: false,
     ...(openingHoursSpecification.length ? { openingHoursSpecification } : {}),
     ...(Array.isArray(seo.sameAs) && seo.sameAs.length ? { sameAs: seo.sameAs } : {}),
+    // Coordinates, when the shop has supplied them. Deliberately config, not a
+    // lookup: the build is pure Node built-ins with no network, so it must not
+    // depend on postcodes.io being reachable at deploy time. Get the numbers
+    // from https://api.postcodes.io/postcodes/<POSTCODE> and paste them in.
+    ...(geoPoint ? { geo: { '@type': 'GeoCoordinates', latitude: geoPoint.lat, longitude: geoPoint.lng } } : {}),
+    // Where the shop will actually deliver, so Google can match "near me" style
+    // queries to a real service area rather than guessing from the address.
+    ...(areaServed.length ? { areaServed } : {}),
+    // Lets Google surface an "Order online" action straight in the result.
+    potentialAction: {
+      '@type': 'OrderAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${url}order`,
+        inLanguage: 'en-GB',
+        actionPlatform: [
+          'http://schema.org/DesktopWebPlatform',
+          'http://schema.org/MobileWebPlatform',
+        ],
+      },
+      deliveryMethod: deliveryMethods,
+    },
   };
   // Escape "<" so the JSON can never break out of the <script> tag.
   const jsonLd = JSON.stringify(schema).replace(/</g, '\\u003c');
   const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  // Share title carries the town. People search and share the brand WITH its
+  // location ("big bites easingwold"), and a bare trading name is ambiguous
+  // across towns. Skipped when the trading name already names the place.
+  const city = a.city || '';
+  const socialTitle = (city && !new RegExp(`\\b${city.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(name))
+    ? `${name} — ${city}` : name;
+  // Share image: a logo previews badly in a WhatsApp or Facebook card — it sits
+  // in a letterboxed square and says nothing appetising. seo.ogImage lets a shop
+  // point at a proper 1200x630 food image instead; falls back to the logo.
+  const ogImage = seo.ogImage ? `${url}${String(seo.ogImage).replace(/^\/+/, '')}` : img;
+  const twitterCard = seo.ogImage ? 'summary_large_image' : 'summary';
   return [
     `<link rel="canonical" href="${url}" />`,
     `<meta property="og:type" content="website" />`,
     `<meta property="og:site_name" content="${esc(name)}" />`,
-    `<meta property="og:title" content="${esc(name)}" />`,
+    `<meta property="og:title" content="${esc(socialTitle)}" />`,
     `<meta property="og:description" content="${esc(desc)}" />`,
     `<meta property="og:url" content="${url}" />`,
-    `<meta property="og:image" content="${img}" />`,
-    `<meta name="twitter:card" content="summary" />`,
-    `<meta name="twitter:title" content="${esc(name)}" />`,
+    `<meta property="og:image" content="${ogImage}" />`,
+    `<meta name="twitter:card" content="${twitterCard}" />`,
+    `<meta name="twitter:title" content="${esc(socialTitle)}" />`,
     `<meta name="twitter:description" content="${esc(desc)}" />`,
-    `<meta name="twitter:image" content="${img}" />`,
+    `<meta name="twitter:image" content="${ogImage}" />`,
     `<script type="application/ld+json">${jsonLd}</script>`,
   ].join('\n');
 }
