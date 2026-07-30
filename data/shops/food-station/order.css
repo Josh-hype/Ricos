@@ -1,10 +1,114 @@
-/* Food Station — sticker-lite buttons.
-   The shared order page already gives the cards, category chips and the
-   cart / checkout button the charcoal-outline + hard-offset-shadow sticker
-   look. These rules extend the same pop to the add-to-cart and quantity
-   buttons (which ship without a shadow) and add a tactile press-down on tap.
-   No rotation, so a dense ordering UI stays calm. */
+/* Big Bites — order page skin.
 
+   Brings the ordering flow in line with the printed menu and the landing page:
+   charcoal throughout, cream panels sitting on top of it, torn yellow banners
+   for the section headings, red for anything that shouts.
+
+   This file is APPENDED to the shared order page (scripts/build-shop.js), so it
+   is per-shop by construction — nothing here touches Rico's, Mega Chippy, the
+   Grub Hub or One Sip. It overrides selectors rather than redefining --cream on
+   purpose: in the shared sheet --cream is both the page background AND a card
+   fill, so retinting the variable would drag surfaces along with it.
+
+   Brand palette: yellow #F7C61A, red #E32619, charcoal #0C0C0C, cream #FBF3DE. */
+
+:root {
+  --bb-char: #0C0C0C;
+  --bb-cream: #FBF3DE;
+  --bb-yellow: #F7C61A;
+  --bb-red: #E32619;
+}
+
+/* ── The page itself ─────────────────────────────────────────────────────── */
+/* Charcoal, with the brand's halftone dot texture so a long menu doesn't read
+   as a flat black slab. */
+/* NB: deliberately no `color` on body. The cream panels below inherit their text
+   colour from it, so a page-wide light colour turns the category names and item
+   rows cream-on-cream. Page-level text is coloured explicitly instead. */
+body {
+  background-color: var(--bb-char);
+  background-image: radial-gradient(rgba(247, 198, 26, 0.13) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+
+header.site {
+  background: var(--bb-char);
+  border-bottom: 4px solid var(--bb-yellow);
+  color: var(--bb-cream);
+}
+header.site a,
+header.site button { color: var(--bb-cream); }
+
+/* Text that sits directly on the page background rather than on a card —
+   without this it keeps the shared sheet's near-black ink and vanishes. */
+.cat-section,
+.cat-section > p,
+.menu-loading,
+.min-order-hint,
+.schedule-note,
+.service-info { color: var(--bb-cream); }
+
+/* And the reverse guard: every cream panel states its own dark ink, so nothing
+   inherited from an ancestor can turn card text cream-on-cream. */
+.cat-card,
+.cat-card *,
+.item-list,
+.item-row,
+.item-row-name { color: var(--ink); }
+.item-row-desc { color: var(--grey); }
+.item-row-price { color: var(--bb-red); }
+.item-row-view,
+.item-row-tag { color: #fff; }
+.cat-card-chev { color: var(--bb-yellow); }
+
+/* ── Category headings become the printed menu's torn banner ─────────────── */
+/* .cat-title is a flex row (emoji + h2); the h2 is the thing that carries the
+   heading treatment in the shared sheet, so the banner goes on the h2 and the
+   emoji stays beside it on the charcoal. */
+.cat-title .icon { font-size: 1.6rem; }
+.cat-title h2 {
+  background: var(--bb-yellow);
+  color: var(--bb-char);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 13px 26px 10px;
+  transform: rotate(-1.2deg);
+  line-height: 1.05;
+  clip-path: polygon(0.0% 1.5%, 4.5% 5%, 9.1% 0%, 13.6% 1.5%, 18.2% 3.5%, 22.7% 0%, 27.3% 5%, 31.8% 3.5%, 36.4% 5%, 40.9% 0%, 45.5% 0%, 50.0% 0%, 54.5% 0%, 59.1% 1.5%, 63.6% 3.5%, 68.2% 1.5%, 72.7% 0%, 77.3% 1.5%, 81.8% 0%, 86.4% 3.5%, 90.9% 5%, 95.5% 5%, 100.0% 1.5%, 100.0% 98%, 95.5% 94.5%, 90.9% 98%, 86.4% 94.5%, 81.8% 100%, 77.3% 100%, 72.7% 96%, 68.2% 96%, 63.6% 100%, 59.1% 94.5%, 54.5% 96%, 50.0% 96%, 45.5% 94.5%, 40.9% 96%, 36.4% 100%, 31.8% 100%, 27.3% 100%, 22.7% 94.5%, 18.2% 100%, 13.6% 100%, 9.1% 100%, 4.5% 100%, 0.0% 96%);
+}
+
+/* ── Cards: cream, not white ─────────────────────────────────────────────── */
+/* The printed menu's panels are warm cream on black; pure white glares against
+   charcoal. */
+.cat-card,
+.item-list,
+.item-row { background: var(--bb-cream); }
+.item-row + .item-row { border-top: 2px dotted rgba(12, 12, 12, 0.22); }
+
+.cat-card {
+  border-color: var(--bb-char);
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.55);
+}
+
+/* Back-to-sections control: a charcoal chip with a yellow keyline, so it reads
+   as a control on the dark page rather than as another cream card. */
+.cat-back {
+  background: var(--bb-char);
+  color: var(--bb-yellow);
+  border: 2px solid var(--bb-yellow);
+}
+
+/* ── The tap hint ────────────────────────────────────────────────────────── */
+/* It ships charcoal-on-cream; on a charcoal page it has to invert or it
+   disappears into the background. */
+.tap {
+  background: var(--bb-yellow);
+  color: var(--bb-char);
+  border-color: var(--bb-char);
+}
+
+/* ── Sticker press, carried over from the previous skin ──────────────────── */
 .add-btn {
   box-shadow: 3px 3px 0 var(--ink);
   transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;

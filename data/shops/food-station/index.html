@@ -15,7 +15,27 @@
   :root{ --yellow:#F7C61A; --red:#E32619; --deepred:#A81409; --char:#0C0C0C;
          --cream:#FBF3DE; --off:#FFFDF7; --ink:#0C0C0C; }
   *{box-sizing:border-box;} html,body{margin:0;} html{scroll-behavior:smooth;}
-  body{font-family:'Montserrat',system-ui,sans-serif;color:var(--ink);background:var(--cream);line-height:1.5;overflow-x:hidden;}
+  /* Charcoal throughout, like the printed menu — cream and yellow arrive as
+     cards and banners on top of it, never as full-width backgrounds. */
+  body{font-family:'Montserrat',system-ui,sans-serif;color:var(--off);background:var(--char);line-height:1.5;overflow-x:hidden;}
+
+  /* ── Torn banner ─────────────────────────────────────────────────────────
+     The printed menu's signature section header: a yellow strip with a ragged
+     tear along both long edges, sitting at a slight angle. The ragged edge is
+     a clip-path polygon rather than an image, so it scales to any width and
+     stays crisp in print or on a phone. */
+  .banner{display:inline-block;background:var(--yellow);color:var(--char);
+    font-family:'Luckiest Guy',system-ui,sans-serif;font-weight:400;
+    font-size:clamp(1.5rem,4.6vw,2.35rem);letter-spacing:1.5px;text-transform:uppercase;
+    padding:16px 34px 12px;transform:rotate(-1.4deg);line-height:1;
+    clip-path:polygon(0.0% 1.5%, 4.5% 5%, 9.1% 0%, 13.6% 1.5%, 18.2% 3.5%, 22.7% 0%, 27.3% 5%, 31.8% 3.5%, 36.4% 5%, 40.9% 0%, 45.5% 0%, 50.0% 0%, 54.5% 0%, 59.1% 1.5%, 63.6% 3.5%, 68.2% 1.5%, 72.7% 0%, 77.3% 1.5%, 81.8% 0%, 86.4% 3.5%, 90.9% 5%, 95.5% 5%, 100.0% 1.5%, 100.0% 98%, 95.5% 94.5%, 90.9% 98%, 86.4% 94.5%, 81.8% 100%, 77.3% 100%, 72.7% 96%, 68.2% 96%, 63.6% 100%, 59.1% 94.5%, 54.5% 96%, 50.0% 96%, 45.5% 94.5%, 40.9% 96%, 36.4% 100%, 31.8% 100%, 27.3% 100%, 22.7% 94.5%, 18.2% 100%, 13.6% 100%, 9.1% 100%, 4.5% 100%, 0.0% 96%);}
+  .banner.red{background:var(--red);color:#fff;}
+  .banner-row{display:flex;justify-content:center;margin-bottom:34px;}
+  .banner-row.left{justify-content:flex-start;}
+
+  /* Dotted rule, printed-menu style: fine white dots, full width. */
+  .dots{height:3px;background-image:radial-gradient(circle,rgba(251,243,222,.75) 1.4px,transparent 1.5px);
+    background-size:11px 3px;background-repeat:repeat-x;margin:0;}
   .display{font-family:'Luckiest Guy',system-ui,sans-serif;font-weight:400;line-height:.92;letter-spacing:1px;text-transform:uppercase;}
   .wrap{max-width:1000px;margin:0 auto;padding:0 22px;}
   a{color:inherit;}
@@ -36,11 +56,14 @@
   /* dotted rule — quick divider (brand toolkit) */
   .dotrule{display:flex;gap:9px;justify-content:center;margin:0 auto;}
   .dotrule i{width:14px;height:7px;background:var(--red);display:block;}
-  /* star ticker strip */
-  .ticker{background:var(--red);color:#fff;border-top:3px solid var(--char);border-bottom:3px solid var(--char);overflow:hidden;white-space:nowrap;}
+  /* Star ticker strip. Yellow bar, black type, red stars — matching the strip
+     printed along the foot of the menu, so the two read as one brand. */
+  .ticker{background:var(--yellow);color:var(--char);border-top:3px solid var(--char);border-bottom:3px solid var(--char);overflow:hidden;white-space:nowrap;}
   .ticker .roll{display:flex;width:max-content;padding:9px 0 7px;font-family:'Luckiest Guy';font-size:1.05rem;letter-spacing:2px;animation:roll 80s linear infinite;}
   .ticker .seq{display:inline-block;white-space:nowrap;}
+  .ticker .st{color:var(--red);}
   @keyframes roll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  @media(prefers-reduced-motion:reduce){.ticker .roll{animation:none;}}
 
   header.bar{display:flex;align-items:center;justify-content:space-between;padding:12px 22px;background:var(--char);border-bottom:4px solid var(--yellow);position:sticky;top:0;z-index:20;}
   header.bar img{height:62px;display:block;}
@@ -66,11 +89,14 @@
   .loc-line .dotrule{margin:0;}
 
   .cravings{padding:48px 0 44px;text-align:center;}
-  .cravings .lbl{font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--red);margin-bottom:20px;}
+  .cravings .lbl{font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--yellow);margin-bottom:20px;}
   .chips{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;}
   .chip{font-family:'Luckiest Guy';font-size:1.45rem;letter-spacing:1px;color:#fff;padding:14px 30px 11px;border:3px solid var(--char);border-radius:999px;box-shadow:5px 5px 0 var(--char);transform:rotate(-2deg);}
   .chip:nth-child(2n){transform:rotate(2deg);}
-  .chip.r{background:var(--red);} .chip.y{background:var(--yellow);color:var(--char);} .chip.k{background:var(--char);color:var(--yellow);}
+  .chip.r{background:var(--red);} .chip.y{background:var(--yellow);color:var(--char);}
+  /* The charcoal chip needs its own outline now the page background is charcoal
+     too — with a charcoal border and shadow it was invisible on the dark page. */
+  .chip.k{background:var(--char);color:var(--yellow);border-color:var(--yellow);box-shadow:5px 5px 0 var(--red);}
 
   .story{color:var(--cream);padding:62px 0;border-top:5px solid var(--char);border-bottom:5px solid var(--yellow);}
   .story h2{font-size:clamp(2rem,5vw,3.2rem);margin:0 0 18px;color:var(--off);}
@@ -79,15 +105,25 @@
   .story .t{color:var(--yellow);font-weight:700;}
   .story .dotrule{justify-content:flex-start;margin:26px 0 0;}
 
-  .feat{padding:56px 0;}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:26px;}
-  .card{padding:30px;border:3px solid var(--char);border-radius:18px;box-shadow:7px 7px 0 var(--char);}
-  .card.red{background:var(--red);color:#fff;}
-  .card.yellow{background:var(--yellow);color:var(--char);}
-  .card .tab{font-size:.95rem;margin-bottom:16px;box-shadow:3px 3px 0 rgba(12,12,12,.4);}
-  .card.red .tab{background:var(--char);color:var(--yellow);}
-  .card h3{font-family:'Luckiest Guy';font-weight:400;letter-spacing:1px;font-size:2rem;margin:0 0 10px;text-transform:uppercase;}
-  .card p{margin:0;font-size:1.05rem;font-weight:500;}
+  /* ── Meal deals ──────────────────────────────────────────────────────────
+     The printed menu's deal block: cream cards, red Luckiest Guy heading,
+     contents centred underneath. No prices here on purpose — the menu data
+     still carries the old Food Station prices, and a landing page that quotes
+     a number the order page won't honour is worse than one that quotes none.
+     Add .deal .price back once the menu is repriced. */
+  .feat{padding:56px 0 62px;}
+  .dealgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .deal{background:var(--cream);color:var(--char);border:3px solid var(--char);
+    border-radius:10px;box-shadow:6px 6px 0 rgba(0,0,0,.55);padding:24px 20px 22px;text-align:center;
+    display:flex;flex-direction:column;}
+  .deal h3{font-family:'Luckiest Guy',system-ui,sans-serif;font-weight:400;color:var(--red);
+    font-size:1.42rem;letter-spacing:.5px;margin:0 0 12px;text-transform:uppercase;line-height:1.05;}
+  .deal p{margin:0;font-size:.98rem;font-weight:600;line-height:1.5;color:#2b2620;}
+  .deal .flag{display:inline-block;align-self:center;margin-top:14px;background:var(--char);color:var(--yellow);
+    font-family:'Luckiest Guy',system-ui,sans-serif;font-size:.8rem;letter-spacing:1.5px;
+    padding:5px 14px 3px;transform:rotate(-2deg);text-transform:uppercase;}
+  .deal-note{text-align:center;margin:30px auto 0;max-width:620px;color:#cfc6b2;font-weight:600;font-size:.98rem;}
+  .deal-note b{color:var(--yellow);}
 
   .eyebrow{display:block;text-align:center;font-weight:800;letter-spacing:.2em;text-transform:uppercase;font-size:.82rem;margin-bottom:10px;}
 
@@ -128,8 +164,11 @@
   .foot-col a.btn.sm{margin-top:6px;color:var(--char);box-shadow:3px 3px 0 rgba(247,198,26,.45);}
   .foot-bottom{border-top:2px solid rgba(247,198,26,.25);display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;max-width:1000px;margin:0 auto;padding:16px 22px;font-size:.82rem;}
   .foot-bottom a{color:var(--yellow);font-weight:600;text-decoration:none;}
+  @media(max-width:900px){ .dealgrid{grid-template-columns:1fr 1fr;} }
   @media(max-width:720px){
     .grid2{grid-template-columns:1fr;}
+    .dealgrid{grid-template-columns:1fr;gap:16px;}
+    .banner{font-size:1.35rem;padding:13px 26px 10px;}
     .find-grid{grid-template-columns:1fr;}
     .foot-grid{grid-template-columns:1fr;text-align:center;gap:26px;}
     .foot-brand img{margin:0 auto;}
@@ -169,7 +208,7 @@
     </div>
   </section>
 
-  <div class="ticker" aria-hidden="true"><div class="roll"><span class="seq">SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;</span><span class="seq">SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;SLICE IT&nbsp;★&nbsp;BIG BITES&nbsp;★&nbsp;FRESH &amp; LOADED&nbsp;★&nbsp;</span></div></div>
+  <div class="ticker" aria-hidden="true"><div class="roll"><span class="seq">SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;</span><span class="seq">SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;</span></div></div>
 
   <section class="cravings"><div class="wrap">
     <div class="lbl">Five cravings · one kitchen</div>
@@ -184,14 +223,40 @@
     <span class="dotrule"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
   </div></section>
 
-  <section class="feat"><div class="wrap grid2">
-    <div class="card red"><span class="tab">The famous one</span><h3>The Goodie Box</h3><p>An 11″ margherita, doner, chips, 4 nuggets, 4 onion rings and a can of drink — the whole lot in one box.</p></div>
-    <div class="card yellow"><span class="tab">Signature offer</span><h3>The Burger Box</h3><p>Cheeseburger, chips, 6 nuggets, 6 onion rings, a dip of your choice and a can of drink. Sorted.</p></div>
+  <section class="feat"><div class="wrap">
+    <div class="banner-row"><span class="banner">Meal Deals</span></div>
+    <div class="dealgrid">
+      <div class="deal">
+        <h3>Goodie Box</h3>
+        <p>11″ Margherita, Doner, Chips,<br>4 Nuggets, 4 Onion Rings,<br>Can of Drink</p>
+        <span class="flag">The famous one</span>
+      </div>
+      <div class="deal">
+        <h3>Burger Box</h3>
+        <p>¼ Cheese, ¼ Chicken,<br>2 × Chips,<br>2 × Can of Pepsi</p>
+      </div>
+      <div class="deal">
+        <h3>Big Bites Deal</h3>
+        <p>Any 2 × 11″ Pizza,<br>2 × Chips,<br>2 × Can of Pepsi</p>
+      </div>
+      <div class="deal">
+        <h3>Personal Deal</h3>
+        <p>Any 11″ Pizza,<br>Chips,<br>Can of Coke</p>
+      </div>
+      <div class="deal">
+        <h3>Family Meal Deal</h3>
+        <p>Any 13″ Pizza,<br>¼ Cheese Burger, Chips,<br>1L Bottle of Drink</p>
+      </div>
+      <div class="deal">
+        <h3>Pizza Deal</h3>
+        <p>Any 3 × 11″ Pizza<br>or<br>Any 3 × 13″ Pizza</p>
+      </div>
+    </div>
+    <p class="deal-note">Every deal, plus pizzas, parmos, kebabs, burgers, wraps and the kids' menu — <b>see the full list and prices when you order</b>.</p>
   </div></section>
 
   <section class="find halftone"><div class="wrap">
-    <span class="eyebrow">Come &amp; get it</span>
-    <h2 class="display">Find your bite</h2>
+    <div class="banner-row"><span class="banner">Find Your Bite</span></div>
     <div class="find-grid">
       <div class="panel">
         <div class="panel-head"><span class="ic-badge">🕒</span><h3>Opening hours</h3></div>
