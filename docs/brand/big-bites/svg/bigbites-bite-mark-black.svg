@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 259 235" width="259" height="235" role="img" aria-label="Big Bites bite mark">
+<title>Bite mark</title>
+<defs>
+  <mask id="bigbites-bite-mark-black-chomp" maskUnits="userSpaceOnUse" x="-104" y="-131" width="259" height="235">
+    <rect x="-104" y="-131" width="259" height="235" fill="#fff"/>
+    <circle cx="80" cy="-68" r="46" fill="#000"/>
+  </mask>
+</defs>
+<g transform="translate(104 131)" fill="#0C0C0C">
+  <circle cx="0" cy="0" r="100" mask="url(#bigbites-bite-mark-black-chomp)"/>
+  <circle cx="130" cy="-106" r="21"/>
+</g>
+</svg>
