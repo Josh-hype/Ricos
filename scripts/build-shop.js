@@ -395,11 +395,20 @@ if (legalName && companyNumber) {
   controllerIdentity = `${config.business.tradingName}, of ${fullAddress}`;
 }
 
-// How customers reach us (email when known, always the phone).
-const contactParts = [];
-if (email) contactParts.push(`by email at ${email}`);
-if (phone) contactParts.push(`by phone on ${phone}`);
-const contactLine = contactParts.join(' or ') || 'using the contact details on our website';
+// How customers reach us on the legal pages: THE PHONE ONLY, for every shop.
+// Owner decision 2026-07-30. These are takeaways — they answer the phone all
+// evening and nobody watches an inbox, so an email address here is a contact
+// route that goes nowhere. This line is the data-controller contact on
+// privacy.html (right next to the ICO complaint route) and on terms.html and
+// allergy-info.html, so it has to be a channel the shop actually answers: a
+// phone number satisfies that, an unmonitored mailbox does not.
+// business.email is still published via /api/config and is still available to
+// landing pages as {{shopEmail}} — it is only kept off the legal pages.
+// The fallback covers a shop with no phone set (today: one-sip, which is
+// till-only and has no customer site).
+const contactLine = phone
+  ? `by phone on ${phone}`
+  : 'using the contact details on our website';
 
 // Terms: the promotional-discount clause only appears for shops that run one.
 const promo = config.promo?.autoOnlineDiscount;
