@@ -37,10 +37,10 @@
     "ogImage": "assets/og-image.png",
     "_comment_geo": "Shop coordinates for the Restaurant schema and the delivery service-area circle. EMPTY ON PURPOSE — do not guess these. Open https://api.postcodes.io/postcodes/YO61%203HT in a browser and paste the \"latitude\" and \"longitude\" values in as numbers. The build cannot fetch them itself: it runs on pure Node built-ins with no network, so a deploy must never depend on an external API being up.",
     "geo": {},
-    "_comment_sameAs": "The shop's own social profiles, emitted as schema.org sameAs. This is how Google ties the website, the socials and the Google Business Profile together as ONE business entity, which is why it matters for local search. Supplied by the owner 2026-07-30. Tracking parameters stripped on purpose (igsh=/utm_source=/mibextid= are QR and referral tags) — sameAs should name the canonical profile, not a one-off share link. TODO: the Facebook entry is still a /share/ redirect shim rather than the page's real address. It resolves, but swap it for the canonical URL when convenient: open the page while logged in and copy what the address bar settles on (facebook.com/<pagename> or facebook.com/profile.php?id=…).",
+    "_comment_sameAs": "The shop's own social profiles, emitted as schema.org sameAs. This is how Google ties the website, the socials and the Google Business Profile together as ONE business entity, which is why it matters for local search. Supplied by the owner 2026-07-30; both are the canonical profile URLs, with the QR/referral tracking parameters (igsh=, utm_source=, mibextid=) stripped, and the Facebook /share/ redirect shim replaced by the real page address. NOTE: the Facebook page has no username yet, so its canonical URL is the numeric profile.php?id= form. If the shop later claims a username the page URL changes to facebook.com/<name> — update this array at the same time, and the printed menu with it.",
     "sameAs": [
       "https://www.instagram.com/bigbiteseasingwold/",
-      "https://www.facebook.com/share/1BPMdfxiSR/"
+      "https://www.facebook.com/profile.php?id=61592819244781"
     ]
   },
   "_comment_theme": "Food Station palette (Brand Identity Guide vol.01). Tomato Red #D72C26 = primary (headlines, buttons). Mustard #F2B91D = accent. Cream #FBF5E9 = background (never pure white). Brand also uses Leaf Green #4FAE3F (secondary) and Charcoal #1A1A1A (text/outlines) — no theme slot, applied in the custom landing/CSS. Type: Poppins Bold (display) / Poppins Regular (body).",
