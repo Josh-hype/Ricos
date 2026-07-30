@@ -65,9 +65,11 @@ More shops are added the same way (see "Adding a new shop").
 | `docs/` | `ADDING_A_SHOP.md`, `SHOP_CHECKLIST.md`, etc. |
 
 **Static files in `public/` that ARE committed** (served as-is, not generated):
-just `_headers`, `_redirects`, `robots.txt`. Everything else under `public/` —
-including `privacy.html`, `terms.html`, `allergy-info.html`, `sitemap.xml`, and
-the `*.inline*.js` files — is **generated** by the build and gitignored.
+just `_headers` and `_redirects`. Everything else under `public/` —
+including `privacy.html`, `terms.html`, `allergy-info.html`, `sitemap.xml`,
+`robots.txt`, and the `*.inline*.js` files — is **generated** by the build and
+gitignored. `robots.txt` is generated from `templates/robots.txt` because its
+`Sitemap:` line must be an absolute, per-shop URL.
 
 **Note — pushing to `main` also updates the physical tills.** A push to `main`
 that touches `templates/staff/**`, `app/web/**`, `app/scripts/sync-web.mjs`, or
@@ -95,6 +97,7 @@ till auto-updates on its next launch. Treat staff-UI pushes as fleet deploys.
   `public/logo.png`, `public/menu-visual.json`, `public/order.html`,
   `public/thank-you.html`, `public/reset-password.html`, `public/privacy.html`,
   `public/terms.html`, `public/allergy-info.html`, `public/sitemap.xml`,
+  `public/robots.txt`,
   `public/staff/index.html`, `public/staff/manifest.json`, `public/assets/`,
   every `public/**/*.inline*.js`, `public/reader-bg.*`, and `data/_active/`.
 

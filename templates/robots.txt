@@ -1,0 +1,20 @@
+# Source of truth for every shop's robots.txt.
+#
+# scripts/build-shop.js copies this to public/robots.txt on each build and
+# appends an ABSOLUTE "Sitemap:" line built from that shop's business.domain.
+# The sitemap directive has to be a fully-qualified URL — the protocol requires
+# it and Google ignores a relative path — and the domain differs per shop, so
+# the line cannot live in a committed static file.
+#
+# public/robots.txt is generated and gitignored. That is deliberate: the Lumin
+# owner console build (PLATFORM_BUILD=1) writes a Disallow-all robots.txt into
+# the same public/ directory, and while the shop copy was committed, running
+# that build locally and then `git add -A` committed a site-wide noindex to
+# every shop. It happened once (commit ddc4745). Now it cannot be committed at
+# all. tests/indexability.test.mjs guards this file.
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /staff/
+Disallow: /thank-you

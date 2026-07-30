@@ -819,4 +819,40 @@ for (const [tplRel, outRelRaw] of templatedFiles) {
   console.log('build-shop: generated public/sitemap.xml (absolute URLs)');
 }
 
+// robots.txt, for exactly the same reason as the sitemap above: the "Sitemap:"
+// directive must be an ABSOLUTE URL. The protocol requires it and Google ignores
+// a relative path, so `Sitemap: /sitemap.xml` — which is what shipped until now —
+// silently disabled sitemap auto-discovery on every shop. The domain is per-shop,
+// so this cannot be a committed static file.
+// _headers travels with robots.txt: same footgun, same fix. No per-shop tokens,
+// it is a straight copy — it just must not be committed under public/.
+{
+  const src = path.join(repoRoot, 'templates', '_headers');
+  if (!fs.existsSync(src)) {
+    console.error('build-shop: required template missing: templates/_headers. Refusing to deploy without cache/robots headers.');
+    process.exit(1);
+  }
+  fs.copyFileSync(src, path.join(repoRoot, 'public', '_headers'));
+  console.log('build-shop: generated public/_headers');
+}
+
+{
+  const src = path.join(repoRoot, 'templates', 'robots.txt');
+  if (!fs.existsSync(src)) {
+    console.error('build-shop: required template missing: templates/robots.txt. Refusing to deploy without a robots.txt.');
+    process.exit(1);
+  }
+  const domain = config.business.domain || '';
+  let out = fs.readFileSync(src, 'utf8').trimEnd() + '\n';
+  if (domain) {
+    out += `\nSitemap: https://${domain}/sitemap.xml\n`;
+  } else {
+    // A till-only venue has no public site to crawl; omitting the line is
+    // correct, and a relative one would be invalid anyway.
+    console.warn('build-shop: no business.domain — robots.txt written without a Sitemap line.');
+  }
+  fs.writeFileSync(path.join(repoRoot, 'public', 'robots.txt'), out);
+  console.log(`build-shop: generated public/robots.txt${domain ? ` (Sitemap: https://${domain}/sitemap.xml)` : ' (no Sitemap line)'}`);
+}
+
 console.log(`build-shop: active shop is "${slug}".`);

@@ -61,7 +61,10 @@ confirm they came out right:
       `priceRange`.
 - [ ] `<link rel="canonical">` points at the live domain (not `.pages.dev`).
 - [ ] `og:` and `twitter:` tags present; `og:image` resolves.
-- [ ] `public/sitemap.xml` and `public/robots.txt` generated.
+- [ ] `public/sitemap.xml` and `public/robots.txt` generated, and `robots.txt`
+      ends with an **absolute** `Sitemap: https://<domain>/sitemap.xml` line. A
+      relative path there is invalid and Google silently ignores it, which
+      disables sitemap auto-discovery.
 
 If any of these are wrong it's a `config.json` problem, not a template problem.
 

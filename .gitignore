@@ -31,10 +31,12 @@ public/terms.html
 public/allergy-info.html
 # Generated each build with absolute per-shop URLs (was a tracked static file).
 public/sitemap.xml
+public/robots.txt
+public/_headers
 # Externalised inline scripts (build-shop.js lifts each page's inline <script>
 # into a same-origin .js so the CSP can drop script-src 'unsafe-inline').
 public/*.inline*.js
 public/**/*.inline*.js
 
 # NOT generated — these static files are served as-is and stay tracked:
-#   public/_headers  public/_redirects  public/robots.txt
+#   public/_redirects
