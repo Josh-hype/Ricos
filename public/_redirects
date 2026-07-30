@@ -16,6 +16,15 @@
 # autocomplete token (registered against the apex) matches every request.
 https://www.ricosyork.co.uk/*  https://ricosyork.co.uk/:splat  301
 
+# Canonical host: www.bigbiteseasingwold.co.uk -> bigbiteseasingwold.co.uk (apex).
+# Both are attached to the Big Bites Pages project, so without this they'd serve
+# identical pages on two hosts and split the SEO signal. The apex is what
+# config.business.domain names and what the till's Restaurant ID resolves to, so
+# the apex must be the one that does NOT redirect — a 301 in front of /api would
+# drop POST bodies and break the till. Matches only this host, so it's a no-op on
+# every other shop's deploy.
+https://www.bigbiteseasingwold.co.uk/*  https://bigbiteseasingwold.co.uk/:splat  301
+
 # Rico's .com is a redirect-only domain — send it (and its www) to the canonical
 # .co.uk so there's ONE address for SEO. Matches only ricosyork.com, so it's a
 # no-op on the Food Station deploy. (Needs ricosyork.com + www.ricosyork.com added

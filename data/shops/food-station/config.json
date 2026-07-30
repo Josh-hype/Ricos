@@ -15,8 +15,10 @@
     },
     "_comment_phone": "Owner confirmed 2026-07-30: 01347 820820 is the correct number (the one printed in the Big Bites brand guidelines). The old Food Station number 01347 824522 was carried over in error. This feeds the landing page call buttons, the JSON-LD telephone, the order confirmation and the Google Business Profile — they must all match.",
     "phone": "01347 820820",
-    "email": "sales@foodstationyork.uk",
-    "domain": "www.foodstationyork.uk"
+    "_comment_email": "MUST be a real, monitored inbox — build-shop.js feeds it into {{contactLine}}, which is the data-controller contact on privacy.html, terms.html and allergy-info.html, i.e. the address a customer uses to demand their data or complain before going to the ICO. Set up Cloudflare Email Routing for orders@bigbiteseasingwold.co.uk -> the shop's real inbox. If that is not in place by go-live, blank this field instead of leaving a bouncing address: build-shop.js:400 only adds the email clause when it is set, so the legal pages fall back to phone-only, which is honest and still compliant.",
+    "email": "orders@bigbiteseasingwold.co.uk",
+    "_comment_domain": "Switched to bigbiteseasingwold.co.uk on 2026-07-30 (bought at GoDaddy, DNS moved to Cloudflare, attached to this Pages project with www). Apex, not www — www 301s here via public/_redirects, matching how Rico's and Mega Chippy are set up. Drives canonical, og:url, JSON-LD url and every sitemap.xml loc, so it must always name the host that actually serves without redirecting. NOTE the brand guidelines p9 print bigbiteseasingwold.uk (no .co) — that domain is NOT owned; the printed guidelines are wrong, not this.",
+    "domain": "bigbiteseasingwold.co.uk"
   },
   "_comment_seo": "Search-engine extras used to build the landing page's JSON-LD Restaurant schema + social meta. cuisine + priceRange feed the structured data; addressRegion sharpens the location; sameAs links your social profiles to the business in Google (paste your Facebook / Instagram / TikTok URLs); description overrides the default meta/OG text. None of this changes the page visually — it's purely for search engines.",
   "seo": {
