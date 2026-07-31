@@ -32,6 +32,15 @@ https://www.bigbiteseasingwold.co.uk/*  https://bigbiteseasingwold.co.uk/:splat 
 https://ricosyork.com/*      https://ricosyork.co.uk/:splat  301
 https://www.ricosyork.com/*  https://ricosyork.co.uk/:splat  301
 
+# Favicon at the conventional root path. Every page already declares
+# <link rel="icon" href="/icon.png"> (injected by build-shop.js), but browsers,
+# feed readers and link-preview bots still request /favicon.ico blind, and a 404
+# there costs the shop its icon in those places. Points at the same file the
+# link tag names, so there is only ever one favicon to keep in sync.
+# On a shop with no icon.png the build doesn't emit one and this 302s to a 404 —
+# same outcome as the bare 404 it replaces, so it is safe everywhere.
+/favicon.ico  /icon.png  302
+
 # Friendly URLs.
 /menu     /order   302
 /book     /order   302
