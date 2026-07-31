@@ -35,13 +35,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -311,13 +306,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -587,13 +577,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -863,13 +848,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -1139,13 +1119,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -1415,13 +1390,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -1692,13 +1662,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -1968,13 +1933,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -2244,13 +2204,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -2520,13 +2475,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -2796,13 +2746,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -3072,13 +3017,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -3348,13 +3288,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -3624,13 +3559,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -3900,13 +3830,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -4176,13 +4101,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -4452,13 +4372,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -4728,13 +4643,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -5004,13 +4914,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -5280,13 +5185,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -5556,13 +5456,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -5833,13 +5728,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -6109,13 +5999,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -6386,13 +6271,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -6662,13 +6542,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -6939,13 +6814,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -7216,13 +7086,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -7492,13 +7357,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -7768,13 +7628,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -8044,13 +7899,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -8636,13 +8486,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -9484,13 +9329,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -13798,13 +13638,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -14357,13 +14192,8 @@
             "required": true,
             "choices": [
               {
-                "id": "p1-thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "p1-deep-pan",
-                "label": "Deep Pan",
+                "id": "p1-regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -14681,13 +14511,8 @@
             "required": true,
             "choices": [
               {
-                "id": "p2-thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "p2-deep-pan",
-                "label": "Deep Pan",
+                "id": "p2-regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -15032,13 +14857,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -15382,13 +15202,8 @@
             "required": true,
             "choices": [
               {
-                "id": "thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "deep-pan",
-                "label": "Deep Pan",
+                "id": "regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -15854,13 +15669,8 @@
             "required": true,
             "choices": [
               {
-                "id": "p1-thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "p1-deep-pan",
-                "label": "Deep Pan",
+                "id": "p1-regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -16178,13 +15988,8 @@
             "required": true,
             "choices": [
               {
-                "id": "p2-thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "p2-deep-pan",
-                "label": "Deep Pan",
+                "id": "p2-regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -16502,13 +16307,8 @@
             "required": true,
             "choices": [
               {
-                "id": "p3-thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "p3-deep-pan",
-                "label": "Deep Pan",
+                "id": "p3-regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -16834,13 +16634,8 @@
             "required": true,
             "choices": [
               {
-                "id": "p1-thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "p1-deep-pan",
-                "label": "Deep Pan",
+                "id": "p1-regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -17158,13 +16953,8 @@
             "required": true,
             "choices": [
               {
-                "id": "p2-thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "p2-deep-pan",
-                "label": "Deep Pan",
+                "id": "p2-regular",
+                "label": "Regular",
                 "price": 0
               },
               {
@@ -17482,13 +17272,8 @@
             "required": true,
             "choices": [
               {
-                "id": "p3-thin-base",
-                "label": "Thin Base",
-                "price": 0
-              },
-              {
-                "id": "p3-deep-pan",
-                "label": "Deep Pan",
+                "id": "p3-regular",
+                "label": "Regular",
                 "price": 0
               },
               {

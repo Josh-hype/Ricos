@@ -19,13 +19,8 @@
             "priceDeltaP": 140
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -270,13 +265,8 @@
             "priceDeltaP": 140
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -521,13 +511,8 @@
             "priceDeltaP": 140
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -772,13 +757,8 @@
             "priceDeltaP": 140
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -1023,13 +1003,8 @@
             "priceDeltaP": 140
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -1274,13 +1249,8 @@
             "priceDeltaP": 140
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -1525,13 +1495,8 @@
             "priceDeltaP": 140
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -1776,13 +1741,8 @@
             "priceDeltaP": 140
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -2027,13 +1987,8 @@
             "priceDeltaP": 140
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -2278,13 +2233,8 @@
             "priceDeltaP": 160
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -2529,13 +2479,8 @@
             "priceDeltaP": 160
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -2780,13 +2725,8 @@
             "priceDeltaP": 160
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -3031,13 +2971,8 @@
             "priceDeltaP": 160
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -3282,13 +3217,8 @@
             "priceDeltaP": 160
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -3533,13 +3463,8 @@
             "priceDeltaP": 160
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -3784,13 +3709,8 @@
             "priceDeltaP": 200
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -4035,13 +3955,8 @@
             "priceDeltaP": 160
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -4286,13 +4201,8 @@
             "priceDeltaP": 160
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -4537,13 +4447,8 @@
             "priceDeltaP": 160
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -4788,13 +4693,8 @@
             "priceDeltaP": 160
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -5039,13 +4939,8 @@
             "priceDeltaP": 160
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -5290,13 +5185,8 @@
             "priceDeltaP": 160
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -5541,13 +5431,8 @@
             "priceDeltaP": 160
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -5792,13 +5677,8 @@
             "priceDeltaP": 160
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -6043,13 +5923,8 @@
             "priceDeltaP": 160
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -6294,13 +6169,8 @@
             "priceDeltaP": 160
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -6545,13 +6415,8 @@
             "priceDeltaP": 160
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -6796,13 +6661,8 @@
             "priceDeltaP": 160
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -7047,13 +6907,8 @@
             "priceDeltaP": 160
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -7298,13 +7153,8 @@
             "priceDeltaP": 160
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -7849,13 +7699,8 @@
             "priceDeltaP": 0
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -8640,13 +8485,8 @@
             "priceDeltaP": 0
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -12153,13 +11993,8 @@
             "priceDeltaP": 0
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -12642,13 +12477,8 @@
             "priceDeltaP": 0
           },
           {
-            "id": "p1-thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "p1-deep-pan",
-            "label": "Deep Pan",
+            "id": "p1-regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -12942,13 +12772,8 @@
             "priceDeltaP": 0
           },
           {
-            "id": "p2-thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "p2-deep-pan",
-            "label": "Deep Pan",
+            "id": "p2-regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -13259,13 +13084,8 @@
             "priceDeltaP": 0
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -13576,13 +13396,8 @@
             "priceDeltaP": 0
           },
           {
-            "id": "thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "deep-pan",
-            "label": "Deep Pan",
+            "id": "regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -13983,13 +13798,8 @@
             "priceDeltaP": 0
           },
           {
-            "id": "p1-thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "p1-deep-pan",
-            "label": "Deep Pan",
+            "id": "p1-regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -14283,13 +14093,8 @@
             "priceDeltaP": 0
           },
           {
-            "id": "p2-thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "p2-deep-pan",
-            "label": "Deep Pan",
+            "id": "p2-regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -14583,13 +14388,8 @@
             "priceDeltaP": 0
           },
           {
-            "id": "p3-thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "p3-deep-pan",
-            "label": "Deep Pan",
+            "id": "p3-regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -14890,13 +14690,8 @@
             "priceDeltaP": 0
           },
           {
-            "id": "p1-thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "p1-deep-pan",
-            "label": "Deep Pan",
+            "id": "p1-regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -15190,13 +14985,8 @@
             "priceDeltaP": 0
           },
           {
-            "id": "p2-thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "p2-deep-pan",
-            "label": "Deep Pan",
+            "id": "p2-regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
@@ -15490,13 +15280,8 @@
             "priceDeltaP": 0
           },
           {
-            "id": "p3-thin-base",
-            "label": "Thin Base",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "p3-deep-pan",
-            "label": "Deep Pan",
+            "id": "p3-regular",
+            "label": "Regular",
             "priceDeltaP": 0
           },
           {
