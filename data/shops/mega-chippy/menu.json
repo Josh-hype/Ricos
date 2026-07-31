@@ -248,27 +248,87 @@
       {
         "id": "pot-peas",
         "name": "Pot of Peas",
-        "priceP": 140
+        "priceP": 140,
+        "modifiers": [
+          {
+            "id": "sz-reg",
+            "label": "Regular",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-lg",
+            "label": "Large",
+            "priceDeltaP": 50
+          }
+        ]
       },
       {
         "id": "tartar-sauce",
         "name": "Homemade Tartar Sauce",
-        "priceP": 190
+        "priceP": 160,
+        "modifiers": [
+          {
+            "id": "sz-reg",
+            "label": "Regular",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-lg",
+            "label": "Large",
+            "priceDeltaP": 60
+          }
+        ]
       },
       {
         "id": "pot-curry",
         "name": "Pot of Curry",
-        "priceP": 140
+        "priceP": 140,
+        "modifiers": [
+          {
+            "id": "sz-reg",
+            "label": "Regular",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-lg",
+            "label": "Large",
+            "priceDeltaP": 50
+          }
+        ]
       },
       {
         "id": "pot-gravy",
         "name": "Pot of Gravy",
-        "priceP": 140
+        "priceP": 140,
+        "modifiers": [
+          {
+            "id": "sz-reg",
+            "label": "Regular",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-lg",
+            "label": "Large",
+            "priceDeltaP": 50
+          }
+        ]
       },
       {
         "id": "pot-beans",
         "name": "Pot of Beans",
-        "priceP": 140
+        "priceP": 140,
+        "modifiers": [
+          {
+            "id": "sz-reg",
+            "label": "Regular",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-lg",
+            "label": "Large",
+            "priceDeltaP": 50
+          }
+        ]
       }
     ]
   },

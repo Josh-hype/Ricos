@@ -287,27 +287,127 @@
       {
         "id": "pot-peas",
         "name": "Pot of Peas",
-        "price": 1.4
+        "price": 1.4,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-reg",
+                "label": "Regular",
+                "price": 0
+              },
+              {
+                "id": "sz-lg",
+                "label": "Large",
+                "price": 0.5
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "tartar-sauce",
         "name": "Homemade Tartar Sauce",
-        "price": 1.9
+        "price": 1.6,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-reg",
+                "label": "Regular",
+                "price": 0
+              },
+              {
+                "id": "sz-lg",
+                "label": "Large",
+                "price": 0.6
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pot-curry",
         "name": "Pot of Curry",
-        "price": 1.4
+        "price": 1.4,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-reg",
+                "label": "Regular",
+                "price": 0
+              },
+              {
+                "id": "sz-lg",
+                "label": "Large",
+                "price": 0.5
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pot-gravy",
         "name": "Pot of Gravy",
-        "price": 1.4
+        "price": 1.4,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-reg",
+                "label": "Regular",
+                "price": 0
+              },
+              {
+                "id": "sz-lg",
+                "label": "Large",
+                "price": 0.5
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pot-beans",
         "name": "Pot of Beans",
-        "price": 1.4
+        "price": 1.4,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-reg",
+                "label": "Regular",
+                "price": 0
+              },
+              {
+                "id": "sz-lg",
+                "label": "Large",
+                "price": 0.5
+              }
+            ]
+          }
+        ]
       }
     ]
   },
