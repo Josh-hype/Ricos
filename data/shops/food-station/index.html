@@ -131,7 +131,9 @@
   .hero .lede{font-size:clamp(1rem,1.35vw,1.14rem);font-weight:500;max-width:520px;
               margin:22px 0 28px;color:#ddd3bf;}
 
-  .trust3{display:flex;gap:26px;flex-wrap:wrap;margin:0 0 30px;padding:0;list-style:none;}
+  /* Sits directly under the headline now that it comes before the description,
+     so it carries its own top margin rather than relying on the paragraph's. */
+  .trust3{display:flex;gap:26px;flex-wrap:wrap;margin:26px 0 0;padding:0;list-style:none;}
   .trust3 li{display:flex;align-items:center;gap:12px;}
   .trust3 .ic{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;
               border:2px solid var(--yellow);background:rgba(247,198,26,.10);font-size:1.2rem;flex:0 0 auto;}
@@ -187,23 +189,23 @@
 
     /* Stacked order on a phone: headline, photo, buttons, then the supporting
        copy. The photo and the two buttons are what sell the shop, so they go
-       above the fold; the description and the delivery/freshly-cooked lines are
+       above the fold; the delivery/freshly-cooked lines and the description are
        reassurance and read fine underneath.
        display:contents dissolves the copy wrapper so its children become grid
        items alongside .foodstack and can be interleaved with `order` — the DOM
        stays in one sensible reading order for screen readers and for the
-       two-column desktop layout, which is untouched. */
+       two-column desktop layout, which follows the same sequence. */
     .hero-copy{display:contents;}
     .hero .tab      {order:1;justify-self:start;}
     .hero h1        {order:2;}
     .hero .foodstack{order:3;}
     .hero .hero-cta {order:4;}
-    .hero .lede     {order:5;}
-    .hero .trust3   {order:6;}
+    .hero .trust3   {order:5;}
+    .hero .lede     {order:6;}
 
     .hero h1{margin-top:16px;}
-    .hero .lede{margin:26px 0 22px;}
-    .trust3{gap:16px;margin:0;}
+    .trust3{gap:16px;margin:26px 0 0;}
+    .hero .lede{margin:22px 0 0;}
     /* Both calls to action on one row. flex:1 1 0 with min-width:0 splits the
        row evenly and lets the labels shrink rather than wrap, so "Collect in
        store" stays on a single line down to the narrowest phone. */
@@ -219,7 +221,7 @@
        same thing here: the left, top and bottom stay feathered and the right
        runs off-screen, so no cut is visible at any phone width.
        html{overflow-x:clip} is what makes the overflow safe. */
-    .foodstack{margin:14px calc(50% - 50vw) 4px;width:100vw;}
+    .foodstack{margin:14px calc(50% - 50vw) 26px;width:100vw;}
     /* Cropped to a shorter band rather than shown at its natural 3:2, so the
        photo reads as a strip under the headline and the buttons stay near the
        fold. The crop is what makes it smaller — the width stays full-bleed,
@@ -265,11 +267,13 @@
   .ticker .st{color:var(--red);}
   @keyframes roll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
   @media(prefers-reduced-motion:reduce){.ticker .roll{animation:none;}}
-  /* Same strip used as the very top bar. Slightly tighter and no top border, so
-     it reads as page furniture rather than a second section divider. */
-  .ticker--top{border-top:0;}
-  .ticker--top .roll{font-size:.92rem;letter-spacing:1.6px;padding:7px 0 5px;}
-  @media(max-width:520px){.ticker--top .roll{font-size:.82rem;letter-spacing:1.2px;padding:6px 0 4px;}}
+  /* Same strip, used as a thin brand rule directly under the header. No top
+     border — the header already ends in a 3px yellow one and the strip is
+     yellow, so a second rule there just reads as a thick band. Kept deliberately
+     shallow so it's a rule, not a section. */
+  .ticker--top{border-top:0;border-bottom-width:2px;}
+  .ticker--top .roll{font-size:.72rem;letter-spacing:1.4px;padding:3px 0 2px;line-height:1.25;}
+  @media(max-width:520px){.ticker--top .roll{font-size:.64rem;letter-spacing:1px;padding:3px 0 2px;}}
 
   /* ── Deals ────────────────────────────────────────────────────────────── */
   .feat{padding:62px 0;}
@@ -395,13 +399,6 @@
   };
 </script>
 
-<!-- Top strip: the same rolling SLICE IT / BIG BITES / FRESH & LOADED ticker that
-     runs further down the page, so the brand line is the first thing on screen.
-     Two identical .seq blocks is what makes the loop seamless — the animation
-     translates the row by exactly -50%, so the second copy is in the first one's
-     place when it restarts. Purely decorative, hence aria-hidden. -->
-<div class="ticker ticker--top" aria-hidden="true"><div class="roll"><span class="seq">SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;</span><span class="seq">SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;</span></div></div>
-
 <header class="bar" id="siteHeader">
   <div class="wrap">
     <a class="brand" href="/" aria-label="{{shopName}} home">
@@ -430,19 +427,27 @@
   </div>
 </header>
 
+<!-- Brand strip: the same rolling SLICE IT / BIG BITES / FRESH & LOADED ticker
+     that runs further down the page, sitting directly under the header. It is
+     outside the sticky header, so it scrolls away while the bar stays put.
+     Two identical .seq blocks is what makes the loop seamless — the animation
+     translates the row by exactly -50%, so the second copy is in the first one's
+     place when it restarts. Purely decorative, hence aria-hidden. -->
+<div class="ticker ticker--top" aria-hidden="true"><div class="roll"><span class="seq">SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;</span><span class="seq">SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;</span></div></div>
+
 <main>
   <section class="hero">
     <div class="wrap">
       <div class="hero-copy">
         <span class="tab">Slice it. Load it. Love it.</span>
         <h1 class="display"><span class="y">Big</span> flavour.<br><span class="r">Big</span> portions.<br><span class="y">Big</span> bites.</h1>
-        <p class="lede">Pizza, parmo, kebab, burger and wrap — fresh &amp; loaded, hot out the oven and out the door. You bring the hunger, we'll bring the lot.</p>
-
         <ul class="trust3">
           <li><span class="ic" aria-hidden="true">🛵</span><span><b>Delivery &amp; collection</b><span id="deliveryTime">{{deliveryAreaDescription}}</span></span></li>
           <li><span class="ic" aria-hidden="true">🔥</span><span><b>Freshly cooked</b><span>Every single order</span></span></li>
           <li id="ratingTrust" hidden><span class="ic" aria-hidden="true">⭐</span><span><b id="ratingTrustB"></b><span id="ratingTrustS"></span></span></li>
         </ul>
+
+        <p class="lede">Pizza, parmo, kebab, burger and wrap — fresh &amp; loaded, hot out the oven and out the door. You bring the hunger, we'll bring the lot.</p>
 
         <div class="hero-cta">
           <a class="btn" href="/order?mode=deliver">Order delivery →</a>
