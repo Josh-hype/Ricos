@@ -171,8 +171,15 @@
      show are the ones we feather. Safe to overflow because html is overflow-x:
      clip. The three faded edges are left, top and bottom; the right simply runs
      off-screen, which also keeps the branded fries carton and the chicken from
-     being cut into by a mask. */
-  .foodstack .shot{width:132%;max-width:none;height:auto;
+     being cut into by a mask.
+     The max() term is what keeps that true on a wide monitor: .wrap stops growing
+     at 1240px and centres, so past ~1440px a plain 132% no longer reached the
+     screen edge and the raw right edge of the photo showed as a hard vertical
+     line with black either side. Adding back half the leftover viewport keeps the
+     bleed at any width; the image's left edge doesn't move, so the composition is
+     unchanged — it just runs further off-screen. */
+  .foodstack .shot{width:calc(132% + max(0px, (100vw - 1240px) / 2));
+    max-width:none;height:auto;
     -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 20%),
                        linear-gradient(to bottom,transparent 0%,#000 14%,#000 80%,transparent 100%);
     -webkit-mask-composite:source-in;
@@ -194,19 +201,50 @@
   .offer .btn{width:100%;}
 
   @media(max-width:980px){
-    .hero .wrap{grid-template-columns:1fr;gap:8px;}
+    .hero .wrap{grid-template-columns:1fr;gap:0;}
     .hero{padding:40px 0 30px;}
-    .foodstack{margin-top:22px;}
-    .foodstack .shot{width:100%;}
-    .offer{position:static;width:100%;margin:18px auto 0;}
+
+    /* Stacked order on a phone: headline, photo, buttons, then the supporting
+       copy. The photo and the two buttons are what sell the shop, so they go
+       above the fold; the description and the delivery/freshly-cooked lines are
+       reassurance and read fine underneath.
+       display:contents dissolves the copy wrapper so its children become grid
+       items alongside .foodstack and can be interleaved with `order` — the DOM
+       stays in one sensible reading order for screen readers and for the
+       two-column desktop layout, which is untouched. */
+    .hero-copy{display:contents;}
+    .hero .tab      {order:1;justify-self:start;}
+    .hero h1        {order:2;}
+    .hero .foodstack{order:3;}
+    .hero .hero-cta {order:4;}
+    .hero .lede     {order:5;}
+    .hero .trust3   {order:6;}
+
+    .hero h1{margin-top:16px;}
+    .hero .lede{margin:26px 0 22px;}
+    .trust3{gap:16px;margin:0;}
     .hero-cta .btn{flex:1 1 100%;}
-    .trust3{gap:16px;}
+
+    /* Full-bleed to the right. On desktop the shot is oversized and runs off the
+       right of the viewport so its only visible edges are the feathered ones; at
+       width:100% inside the wrap's 22px padding that stopped being true and the
+       raw right edge showed as a hard vertical line straight through the fries
+       and the chicken. Cancelling the wrap's padding and over-sizing does the
+       same thing here: the left, top and bottom stay feathered and the right
+       runs off-screen, so no cut is visible at any phone width.
+       html{overflow-x:clip} is what makes the overflow safe. */
+    .foodstack{margin:14px calc(50% - 50vw) 4px;width:100vw;}
+    .foodstack .shot{width:118%;max-width:none;}
+    .offer{position:static;width:calc(100% - 44px);margin:18px auto 0;}
   }
   @media(max-width:420px){
     .trust3{flex-direction:column;gap:12px;}
-    /* Narrow phones: crop in on the burger rather than shrinking the whole
-       scene until the food is unreadable. */
-    .foodstack .shot{aspect-ratio:4/3;object-fit:cover;object-position:38% 50%;}
+    /* Narrow phones: crop the scene shorter rather than shrinking the whole
+       thing until the food is unreadable. 16/10 at 36% keeps the same framing a
+       440px phone gets naturally — burger, branded fries carton, chicken — so
+       the composition doesn't change character across the breakpoint, and the
+       buttons stay near the fold. */
+    .foodstack .shot{aspect-ratio:16/10;object-fit:cover;object-position:36% 50%;}
   }
 
   /* ── Category rail ────────────────────────────────────────────────────── */
@@ -415,7 +453,7 @@
 <main>
   <section class="hero">
     <div class="wrap">
-      <div>
+      <div class="hero-copy">
         <span class="tab">Slice it. Load it. Love it.</span>
         <h1 class="display"><span class="y">Big</span> flavour.<br><span class="r">Big</span> portions.<br><span class="y">Big</span> bites.</h1>
         <p class="lede">Pizza, parmo, kebab, burger and wrap — fresh &amp; loaded, hot out the oven and out the door. You bring the hunger, we'll bring the lot.</p>
