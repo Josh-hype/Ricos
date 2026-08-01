@@ -86,18 +86,29 @@
   header.bar.compact .brand img{height:44px;}
   .brand{display:flex;align-items:center;gap:12px;flex:0 0 auto;}
   .brand img{height:60px;width:auto;transition:height .18s ease;}
-  .hdr-loc{font-family:'Luckiest Guy',system-ui,sans-serif;font-size:1.05rem;letter-spacing:2px;
-           color:var(--yellow);text-transform:uppercase;padding-top:6px;white-space:nowrap;}
-  .hdr-loc .st{color:var(--red);}
+  /* Town badge. A red chip rather than loose yellow type — it reads as part of
+     the mark, and the town is the single strongest local signal on the page. */
+  .hdr-loc{font-family:'Luckiest Guy',system-ui,sans-serif;font-size:.8rem;letter-spacing:2px;
+           color:#fff;background:var(--red);text-transform:uppercase;white-space:nowrap;
+           padding:4px 11px 2px;border-radius:6px;line-height:1.25;}
   nav.main{margin-left:auto;}
   nav.main ul{display:flex;gap:30px;list-style:none;margin:0;padding:0;}
   nav.main a{font-weight:800;font-size:.86rem;letter-spacing:.12em;text-transform:uppercase;
              color:#e8dfcc;padding:6px 0;border-bottom:3px solid transparent;}
   nav.main a:hover,nav.main a[aria-current="page"]{color:var(--yellow);border-bottom-color:var(--yellow);}
   .hdr-actions{display:flex;align-items:center;gap:12px;flex:0 0 auto;}
-  .burger{display:none;background:none;border:0;padding:8px;cursor:pointer;}
-  .burger span{display:block;width:26px;height:3px;background:var(--yellow);border-radius:2px;}
+  /* 44x44 minimum: it was 42x35, under the size a thumb reliably hits. */
+  .burger{display:none;background:none;border:0;padding:0;cursor:pointer;
+          width:44px;height:44px;}
+  .burger span{display:block;width:26px;height:3px;margin:0 auto;background:var(--yellow);
+               border-radius:2px;transition:transform .22s ease,opacity .16s ease;}
   .burger span+span{margin-top:5px;}
+  /* Morphs to a cross when open. Driven off aria-expanded, which the nav script
+     already maintains, so the state and the visual can't disagree. */
+  .burger[aria-expanded="true"] span:nth-child(1){transform:translateY(8px) rotate(45deg);}
+  .burger[aria-expanded="true"] span:nth-child(2){opacity:0;}
+  .burger[aria-expanded="true"] span:nth-child(3){transform:translateY(-8px) rotate(-45deg);}
+  @media(prefers-reduced-motion:reduce){.burger span{transition:none;}}
   @media(max-width:1080px){
     /* Closed state stays INSIDE the viewport and hides with opacity/visibility.
        Parking it at translateX(100%) pushed the document to 710px wide inside a
@@ -117,8 +128,20 @@
     .navscrim.on{display:block;}
   }
   @media(max-width:560px){
-    .brand img{height:46px;} .hdr-loc{display:none;}
-    .hdr-actions .btn{padding:11px 16px;font-size:.86rem;}
+    /* Logo over badge, the way the mark is locked up on the shopfront. Keeps the
+       town visible on a phone instead of dropping it, and gives the Order button
+       the width it needs to stay the obvious next tap. */
+    .brand{flex-direction:column;align-items:flex-start;gap:5px;}
+    .brand img{height:46px;}
+    .hdr-loc{font-size:.68rem;padding:3px 9px 2px;}
+    .hdr-actions .btn{padding:13px 18px;font-size:.9rem;}
+  }
+  @media(max-width:360px){
+    /* A 320px phone has no slack: the 44px tap target plus a 12px gap put the
+       header 1px over the viewport. Tighten the gap rather than shrink the
+       target back below 44. */
+    .hdr-actions{gap:7px;}
+    .hdr-actions .btn{padding:12px 13px;font-size:.84rem;}
   }
 
   /* ── Hero ─────────────────────────────────────────────────────────────── */
@@ -130,18 +153,6 @@
   .hero h1 .y{color:var(--yellow);} .hero h1 .r{color:var(--red);}
   .hero .lede{font-size:clamp(1rem,1.35vw,1.14rem);font-weight:500;max-width:520px;
               margin:22px 0 28px;color:#ddd3bf;}
-
-  /* Sits directly under the headline now that it comes before the description,
-     so it carries its own top margin rather than relying on the paragraph's. */
-  .trust3{display:flex;gap:26px;flex-wrap:wrap;margin:26px 0 0;padding:0;list-style:none;}
-  .trust3 li{display:flex;align-items:center;gap:12px;}
-  .trust3 .ic{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;
-              border:2px solid var(--yellow);background:rgba(247,198,26,.10);font-size:1.2rem;flex:0 0 auto;}
-  .trust3 b{display:block;font-size:.82rem;letter-spacing:.09em;text-transform:uppercase;color:var(--off);}
-  .trust3 span{display:block;font-size:.82rem;color:var(--muted);font-weight:600;}
-
-  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;}
-  .hero-cta .btn{font-size:1.05rem;padding:17px 30px;}
 
   /* Food stack. The plate is a soft warm glow behind the food so the cut-outs
      read as lit rather than pasted onto flat black. */
@@ -185,33 +196,16 @@
 
   @media(max-width:980px){
     .hero .wrap{grid-template-columns:1fr;gap:0;}
-    .hero{padding:40px 0 30px;}
+    /* No bottom padding: the photo is the last thing in the section and runs
+       straight into the torn edge, the way it does in the design. */
+    .hero{padding:34px 0 0;}
 
-    /* Stacked order on a phone: headline, photo, buttons, then the supporting
-       copy. The photo and the two buttons are what sell the shop, so they go
-       above the fold; the delivery/freshly-cooked lines and the description are
-       reassurance and read fine underneath.
-       display:contents dissolves the copy wrapper so its children become grid
-       items alongside .foodstack and can be interleaved with `order` — the DOM
-       stays in one sensible reading order for screen readers and for the
-       two-column desktop layout, which follows the same sequence. */
-    .hero-copy{display:contents;}
-    .hero .tab      {order:1;justify-self:start;}
-    .hero h1        {order:2;}
-    .hero .foodstack{order:3;}
-    .hero .hero-cta {order:4;}
-    .hero .trust3   {order:5;}
-    .hero .lede     {order:6;}
-
-    .hero h1{margin-top:16px;}
-    .trust3{gap:16px;margin:26px 0 0;}
-    .hero .lede{margin:22px 0 0;}
-    /* Both calls to action on one row. flex:1 1 0 with min-width:0 splits the
-       row evenly and lets the labels shrink rather than wrap, so "Collect in
-       store" stays on a single line down to the narrowest phone. */
-    .hero-cta{gap:10px;flex-wrap:nowrap;}
-    .hero-cta .btn{flex:1 1 0;min-width:0;white-space:nowrap;text-align:center;
-                   font-size:clamp(.78rem,3.3vw,1rem);padding:14px 8px;}
+    /* One column on a phone, in DOM order: strapline, headline, one-liner,
+       the three badges, then the photo closing the section. No `order` juggling
+       any more — the markup is already the sequence we want, which keeps the
+       visual order and the screen-reader order identical. */
+    .hero h1{margin-top:14px;}
+    .hero .lede{margin:18px 0 0;max-width:none;}
 
     /* Full-bleed to the right. On desktop the shot is oversized and runs off the
        right of the viewport so its only visible edges are the feathered ones; at
@@ -221,18 +215,155 @@
        same thing here: the left, top and bottom stay feathered and the right
        runs off-screen, so no cut is visible at any phone width.
        html{overflow-x:clip} is what makes the overflow safe. */
-    .foodstack{margin:14px calc(50% - 50vw) 26px;width:100vw;}
-    /* Cropped to a shorter band rather than shown at its natural 3:2, so the
-       photo reads as a strip under the headline and the buttons stay near the
-       fold. The crop is what makes it smaller — the width stays full-bleed,
-       because that is what keeps the raw right edge off-screen. 34% anchors the
-       burger just left of centre and keeps the branded fries carton in frame. */
+    .foodstack{margin:20px calc(50% - 50vw) 0;width:100vw;}
+    /* Cropped shorter than its natural 3:2 so the section closes without a long
+       run of photo. The crop is what sets the height — the width stays
+       full-bleed, because that is what keeps the raw right edge off-screen.
+       34% anchors the burger just left of centre with the fries carton in frame. */
     .foodstack .shot{width:118%;max-width:none;
-                     aspect-ratio:2/1;object-fit:cover;object-position:34% 52%;}
+                     aspect-ratio:16/10;object-fit:cover;object-position:34% 52%;}
     .offer{position:static;width:calc(100% - 44px);margin:18px auto 0;}
   }
-  @media(max-width:420px){
-    .trust3{flex-direction:column;gap:12px;}
+
+  /* ── Hero atmosphere ──────────────────────────────────────────────────── */
+  /* Drawn entirely with gradients and transforms — no extra images, nothing to
+     download, and only opacity/transform animate so it stays on the compositor.
+     No synthetic steam: the photograph already has real steam coming off the
+     burger, and a CSS plume on top of it reads as a fake. */
+  .hero-fx{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1;}
+  /* Diagonal brush strokes, top right, faded out with a radial mask so they end
+     in nothing instead of on a hard edge. */
+  .hero-fx .brush{position:absolute;top:-10%;right:-8%;width:66%;height:62%;
+    background:repeating-linear-gradient(-58deg,
+      rgba(227,38,25,.9) 0 3px, rgba(227,38,25,0) 3px 10px,
+      rgba(227,38,25,.5) 10px 12px, rgba(227,38,25,0) 12px 23px);
+    -webkit-mask-image:radial-gradient(115% 95% at 100% 0%,#000 18%,transparent 70%);
+            mask-image:radial-gradient(115% 95% at 100% 0%,#000 18%,transparent 70%);}
+  /* Warm glow under the food, so the shot reads as lit rather than pasted on. */
+  .hero-fx .glow{position:absolute;right:-6%;bottom:2%;width:70%;height:62%;
+    background:radial-gradient(ellipse at 55% 60%,rgba(247,198,26,.16),rgba(227,38,25,.07) 45%,transparent 72%);}
+  .hero-fx .ember{position:absolute;width:4px;height:4px;border-radius:50%;
+    background:radial-gradient(circle,#ffd970 0 38%,rgba(227,38,25,.75) 39%,transparent 100%);
+    opacity:0;animation:ember 9s linear infinite;will-change:transform,opacity;}
+  .hero-fx .ember:nth-child(3){left:58%;bottom:12%;animation-delay:0s;}
+  .hero-fx .ember:nth-child(4){left:66%;bottom:6%;animation-delay:1.6s;}
+  .hero-fx .ember:nth-child(5){left:74%;bottom:16%;animation-delay:3.1s;transform:scale(.7);}
+  .hero-fx .ember:nth-child(6){left:82%;bottom:9%;animation-delay:4.4s;}
+  .hero-fx .ember:nth-child(7){left:63%;bottom:22%;animation-delay:5.9s;transform:scale(.8);}
+  .hero-fx .ember:nth-child(8){left:89%;bottom:18%;animation-delay:7.2s;}
+  @keyframes ember{
+    0%  {transform:translate3d(0,10px,0) scale(.5);opacity:0}
+    14% {opacity:.95}
+    72% {opacity:.5}
+    100%{transform:translate3d(-22px,-210px,0) scale(1.05);opacity:0}
+  }
+
+  /* Headline reveals a line at a time on load. */
+  .hero h1 .ln{display:block;}
+  .hero h1 .ln,.hero .tab,.hero .lede,.feats li{animation:riseIn .62s cubic-bezier(.2,.7,.3,1) both;}
+  .hero .tab            {animation-delay:.02s;}
+  .hero h1 .ln:nth-child(1){animation-delay:.10s;}
+  .hero h1 .ln:nth-child(2){animation-delay:.19s;}
+  .hero h1 .ln:nth-child(3){animation-delay:.28s;}
+  .hero .lede           {animation-delay:.38s;}
+  .feats li:nth-child(1){animation-delay:.46s;}
+  .feats li:nth-child(2){animation-delay:.53s;}
+  .feats li:nth-child(3){animation-delay:.60s;}
+  @keyframes riseIn{from{opacity:0;transform:translate3d(0,16px,0)}to{opacity:1;transform:none}}
+
+  /* Scroll reveal for everything below the fold. .reveal starts hidden ONLY when
+     the observer is running (html.js-reveal), so with JS off nothing is lost. */
+  .js-reveal .reveal{opacity:0;transform:translate3d(0,22px,0);
+                     transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.3,1);}
+  .js-reveal .reveal.in{opacity:1;transform:none;}
+
+  @media(prefers-reduced-motion:reduce){
+    .hero-fx .ember{animation:none;opacity:.5;}
+    .hero h1 .ln,.hero .tab,.hero .lede,.feats li{animation:none;}
+    .js-reveal .reveal{opacity:1;transform:none;transition:none;}
+  }
+
+  /* ── Hero feature badges ──────────────────────────────────────────────── */
+  .feats{list-style:none;margin:26px 0 0;padding:0;display:flex;flex-direction:column;gap:14px;}
+  .feats li{display:flex;align-items:center;gap:13px;}
+  .feats .ic{flex:0 0 auto;display:grid;place-items:center;width:46px;height:46px;border-radius:50%;
+             background:var(--red);color:#fff;box-shadow:0 6px 16px -6px rgba(227,38,25,.9);}
+  .feats .ic svg{width:23px;height:23px;display:block;}
+  .feats b{display:block;font-family:'Luckiest Guy',system-ui,sans-serif;font-weight:400;
+           font-size:1rem;letter-spacing:.06em;text-transform:uppercase;color:var(--off);line-height:1.1;}
+  .feats span span{display:block;font-size:.8rem;font-weight:800;letter-spacing:.08em;
+                   text-transform:uppercase;color:var(--yellow);}
+
+  /* ── Torn edge + red CTA band ─────────────────────────────────────────── */
+  .cta-band{position:relative;background:var(--red);padding:52px 0 40px;
+            color:#fff;overflow:hidden;}
+  /* Two stacked cuts of the same ragged polygon: the cream one sits a few pixels
+     lower than the black one, so a torn paper sliver shows between the hero and
+     the band. Fixed point list, not random, so it can never reflow. */
+  .cta-band .tear,.cta-band .tear::before{position:absolute;left:0;right:0;top:0;height:30px;
+    clip-path:polygon(0% 0%, 100% 0%, 100.0% 76.2%, 97.1% 74.7%, 94.1% 98.0%, 91.2% 93.6%, 88.2% 66.5%, 85.3% 98.3%, 82.4% 78.2%, 79.4% 72.0%, 76.5% 92.8%, 73.5% 91.2%, 70.6% 60.1%, 67.6% 79.8%, 64.7% 62.8%, 61.8% 71.7%, 58.8% 87.3%, 55.9% 59.9%, 52.9% 61.5%, 50.0% 99.2%, 47.1% 82.1%, 44.1% 61.4%, 41.2% 65.8%, 38.2% 97.2%, 35.3% 86.3%, 32.4% 85.2%, 29.4% 65.1%, 26.5% 72.6%, 23.5% 76.7%, 20.6% 68.8%, 17.6% 74.5%, 14.7% 93.8%, 11.8% 95.2%, 8.8% 74.6%, 5.9% 65.4%, 2.9% 82.3%, 0.0% 97.2%);}
+  .cta-band .tear{background:var(--off);z-index:2;}
+  .cta-band .tear::before{content:'';background:var(--bg);transform:translateY(-6px);}
+
+  .cta-head{display:flex;align-items:center;gap:14px;margin:14px 0 26px;}
+  .stamp{flex:0 0 auto;border:2px dashed rgba(255,255,255,.85);border-radius:10px;
+         padding:10px 14px;font-family:'Luckiest Guy',system-ui,sans-serif;font-weight:400;
+         font-size:.95rem;line-height:1.22;letter-spacing:.05em;text-transform:uppercase;
+         text-align:center;transform:rotate(-2deg);}
+  .stamp em{font-style:normal;color:var(--yellow);display:block;}
+  .cta-head .arw{flex:0 0 auto;width:34px;color:#fff;opacity:.9;}
+  .cta-head .arw svg{width:100%;height:auto;display:block;}
+  .shout{margin:0;font-family:'Luckiest Guy',system-ui,sans-serif;font-size:1.5rem;line-height:1.05;
+         letter-spacing:.5px;text-transform:uppercase;transform:rotate(-2deg);}
+  .shout u{text-decoration:none;box-shadow:inset 0 -6px 0 rgba(247,198,26,.85);}
+
+  /* Stacked on a phone so each is a full-width target; side by side once there
+     is room, which is where the two routes read as a genuine choice. */
+  .cta-cards{display:grid;gap:14px;}
+  @media(min-width:720px){.cta-cards{grid-template-columns:1fr 1fr;gap:20px;}}
+  .ccard{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:16px;
+         border:3px solid var(--char);box-shadow:6px 6px 0 rgba(12,12,12,.55);
+         transition:transform .12s ease,box-shadow .12s ease;}
+  .ccard:hover{transform:translate(-2px,-3px);box-shadow:9px 9px 0 rgba(12,12,12,.55);}
+  .ccard:active{transform:translate(2px,2px);box-shadow:2px 2px 0 rgba(12,12,12,.55);}
+  .ccard .ic{flex:0 0 auto;width:38px;height:38px;}
+  .ccard .ic svg{width:100%;height:100%;display:block;}
+  .ccard .txt{flex:1 1 auto;min-width:0;}
+  .ccard b{display:block;font-family:'Luckiest Guy',system-ui,sans-serif;font-weight:400;
+           font-size:1.22rem;letter-spacing:.04em;text-transform:uppercase;line-height:1.06;}
+  .ccard .sub{display:block;font-size:.76rem;font-weight:800;letter-spacing:.07em;
+              text-transform:uppercase;opacity:.78;margin-top:3px;}
+  .ccard .go{flex:0 0 auto;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;
+             font-size:1.1rem;line-height:1;transition:transform .16s ease;}
+  .ccard:hover .go{transform:translateX(3px);}
+  .ccard--yellow{background:var(--yellow);color:var(--char);}
+  .ccard--yellow .go{background:var(--char);color:var(--yellow);}
+  .ccard--black{background:var(--char);color:var(--off);border-color:rgba(255,255,255,.9);}
+  .ccard--black .go{background:var(--off);color:var(--char);}
+
+  /* ── Delivery / rating strip ──────────────────────────────────────────── */
+  .dstrip{background:var(--bg);border-bottom:1px solid var(--line);}
+  .dstrip .wrap{display:flex;align-items:center;justify-content:space-between;gap:18px;
+                flex-wrap:wrap;padding-top:16px;padding-bottom:16px;}
+  .dstrip .item{display:flex;align-items:center;gap:12px;}
+  .dstrip .ic{flex:0 0 auto;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;
+              border:2px solid var(--yellow);background:rgba(247,198,26,.10);color:var(--yellow);}
+  .dstrip .ic svg{width:22px;height:22px;display:block;}
+  .dstrip b{display:block;font-size:.84rem;font-weight:900;letter-spacing:.09em;
+            text-transform:uppercase;color:var(--off);}
+  .dstrip .item span span{display:block;font-size:.84rem;font-weight:600;color:var(--muted);}
+  .dstrip .rate{text-align:right;}
+  .dstrip .rate .stars{color:var(--yellow);letter-spacing:2px;font-size:1rem;}
+  .dstrip .rate .score{font-weight:900;color:var(--off);margin-left:6px;}
+  .dstrip .rate small{display:block;font-size:.8rem;color:var(--muted);font-weight:600;}
+
+  @media(max-width:560px){
+    .cta-head{gap:10px;}
+    .stamp{font-size:.82rem;padding:9px 11px;}
+    .shout{font-size:1.22rem;}
+    .cta-head .arw{width:26px;}
+    .dstrip .wrap{gap:12px;}
+    .dstrip .rate{text-align:left;}
   }
 
   /* ── Category rail ────────────────────────────────────────────────────── */
@@ -271,6 +402,10 @@
      border — the header already ends in a 3px yellow one and the strip is
      yellow, so a second rule there just reads as a thick band. Kept deliberately
      shallow so it's a rule, not a section. */
+  /* Red cut of the strip, used at the top. White type, yellow stars — it reads
+     as a continuation of the header rather than a yellow slab across the page. */
+  .ticker--red{background:var(--red);color:#fff;border-color:var(--char);}
+  .ticker--red .st{color:var(--yellow);}
   .ticker--top{border-top:0;border-bottom-width:2px;}
   .ticker--top .roll{font-size:.72rem;letter-spacing:1.4px;padding:3px 0 2px;line-height:1.25;}
   @media(max-width:520px){.ticker--top .roll{font-size:.64rem;letter-spacing:1px;padding:3px 0 2px;}}
@@ -403,7 +538,7 @@
   <div class="wrap">
     <a class="brand" href="/" aria-label="{{shopName}} home">
       <img src="logo.png" alt="{{shopName}} {{shopCity}}" width="200" height="60" />
-      <span class="hdr-loc"><span class="st">★</span> {{shopCity}}</span>
+      <span class="hdr-loc">{{shopCity}}</span>
     </a>
 
     <nav class="main" id="mainNav" aria-label="Main">
@@ -433,26 +568,32 @@
      Two identical .seq blocks is what makes the loop seamless — the animation
      translates the row by exactly -50%, so the second copy is in the first one's
      place when it restarts. Purely decorative, hence aria-hidden. -->
-<div class="ticker ticker--top" aria-hidden="true"><div class="roll"><span class="seq">SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;</span><span class="seq">SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;</span></div></div>
+<div class="ticker ticker--top ticker--red" aria-hidden="true"><div class="roll"><span class="seq">FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FULL FLAVOUR&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FULL FLAVOUR&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FULL FLAVOUR&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FULL FLAVOUR&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FULL FLAVOUR&nbsp;<span class="st">★</span>&nbsp;</span><span class="seq">FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FULL FLAVOUR&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FULL FLAVOUR&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FULL FLAVOUR&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FULL FLAVOUR&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FULL FLAVOUR&nbsp;<span class="st">★</span>&nbsp;</span></div></div>
 
 <main>
   <section class="hero">
+    <!-- Atmosphere layer: brush strokes, warm glow and drifting embers. All
+         gradients and transforms, no images, and inert to the pointer. -->
+    <div class="hero-fx" aria-hidden="true">
+      <span class="brush"></span><span class="glow"></span>
+      <span class="ember"></span><span class="ember"></span><span class="ember"></span>
+      <span class="ember"></span><span class="ember"></span><span class="ember"></span>
+    </div>
     <div class="wrap">
       <div class="hero-copy">
         <span class="tab">Slice it. Load it. Love it.</span>
-        <h1 class="display"><span class="y">Big</span> flavour.<br><span class="r">Big</span> portions.<br><span class="y">Big</span> bites.</h1>
-        <ul class="trust3">
-          <li><span class="ic" aria-hidden="true">🛵</span><span><b>Delivery &amp; collection</b><span id="deliveryTime">{{deliveryAreaDescription}}</span></span></li>
-          <li><span class="ic" aria-hidden="true">🔥</span><span><b>Freshly cooked</b><span>Every single order</span></span></li>
-          <li id="ratingTrust" hidden><span class="ic" aria-hidden="true">⭐</span><span><b id="ratingTrustB"></b><span id="ratingTrustS"></span></span></li>
+        <h1 class="display">
+          <span class="ln"><span class="y">Big</span> flavour.</span>
+          <span class="ln"><span class="r">Big</span> portions.</span>
+          <span class="ln"><span class="y">Big</span> bites.</span>
+        </h1>
+        <p class="lede">Bold flavours. Loaded portions. Unbeatable taste.</p>
+
+        <ul class="feats">
+          <li><span class="ic"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.2 1.5c1 3.1-.2 4.9-1.7 6.4-1.6 1.6-3.4 3.1-3.4 6a6 6 0 0 0 12 0c0-2.4-1-4.1-2.1-5.4-.2 1-.8 1.8-1.6 2.2.7-3.3-.7-6.9-3.2-9.2Z"/></svg></span><span><b>Flame grilled</b><span>To perfection</span></span></li>
+          <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 3.2c.4 8.7-4.6 13.6-10.3 13.6-1.4 0-2.6-.3-3.6-.8C7.4 9.4 12.6 4.9 20.5 3.2Z" fill="currentColor" stroke="none"/><path d="M4 20.8c1.1-3.9 3.2-7.1 6.2-9.5"/></svg></span><span><b>Fresh ingredients</b><span>Every time</span></span></li>
+          <li><span class="ic"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 9.6c0-3.1 3.6-5.5 8-5.5s8 2.4 8 5.5c0 .4-.3.7-.7.7H4.7a.7.7 0 0 1-.7-.7Z"/><path d="M4.3 12.6c1.3-1.3 2.6.7 3.9 0s2.6.7 3.9 0 2.6.7 3.9 0 2.5.7 3.7-.1" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15.6h16c0 2.7-3.6 4.5-8 4.5s-8-1.8-8-4.5Z"/></svg></span><span><b>Big portions</b><span>Great value</span></span></li>
         </ul>
-
-        <p class="lede">Pizza, parmo, kebab, burger and wrap — fresh &amp; loaded, hot out the oven and out the door. You bring the hunger, we'll bring the lot.</p>
-
-        <div class="hero-cta">
-          <a class="btn" href="/order?mode=deliver">Order delivery →</a>
-          <a class="btn ghost" href="/order?mode=collect">Collect in store</a>
-        </div>
       </div>
 
       <div class="foodstack">
@@ -467,6 +608,48 @@
                alt="A stacked Big Bites cheeseburger with bacon, melted cheese and red onion, beside a carton of fries and southern fried chicken" />
         </picture>
         <aside class="offer" id="offerCard" hidden></aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- Red band: the decision point. Torn top edge, then the two order routes. -->
+  <section class="cta-band">
+    <div class="tear" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="cta-head reveal">
+        <span class="stamp">{{shopCity}}'s<em>favourite</em><em>takeaway</em></span>
+        <span class="arw"><svg viewBox="0 0 40 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M37 12H5"/><path d="M13 4.5 5 12l8 7.5"/></svg></span>
+        <p class="shout">Hungry?<br><u>We've got you.</u></p>
+      </div>
+
+      <div class="cta-cards reveal">
+        <a class="ccard ccard--yellow" href="/order?mode=deliver">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5.6" cy="16.8" r="3.1"/><circle cx="18.6" cy="16.8" r="3.1"/><path d="M8.7 16.8h6.8"/><path d="M15.5 16.8c0-4-2.4-6.6-6.2-6.6H7.6"/><path d="M13.2 5.4h2.6l2.6 9"/><path d="M12 5.4h2.4"/></svg></span>
+          <span class="txt"><b>Order delivery</b><span class="sub">Fast &amp; hot to your door</span></span>
+          <span class="go" aria-hidden="true">&rsaquo;</span>
+        </a>
+        <a class="ccard ccard--black" href="/order?mode=collect">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.6 7.8h14.8l-1.2 11.4a2 2 0 0 1-2 1.8H7.8a2 2 0 0 1-2-1.8L4.6 7.8Z"/><path d="M8.6 7.8V6a3.4 3.4 0 0 1 6.8 0v1.8"/></svg></span>
+          <span class="txt"><b>Collect in store</b><span class="sub">Skip the wait</span></span>
+          <span class="go" aria-hidden="true">&rsaquo;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="dstrip">
+    <div class="wrap">
+      <div class="item">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5.6" cy="16.8" r="3.1"/><circle cx="18.6" cy="16.8" r="3.1"/><path d="M8.7 16.8h6.8"/><path d="M15.5 16.8c0-4-2.4-6.6-6.2-6.6H7.6"/><path d="M13.2 5.4h2.6l2.6 9"/><path d="M12 5.4h2.4"/></svg></span>
+        <span><b>Delivery &amp; collection</b><span id="deliveryTime">{{deliveryAreaDescription}}</span></span>
+      </div>
+      <!-- Rating renders ONLY from a value the owner has supplied in
+           BIG_BITES_CLAIMS. Nothing is hard-coded: an invented star rating is a
+           banned commercial practice, and self-declared aggregateRating on your
+           own site is against Google's guidelines. -->
+      <div class="rate" id="ratingTrust" hidden>
+        <span class="stars" id="ratingTrustB" aria-hidden="true"></span>
+        <small id="ratingTrustS"></small>
       </div>
     </div>
   </section>
@@ -594,6 +777,24 @@
 
   $('year').textContent = new Date().getFullYear();
 
+  /* Scroll reveal. The hiding rule is scoped to html.js-reveal and the class is
+     only added here, so with JS blocked every section renders normally instead
+     of staying invisible. Skipped entirely when the visitor asks for less
+     motion, and each element is unobserved once shown so nothing keeps ticking. */
+  var reveals = document.querySelectorAll('.reveal');
+  if (reveals.length && 'IntersectionObserver' in window
+      && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.documentElement.classList.add('js-reveal');
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.06 });
+    reveals.forEach(function (el) { io.observe(el); });
+  }
+
   /* Sticky header shrinks once you've scrolled past the top ticker strip. */
   var hdr = $('siteHeader');
   var onScroll = function () { hdr.classList.toggle('compact', window.scrollY > 60); };
@@ -618,21 +819,20 @@
         so an unconfirmed statistic can never reach the page. ─────────────── */
   var num = function (n) { return Number(n).toLocaleString('en-GB'); };
 
+  /* Stars + score in the delivery strip. Renders ONLY from a real value the
+     owner has put in BIG_BITES_CLAIMS — never a placeholder. The stars carry
+     aria-hidden and the readable sentence sits alongside, so a screen reader
+     gets "Rated 4.8 out of 5 from 500+ customers" rather than a row of glyphs. */
   if (C.rating != null) {
     var full = Math.round(Number(C.rating));
     var stars = '★★★★★'.slice(0, full) + '☆☆☆☆☆'.slice(0, 5 - full);
-    var line = 'Rated ' + C.rating + '/5' + (C.reviewCount != null ? ' from ' + num(C.reviewCount) + '+ customers' : '');
-    // The old announcement bar carried a copy of this; it's been replaced by the
-    // ticker, so the rating now lives only in the hero trust row below. Guarded
-    // rather than assumed, so setting a rating can never throw on a missing node.
-    var bar = $('announceRating');
-    if (bar) {
-      bar.innerHTML = '<span>' + line + '</span><span class="stars" aria-hidden="true">' + stars + '</span>';
-      bar.hidden = false;
-    }
-
-    $('ratingTrustB').textContent = 'Rated ' + C.rating + '/5';
-    $('ratingTrustS').textContent = C.reviewCount != null ? num(C.reviewCount) + '+ reviews' : 'From our customers';
+    $('ratingTrustB').innerHTML = stars + '<span class="score">' + C.rating + '</span>';
+    $('ratingTrustS').textContent = C.reviewCount != null
+      ? num(C.reviewCount) + '+ happy customers'
+      : 'Rated by our customers';
+    $('ratingTrust').setAttribute('aria-label',
+      'Rated ' + C.rating + ' out of 5'
+      + (C.reviewCount != null ? ' from ' + num(C.reviewCount) + '+ customers' : ''));
     $('ratingTrust').hidden = false;
   }
 
