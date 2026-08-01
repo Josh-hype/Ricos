@@ -97,6 +97,9 @@
              color:#e8dfcc;padding:6px 0;border-bottom:3px solid transparent;}
   nav.main a:hover,nav.main a[aria-current="page"]{color:var(--yellow);border-bottom-color:var(--yellow);}
   .hdr-actions{display:flex;align-items:center;gap:12px;flex:0 0 auto;}
+  /* Set in caps to match the mark's lock-up — it reads as a button label rather
+     than a sentence, and it is the one action the header is there to offer. */
+  .hdr-order{text-transform:uppercase;letter-spacing:.06em;font-weight:900;}
   /* 44x44 minimum: it was 42x35, under the size a thumb reliably hits. */
   .burger{display:none;background:none;border:0;padding:0;cursor:pointer;
           width:44px;height:44px;}
@@ -140,8 +143,14 @@
     /* A 320px phone has no slack: the 44px tap target plus a 12px gap put the
        header 1px over the viewport. Tighten the gap rather than shrink the
        target back below 44. */
-    .hdr-actions{gap:7px;}
-    .hdr-actions .btn{padding:12px 13px;font-size:.84rem;}
+    .hdr-actions{gap:6px;}
+    .hdr-actions .btn{padding:12px 11px;font-size:.78rem;letter-spacing:.03em;}
+  }
+  @media(max-width:400px){
+    /* Below about 380px there is no width left for "Collect in store" on one
+       line beside an icon and a chevron, so the labels wrap rather than being
+       shrunk to nothing or clipped. The pair stays side by side either way. */
+    .ccard b,.ccard .sub{white-space:normal;}
   }
 
   /* ── Hero ─────────────────────────────────────────────────────────────── */
@@ -195,34 +204,62 @@
   .offer .btn{width:100%;}
 
   @media(max-width:980px){
-    .hero .wrap{grid-template-columns:1fr;gap:0;}
-    /* No bottom padding: the photo is the last thing in the section and runs
-       straight into the torn edge, the way it does in the design. */
-    .hero{padding:34px 0 0;}
+    /* The photo needs to escape downward (into the band) but must still be cut
+       off sideways, or the page gains 35px of horizontal scroll. `clip` is what
+       makes that possible: unlike `hidden`, it can be set on one axis while the
+       other stays visible. */
+    .hero{padding:30px 0 0;overflow-x:clip;overflow-y:visible;}
 
-    /* One column on a phone, in DOM order: strapline, headline, one-liner,
-       the three badges, then the photo closing the section. No `order` juggling
-       any more — the markup is already the sequence we want, which keeps the
-       visual order and the screen-reader order identical. */
-    .hero h1{margin-top:14px;}
-    .hero .lede{margin:18px 0 0;max-width:none;}
+    /* The design keeps its two columns on a phone: the strapline and headline run
+       full width, then the one-liner and the three badges sit in a left column
+       with the photograph filling the right and bleeding off the screen.
+       display:contents dissolves the copy wrapper so its four children can be
+       placed on the same grid as .foodstack. The DOM is untouched, so the reading
+       order is still strapline → headline → line → badges → photo.
+       The split is 47/53 rather than the mock's 39/61: at 39% the badge labels
+       come out around 9px, which is below what anyone can comfortably read. Same
+       composition, type that survives contact with a real phone. */
+    .hero .wrap{grid-template-columns:50% 1fr;gap:0;align-items:start;}
+    .hero-copy{display:contents;}
+    .hero .tab      {grid-column:1/-1;grid-row:1;justify-self:start;font-size:.86rem;}
+    .hero h1        {grid-column:1/-1;grid-row:2;margin-top:12px;
+                     font-size:clamp(2.05rem,8.6vw,3.1rem);}
+    .hero .lede     {grid-column:1;grid-row:3;margin:14px 0 0;max-width:none;
+                     font-size:.8rem;line-height:1.4;}
+    .hero .feats    {grid-column:1;grid-row:4;margin-top:16px;gap:11px;
+                     padding-bottom:22px;}
+    /* Photo fills whatever height the copy column comes to, as in the design —
+       so the hero is sized by its words, not by a fixed image ratio, and the
+       whole section still lands inside one phone screen. */
+    .hero .foodstack{grid-column:2;grid-row:3/5;align-self:stretch;min-height:100%;}
 
-    /* Full-bleed to the right. On desktop the shot is oversized and runs off the
-       right of the viewport so its only visible edges are the feathered ones; at
-       width:100% inside the wrap's 22px padding that stopped being true and the
-       raw right edge showed as a hard vertical line straight through the fries
-       and the chicken. Cancelling the wrap's padding and over-sizing does the
-       same thing here: the left, top and bottom stay feathered and the right
-       runs off-screen, so no cut is visible at any phone width.
-       html{overflow-x:clip} is what makes the overflow safe. */
-    .foodstack{margin:20px calc(50% - 50vw) 0;width:100vw;}
-    /* Cropped shorter than its natural 3:2 so the section closes without a long
-       run of photo. The crop is what sets the height — the width stays
-       full-bleed, because that is what keeps the raw right edge off-screen.
-       34% anchors the burger just left of centre with the fries carton in frame. */
-    .foodstack .shot{width:118%;max-width:none;
-                     aspect-ratio:16/10;object-fit:cover;object-position:34% 52%;}
-    .offer{position:static;width:calc(100% - 44px);margin:18px auto 0;}
+    /* Tighter badges so each label stays on one line in the narrower column. */
+    .feats .ic{width:32px;height:32px;}
+    .feats .ic svg{width:17px;height:17px;}
+    .feats li{gap:10px;}
+    .feats b{font-size:.7rem;letter-spacing:.01em;white-space:nowrap;}
+    .feats span span{font-size:.58rem;letter-spacing:.04em;white-space:nowrap;}
+
+    /* Bleeds off the right of the screen, so the only edges that can be seen are
+       the feathered ones — the raw right edge never shows. margin-right pulls it
+       past the wrap's 22px padding to the viewport edge; the width over-sizes it
+       from there, and height:100% ties it to the copy column. */
+    /* Runs on past the torn edge into the red band, as the design does, instead
+       of stopping dead at the section boundary. The photo's bottom mask already
+       fades to nothing, so the overlap dissolves into the red rather than ending
+       on a line. z-index lifts it over the tear; .hero drops its overflow so it
+       isn't clipped at the section edge (the atmosphere layer does its own
+       clipping, so nothing escapes). */
+    .foodstack{margin-right:-22px;margin-bottom:-52px;height:calc(100% + 52px);
+               position:relative;z-index:3;}
+    .foodstack picture{display:block;height:100%;}
+    /* Framed to keep the burger dominant while bringing the branded fries carton
+       and the chicken into shot, as the design does. The small over-size is a
+       safety bleed so the raw right edge lands off-screen rather than exactly on
+       it, where sub-pixel rounding could show a sliver. */
+    .foodstack .shot{width:104%;max-width:none;height:100%;
+                     object-fit:cover;object-position:76% 55%;}
+    .offer{position:static;width:100%;margin:14px 0 0;}
   }
 
   /* ── Hero atmosphere ──────────────────────────────────────────────────── */
@@ -295,17 +332,29 @@
                    text-transform:uppercase;color:var(--yellow);}
 
   /* ── Torn edge + red CTA band ─────────────────────────────────────────── */
-  .cta-band{position:relative;background:var(--red);padding:52px 0 40px;
+  .cta-band{position:relative;background:var(--red);padding:34px 0 28px;
             color:#fff;overflow:hidden;}
-  /* Two stacked cuts of the same ragged polygon: the cream one sits a few pixels
-     lower than the black one, so a torn paper sliver shows between the hero and
-     the band. Fixed point list, not random, so it can never reflow. */
-  .cta-band .tear,.cta-band .tear::before{position:absolute;left:0;right:0;top:0;height:30px;
-    clip-path:polygon(0% 0%, 100% 0%, 100.0% 76.2%, 97.1% 74.7%, 94.1% 98.0%, 91.2% 93.6%, 88.2% 66.5%, 85.3% 98.3%, 82.4% 78.2%, 79.4% 72.0%, 76.5% 92.8%, 73.5% 91.2%, 70.6% 60.1%, 67.6% 79.8%, 64.7% 62.8%, 61.8% 71.7%, 58.8% 87.3%, 55.9% 59.9%, 52.9% 61.5%, 50.0% 99.2%, 47.1% 82.1%, 44.1% 61.4%, 41.2% 65.8%, 38.2% 97.2%, 35.3% 86.3%, 32.4% 85.2%, 29.4% 65.1%, 26.5% 72.6%, 23.5% 76.7%, 20.6% 68.8%, 17.6% 74.5%, 14.7% 93.8%, 11.8% 95.2%, 8.8% 74.6%, 5.9% 65.4%, 2.9% 82.3%, 0.0% 97.2%);}
-  .cta-band .tear{background:var(--off);z-index:2;}
-  .cta-band .tear::before{content:'';background:var(--bg);transform:translateY(-6px);}
+  /* Torn edge, tilted the way the design has it — it drops about 70px from left
+     to right rather than running level.
+     The container is deliberately over-sized and rotated: at 9 degrees across
+     120% width the ends swing +/-43px, so a short strip would leave the band's
+     top corners uncovered. It is clipped by .cta-band's overflow, so the part
+     that swings up above the band simply disappears against the hero's black.
+     Two pseudo-elements share one fixed rag: the black sits on top and the cream
+     six pixels lower, which is what leaves the torn-paper sliver. Fixed points,
+     never random, so the edge can't reflow between renders. */
+  /* The tilt is an angle, so the drop it produces grows with the width: the 9deg
+     that reads right across a 440px phone becomes a 230px wedge on a 1440px
+     monitor. Gentle by default, steep only where the viewport is narrow. */
+  .cta-band .tear{position:absolute;left:-10%;width:120%;top:-58px;height:160px;
+    z-index:2;pointer-events:none;transform:rotate(1.8deg);transform-origin:50% 50%;}
+  @media(max-width:980px){.cta-band .tear{transform:rotate(9deg);}}
+  .cta-band .tear::before,.cta-band .tear::after{content:'';position:absolute;inset:0;
+    clip-path:polygon(0% 0%, 100% 0%, 100.0% 53.0%, 97.1% 52.8%, 94.1% 56.7%, 91.2% 55.9%, 88.2% 51.4%, 85.3% 56.7%, 82.4% 53.4%, 79.4% 52.3%, 76.5% 55.8%, 73.5% 55.5%, 70.6% 50.4%, 67.6% 53.6%, 64.7% 50.8%, 61.8% 52.3%, 58.8% 54.9%, 55.9% 50.3%, 52.9% 50.6%, 50.0% 56.9%, 47.1% 54.0%, 44.1% 50.6%, 41.2% 51.3%, 38.2% 56.5%, 35.3% 54.7%, 32.4% 54.5%, 29.4% 51.2%, 26.5% 52.4%, 23.5% 53.1%, 20.6% 51.8%, 17.6% 52.7%, 14.7% 56.0%, 11.8% 56.2%, 8.8% 52.8%, 5.9% 51.2%, 2.9% 54.1%, 0.0% 56.5%);}
+  .cta-band .tear::before{background:var(--off);transform:translateY(6px);}
+  .cta-band .tear::after{background:var(--bg);}
 
-  .cta-head{display:flex;align-items:center;gap:14px;margin:14px 0 26px;}
+  .cta-head{display:flex;align-items:center;gap:14px;margin:0 0 22px;}
   .stamp{flex:0 0 auto;border:2px dashed rgba(255,255,255,.85);border-radius:10px;
          padding:10px 14px;font-family:'Luckiest Guy',system-ui,sans-serif;font-weight:400;
          font-size:.95rem;line-height:1.22;letter-spacing:.05em;text-transform:uppercase;
@@ -317,11 +366,15 @@
          letter-spacing:.5px;text-transform:uppercase;transform:rotate(-2deg);}
   .shout u{text-decoration:none;box-shadow:inset 0 -6px 0 rgba(247,198,26,.85);}
 
-  /* Stacked on a phone so each is a full-width target; side by side once there
-     is room, which is where the two routes read as a genuine choice. */
-  .cta-cards{display:grid;gap:14px;}
-  @media(min-width:720px){.cta-cards{grid-template-columns:1fr 1fr;gap:20px;}}
-  .ccard{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:16px;
+  /* Side by side at every width, as in the design — the two routes read as one
+     choice rather than a list. They stay comfortably above the 44px tap target
+     even at 320px, because the card is tall, not because it is wide. */
+  .cta-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(min-width:720px){.cta-cards{gap:20px;}}
+  /* min-width:0 so the card is governed by its grid track. Without it a grid
+     item refuses to shrink below its content, and the nowrap label pushed the
+     pair 5px past a 320px screen. */
+  .ccard{min-width:0;display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:16px;
          border:3px solid var(--char);box-shadow:6px 6px 0 rgba(12,12,12,.55);
          transition:transform .12s ease,box-shadow .12s ease;}
   .ccard:hover{transform:translate(-2px,-3px);box-shadow:9px 9px 0 rgba(12,12,12,.55);}
@@ -362,8 +415,24 @@
     .stamp{font-size:.82rem;padding:9px 11px;}
     .shout{font-size:1.22rem;}
     .cta-head .arw{width:26px;}
-    .dstrip .wrap{gap:12px;}
-    .dstrip .rate{text-align:left;}
+    /* Two cards on one phone row, keeping the design's icon-label-chevron row
+       rather than stacking — the type comes down instead, which is what lets
+       both fit without either label wrapping. */
+    .cta-cards{gap:11px;}
+    .ccard{gap:8px;padding:11px 10px;border-width:2px;box-shadow:4px 4px 0 rgba(12,12,12,.55);}
+    .ccard:hover{box-shadow:6px 6px 0 rgba(12,12,12,.55);}
+    .ccard .ic{width:26px;height:26px;}
+    .ccard b{font-size:.74rem;letter-spacing:0;white-space:nowrap;}
+    .ccard .sub{font-size:.5rem;letter-spacing:.02em;margin-top:2px;white-space:nowrap;}
+    .ccard .go{width:26px;height:26px;font-size:.9rem;}
+    .stamp{font-size:.76rem;padding:8px 10px;}
+    /* Delivery strip: one compact row, as in the design. */
+    .dstrip .wrap{gap:12px;padding-top:9px;padding-bottom:9px;}
+    .dstrip .ic{width:34px;height:34px;}
+    .dstrip .ic svg{width:18px;height:18px;}
+    .dstrip b{font-size:.74rem;}
+    .dstrip .item span span{font-size:.74rem;}
+    .dstrip .rate{text-align:right;}
   }
 
   /* ── Category rail ────────────────────────────────────────────────────── */
@@ -407,8 +476,8 @@
   .ticker--red{background:var(--red);color:#fff;border-color:var(--char);}
   .ticker--red .st{color:var(--yellow);}
   .ticker--top{border-top:0;border-bottom-width:2px;}
-  .ticker--top .roll{font-size:.72rem;letter-spacing:1.4px;padding:3px 0 2px;line-height:1.25;}
-  @media(max-width:520px){.ticker--top .roll{font-size:.64rem;letter-spacing:1px;padding:3px 0 2px;}}
+  .ticker--top .roll{font-size:.92rem;letter-spacing:1.6px;padding:6px 0 4px;line-height:1.25;}
+  @media(max-width:520px){.ticker--top .roll{font-size:.8rem;letter-spacing:1.2px;padding:6px 0 4px;}}
 
   /* ── Deals ────────────────────────────────────────────────────────────── */
   .feat{padding:62px 0;}
@@ -554,7 +623,7 @@
 
     <div class="hdr-actions">
       <a class="btn ghost sm" href="tel:{{shopPhoneTel}}">📞 {{shopPhone}}</a>
-      <a class="btn sm" href="/order">Order now</a>
+      <a class="btn sm hdr-order" href="/order">Order now</a>
       <button class="burger" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mainNav">
         <span></span><span></span><span></span>
       </button>
