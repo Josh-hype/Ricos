@@ -9819,8 +9819,9 @@
           {
             "id": "sauce",
             "label": "Sauce",
-            "select": "single",
+            "select": "multi",
             "required": true,
+            "max": 2,
             "choices": [
               {
                 "id": "no-sauce",
@@ -9890,8 +9891,9 @@
           {
             "id": "sauce",
             "label": "Sauce",
-            "select": "single",
+            "select": "multi",
             "required": true,
+            "max": 2,
             "choices": [
               {
                 "id": "no-sauce",
@@ -9978,8 +9980,9 @@
           {
             "id": "sauce",
             "label": "Sauce",
-            "select": "single",
+            "select": "multi",
             "required": true,
+            "max": 2,
             "choices": [
               {
                 "id": "no-sauce",
@@ -10085,8 +10088,9 @@
           {
             "id": "sauce",
             "label": "Sauce",
-            "select": "single",
+            "select": "multi",
             "required": true,
+            "max": 2,
             "choices": [
               {
                 "id": "no-sauce",
@@ -10155,8 +10159,9 @@
           {
             "id": "sauce",
             "label": "Sauce",
-            "select": "single",
+            "select": "multi",
             "required": true,
+            "max": 2,
             "choices": [
               {
                 "id": "no-sauce",
@@ -10243,8 +10248,9 @@
           {
             "id": "sauce",
             "label": "Sauce",
-            "select": "single",
+            "select": "multi",
             "required": true,
+            "max": 2,
             "choices": [
               {
                 "id": "no-sauce",
@@ -10331,8 +10337,9 @@
           {
             "id": "sauce",
             "label": "Sauce",
-            "select": "single",
+            "select": "multi",
             "required": true,
+            "max": 2,
             "choices": [
               {
                 "id": "no-sauce",
@@ -10419,8 +10426,9 @@
           {
             "id": "sauce",
             "label": "Sauce",
-            "select": "single",
+            "select": "multi",
             "required": true,
+            "max": 2,
             "choices": [
               {
                 "id": "no-sauce",
@@ -10508,8 +10516,9 @@
           {
             "id": "sauce",
             "label": "Sauce",
-            "select": "single",
+            "select": "multi",
             "required": true,
+            "max": 2,
             "choices": [
               {
                 "id": "no-sauce",
@@ -10597,8 +10606,9 @@
           {
             "id": "sauce",
             "label": "Sauce",
-            "select": "single",
+            "select": "multi",
             "required": true,
+            "max": 2,
             "choices": [
               {
                 "id": "no-sauce",
@@ -11145,8 +11155,9 @@
           {
             "id": "sauce",
             "label": "Sauce",
-            "select": "single",
+            "select": "multi",
             "required": true,
+            "max": 2,
             "choices": [
               {
                 "id": "no-sauce",
@@ -11202,6 +11213,19 @@
                 "id": "relish",
                 "label": "Relish",
                 "price": 0
+              }
+            ]
+          },
+          {
+            "id": "extra-cheese",
+            "label": "Extra cheese",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "extra-cheese",
+                "label": "Extra cheese in wrap",
+                "price": 1.5
               }
             ]
           }
@@ -11233,8 +11257,9 @@
           {
             "id": "sauce",
             "label": "Sauce",
-            "select": "single",
+            "select": "multi",
             "required": true,
+            "max": 2,
             "choices": [
               {
                 "id": "no-sauce",
@@ -11290,6 +11315,19 @@
                 "id": "relish",
                 "label": "Relish",
                 "price": 0
+              }
+            ]
+          },
+          {
+            "id": "extra-cheese",
+            "label": "Extra cheese",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "extra-cheese",
+                "label": "Extra cheese in wrap",
+                "price": 1.5
               }
             ]
           }
@@ -11322,8 +11360,9 @@
           {
             "id": "sauce",
             "label": "Sauce",
-            "select": "single",
+            "select": "multi",
             "required": true,
+            "max": 2,
             "choices": [
               {
                 "id": "no-sauce",
@@ -11379,6 +11418,19 @@
                 "id": "relish",
                 "label": "Relish",
                 "price": 0
+              }
+            ]
+          },
+          {
+            "id": "extra-cheese",
+            "label": "Extra cheese",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "extra-cheese",
+                "label": "Extra cheese in wrap",
+                "price": 1.5
               }
             ]
           }
@@ -11411,8 +11463,9 @@
           {
             "id": "sauce",
             "label": "Sauce",
-            "select": "single",
+            "select": "multi",
             "required": true,
+            "max": 2,
             "choices": [
               {
                 "id": "no-sauce",
@@ -11468,6 +11521,19 @@
                 "id": "relish",
                 "label": "Relish",
                 "price": 0
+              }
+            ]
+          },
+          {
+            "id": "extra-cheese",
+            "label": "Extra cheese",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "extra-cheese",
+                "label": "Extra cheese in wrap",
+                "price": 1.5
               }
             ]
           }
@@ -11499,8 +11565,9 @@
           {
             "id": "sauce",
             "label": "Sauce",
-            "select": "single",
+            "select": "multi",
             "required": true,
+            "max": 2,
             "choices": [
               {
                 "id": "no-sauce",
@@ -11556,6 +11623,19 @@
                 "id": "relish",
                 "label": "Relish",
                 "price": 0
+              }
+            ]
+          },
+          {
+            "id": "extra-cheese",
+            "label": "Extra cheese",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "extra-cheese",
+                "label": "Extra cheese in wrap",
+                "price": 1.5
               }
             ]
           }
@@ -11587,8 +11667,9 @@
           {
             "id": "sauce",
             "label": "Sauce",
-            "select": "single",
+            "select": "multi",
             "required": true,
+            "max": 2,
             "choices": [
               {
                 "id": "no-sauce",
@@ -11644,6 +11725,19 @@
                 "id": "relish",
                 "label": "Relish",
                 "price": 0
+              }
+            ]
+          },
+          {
+            "id": "extra-cheese",
+            "label": "Extra cheese",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "extra-cheese",
+                "label": "Extra cheese in wrap",
+                "price": 1.5
               }
             ]
           }
@@ -11676,8 +11770,9 @@
           {
             "id": "sauce",
             "label": "Sauce",
-            "select": "single",
+            "select": "multi",
             "required": true,
+            "max": 2,
             "choices": [
               {
                 "id": "no-sauce",
@@ -11733,6 +11828,19 @@
                 "id": "relish",
                 "label": "Relish",
                 "price": 0
+              }
+            ]
+          },
+          {
+            "id": "extra-cheese",
+            "label": "Extra cheese",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "extra-cheese",
+                "label": "Extra cheese in wrap",
+                "price": 1.5
               }
             ]
           }
@@ -11765,8 +11873,9 @@
           {
             "id": "sauce",
             "label": "Sauce",
-            "select": "single",
+            "select": "multi",
             "required": true,
+            "max": 2,
             "choices": [
               {
                 "id": "no-sauce",
@@ -11822,6 +11931,19 @@
                 "id": "relish",
                 "label": "Relish",
                 "price": 0
+              }
+            ]
+          },
+          {
+            "id": "extra-cheese",
+            "label": "Extra cheese",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "extra-cheese",
+                "label": "Extra cheese in wrap",
+                "price": 1.5
               }
             ]
           }
@@ -11853,8 +11975,9 @@
           {
             "id": "sauce",
             "label": "Sauce",
-            "select": "single",
+            "select": "multi",
             "required": true,
+            "max": 2,
             "choices": [
               {
                 "id": "no-sauce",
@@ -11910,6 +12033,19 @@
                 "id": "relish",
                 "label": "Relish",
                 "price": 0
+              }
+            ]
+          },
+          {
+            "id": "extra-cheese",
+            "label": "Extra cheese",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "extra-cheese",
+                "label": "Extra cheese in wrap",
+                "price": 1.5
               }
             ]
           }

@@ -1305,6 +1305,10 @@ textarea.me-in{resize:vertical;font-family:inherit}
    selected options with no highlight. Separate rules degrade independently. */
 .opt-choice:has(input:checked){border-color:var(--blue);background:var(--blue-tint);box-shadow:inset 0 0 0 1px var(--blue)}
 .opt-choice.sel{border-color:var(--blue);background:var(--blue-tint);box-shadow:inset 0 0 0 1px var(--blue)}
+/* A group at its max greys the choices that can no longer be picked. Kept AFTER
+   .sel and after the :hover block above so it wins on source order (all three
+   are 0,2,0). Only ever set on UNticked choices, so it can't grey a selection. */
+.opt-choice.maxed{opacity:.42}
 .opt-choice span{flex:1;font-size:15px;font-weight:600}
 
 /* Folded option group (long optional multi-selects, e.g. pizza extra toppings).
@@ -5548,6 +5552,19 @@ function openItemDetail(id) {
       const d = modDeltaP(canonical.modifiers?.find(m => m.id === opt.value), active);
       opt.textContent = d ? `${base} (+£${(d / 100).toFixed(2)})` : base;
     });
+    // Multi-selects with a max: once the ceiling is reached, grey the unticked
+    // choices so it's obvious why they've stopped responding. Purely visual —
+    // the tap handler below is what actually refuses the selection, because we
+    // drive checkbox state ourselves and a `disabled` input wouldn't stop it.
+    body.querySelectorAll('.opt-group[data-max]').forEach(grp => {
+      const max = parseInt(grp.dataset.max, 10);
+      if (!max) return;
+      const atMax = grp.querySelectorAll('input:checked').length >= max;
+      grp.querySelectorAll('.opt-choice').forEach(box => {
+        const inp = box.querySelector('input');
+        box.classList.toggle('maxed', atMax && inp && !inp.checked);
+      });
+    });
     // Folded groups: show how many are ticked on the closed row, so a topping
     // added and then folded away is never invisible.
     body.querySelectorAll('[data-opt-fold]').forEach(fold => {
@@ -5588,7 +5605,19 @@ function openItemDetail(id) {
     box.addEventListener('pointercancel', () => { moved = true; });
     box.addEventListener('pointerup', () => {
       if (moved) return;
+      // Honour a group's max. Ticking off is always allowed; ticking on is
+      // refused once the ceiling is reached, with a line telling staff why
+      // (silently ignoring the tap reads as a broken screen). Groups without a
+      // max are unaffected.
+      const grp = box.closest('.opt-group');
+      const max = grp && grp.dataset.max ? parseInt(grp.dataset.max, 10) : 0;
+      if (!inp.checked && max && grp.querySelectorAll('input:checked').length >= max) {
+        const errEl = grp.querySelector('[data-err]');
+        if (errEl) errEl.textContent = `Up to ${max} — untick one to change it.`;
+        return;
+      }
       inp.checked = !inp.checked;   // we drive state; no native label forwarding
+      if (grp) { const e = grp.querySelector('[data-err]'); if (e) e.textContent = ''; }
       recalc();                     // selected highlight (.sel) + live price
     });
   });
@@ -5606,12 +5635,35 @@ function openItemDetail(id) {
     // Required option groups must have a selection (a dropdown's "Choose…" / an
     // unticked multi-select group).
     let optionErr = false;
-    body.querySelectorAll('.opt-group[data-required="1"]').forEach(grp => {
+    body.querySelectorAll('.opt-group').forEach(grp => {
       const errEl = grp.querySelector('[data-err]');
+      const req = grp.dataset.required === '1';
       const sel = grp.querySelector('select');
-      const chosen = sel ? !!sel.value : !!grp.querySelector('input:checked');
-      if (!chosen) {
-        if (errEl) errEl.textContent = `Please choose ${grp.dataset.label || 'an option'}.`;
+      // Dropdown (single-select): unchanged — a required one needs a value.
+      if (sel) {
+        if (req && !sel.value) {
+          if (errEl) errEl.textContent = `Please choose ${grp.dataset.label || 'an option'}.`;
+          optionErr = true;
+        } else if (errEl) { errEl.textContent = ''; }
+        return;
+      }
+      // Multi-select: a required group still needs at least one, and min/max
+      // bound the count when set. Absent min/max on a required group gives
+      // min 1 / no ceiling — the previous behaviour exactly.
+      const min = grp.dataset.min !== '' && grp.dataset.min != null
+        ? parseInt(grp.dataset.min, 10) : (req ? 1 : 0);
+      const max = grp.dataset.max !== '' && grp.dataset.max != null
+        ? parseInt(grp.dataset.max, 10) : Infinity;
+      if (!min && max === Infinity) { if (errEl) errEl.textContent = ''; return; }
+      const n = grp.querySelectorAll('input:checked').length;
+      const lbl = grp.dataset.label || 'an option';
+      if (n < min || n > max) {
+        let msg;
+        if (min && max !== Infinity && min === max) msg = `Please choose exactly ${min} for ${lbl}.`;
+        else if (min && max !== Infinity) msg = `Please choose between ${min} and ${max} for ${lbl}.`;
+        else if (max !== Infinity) msg = `Please choose no more than ${max} for ${lbl}.`;
+        else msg = `Please choose ${lbl}.`;
+        if (errEl) errEl.textContent = msg;
         optionErr = true;
       } else if (errEl) { errEl.textContent = ''; }
     });
@@ -5713,9 +5765,20 @@ function optionGroupHTML(g, canonical) {
   if (selfServeDrinks() && /drink/i.test(g.label || '')) return '';
   const required = !!g.required;
   const choices = g.choices || [];
-  const legend = `<div class="opt-legend">${escapeHtml(g.label || '')}${required ? '' : ' <em>(optional)</em>'}</div>`;
+  // Optional count bounds on a multi-select (e.g. "Sauce · up to 2"). Both are
+  // gated on being present: absent ⇒ exactly the old behaviour (required = at
+  // least one, no ceiling), so every other shop's till is untouched. Same
+  // min/max contract the website's order page already honours, so a group
+  // written once in menu-visual.json behaves the same in both places.
+  const isMulti = g.select === 'multi';
+  const minN = isMulti && Number.isInteger(g.min) ? g.min : null;
+  const maxN = isMulti && Number.isInteger(g.max) ? g.max : null;
+  const hint = (minN !== null && maxN !== null)
+    ? (minN === maxN ? ` <em>(choose ${minN})</em>` : ` <em>(choose ${minN}–${maxN})</em>`)
+    : (maxN !== null ? ` <em>(up to ${maxN})</em>` : (minN !== null ? ` <em>(at least ${minN})</em>` : ''));
+  const legend = `<div class="opt-legend">${escapeHtml(g.label || '')}${required ? '' : ' <em>(optional)</em>'}${hint}</div>`;
   const errEl = `<div class="opt-required-err" data-err aria-live="polite"></div>`;
-  const open = `<fieldset class="opt-group" data-required="${required ? '1' : '0'}" data-label="${escapeHtml(g.label || 'an option')}">${legend}`;
+  const open = `<fieldset class="opt-group" data-required="${required ? '1' : '0'}" data-min="${minN !== null ? minN : ''}" data-max="${maxN !== null ? maxN : ''}" data-label="${escapeHtml(g.label || 'an option')}">${legend}`;
 
   // Single-select → a compact dropdown (like the meal-choice pickers), so big
   // platters with 4+ required picks don't become a wall of boxes. We pre-select
