@@ -63,3 +63,23 @@ no `npm install` needed. Then check there is no horizontal overflow at 320px and
   edges are feathered with CSS masks so it sits directly on the page.
 - The design being iterated matches a reference mock: two-column hero on all
   sizes, tilted torn edge into a red CTA band, order cards side by side.
+
+## The one trap in this file
+
+`index.html` is **not** ordered base-rules-then-media-queries. Several
+`@media` blocks sit ABOVE the base rules they mean to override, so an override
+with the *same specificity* silently loses on source order and becomes dead CSS
+— it looks correct, it just never applies. This has bitten twice: the hero
+badges kept rendering at the desktop 16px, and the CTA card labels kept
+clipping under the chevron.
+
+If a mobile override appears to do nothing, **measure the computed value before
+assuming the rule is wrong**:
+
+```js
+getComputedStyle(document.querySelector('.hero .feats b')).fontSize
+```
+
+Fix it by raising specificity (`.hero .feats b` = 0,2,1 beats `.feats b` =
+0,1,1) or by moving the block below the rule it overrides — not by piling on
+`!important`. Check both 320px and 440px: some of these only show at one width.
