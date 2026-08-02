@@ -1298,6 +1298,30 @@ textarea.me-in{resize:vertical;font-family:inherit}
 .opt-choice:has(input:checked){border-color:var(--blue);background:var(--blue-tint);box-shadow:inset 0 0 0 1px var(--blue)}
 .opt-choice.sel{border-color:var(--blue);background:var(--blue-tint);box-shadow:inset 0 0 0 1px var(--blue)}
 .opt-choice span{flex:1;font-size:15px;font-weight:600}
+
+/* Folded option group (long optional multi-selects, e.g. pizza extra toppings).
+   The toggle is a full-width 52px target so it is comfortable on the till. */
+.opt-toggle{
+  display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:12px 14px;
+  border:1.5px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink);
+  font-family:var(--sans);font-size:15px;font-weight:700;text-align:left;cursor:pointer;
+  transition:var(--motion-fast) var(--ease-out);touch-action:manipulation;
+  user-select:none;-webkit-user-select:none;
+}
+.opt-toggle:hover{border-color:var(--blue);background:var(--blue-tint-2)}
+.opt-toggle:active{transform:scale(.99)}
+.opt-toggle .opt-toggle-lab{flex:1}
+.opt-toggle .opt-count{font-size:13px;font-weight:800;color:var(--blue)}
+.opt-toggle .opt-chev{
+  width:9px;height:9px;flex:0 0 auto;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);
+  transform:rotate(45deg);margin:-4px 3px 0 2px;transition:transform var(--motion-fast) var(--ease-out);
+}
+.opt-toggle[aria-expanded="true"]{border-color:var(--blue);background:var(--blue-tint-2)}
+.opt-toggle[aria-expanded="true"] .opt-chev{transform:rotate(-135deg);margin-top:2px}
+/* Any chosen extras stay visible on the closed row, so nothing is hidden by
+   accident — the count is the only clue the group is folded. */
+.opt-toggle .opt-count:empty{display:none}
+.opt-fold{display:flex;flex-direction:column;gap:6px;margin-top:6px}
 .opt-choice .opt-delta{font-family:var(--mono);font-weight:600;color:var(--ink-2)}
 .opt-required-err{color:var(--red);font-size:12.5px;font-weight:600;min-height:0}
 .opt-required-err:not(:empty){min-height:18px;margin-top:2px}
@@ -5450,6 +5474,10 @@ function openItemDetail(id) {
   if (!v || !canonical) return;
   const body = $('#itemBody');
   body.innerHTML = itemDetailHTML(v, canonical);
+  // Start every item at the top. The modal body is the scroll container and it
+  // is reused between items, so without this the next pizza opens still scrolled
+  // to wherever the last one was left — staff were scrolling back up each time.
+  body.scrollTop = 0;
   // Wire the live price recompute (selecting an option / meal updates it).
   const priceEl = body.querySelector('#itemDetailPrice');
   const mealInput = body.querySelector('.meal-toggle input');
@@ -5491,11 +5519,28 @@ function openItemDetail(id) {
       const d = modDeltaP(canonical.modifiers?.find(m => m.id === opt.value), active);
       opt.textContent = d ? `${base} (+£${(d / 100).toFixed(2)})` : base;
     });
+    // Folded groups: show how many are ticked on the closed row, so a topping
+    // added and then folded away is never invisible.
+    body.querySelectorAll('[data-opt-fold]').forEach(fold => {
+      const n = fold.querySelectorAll('input:checked').length;
+      const count = fold.parentElement.querySelector('[data-opt-count]');
+      if (count) count.textContent = n ? `${n} added` : '';
+    });
     if (priceEl) priceEl.textContent = `£${(p / 100).toFixed(2)}`;
     const addEl = body.querySelector('.item-add');
     const addLbl = addEl && addEl.querySelector('span');
     if (addLbl && !addEl.classList.contains('added')) addLbl.textContent = `Add to order · £${(p / 100).toFixed(2)}`;
   }
+  // Open/close a folded option group.
+  body.querySelectorAll('[data-opt-toggle]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const fold = btn.parentElement.querySelector('[data-opt-fold]');
+      if (!fold) return;
+      const open = fold.hidden;
+      fold.hidden = !open;
+      btn.setAttribute('aria-expanded', String(open));
+    });
+  });
   body.querySelectorAll('.opt-group input, .opt-group select').forEach(el => el.addEventListener('change', recalc));
   // Touch-robust multi-select toppings. The EPOS WebView mishandles
   // <label>→checkbox toggling and can synthesise a tap at the end of a scroll —
@@ -5628,6 +5673,10 @@ function choiceDeltaP(c, canonical) {
   const mod = canonical.modifiers?.find(m => m.id === c.id);
   return mod ? (mod.priceDeltaP || 0) : Math.round((Number(c.price) || 0) * 100);
 }
+// Fold an optional multi-select from this many choices up. Chosen so the real
+// groups land the right side of it: extra toppings (27) folds; the meal-deal
+// sides pickers (2-4, and required anyway) do not.
+const COLLAPSE_OPTIONS_FROM = 5;
 function optionGroupHTML(g, canonical) {
   // Self-serve drinks: hide drink option groups on the till too (platters, kids
   // meals — the customer takes their own from the fridge). These are £0 included
@@ -5664,6 +5713,28 @@ function optionGroupHTML(g, canonical) {
       ${delta}
     </div>`;
   }).join('');
+
+  // A long OPTIONAL multi-select (pizza extra toppings is 27 choices) folds
+  // behind a single tap. Without this the staff scroll past the whole topping
+  // list to reach Add to order on every pizza, which is most pizzas.
+  // Only optional groups fold — a required one must stay in front of them —
+  // and only when the list is long enough to be in the way.
+  // Deliberately a button and a hidden div rather than <details>: this WebView
+  // already mishandles label→checkbox and :has() (see the notes above and in
+  // recalc), so the disclosure is driven explicitly instead of natively.
+  // The inputs stay in the DOM when folded, so ticked toppings still count —
+  // optModIds() reads `.opt-group input:checked`, which ignores visibility.
+  if (!required && choices.length >= COLLAPSE_OPTIONS_FROM) {
+    const label = escapeHtml(g.label || 'More options');
+    return `${open}
+      <button type="button" class="opt-toggle" aria-expanded="false" data-opt-toggle>
+        <span class="opt-toggle-lab">${label}</span>
+        <span class="opt-count" data-opt-count></span>
+        <span class="opt-chev" aria-hidden="true"></span>
+      </button>
+      <div class="opt-fold" data-opt-fold hidden>${rows}</div>
+      ${errEl}</fieldset>`;
+  }
   return `${open}${rows}${errEl}</fieldset>`;
 }
 
