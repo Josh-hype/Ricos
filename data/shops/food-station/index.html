@@ -146,13 +146,6 @@
     .hdr-actions{gap:6px;}
     .hdr-actions .btn{padding:12px 11px;font-size:.78rem;letter-spacing:.03em;}
   }
-  @media(max-width:400px){
-    /* Below about 380px there is no width left for "Collect in store" on one
-       line beside an icon and a chevron, so the labels wrap rather than being
-       shrunk to nothing or clipped. The pair stays side by side either way. */
-    .ccard b,.ccard .sub{white-space:normal;}
-  }
-
   /* ── Hero ─────────────────────────────────────────────────────────────── */
   .hero{position:relative;overflow:hidden;padding:56px 0 40px;background:var(--bg);}
   .hero .wrap{position:relative;z-index:2;display:grid;grid-template-columns:1.02fr .98fr;
@@ -219,7 +212,9 @@
        The split is 47/53 rather than the mock's 39/61: at 39% the badge labels
        come out around 9px, which is below what anyone can comfortably read. Same
        composition, type that survives contact with a real phone. */
-    .hero .wrap{grid-template-columns:50% 1fr;gap:0;align-items:start;}
+    /* 43/57 rather than 50/50 — the copy only needs enough for the badges, and
+       every point given back here is width the burger gets. */
+    .hero .wrap{grid-template-columns:43% 1fr;gap:0;align-items:start;}
     .hero-copy{display:contents;}
     .hero .tab      {grid-column:1/-1;grid-row:1;justify-self:start;font-size:.86rem;}
     .hero h1        {grid-column:1/-1;grid-row:2;margin-top:12px;
@@ -233,12 +228,22 @@
        whole section still lands inside one phone screen. */
     .hero .foodstack{grid-column:2;grid-row:3/5;align-self:stretch;min-height:100%;}
 
-    /* Tighter badges so each label stays on one line in the narrower column. */
-    .feats .ic{width:32px;height:32px;}
-    .feats .ic svg{width:17px;height:17px;}
-    .feats li{gap:10px;}
-    .feats b{font-size:.7rem;letter-spacing:.01em;white-space:nowrap;}
-    .feats span span{font-size:.58rem;letter-spacing:.04em;white-space:nowrap;}
+    /* Small badges so the photograph gets the width.
+       SCOPED WITH .hero ON PURPOSE. The base .feats rules further down this
+       stylesheet have the same specificity as a bare `.feats b`, and they come
+       LATER in the file, so an unscoped override here silently lost and the
+       labels stayed at their full 16px — which is why they were overrunning the
+       column and sitting on top of the burger. `.hero .feats b` outranks
+       `.feats b`, so these now win regardless of order. */
+    .hero .feats .ic{width:28px;height:28px;}
+    .hero .feats .ic svg{width:15px;height:15px;}
+    .hero .feats li{gap:9px;}
+    /* Belt and braces: a flex item defaults to min-width:auto and so refuses to
+       shrink below its content. With this, a label longer than the column breaks
+       onto a second line instead of spilling over the photo. */
+    .hero .feats li > span:not(.ic){min-width:0;}
+    .hero .feats b{font-size:.64rem;letter-spacing:.01em;line-height:1.15;}
+    .hero .feats span span{font-size:.53rem;letter-spacing:.04em;line-height:1.2;}
 
     /* Bleeds off the right of the screen, so the only edges that can be seen are
        the feathered ones — the raw right edge never shows. margin-right pulls it
@@ -258,7 +263,15 @@
        safety bleed so the raw right edge lands off-screen rather than exactly on
        it, where sub-pixel rounding could show a sliver. */
     .foodstack .shot{width:104%;max-width:none;height:100%;
-                     object-fit:cover;object-position:76% 55%;}
+                     object-fit:cover;object-position:76% 55%;
+      /* Shorter left feather than the desktop 20%. On a narrow phone column 20%
+         was ~50px of fade, which reached the bun and washed the burger out —
+         the whole point of the photo. 9% still softens the join to the black
+         behind the copy without eating into the food. */
+      -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 9%),
+                         linear-gradient(to bottom,transparent 0%,#000 8%,#000 84%,transparent 100%);
+              mask-image:linear-gradient(to right,transparent 0%,#000 9%),
+                         linear-gradient(to bottom,transparent 0%,#000 8%,#000 84%,transparent 100%);}
     .offer{position:static;width:100%;margin:14px 0 0;}
   }
 
@@ -422,8 +435,12 @@
     .ccard{gap:8px;padding:11px 10px;border-width:2px;box-shadow:4px 4px 0 rgba(12,12,12,.55);}
     .ccard:hover{box-shadow:6px 6px 0 rgba(12,12,12,.55);}
     .ccard .ic{width:26px;height:26px;}
-    .ccard b{font-size:.74rem;letter-spacing:0;white-space:nowrap;}
-    .ccard .sub{font-size:.5rem;letter-spacing:.02em;margin-top:2px;white-space:nowrap;}
+    /* Both labels wrap. .txt has min-width:0 and there is no ellipsis, so on
+       nowrap anything too wide silently ran under the chevron — the sub-label
+       at every phone width, "Collect in store" below about 425px. Wrapping
+       costs nothing above that: the labels still sit on one line. */
+    .ccard b{font-size:.74rem;letter-spacing:0;white-space:normal;}
+    .ccard .sub{font-size:.5rem;letter-spacing:.02em;margin-top:2px;white-space:normal;}
     .ccard .go{width:26px;height:26px;font-size:.9rem;}
     .stamp{font-size:.76rem;padding:8px 10px;}
     /* Delivery strip: one compact row, as in the design. */
@@ -434,7 +451,6 @@
     .dstrip .item span span{font-size:.74rem;}
     .dstrip .rate{text-align:right;}
   }
-
   /* ── Category rail ────────────────────────────────────────────────────── */
   .cats{background:var(--coal);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
   .cats .rail{display:flex;gap:12px;overflow-x:auto;padding:16px 0;scrollbar-width:none;
