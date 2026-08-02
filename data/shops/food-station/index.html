@@ -577,6 +577,286 @@
     .foot-bottom{justify-content:center;text-align:center;}
     .loc-actions,.cta-actions{justify-content:center;}
   }
+
+  /* ── Reference-mock composition ────────────────────────────────────────
+     The approved mock keeps the whole ordering decision in one dense, premium
+     first screen: utility strip, navigation, hero, category rail and proof
+     points. These late rules intentionally sit after the older mobile blocks
+     so their responsive values cannot be lost to source order. */
+  .utility{border-bottom:1px solid rgba(255,255,255,.16);background:#030303;color:#ddd;
+           font-size:.69rem;font-weight:700;letter-spacing:.035em;text-transform:uppercase;}
+  .utility .wrap{min-height:38px;display:flex;align-items:center;justify-content:space-between;gap:24px;}
+  .utility-list{display:flex;align-items:center;gap:25px;white-space:nowrap;}
+  .utility-list span{display:inline-flex;align-items:center;gap:7px;}
+  .utility-list i{color:var(--yellow);font-style:normal;font-size:.82rem;}
+  .utility-list span:first-child i{color:var(--red);}
+  .utility-contact{white-space:nowrap;color:#f1eadc;}
+  .utility-contact strong{color:var(--yellow);}
+
+  header.bar{position:sticky;top:0;background:rgba(0,0,0,.94);border-bottom:1px solid rgba(255,255,255,.14);
+             backdrop-filter:blur(14px);}
+  header.bar .wrap{max-width:1380px;min-height:88px;padding-top:10px;padding-bottom:10px;gap:24px;}
+  header.bar.compact .wrap{padding-top:7px;padding-bottom:7px;min-height:72px;}
+  header.bar.compact .brand img{height:54px;}
+  .brand{gap:14px;}
+  .brand img{height:64px;}
+  .hdr-loc{display:inline-flex;align-items:center;gap:9px;background:none;border-radius:0;padding:0;
+           color:var(--yellow);font-family:'Montserrat',system-ui,sans-serif;font-size:.84rem;
+           font-weight:900;letter-spacing:.14em;}
+  .hdr-loc::before{content:'★';color:var(--red);font-size:1.15rem;line-height:1;}
+  nav.main ul{gap:40px;}
+  nav.main a{font-size:.82rem;letter-spacing:.04em;padding:13px 0 10px;}
+  .hdr-actions{gap:12px;}
+  .hdr-actions .btn{min-height:46px;border-width:1px;border-radius:7px;box-shadow:none;padding:11px 21px;
+                    font-size:.78rem;letter-spacing:.04em;}
+  .hdr-actions .btn:hover{transform:translateY(-1px);box-shadow:none;}
+  .hdr-actions .btn.ghost{border-color:#eee;color:#f8f4eb;}
+  .hdr-actions .btn.ghost:hover{border-color:var(--yellow);color:var(--yellow);}
+  .burger{position:relative;z-index:80;}
+
+  .ticker--top{display:none;}
+  .hero{min-height:610px;padding:42px 0 28px;overflow:hidden;background:#000;}
+  .hero-fx .glow{display:none;}
+  .hero .wrap{max-width:1380px;min-height:540px;display:grid;grid-template-columns:minmax(430px,41%) 1fr;
+              align-items:center;gap:0;}
+  .hero-copy{position:relative;z-index:5;align-self:center;padding:14px 0 4px;}
+  .hero .tab{font-size:.91rem;padding:8px 18px 6px;border-radius:0;box-shadow:3px 3px 0 rgba(0,0,0,.65);}
+  .hero h1{font-size:clamp(3.45rem,4.6vw,4.8rem);line-height:.96;margin:18px 0 0;
+           letter-spacing:1.5px;text-shadow:4px 4px 0 rgba(0,0,0,.65);}
+  .hero h1 .ln{white-space:nowrap;}
+  .hero .lede{max-width:470px;margin:22px 0 20px;font-size:.99rem;line-height:1.55;color:#d8d2c8;}
+  .hero .feats{margin:0 0 24px;display:flex;flex-direction:row;align-items:flex-start;gap:21px;}
+  .hero .feats li{min-width:0;gap:9px;}
+  .hero .feats .ic{width:38px;height:38px;background:transparent;border:2px solid var(--yellow);
+                   color:var(--yellow);box-shadow:none;}
+  .hero .feats li:nth-child(2) .ic{border-color:var(--red);color:var(--red);}
+  .hero .feats .ic svg{width:19px;height:19px;}
+  .hero .feats b{font-family:'Montserrat',system-ui,sans-serif;font-size:.66rem;font-weight:900;
+                 letter-spacing:.035em;white-space:nowrap;}
+  .hero .feats span span{font-size:.61rem;font-weight:600;letter-spacing:0;text-transform:none;
+                         color:#bfb8ad;white-space:nowrap;}
+  .hero-actions{display:flex;align-items:center;gap:14px;}
+  .hero-actions .btn{min-width:204px;min-height:50px;border-width:1px;border-radius:7px;box-shadow:none;
+                     padding:13px 20px;font-size:.84rem;letter-spacing:.02em;text-transform:uppercase;}
+  .hero-actions .btn:hover{transform:translateY(-2px);box-shadow:0 9px 24px rgba(247,198,26,.15);}
+  .hero-actions .btn.ghost:hover{transform:translateY(-2px);box-shadow:none;}
+
+  .hero .foodstack{position:absolute;z-index:2;left:31%;right:calc((100vw - 100%) / -2);
+                   top:-42px;bottom:-38px;margin:0;height:auto;}
+  .hero .foodstack picture{display:block;width:100%;height:100%;}
+  .hero .foodstack::before{content:'';position:absolute;inset:0 auto 0 0;z-index:3;width:22%;
+    background:linear-gradient(to right,#000 0%,rgba(0,0,0,.92) 24%,rgba(0,0,0,.42) 62%,transparent 100%);
+    pointer-events:none;}
+  .hero .foodstack .shot{width:100%;height:100%;max-width:none;object-fit:cover;object-position:52% 58%;
+    -webkit-mask-image:none;mask-image:none;}
+  /* The first screen needs to be complete on the first paint. The older reveal
+     sequence could leave the headline and photograph missing in static previews
+     and on aggressive battery-saving browsers. Lower sections still reveal on
+     scroll; the ordering decision itself never waits for animation. */
+  .hero h1 .ln,.hero .tab,.hero .lede,.hero .feats li{animation:none;opacity:1;transform:none;}
+  .hero .offer{right:5.5%;top:48px;width:310px;border:1px solid rgba(255,255,255,.30);border-radius:8px;
+               padding:20px 22px 22px;background:linear-gradient(135deg,rgba(26,22,18,.96),rgba(11,10,9,.94));
+               box-shadow:0 22px 50px rgba(0,0,0,.55);}
+  .hero .offer .eyebrow{font-family:'Montserrat',system-ui,sans-serif;font-size:.7rem;font-weight:900;}
+  .hero .offer h3{font-size:1.8rem;margin-top:8px;}
+  .hero .offer ul{font-size:.76rem;line-height:1.55;}
+  .hero .offer .price{font-size:2.75rem;}
+  .hero .offer .btn{min-height:44px;border-width:1px;border-radius:6px;box-shadow:none;font-size:.76rem;padding:10px 16px;}
+
+  /* The mock places both order routes in the hero. The older red decision band
+     repeats the same actions and is therefore removed from the visual flow. */
+  .cta-band,.dstrip{display:none;}
+  .cats{position:relative;z-index:6;background:#050505;border:0;}
+  .cats .wrap{max-width:1380px;}
+  .cats .rail{gap:0;margin:0;border:1px solid rgba(255,255,255,.22);border-radius:8px;padding:10px 8px;}
+  .cats a{flex:1 0 auto;justify-content:center;gap:9px;min-height:48px;padding:8px 18px;border:0;
+          border-right:1px solid rgba(255,255,255,.16);border-radius:0;background:transparent;
+          font-size:.76rem;letter-spacing:.02em;color:#f1ece2;}
+  .cats a:last-child{border-right:0;}
+  .cats a:hover{border-color:rgba(255,255,255,.16);background:rgba(247,198,26,.08);}
+  .cats .em{font-size:1.45rem;}
+
+  .trustbar{padding:18px 0 22px;background:#000;}
+  .trustbar .wrap{max-width:1380px;}
+  .trustgrid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0;border:1px solid rgba(247,198,26,.22);
+             border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,.025),transparent);}
+  .tcard{min-height:72px;align-items:center;gap:11px;padding:12px 18px;border:0;border-right:1px solid rgba(255,255,255,.13);
+         border-radius:0;background:transparent;}
+  .tcard:nth-child(4),.tcard:last-child{border-right:0;}
+  .tcard .ic{width:36px;height:36px;border-width:1px;background:transparent;font-size:1rem;}
+  .tcard b{font-size:.7rem;line-height:1.2;}
+  .tcard span{font-size:.68rem;line-height:1.35;}
+
+  @media(max-width:1180px){
+    nav.main ul{gap:24px;}
+    .hero .wrap{grid-template-columns:minmax(390px,42%) 1fr;}
+    .hero h1{font-size:clamp(3.25rem,5.6vw,4.7rem);}
+    .hero .offer{right:2%;width:280px;}
+    .hero .feats{gap:13px;}
+    .hero .feats b{font-size:.61rem;}
+    .hero .feats span span{font-size:.56rem;}
+    .hero-actions .btn{min-width:185px;}
+  }
+  @media(max-width:980px){
+    .utility-list span:nth-child(4){display:none;}
+    header.bar .wrap{min-height:78px;}
+    .brand img{height:54px;}
+    .hdr-loc{font-size:.72rem;}
+    .hero{min-height:0;padding:30px 0 24px;overflow:hidden;}
+    .hero .wrap{display:grid;grid-template-columns:minmax(0,48%) minmax(0,52%);min-height:520px;gap:0;align-items:start;}
+    .hero-copy{display:block;grid-column:1;position:relative;padding:8px 0 0;}
+    .hero .tab{display:inline-block;font-size:.72rem;}
+    .hero h1{font-size:clamp(2.45rem,6.8vw,3.75rem);margin-top:14px;}
+    .hero .lede{font-size:.77rem;margin:16px 0;max-width:320px;}
+    .hero .feats{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:18px;}
+    .hero .feats .ic{width:30px;height:30px;}
+    .hero .feats .ic svg{width:15px;height:15px;}
+    .hero .feats b{font-size:.58rem;}
+    .hero .feats span span{font-size:.53rem;}
+    .hero-actions{display:grid;grid-template-columns:1fr;gap:9px;max-width:230px;}
+    .hero-actions .btn{min-width:0;min-height:44px;padding:10px 12px;font-size:.69rem;}
+    .hero .foodstack{grid-column:2;position:absolute;left:43%;right:calc((100vw - 100%) / -2);
+                     top:-16px;bottom:-26px;height:auto;margin:0;}
+    .hero .foodstack::before{width:17%;}
+    .hero .foodstack .shot{object-position:48% 58%;-webkit-mask-image:none;mask-image:none;}
+    .hero .offer{position:absolute;right:3%;top:18px;width:min(250px,52%);margin:0;padding:14px;}
+    .hero .offer h3{font-size:1.3rem;}
+    .hero .offer ul{display:none;}
+    .hero .offer .price{font-size:2rem;margin-bottom:9px;}
+    .cats .rail{border-radius:0;border-left:0;border-right:0;}
+    .cats a{flex:0 0 auto;min-width:145px;}
+    .trustgrid{grid-template-columns:1fr 1fr;}
+    .tcard:nth-child(2){border-right:0;}
+    .tcard:nth-child(-n+2){border-bottom:1px solid rgba(255,255,255,.13);}
+  }
+  @media(max-width:620px){
+    main,footer{overflow-x:clip;}
+    .wrap{padding-left:16px;padding-right:16px;}
+    .utility .wrap{min-height:34px;overflow:hidden;}
+    .utility-list{gap:17px;font-size:.61rem;animation:utilityDrift 18s linear infinite;}
+    .utility-list span:nth-child(3){display:none;}
+    .utility-contact{display:none;}
+    @keyframes utilityDrift{0%,35%{transform:translateX(0)}65%,100%{transform:translateX(-38px)}}
+    @media(prefers-reduced-motion:reduce){.utility-list{animation:none;}}
+    header.bar .wrap{min-height:72px;gap:10px;padding-top:8px;padding-bottom:8px;}
+    .brand{gap:8px;scale:1.01;}
+    .brand img{height:46px;}
+    .hdr-loc{font-size:.6rem;letter-spacing:.08em;}
+    .hdr-loc::before{font-size:.86rem;}
+    .hdr-actions .btn{min-height:44px;padding:9px 13px;font-size:.7rem;}
+    .hero{padding:24px 0 18px;}
+    .hero .wrap{grid-template-columns:46% 54%;min-height:500px;translate:0 -15px;}
+    .hero-copy{display:block;padding-top:2px;}
+    .hero .tab{font-size:.62rem;letter-spacing:.08em;padding:7px 10px 5px;translate:0 -22px;}
+    .hero h1{font-size:clamp(2.1rem,10.4vw,3.15rem);line-height:.94;margin-top:13px;translate:0 -21px;}
+    .hero .lede{font-size:.68rem;line-height:1.45;margin:14px 0;translate:-15px -13px;scale:.86;}
+    .hero .feats{grid-template-columns:1fr;gap:8px;margin-bottom:15px;translate:0 -4px;}
+    .hero .feats li{gap:7px;align-items:center;}
+    .hero .feats .ic{width:26px;height:26px;}
+    .hero .feats b{font-size:.5rem;white-space:normal;}
+    .hero .feats span span{font-size:.47rem;white-space:normal;}
+    .hero-actions{grid-template-columns:repeat(2,minmax(0,1fr));width:calc(100vw - 32px);
+                  max-width:none;gap:8px;translate:5px -2px;scale:1.04;}
+    .hero-actions .btn{min-height:44px;font-size:.58rem;padding:8px 6px;}
+    /* Preserve the original split composition; only the photograph is scaled
+       down and nudged inward. Its natural 3:2 frame now shows the complete
+       burger and most of the sides instead of using a tall, heavily cropped
+       right-hand slice. */
+    .hero .foodstack{grid-column:1/-1;position:absolute;left:22%;right:auto;top:46%;
+                     bottom:auto;width:90vw;height:auto;min-height:0;aspect-ratio:3/2;
+                     margin:0;transform:translateY(-48%);translate:3px 26px;overflow:visible;}
+    .hero .foodstack picture{width:100%;height:100%;}
+    .hero .foodstack::before{display:block;width:14%;}
+    .hero .foodstack .shot{width:100%;height:100%;object-fit:cover;object-position:center;}
+    .hero .offer{display:none;}
+    .cats .wrap{padding:0;}
+    .cats .rail{padding:8px 5px;translate:1px 14px;}
+    .cats a{min-width:126px;min-height:46px;padding:7px 12px;font-size:.66rem;}
+    .trustbar{padding-top:12px;}
+    .trustbar .wrap{padding:0 10px;}
+    .trustgrid{grid-template-columns:1fr 1fr;translate:-1px 14px;}
+    .tcard{min-height:68px;padding:10px 9px;gap:8px;}
+    .tcard .ic{width:31px;height:31px;}
+    .tcard b{font-size:.58rem;}
+    .tcard span{font-size:.57rem;}
+    main > .ticker:not(.ticker--top){translate:11px -290px;scale:1.02;}
+    .feat .wrap{translate:0 -82px;}
+    .story .wrap{translate:2px -172px;}
+    .find .wrap{translate:-6px -269px;}
+    .cta{translate:-3px -298px;}
+    footer .foot-grid{translate:2px -282px;}
+  }
+  @media(max-width:360px){
+    .hdr-loc{display:none;}
+    .hero .wrap{grid-template-columns:49% 51%;min-height:485px;}
+    .hero .foodstack{left:22%;right:auto;top:46%;bottom:auto;width:90vw;height:auto;
+                     min-height:0;margin:0;transform:translateY(-48%);}
+    .hero h1{font-size:2rem;}
+    .hero .feats{grid-template-columns:1fr;gap:8px;}
+  }
+
+  /* Local layout workshop. This is activated only by the localhost-only
+     script below when ?edit=1 is present, so customers never see it. */
+  html.bb-layout-editing [data-layout-key]{
+    outline:1px dashed rgba(247,198,26,.42);
+    outline-offset:2px;
+    cursor:grab;
+    touch-action:none;
+  }
+  html.bb-layout-editing [data-layout-selected]{
+    outline:3px solid var(--yellow);
+    outline-offset:4px;
+    box-shadow:0 0 0 2px rgba(0,0,0,.8),0 0 24px rgba(247,198,26,.28);
+  }
+  html.bb-layout-editing [data-layout-dragging]{cursor:grabbing;}
+  .bb-editor{
+    --editor-yellow:#f7c61a;
+    position:fixed;z-index:10000;right:14px;bottom:14px;width:min(360px,calc(100vw - 28px));
+    max-height:min(570px,calc(100vh - 28px));overflow:auto;color:#f7f3e9;background:#090909;
+    border:2px solid var(--editor-yellow);border-radius:12px;box-shadow:0 18px 60px rgba(0,0,0,.72);
+    font:700 13px/1.35 'Montserrat',system-ui,sans-serif;letter-spacing:0;
+  }
+  .bb-editor *{box-sizing:border-box;}
+  .bb-editor__head{position:sticky;z-index:2;top:0;display:flex;align-items:center;justify-content:space-between;
+    gap:12px;padding:12px 14px;background:var(--editor-yellow);color:#080808;}
+  .bb-editor__head strong{font-size:14px;text-transform:uppercase;letter-spacing:.04em;}
+  .bb-editor__mode{font-size:10px;padding:4px 7px;border:1px solid currentColor;border-radius:999px;text-transform:uppercase;}
+  .bb-editor__toggle{width:44px;min-height:44px;margin:-8px -8px -8px 0;border:0;background:transparent;
+    color:inherit;font:900 21px/1 system-ui;cursor:pointer;}
+  .bb-editor__body{padding:13px;}
+  .bb-editor__hint{margin:0 0 12px;color:#c9c3b6;font-size:11px;font-weight:600;line-height:1.5;}
+  .bb-editor label{display:grid;gap:6px;margin:0 0 11px;color:#fff;font-size:11px;text-transform:uppercase;
+    letter-spacing:.055em;}
+  .bb-editor select,.bb-editor input[type="number"]{
+    width:100%;min-height:44px;border:1px solid #5c584e;border-radius:7px;padding:9px 10px;
+    background:#171717;color:#fff;font:700 14px/1 system-ui;outline:none;
+  }
+  .bb-editor select:focus,.bb-editor input:focus,.bb-editor button:focus-visible{
+    border-color:var(--editor-yellow);outline:2px solid var(--editor-yellow);outline-offset:2px;
+  }
+  .bb-editor__xy{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .bb-editor__scale{display:grid;grid-template-columns:1fr 64px;align-items:end;gap:10px;}
+  .bb-editor input[type="range"]{width:100%;height:44px;margin:0;accent-color:var(--editor-yellow);cursor:pointer;}
+  .bb-editor__nudges{display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(2,44px);
+    justify-content:center;gap:6px;margin:2px 0 13px;}
+  .bb-editor button{min-height:44px;border:1px solid #5c584e;border-radius:7px;padding:8px 11px;
+    background:#1a1a1a;color:#fff;font:900 12px/1 'Montserrat',system-ui,sans-serif;cursor:pointer;}
+  .bb-editor button:hover{border-color:var(--editor-yellow);color:var(--editor-yellow);}
+  .bb-editor__nudges button{padding:0;font-size:18px;}
+  .bb-editor__nudges [data-dy="-8"]{grid-column:2;grid-row:1;}
+  .bb-editor__nudges [data-dx="-8"]{grid-column:1;grid-row:2;}
+  .bb-editor__nudges [data-reset-position]{grid-column:2;grid-row:2;font-size:11px;}
+  .bb-editor__nudges [data-dx="8"]{grid-column:3;grid-row:2;}
+  .bb-editor__nudges [data-dy="8"]{grid-column:2;grid-row:3;}
+  .bb-editor__actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .bb-editor__actions button:first-child{background:var(--editor-yellow);border-color:var(--editor-yellow);color:#080808;}
+  .bb-editor__saved{display:block;margin-top:10px;color:#8d877d;font-size:10px;text-align:center;}
+  .bb-editor--min{width:auto;overflow:hidden;}
+  .bb-editor--min .bb-editor__body,.bb-editor--min .bb-editor__mode{display:none;}
+  .bb-editor--min .bb-editor__head{gap:5px;}
+  @media(max-width:620px){
+    .bb-editor{right:8px;bottom:8px;width:min(340px,calc(100vw - 16px));max-height:46vh;}
+  }
 </style>
 </head>
 <body>
@@ -611,13 +891,30 @@
     reviewCount: null,
     ordersDelivered: null,
     deliveryMinutes: null,
-    offer: null,
+    offer: {
+      eyebrow: 'Signature meal deal',
+      title: 'Goodie Box',
+      lines: ['11″ Margherita + doner', 'Chips, nuggets & onion rings', '+ Can of drink'],
+      price: '£17.00'
+    },
     /* offer example:
        { eyebrow:'Limited time offer', title:'Large Pizza',
          lines:['+ Garlic bread','+ Drink'], price:'£14.99' } */
     platforms: []
   };
 </script>
+
+<div class="utility" aria-label="Big Bites highlights">
+  <div class="wrap">
+    <div class="utility-list">
+      <span><i>●</i>Freshly cooked</span>
+      <span><i>★</i>Big portions</span>
+      <span><i>⚡</i>Delivery &amp; collection</span>
+      <span><i>★</i>Made in {{shopCity}}</span>
+    </div>
+    <span class="utility-contact">Order direct <strong>·</strong> {{shopPhone}}</span>
+  </div>
+</div>
 
 <header class="bar" id="siteHeader">
   <div class="wrap">
@@ -638,8 +935,8 @@
     <div class="navscrim" id="navScrim" hidden></div>
 
     <div class="hdr-actions">
-      <a class="btn ghost sm" href="tel:{{shopPhoneTel}}">📞 {{shopPhone}}</a>
-      <a class="btn sm hdr-order" href="/order">Order now</a>
+      <a class="btn ghost sm" href="tel:{{shopPhoneTel}}">☎ Call us</a>
+      <a class="btn sm hdr-order" href="/order">▣ Order now</a>
       <button class="burger" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mainNav">
         <span></span><span></span><span></span>
       </button>
@@ -672,13 +969,17 @@
           <span class="ln"><span class="r">Big</span> portions.</span>
           <span class="ln"><span class="y">Big</span> bites.</span>
         </h1>
-        <p class="lede">Bold flavours. Loaded portions. Unbeatable taste.</p>
+        <p class="lede">Pizza, parmo, kebab, burger and wrap — fresh, loaded and made to order in {{shopCity}}.</p>
 
         <ul class="feats">
-          <li><span class="ic"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.2 1.5c1 3.1-.2 4.9-1.7 6.4-1.6 1.6-3.4 3.1-3.4 6a6 6 0 0 0 12 0c0-2.4-1-4.1-2.1-5.4-.2 1-.8 1.8-1.6 2.2.7-3.3-.7-6.9-3.2-9.2Z"/></svg></span><span><b>Flame grilled</b><span>To perfection</span></span></li>
-          <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 3.2c.4 8.7-4.6 13.6-10.3 13.6-1.4 0-2.6-.3-3.6-.8C7.4 9.4 12.6 4.9 20.5 3.2Z" fill="currentColor" stroke="none"/><path d="M4 20.8c1.1-3.9 3.2-7.1 6.2-9.5"/></svg></span><span><b>Fresh ingredients</b><span>Every time</span></span></li>
-          <li><span class="ic"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 9.6c0-3.1 3.6-5.5 8-5.5s8 2.4 8 5.5c0 .4-.3.7-.7.7H4.7a.7.7 0 0 1-.7-.7Z"/><path d="M4.3 12.6c1.3-1.3 2.6.7 3.9 0s2.6.7 3.9 0 2.6.7 3.9 0 2.5.7 3.7-.1" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15.6h16c0 2.7-3.6 4.5-8 4.5s-8-1.8-8-4.5Z"/></svg></span><span><b>Big portions</b><span>Great value</span></span></li>
+          <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5.6" cy="16.8" r="3.1"/><circle cx="18.6" cy="16.8" r="3.1"/><path d="M8.7 16.8h6.8"/><path d="M15.5 16.8c0-4-2.4-6.6-6.2-6.6H7.6"/><path d="M13.2 5.4h2.6l2.6 9"/></svg></span><span><b>Local delivery</b><span>{{deliveryAreaDescription}}</span></span></li>
+          <li><span class="ic"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.2 1.5c1 3.1-.2 4.9-1.7 6.4-1.6 1.6-3.4 3.1-3.4 6a6 6 0 0 0 12 0c0-2.4-1-4.1-2.1-5.4-.2 1-.8 1.8-1.6 2.2.7-3.3-.7-6.9-3.2-9.2Z"/></svg></span><span><b>Freshly cooked</b><span>Every single order</span></span></li>
+          <li><span class="ic"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2.2 2.8 5.7 6.3.9-4.6 4.4 1.1 6.3-5.6-2.9-5.6 2.9 1.1-6.3-4.6-4.4 6.3-.9L12 2.2Z"/></svg></span><span><b>Big portions</b><span>Built for hunger</span></span></li>
         </ul>
+        <div class="hero-actions">
+          <a class="btn" href="/order?mode=deliver">Order delivery <span aria-hidden="true">→</span></a>
+          <a class="btn ghost" href="/order?mode=collect">Collect in store <span aria-hidden="true">▢</span></a>
+        </div>
       </div>
 
       <div class="foodstack">
@@ -746,8 +1047,8 @@
         <a href="/order"><span class="em" aria-hidden="true">🍔</span>Burgers</a>
         <a href="/order"><span class="em" aria-hidden="true">🌯</span>Kebab</a>
         <a href="/order"><span class="em" aria-hidden="true">🌮</span>Wraps</a>
-        <a href="/order"><span class="em" aria-hidden="true">🧀</span>Parmesan</a>
-        <a href="/order"><span class="em" aria-hidden="true">🍟</span>Side orders</a>
+        <a href="/order"><span class="em" aria-hidden="true">🧀</span>Parmos</a>
+        <a href="/order"><span class="em" aria-hidden="true">🍟</span>Sides</a>
         <a href="/order"><span class="em" aria-hidden="true">🥤</span>Drinks</a>
         <a href="/order"><span class="em" aria-hidden="true">🍰</span>Desserts</a>
       </div>
@@ -758,9 +1059,10 @@
     <div class="wrap">
       <div class="trustgrid">
         <div class="tcard"><span class="ic" aria-hidden="true">🏅</span><span><b>Independent &amp; local</b><span>Cooked in {{shopCity}}, not a chain kitchen</span></span></div>
-        <div class="tcard" id="ordersCard" hidden><span class="ic" aria-hidden="true">👥</span><span><b id="ordersB"></b><span>Delivered to happy customers</span></span></div>
+        <div class="tcard"><span class="ic" aria-hidden="true">✦</span><span><b>Five cravings</b><span>Pizza, parmo, kebab, burgers &amp; wraps</span></span></div>
         <div class="tcard"><span class="ic" aria-hidden="true">🔪</span><span><b>Made to order</b><span>Nothing sits under a lamp</span></span></div>
-        <div class="tcard"><span class="ic" aria-hidden="true">⚡</span><span><b>Order direct</b><span>No app fees, no middleman markup</span></span></div>
+        <div class="tcard"><span class="ic" aria-hidden="true">⚡</span><span><b>Order direct</b><span>Collection or local delivery</span></span></div>
+        <div class="tcard" id="ordersCard" hidden><span class="ic" aria-hidden="true">👥</span><span><b id="ordersB"></b><span>Delivered to happy customers</span></span></div>
       </div>
     </div>
   </section>
@@ -947,6 +1249,236 @@
       '<a class="direct" href="/order">Order direct &amp; save more →</a>';
     $('platformsRow').hidden = false;
   }
+})();
+</script>
+<script>
+(function () {
+  'use strict';
+
+  /* A visual placement workshop for the owner. It is deliberately restricted
+     to loopback hosts and ?edit=1; the published page remains untouched. */
+  var params = new URLSearchParams(window.location.search);
+  var localHosts = ['localhost', '127.0.0.1', '[::1]'];
+  if (params.get('edit') !== '1' || localHosts.indexOf(window.location.hostname) === -1) return;
+
+  var blocks = [
+    { key:'utility', label:'Top highlight strip', selector:'.utility' },
+    { key:'header', label:'Whole header', selector:'header.bar .wrap' },
+    { key:'logo', label:'Logo & location', selector:'.brand' },
+    { key:'nav', label:'Navigation links', selector:'nav.main' },
+    { key:'header-actions', label:'Header buttons', selector:'.hdr-actions' },
+    { key:'top-ticker', label:'Top red ticker', selector:'.ticker--top' },
+    { key:'hero-all', label:'Whole hero contents', selector:'.hero .wrap' },
+    { key:'hero-tag', label:'Hero red label', selector:'.hero .tab' },
+    { key:'hero-heading', label:'Hero headline', selector:'.hero h1' },
+    { key:'hero-copy', label:'Hero description', selector:'.hero .lede' },
+    { key:'hero-features', label:'Hero feature badges', selector:'.hero .feats' },
+    { key:'hero-image', label:'Hero food image', selector:'.hero .foodstack' },
+    { key:'hero-buttons', label:'Hero order buttons', selector:'.hero-actions' },
+    { key:'categories', label:'Food categories', selector:'.cats .rail' },
+    { key:'trust', label:'Trust cards', selector:'.trustgrid' },
+    { key:'main-ticker', label:'Middle red ticker', selector:'main > .ticker:not(.ticker--top)' },
+    { key:'deals', label:'Meal deals section', selector:'.feat .wrap' },
+    { key:'about', label:'About section', selector:'.story .wrap' },
+    { key:'contact', label:'Contact section', selector:'.find .wrap' },
+    { key:'bottom-cta', label:'Bottom order section', selector:'.cta' },
+    { key:'footer', label:'Footer contents', selector:'footer .foot-grid' }
+  ];
+
+  var mode = matchMedia('(max-width:620px)').matches ? 'mobile' : 'desktop';
+  var storageKey = 'big-bites-layout-editor-v1:' + mode;
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem(storageKey) || '{}') || {}; } catch (ignore) {}
+
+  var byKey = {};
+  blocks = blocks.filter(function (block) {
+    var el = document.querySelector(block.selector);
+    if (!el) return false;
+    block.el = el;
+    el.dataset.layoutKey = block.key;
+    el.dataset.layoutLabel = block.label;
+    byKey[block.key] = block;
+    return true;
+  });
+  if (!blocks.length) return;
+
+  var editor = document.createElement('aside');
+  editor.className = 'bb-editor';
+  editor.setAttribute('aria-label', 'Page layout editor');
+  editor.innerHTML =
+    '<div class="bb-editor__head">' +
+      '<strong>Move the page</strong><span class="bb-editor__mode">' + mode + '</span>' +
+      '<button class="bb-editor__toggle" type="button" aria-label="Hide editor" title="Hide editor">−</button>' +
+    '</div>' +
+    '<div class="bb-editor__body">' +
+      '<p class="bb-editor__hint">Drag any outlined block, or select one here. Your ' + mode +
+        ' layout saves automatically in this browser.</p>' +
+      '<label>Selected block<select data-editor-select></select></label>' +
+      '<div class="bb-editor__xy">' +
+        '<label>Horizontal (px)<input data-editor-x type="number" step="1"></label>' +
+        '<label>Vertical (px)<input data-editor-y type="number" step="1"></label>' +
+      '</div>' +
+      '<div class="bb-editor__scale">' +
+        '<label>Size<input data-editor-scale type="range" min="50" max="160" step="1"></label>' +
+        '<label>Percent<input data-editor-scale-number type="number" min="50" max="160" step="1"></label>' +
+      '</div>' +
+      '<div class="bb-editor__nudges" aria-label="Nudge selected block">' +
+        '<button type="button" data-dy="-8" aria-label="Move up">↑</button>' +
+        '<button type="button" data-dx="-8" aria-label="Move left">←</button>' +
+        '<button type="button" data-reset-position aria-label="Reset position">0</button>' +
+        '<button type="button" data-dx="8" aria-label="Move right">→</button>' +
+        '<button type="button" data-dy="8" aria-label="Move down">↓</button>' +
+      '</div>' +
+      '<div class="bb-editor__actions">' +
+        '<button type="button" data-reset-selected>Reset selected</button>' +
+        '<button type="button" data-reset-all>Reset all</button>' +
+      '</div>' +
+      '<small class="bb-editor__saved">Autosaved · mobile and desktop are separate</small>' +
+    '</div>';
+  document.body.appendChild(editor);
+  document.documentElement.classList.add('bb-layout-editing');
+
+  var select = editor.querySelector('[data-editor-select]');
+  blocks.forEach(function (block) {
+    var option = document.createElement('option');
+    option.value = block.key;
+    option.textContent = block.label;
+    select.appendChild(option);
+  });
+
+  var xInput = editor.querySelector('[data-editor-x]');
+  var yInput = editor.querySelector('[data-editor-y]');
+  var scaleInput = editor.querySelector('[data-editor-scale]');
+  var scaleNumber = editor.querySelector('[data-editor-scale-number]');
+  var currentKey = byKey['hero-image'] ? 'hero-image' : blocks[0].key;
+  var dragging = null;
+
+  function values(key) {
+    if (!state[key]) state[key] = { x:0, y:0, scale:100 };
+    state[key].x = Number(state[key].x) || 0;
+    state[key].y = Number(state[key].y) || 0;
+    state[key].scale = Math.min(160, Math.max(50, Number(state[key].scale) || 100));
+    return state[key];
+  }
+  function save() {
+    try { localStorage.setItem(storageKey, JSON.stringify(state)); } catch (ignore) {}
+  }
+  function apply(key) {
+    var block = byKey[key];
+    if (!block) return;
+    var val = values(key);
+    block.el.style.translate = val.x + 'px ' + val.y + 'px';
+    block.el.style.scale = val.scale / 100;
+  }
+  function applyAll() {
+    blocks.forEach(function (block) { apply(block.key); });
+  }
+  function syncControls() {
+    var val = values(currentKey);
+    select.value = currentKey;
+    xInput.value = val.x;
+    yInput.value = val.y;
+    scaleInput.value = val.scale;
+    scaleNumber.value = val.scale;
+  }
+  function choose(key) {
+    if (!byKey[key]) return;
+    blocks.forEach(function (block) { block.el.removeAttribute('data-layout-selected'); });
+    currentKey = key;
+    byKey[key].el.setAttribute('data-layout-selected', '');
+    syncControls();
+  }
+  function update(patch) {
+    var val = values(currentKey);
+    Object.keys(patch).forEach(function (key) { val[key] = patch[key]; });
+    apply(currentKey);
+    syncControls();
+    save();
+  }
+
+  applyAll();
+  choose(currentKey);
+
+  select.addEventListener('change', function () { choose(select.value); });
+  xInput.addEventListener('input', function () { update({ x:Number(xInput.value) || 0 }); });
+  yInput.addEventListener('input', function () { update({ y:Number(yInput.value) || 0 }); });
+  scaleInput.addEventListener('input', function () { update({ scale:Number(scaleInput.value) || 100 }); });
+  scaleNumber.addEventListener('input', function () { update({ scale:Number(scaleNumber.value) || 100 }); });
+
+  editor.addEventListener('click', function (event) {
+    var nudge = event.target.closest('[data-dx],[data-dy]');
+    if (nudge) {
+      var val = values(currentKey);
+      update({ x:val.x + Number(nudge.dataset.dx || 0), y:val.y + Number(nudge.dataset.dy || 0) });
+      return;
+    }
+    if (event.target.closest('[data-reset-position]')) {
+      update({ x:0, y:0 });
+      return;
+    }
+    if (event.target.closest('[data-reset-selected]')) {
+      state[currentKey] = { x:0, y:0, scale:100 };
+      apply(currentKey); syncControls(); save();
+      return;
+    }
+    if (event.target.closest('[data-reset-all]')) {
+      if (!window.confirm('Reset every ' + mode + ' layout change?')) return;
+      state = {};
+      applyAll(); syncControls(); save();
+      return;
+    }
+    var toggle = event.target.closest('.bb-editor__toggle');
+    if (toggle) {
+      var minimized = editor.classList.toggle('bb-editor--min');
+      toggle.textContent = minimized ? '+' : '−';
+      toggle.setAttribute('aria-label', minimized ? 'Show editor' : 'Hide editor');
+      toggle.title = minimized ? 'Show editor' : 'Hide editor';
+    }
+  });
+
+  document.addEventListener('pointerdown', function (event) {
+    if (event.target.closest('.bb-editor') || (event.button != null && event.button !== 0)) return;
+    var target = event.target.closest('[data-layout-key]');
+    if (!target) return;
+    event.preventDefault();
+    choose(target.dataset.layoutKey);
+    var val = values(currentKey);
+    dragging = { target:target, startX:event.clientX, startY:event.clientY, x:val.x, y:val.y };
+    target.setAttribute('data-layout-dragging', '');
+  }, true);
+  addEventListener('pointermove', function (event) {
+    if (!dragging) return;
+    event.preventDefault();
+    update({
+      x:Math.round(dragging.x + event.clientX - dragging.startX),
+      y:Math.round(dragging.y + event.clientY - dragging.startY)
+    });
+  }, { passive:false });
+  addEventListener('pointerup', function () {
+    if (!dragging) return;
+    dragging.target.removeAttribute('data-layout-dragging');
+    dragging = null;
+    save();
+  });
+  document.addEventListener('click', function (event) {
+    if (event.target.closest('.bb-editor')) return;
+    if (event.target.closest('a,button')) event.preventDefault();
+  }, true);
+  document.addEventListener('keydown', function (event) {
+    if (event.target.matches('input,select,button,textarea')) return;
+    var moves = { ArrowLeft:[-1,0], ArrowRight:[1,0], ArrowUp:[0,-1], ArrowDown:[0,1] };
+    if (!moves[event.key]) return;
+    event.preventDefault();
+    var step = event.shiftKey ? 10 : 2;
+    var val = values(currentKey);
+    update({ x:val.x + moves[event.key][0] * step, y:val.y + moves[event.key][1] * step });
+  });
+
+  var initialMode = mode;
+  addEventListener('resize', function () {
+    var nextMode = matchMedia('(max-width:620px)').matches ? 'mobile' : 'desktop';
+    if (nextMode !== initialMode) window.location.reload();
+  }, { passive:true });
 })();
 </script>
 </body>
