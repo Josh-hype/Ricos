@@ -779,12 +779,14 @@
     .tcard .ic{width:31px;height:31px;}
     .tcard b{font-size:.58rem;}
     .tcard span{font-size:.57rem;}
-    main > .ticker:not(.ticker--top){translate:11px -290px;scale:1.02;}
-    .feat .wrap{translate:0 -82px;}
-    .story .wrap{translate:2px -172px;}
-    .find .wrap{translate:-6px -269px;}
-    .cta{translate:-3px -298px;}
-    footer .foot-grid{translate:2px -282px;}
+    /* NOTE: six section-level `translate` offsets were removed here. They came
+       from the ?edit=1 drag editor below and were baked in as fixed pixel values
+       (-82 to -298px). `translate` moves an element visually WITHOUT changing
+       layout, so each section kept its original height: the content slid up
+       under the sticky header and left 144-335px voids behind it. If the intent
+       was tighter vertical rhythm, change the sections' margins/padding — that
+       moves the box too. */
+    main > .ticker:not(.ticker--top){scale:1.02;}
   }
   @media(max-width:360px){
     .hdr-loc{display:none;}
