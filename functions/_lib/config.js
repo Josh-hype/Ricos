@@ -87,6 +87,13 @@ export function getPublicConfig() {
       // shop): the till receives/accepts/prints online orders and keeps the full
       // back office, but hides the in-person EPOS (counter sale + card reader).
       ordersOnly: !!pos.ordersOnly,
+      // Counter orders: name + phone are required on collection/delivery by
+      // default. Some shops take the order and hand it over on the order number
+      // alone and don't want to slow the queue asking for details. Opt-in per
+      // shop, so every other till keeps asking. A DELIVERY address is still
+      // required either way — that one is validated in priceCounterSale, and a
+      // driver has to have somewhere to go.
+      customerDetailsOptional: !!pos.customerDetailsOptional,
       // Service style drives the till's sale modes: 'takeaway' (default) keeps
       // Walk in / Collection / Delivery; 'hospitality' swaps to Eat in / Takeaway
       // for coffee shops + restaurants. `modes` overrides the derived set, and

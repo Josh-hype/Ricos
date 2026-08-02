@@ -1641,11 +1641,11 @@ textarea.me-in{resize:vertical;font-family:inherit}
           </div>
           <form id="saleForm" autocomplete="off" novalidate>
             <label class="field">
-              <span>Customer name</span>
+              <span id="cfNameLab">Customer name</span>
               <input type="text" id="cfName" required maxlength="60" />
             </label>
             <label class="field">
-              <span>Phone</span>
+              <span id="cfPhoneLab">Phone</span>
               <input type="tel" id="cfPhone" required inputmode="tel" maxlength="30" />
             </label>
             <label class="field" id="cfL1Field" hidden>
@@ -4130,8 +4130,8 @@ function renderCard(o, isNew, collapsed = false, readOnly = false) {
   const detail = `
       <ul class="lines">${lines}</ul>
       <div class="who">
-        <strong>${escapeHtml(o.customer.name)}</strong>
-        <a href="tel:${escapeHtml(o.customer.phone)}">${escapeHtml(o.customer.phone)}</a>
+        ${o.customer.name ? `<strong>${escapeHtml(o.customer.name)}</strong>` : ''}
+        ${o.customer.phone ? `<a href="tel:${escapeHtml(o.customer.phone)}">${escapeHtml(o.customer.phone)}</a>` : ''}
         ${addr}
       </div>
       ${totals}
@@ -4275,7 +4275,7 @@ function renderRow(o, isNew) {
     <div class="card-body" hidden>
       <ul class="lines">${lineItemsHtml(o)}</ul>
       <div class="who">
-        <strong>${escapeHtml(o.customer.name)}</strong>
+        ${o.customer.name ? `<strong>${escapeHtml(o.customer.name)}</strong>` : ''}
         ${o.customer.phone ? `<a href="tel:${escapeHtml(o.customer.phone)}">${escapeHtml(o.customer.phone)}</a>` : ''}
         ${addrHtml}
       </div>
@@ -4405,8 +4405,8 @@ function renderAlarm(o, qlen) {
       <div class="total"><span>Total</span><span>£${(o.totals.totalP/100).toFixed(2)}</span></div>
     </div>
     <div class="who" style="margin-top:10px">
-      <strong>${escapeHtml(o.customer.name)}</strong>
-      <a href="tel:${escapeHtml(o.customer.phone)}">${escapeHtml(o.customer.phone)}</a>
+      ${o.customer.name ? `<strong>${escapeHtml(o.customer.name)}</strong>` : ''}
+      ${o.customer.phone ? `<a href="tel:${escapeHtml(o.customer.phone)}">${escapeHtml(o.customer.phone)}</a>` : ''}
       ${addr}
     </div>`;
 
@@ -5001,7 +5001,16 @@ function setSaleStage(stage) {
   $('#saleStageForm').hidden = stage !== 'form';
   $('#saleCatalog').hidden = stage !== 'menu';
   $('#saleTicket').hidden = stage !== 'menu';
-  if (stage === 'form') setTimeout(() => $('#cfName').focus(), 50);
+  if (stage === 'form') {
+    // Mark the two fields optional where the shop has turned the requirement
+    // off, so staff can see they may tab straight past them.
+    const opt = customerDetailsOptional();
+    $('#cfNameLab').innerHTML = 'Customer name' + (opt ? ' <em>(optional)</em>' : '');
+    $('#cfPhoneLab').innerHTML = 'Phone' + (opt ? ' <em>(optional)</em>' : '');
+    $('#cfName').required = !opt;
+    $('#cfPhone').required = !opt;
+    setTimeout(() => $('#cfName').focus(), 50);
+  }
   if (stage === 'menu') renderSaleTicket();
 }
 
@@ -5071,8 +5080,17 @@ $('#saleForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const name = $('#cfName').value.trim();
   const phone = $('#cfPhone').value.trim();
-  if (name.length < 2) { return formError('Please enter the customer\'s name.'); }
-  if (phone.length < 6) { return formError('Please enter a contact phone number.'); }
+  // Shops that hand over on the order number alone can skip both (server-gated
+  // by config.pos.customerDetailsOptional; the address below is still required
+  // for delivery either way). A half-typed entry is still rejected, so a name of
+  // "J" or a three-digit phone can't reach an order.
+  if (!customerDetailsOptional()) {
+    if (name.length < 2) { return formError('Please enter the customer\'s name.'); }
+    if (phone.length < 6) { return formError('Please enter a contact phone number.'); }
+  } else {
+    if (name.length && name.length < 2) { return formError('That name looks too short — clear it or type it in full.'); }
+    if (phone.length && phone.length < 6) { return formError('That phone number looks too short — clear it or type it in full.'); }
+  }
   const customer = { name, phone };
   if (sale.mode === 'delivery') {
     const line1 = $('#cfL1').value.trim();
@@ -5756,6 +5774,11 @@ function optionGroupHTML(g, canonical) {
 // config.pos.selfServeDrinks.
 function selfServeDrinks() {
   return !!(sale.config && sale.config.pos && sale.config.pos.selfServeDrinks);
+}
+// Shop takes counter orders without asking for a name or phone (order number
+// only). Mirrors the same server-side gate in counter-order.js.
+function customerDetailsOptional() {
+  return !!(sale.config && sale.config.pos && sale.config.pos.customerDetailsOptional);
 }
 function mealChooseHTML(choose) {
   const groups = Array.isArray(choose) ? choose : [];

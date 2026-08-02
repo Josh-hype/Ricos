@@ -84,13 +84,18 @@ export const onRequestPost = async ({ request, env }) => {
   const { mode, fulfillment, totals, address } = priced;
 
   // Customer. Anonymous counter modes (walk in / eat in / takeaway) get a
-  // placeholder; collection / delivery need a name + phone.
+  // placeholder; collection / delivery need a name + phone — unless the shop has
+  // turned that off (pos.customerDetailsOptional), in which case either may be
+  // left blank and the order is identified by its number. Whatever IS typed is
+  // still kept. A delivery address stays required regardless: priceCounterSale
+  // above already rejected a delivery without one.
   const anon = ANON_MODES.has(mode);
+  const detailsOptional = !!(config.pos && config.pos.customerDetailsOptional);
   const rawName = String(body.customer?.name || '').trim().slice(0, 60);
   const rawPhone = String(body.customer?.phone || '').trim().slice(0, 30);
   const name = rawName || (anon ? 'Walk-in' : '');
-  if (!anon && name.length < 2) return err('Customer name is required.', 400);
-  if (!anon && rawPhone.length < 6) return err('Customer phone is required.', 400);
+  if (!anon && !detailsOptional && name.length < 2) return err('Customer name is required.', 400);
+  if (!anon && !detailsOptional && rawPhone.length < 6) return err('Customer phone is required.', 400);
 
   // Eat in: the order is tagged with a table off the shop's configured floor list.
   // Validated server-side so an unknown/blank table can never reach an order.
