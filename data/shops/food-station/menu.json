@@ -10026,6 +10026,11 @@
             "id": "relish",
             "label": "Relish",
             "priceDeltaP": 0
+          },
+          {
+            "id": "extra-cheese",
+            "label": "Extra cheese in wrap",
+            "priceDeltaP": 150
           }
         ]
       },
@@ -10098,6 +10103,11 @@
             "id": "relish",
             "label": "Relish",
             "priceDeltaP": 0
+          },
+          {
+            "id": "extra-cheese",
+            "label": "Extra cheese in wrap",
+            "priceDeltaP": 150
           }
         ]
       },
@@ -10170,6 +10180,11 @@
             "id": "relish",
             "label": "Relish",
             "priceDeltaP": 0
+          },
+          {
+            "id": "extra-cheese",
+            "label": "Extra cheese in wrap",
+            "priceDeltaP": 150
           }
         ]
       },
@@ -10242,6 +10257,11 @@
             "id": "relish",
             "label": "Relish",
             "priceDeltaP": 0
+          },
+          {
+            "id": "extra-cheese",
+            "label": "Extra cheese in wrap",
+            "priceDeltaP": 150
           }
         ]
       },
@@ -10314,6 +10334,11 @@
             "id": "relish",
             "label": "Relish",
             "priceDeltaP": 0
+          },
+          {
+            "id": "extra-cheese",
+            "label": "Extra cheese in wrap",
+            "priceDeltaP": 150
           }
         ]
       },
@@ -10386,6 +10411,11 @@
             "id": "relish",
             "label": "Relish",
             "priceDeltaP": 0
+          },
+          {
+            "id": "extra-cheese",
+            "label": "Extra cheese in wrap",
+            "priceDeltaP": 150
           }
         ]
       },
@@ -10458,6 +10488,11 @@
             "id": "relish",
             "label": "Relish",
             "priceDeltaP": 0
+          },
+          {
+            "id": "extra-cheese",
+            "label": "Extra cheese in wrap",
+            "priceDeltaP": 150
           }
         ]
       },
@@ -10530,6 +10565,11 @@
             "id": "relish",
             "label": "Relish",
             "priceDeltaP": 0
+          },
+          {
+            "id": "extra-cheese",
+            "label": "Extra cheese in wrap",
+            "priceDeltaP": 150
           }
         ]
       },
@@ -10602,6 +10642,11 @@
             "id": "relish",
             "label": "Relish",
             "priceDeltaP": 0
+          },
+          {
+            "id": "extra-cheese",
+            "label": "Extra cheese in wrap",
+            "priceDeltaP": 150
           }
         ]
       }
