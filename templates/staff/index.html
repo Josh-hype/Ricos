@@ -1288,7 +1288,15 @@ textarea.me-in{resize:vertical;font-family:inherit}
   border-radius:12px;cursor:pointer;transition:var(--motion-fast) var(--ease-out);background:var(--panel);position:relative;
   user-select:none;-webkit-user-select:none;touch-action:manipulation;
 }
-.opt-choice:hover{border-color:var(--blue);background:var(--blue-tint-2)}
+/* Hover only where there is a real pointer. On the touchscreen the browser
+   leaves :hover stuck on the last thing tapped, so a topping that had just been
+   DEselected kept the blue border and tint and still read as half-selected.
+   Guarded rather than deleted so the back office in a desktop browser keeps it.
+   If an old WebView doesn't know (hover:hover) it skips the block entirely,
+   which lands on the correct touch behaviour anyway. */
+@media (hover: hover) and (pointer: fine) {
+  .opt-choice:hover{border-color:var(--blue);background:var(--blue-tint-2)}
+}
 .opt-choice:active{transform:scale(.99)}
 .opt-choice input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
 /* Split into two rules on purpose: the old Sunmi T2 WebView doesn't understand
@@ -1308,7 +1316,10 @@ textarea.me-in{resize:vertical;font-family:inherit}
   transition:var(--motion-fast) var(--ease-out);touch-action:manipulation;
   user-select:none;-webkit-user-select:none;
 }
-.opt-toggle:hover{border-color:var(--blue);background:var(--blue-tint-2)}
+/* Same sticky-hover guard as .opt-choice — the fold row is tapped just as often. */
+@media (hover: hover) and (pointer: fine) {
+  .opt-toggle:hover{border-color:var(--blue);background:var(--blue-tint-2)}
+}
 .opt-toggle:active{transform:scale(.99)}
 .opt-toggle .opt-toggle-lab{flex:1}
 .opt-toggle .opt-count{font-size:13px;font-weight:800;color:var(--blue)}
