@@ -105,11 +105,11 @@
   "stripe": {
     "connectedAccountId": "acct_1Tey3sJlWcdyhDMU"
   },
-  "_comment_pos": "Till behaviour. externalCardMachine:true makes the staff till's Card button record the sale as paid by card immediately — Food Station takes the actual payment on its own third-party card machine, so there is no LumiPOS Stripe reader to drive. The website still takes online card payments via Stripe normally. requireOrderPin:false — staff take orders (walk-in/collection/delivery) without entering a per-order code; the manager/owner PIN on voids, refunds and cancellations is separate and still always required.",
+  "_comment_pos": "Till behaviour. externalCardMachine:true makes the staff till's Card button record the sale as paid by card immediately — Food Station takes the actual payment on its own third-party card machine, so there is no LumiPOS Stripe reader to drive. The website still takes online card payments via Stripe normally. requireOrderPin:false — staff take orders (walk-in/collection/delivery) without entering a per-order code; the manager/owner PIN on voids, refunds and cancellations is separate and still always required. ordersOnly:false — FULL EPOS: the till shows the counter sale bar (Walk in / Collection / Delivery) alongside the online-order board. Set it true to run a device as an online-orders-only terminal, which hides in-person selling and the card-reader setup (Mega Chippy runs that way). NOTE: card refunds must be done on the shop's own card machine — LumiPOS never touched that money, so the till will say a counter-card sale has no refundable payment. Cancelling still works.",
   "pos": {
     "externalCardMachine": true,
     "requireOrderPin": false,
-    "ordersOnly": true
+    "ordersOnly": false
   },
   "hours": {
     "_comment": "24-hour format. Source: printed menu — Sun-Thu 4pm-10pm, Fri-Sat 4pm-11pm.",
