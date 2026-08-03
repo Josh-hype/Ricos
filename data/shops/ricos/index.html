@@ -31,18 +31,6 @@
       --hand: "Caveat", cursive;
       --shadow: 0 22px 60px rgba(80, 0, 5, 0.27);
       --wrap: min(1390px, calc(100vw - 72px));
-      /* Carried over from the previous Rico’s page so its section styles
-         (spice guide, story) resolve. Shared names (--red/--yellow/--cream/--ink)
-         deliberately keep the NEW values so the whole page stays one palette. */
-      --ink-soft: #2b1f1b;
-      --yellow-deep: #d99a00;
-      --green: #2da44e;
-      --display-alt: "Anton", Impact, sans-serif;
-      --radius: 14px;
-      --radius-lg: 28px;
-      --shadow-md: 0 16px 36px -16px rgba(24, 18, 16, 0.35);
-      --shadow-lg: 0 30px 60px -20px rgba(24, 18, 16, 0.45);
-      --ring: 3px solid var(--ink);
     }
 
     *,
@@ -59,7 +47,7 @@
     body {
       margin: 0;
       min-width: 320px;
-      overflow-x: hidden;
+      overflow-x: clip;
       background: var(--cream);
       color: var(--ink);
       font-family: var(--body);
@@ -112,14 +100,6 @@
     }
 
     .promo-token {
-      display: none;
-    }
-
-    .reference-tablet {
-      display: none;
-    }
-
-    .reference-family-offer {
       display: none;
     }
 
@@ -335,7 +315,7 @@
 
     .hero {
       position: relative;
-      min-height: 620px;
+      min-height: 680px;
       isolation: isolate;
       overflow: hidden;
       background: #b0000f;
@@ -356,7 +336,9 @@
       position: absolute;
       z-index: -2;
       inset: 0;
-      background: linear-gradient(90deg, rgba(181, 0, 16, 0.99) 0%, rgba(195, 0, 18, 0.98) 38%, transparent 42%);
+      background:
+        radial-gradient(circle at 76% 44%, rgba(255,196,0,.16), transparent 27%),
+        linear-gradient(90deg, rgba(181, 0, 16, 0.99) 0%, rgba(195, 0, 18, 0.96) 39%, rgba(151,0,12,.18) 64%, rgba(100,0,7,.62) 100%);
     }
 
     .hero-pattern {
@@ -374,17 +356,79 @@
 
     .hero-inner {
       position: relative;
-      min-height: 620px;
+      min-height: 680px;
       display: grid;
-      grid-template-columns: minmax(540px, 47%) 1fr;
+      grid-template-columns: minmax(540px, 46%) minmax(0, 54%);
       align-items: center;
+      gap: 12px;
     }
 
     .hero-copy {
       position: relative;
       z-index: 5;
-      padding: 50px 0 34px;
+      padding: 56px 0 46px;
       max-width: 650px;
+    }
+
+    .hero-visual {
+      position: relative;
+      align-self: stretch;
+      min-width: 0;
+      min-height: 680px;
+      isolation: isolate;
+    }
+
+    .hero-visual::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      right: -8%;
+      bottom: 42px;
+      width: 96%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, rgba(255,196,0,.25) 0 13%, rgba(217,8,23,.15) 41%, transparent 69%);
+      filter: blur(3px);
+      opacity: .85;
+    }
+
+    .hero-food {
+      position: absolute;
+      z-index: 1;
+      right: -24%;
+      bottom: -5px;
+      width: 147%;
+      max-width: none;
+      height: auto;
+      filter: saturate(1.08) contrast(1.04) drop-shadow(0 34px 24px rgba(55,0,3,.36));
+      transform: rotate(-1.1deg);
+      transform-origin: 55% 70%;
+    }
+
+    .hero-sizzle {
+      position: absolute;
+      z-index: 4;
+      right: 5%;
+      bottom: 31px;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      border: 2px solid rgba(255,255,255,.86);
+      border-radius: 999px;
+      background: rgba(45,0,4,.86);
+      color: var(--white);
+      padding: 9px 15px;
+      box-shadow: 0 12px 28px rgba(57,0,4,.28);
+      font-family: var(--display);
+      font-size: .72rem;
+      letter-spacing: .025em;
+      text-transform: uppercase;
+    }
+
+    .hero-sizzle span {
+      color: var(--yellow);
+      font-size: 1rem;
     }
 
     .hero-ribbon {
@@ -580,7 +624,7 @@
     }
 
     .offer-order {
-      min-height: 41px;
+      min-height: 44px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -694,10 +738,19 @@
       box-shadow: 0 13px 24px rgba(118, 24, 12, 0.18);
     }
 
-    .category-emoji {
+    .category-index {
+      width: 38px;
+      height: 38px;
       flex: 0 0 auto;
-      font-size: 2.25rem;
-      filter: saturate(1.15) drop-shadow(0 4px 3px rgba(80,0,0,.12));
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(143,0,16,.2);
+      border-radius: 50%;
+      background: var(--red);
+      color: var(--yellow);
+      font-family: var(--condensed);
+      font-size: 1rem;
+      letter-spacing: .04em;
     }
 
     .trust {
@@ -1041,7 +1094,10 @@
       margin-bottom: 12px;
       border-radius: 50%;
       background: var(--yellow);
-      font-size: 1.25rem;
+      font-family: var(--display);
+      font-size: .58rem;
+      letter-spacing: .025em;
+      text-transform: uppercase;
     }
 
     .order-step h3 {
@@ -1058,6 +1114,234 @@
       line-height: 1.35;
     }
 
+    .spice {
+      background:
+        radial-gradient(circle at 13% 20%, rgba(255,255,255,.025) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 79% 67%, rgba(255,196,0,.03), transparent 26%),
+        linear-gradient(105deg, #0b0907, #14100d 49%, #090706);
+      background-size: 9px 9px, auto, auto;
+      color: var(--white);
+      padding: 76px 0 58px;
+    }
+
+    .spice-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(360px, .75fr);
+      align-items: center;
+      gap: 70px;
+      margin-bottom: 38px;
+    }
+
+    .spice .section-kicker {
+      margin-bottom: 10px;
+      color: var(--yellow);
+      font-family: var(--condensed);
+      font-size: 1.05rem;
+      letter-spacing: .045em;
+    }
+
+    .spice-title {
+      margin: 0;
+      font-family: var(--condensed);
+      font-size: clamp(4rem, 6.25vw, 6.55rem);
+      font-weight: 400;
+      line-height: .88;
+      letter-spacing: .01em;
+      text-transform: uppercase;
+    }
+
+    .spice-title span {
+      display: block;
+      color: var(--yellow);
+    }
+
+    .spice-tagline {
+      width: min(720px, 100%);
+      margin-top: 18px;
+      background:
+        linear-gradient(177deg, transparent 0 12%, #9f0806 13% 86%, transparent 87%);
+      color: var(--white);
+      padding: 10px 54px 13px;
+      font-family: var(--hand);
+      font-size: clamp(1.45rem, 2.25vw, 2.15rem);
+      font-weight: 700;
+      line-height: 1;
+      transform: rotate(-1.2deg);
+    }
+
+    .spice-tagline strong {
+      color: var(--yellow);
+      font-weight: 700;
+    }
+
+    .spice-guide {
+      border-left: 2px solid rgba(255,196,0,.22);
+      padding: 15px 0 15px 44px;
+    }
+
+    .spice-guide-icon {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--yellow);
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .spice-guide p {
+      max-width: 470px;
+      margin: 0;
+      color: #f4ead7;
+      font-family: var(--hand);
+      font-size: 1.45rem;
+      line-height: 1.24;
+    }
+
+    .spice-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 13px;
+    }
+
+    .spice-card {
+      --spice-accent: #708b39;
+      position: relative;
+      min-width: 0;
+      min-height: 500px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 2px solid var(--spice-accent);
+      border-radius: 14px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.025), transparent 36%),
+        #15120e;
+      color: #fff8e9;
+      box-shadow: inset 0 0 34px rgba(0,0,0,.52);
+      text-align: center;
+    }
+
+    .spice-card--mild {
+      --spice-accent: #e56a18;
+    }
+
+    .spice-card--hot {
+      --spice-accent: #ef5117;
+    }
+
+    .spice-card--extra {
+      --spice-accent: #f13b20;
+    }
+
+    .spice-card--extreme {
+      --spice-accent: #ff2c25;
+      border-color: #fff3de;
+      box-shadow:
+        0 0 8px #ff2c25,
+        0 0 28px rgba(255,44,37,.72),
+        inset 0 0 34px rgba(83,0,0,.56);
+    }
+
+    .spice-art {
+      position: relative;
+      height: 143px;
+      flex: 0 0 143px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 68%, color-mix(in srgb, var(--spice-accent) 40%, transparent), transparent 40%),
+        linear-gradient(180deg, #211711, #0e0b08);
+    }
+
+    .spice-art::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 18% 26%, var(--spice-accent) 0 2px, transparent 3px),
+        radial-gradient(circle at 75% 42%, var(--spice-accent) 0 1px, transparent 2px),
+        radial-gradient(circle at 54% 74%, var(--spice-accent) 0 2px, transparent 3px);
+      background-size: 31px 27px, 37px 35px, 29px 32px;
+      opacity: .4;
+      transform: rotate(7deg) scale(1.2);
+    }
+
+    .spice-art--smoky {
+      background:
+        linear-gradient(180deg, rgba(4,3,2,.12), rgba(6,4,2,.72)),
+        url("/assets/hero-fire-chicken.jpg") 50% 4% / 210% auto no-repeat;
+    }
+
+    .spice-art-code {
+      position: relative;
+      z-index: 1;
+      display: block;
+      color: var(--spice-accent);
+      font-family: var(--condensed);
+      font-size: clamp(3.2rem, 4vw, 4.6rem);
+      line-height: .9;
+      letter-spacing: -.025em;
+      text-shadow: 0 12px 22px rgba(0,0,0,.72);
+      transform: rotate(-4deg);
+    }
+
+    .spice-badge {
+      position: relative;
+      z-index: 3;
+      width: 70px;
+      height: 70px;
+      display: grid;
+      place-items: center;
+      margin: -38px auto 10px;
+      border: 2px solid var(--spice-accent);
+      border-radius: 50%;
+      background: #18150f;
+      color: var(--spice-accent);
+      box-shadow: 0 5px 16px rgba(0,0,0,.45);
+      font-size: 1.6rem;
+    }
+
+    .spice-card-body {
+      position: relative;
+      z-index: 2;
+      min-height: 310px;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 14px 16px;
+    }
+
+    .spice-card--hot .spice-badge,
+    .spice-card--extra .spice-badge,
+    .spice-card--extreme .spice-badge { font-size: .78rem; }
+
+    .spice-card h3 {
+      margin: 0;
+      font-family: var(--condensed);
+      font-size: clamp(1.25rem, 1.65vw, 1.75rem);
+      font-weight: 400;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .spice-rule {
+      width: 78%;
+      height: 5px;
+      margin: 10px auto 11px;
+      background: var(--spice-accent);
+      clip-path: polygon(0 48%, 100% 0, 88% 100%, 10% 78%);
+    }
+
+    .spice-card p {
+      margin: 0;
+      color: #f1e7d3;
+      font-family: var(--hand);
+      font-size: clamp(1rem, 1.15vw, 1.22rem);
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
     .heat-meter {
       display: flex;
       align-items: center;
@@ -1068,20 +1352,19 @@
     }
 
     .heat-meter span {
-      width: auto;
-      height: auto;
-      color: #7a7064;
-      background: none;
-      font-size: 1.23rem;
-      line-height: 1;
-      filter: grayscale(1);
-      opacity: .54;
+      width: 19px;
+      height: 6px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #655c52;
+      color: transparent;
+      font-size: 0;
+      opacity: .64;
     }
 
     .heat-meter span.on {
-      color: var(--spice-accent);
-      background: none;
-      filter: none;
+      background: var(--spice-accent);
+      box-shadow: 0 0 10px color-mix(in srgb, var(--spice-accent) 65%, transparent);
       opacity: 1;
     }
 
@@ -1092,6 +1375,35 @@
       font-size: 1.45rem;
       font-weight: 700;
       line-height: 1;
+    }
+
+    .spice-tip {
+      width: max-content;
+      max-width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 26px;
+      margin: 34px auto 0;
+      border: 2px dashed rgba(255,196,0,.24);
+      border-radius: 12px;
+      background: rgba(28,22,17,.82);
+      color: #f4ead8;
+      padding: 10px 28px;
+      font-family: var(--hand);
+      font-size: 1.25rem;
+      line-height: 1.1;
+    }
+
+    .spice-tip span + span {
+      border-left: 1px solid rgba(255,196,0,.26);
+      padding-left: 26px;
+    }
+
+    .spice-tip strong {
+      color: var(--yellow);
+      font-family: var(--body);
+      font-size: 1.1rem;
     }
 
     .location {
@@ -1282,153 +1594,6 @@
       font-size: 0.78rem;
     }
 
-    @media (min-width: 981px) {
-      .hero > .offer-card,
-      .hero > .promo-seal {
-        display: none;
-      }
-    }
-
-    @media (min-width: 701px) {
-      .reference-tablet {
-        display: block;
-        background: var(--cream);
-      }
-
-      .reference-tablet-crop {
-        position: relative;
-        width: 100%;
-        aspect-ratio: 1536 / 956;
-        overflow: hidden;
-      }
-
-      .reference-tablet-crop > img {
-        width: 100%;
-        height: auto;
-      }
-
-      .reference-family-offer {
-        position: absolute;
-        z-index: 3;
-        top: 16.2%;
-        left: 65.65%;
-        width: 25.45%;
-        height: 29.45%;
-        display: grid;
-        grid-template-columns: 62% 38%;
-        overflow: hidden;
-        border: clamp(2px, .22vw, 4px) solid var(--paper);
-        border-radius: clamp(10px, 1.25vw, 20px);
-        background: var(--paper);
-        color: var(--ink);
-        box-shadow: 0 1.6vw 3vw rgba(59,0,4,.32);
-      }
-
-      .reference-family-copy {
-        position: relative;
-        z-index: 2;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: center;
-        min-width: 0;
-        padding: 5.5% 1% 5% 7%;
-      }
-
-      .reference-family-kicker {
-        display: inline-block;
-        margin-bottom: 3.5%;
-        background: var(--red);
-        color: var(--white);
-        padding: 2.4% 5%;
-        font-family: var(--condensed);
-        font-size: clamp(.39rem, .68vw, .72rem);
-        line-height: 1;
-        text-transform: uppercase;
-        transform: rotate(-1deg);
-      }
-
-      .reference-family-offer h2 {
-        margin: 0;
-        font-family: var(--condensed);
-        font-size: clamp(.88rem, 2.12vw, 2.05rem);
-        font-weight: 400;
-        line-height: .91;
-        text-transform: uppercase;
-      }
-
-      .reference-family-offer p {
-        max-width: 97%;
-        margin: 4% 0 1.5%;
-        font-size: clamp(.37rem, .72vw, .72rem);
-        font-weight: 700;
-        line-height: 1.2;
-      }
-
-      .reference-family-price {
-        display: block;
-        color: var(--red);
-        font-family: var(--condensed);
-        font-size: clamp(1rem, 2.45vw, 2.45rem);
-        line-height: 1;
-      }
-
-      .reference-family-button {
-        display: inline-flex;
-        align-items: center;
-        min-height: clamp(18px, 2.7vw, 42px);
-        margin-top: 3%;
-        border-radius: clamp(4px, .48vw, 8px);
-        background: var(--yellow);
-        padding: 0 8%;
-        font-family: var(--display);
-        font-size: clamp(.38rem, .7vw, .72rem);
-        text-transform: uppercase;
-      }
-
-      .reference-family-image {
-        position: relative;
-        background: #760008 url("/assets/hero-fire-chicken.jpg") 57% 59% / 440% auto no-repeat;
-      }
-
-      .reference-family-image::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(90deg, var(--paper), transparent 32%);
-      }
-
-      .reference-tablet-link {
-        position: absolute;
-        z-index: 4;
-        display: block;
-        border-radius: 8px;
-      }
-
-      .reference-tablet-direct {
-        min-height: clamp(40px, 4.43vw, 68px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 15px;
-        background: linear-gradient(90deg, #9d000b, #d00012 52%, #920008);
-        color: var(--white);
-        font-size: clamp(0.68rem, 1vw, 0.82rem);
-      }
-
-      .reference-tablet-direct strong {
-        color: var(--yellow);
-        font-family: var(--display);
-        text-transform: uppercase;
-      }
-
-      .reference-tablet-direct a {
-        font-family: var(--display);
-        text-transform: uppercase;
-      }
-
-    }
-
     @media (max-width: 1260px) {
       :root {
         --wrap: min(1160px, calc(100vw - 52px));
@@ -1563,6 +1728,28 @@
         font-size: clamp(4.25rem, 11vw, 6rem);
       }
 
+      .hero-visual {
+        min-height: 570px;
+        margin-top: -34px;
+      }
+
+      .hero-visual::before {
+        right: -4%;
+        bottom: 70px;
+        width: 74%;
+      }
+
+      .hero-food {
+        right: -18%;
+        bottom: 112px;
+        width: 125%;
+      }
+
+      .hero-sizzle {
+        right: 2%;
+        bottom: 125px;
+      }
+
       .mobile-food {
         position: relative;
         display: block;
@@ -1576,17 +1763,18 @@
       }
 
       .offer-card {
-        position: relative;
+        position: absolute;
         top: auto;
-        right: auto;
+        right: 0;
+        bottom: 18px;
         width: min(520px, 100%);
         min-height: 215px;
-        margin: -54px 0 30px auto;
+        margin: 0;
       }
 
       .promo-seal {
         right: 18px;
-        bottom: 205px;
+        bottom: 240px;
       }
 
       .categories {
@@ -1649,6 +1837,29 @@
         border-top: 1px solid rgba(37, 0, 3, 0.18);
       }
 
+      .spice-head {
+        display: block;
+      }
+
+      .spice-guide {
+        margin-top: 32px;
+      }
+
+      .spice-grid {
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(205px, 36vw);
+        grid-template-columns: none;
+        overflow-x: auto;
+        overscroll-behavior-inline: contain;
+        scroll-snap-type: inline mandatory;
+        scrollbar-color: var(--yellow) #211a13;
+        padding: 10px 2px 20px;
+      }
+
+      .spice-card {
+        scroll-snap-align: start;
+      }
+
       .footer-top {
         grid-template-columns: 1fr 1fr;
       }
@@ -1689,7 +1900,7 @@
 
       .nav-btn--primary {
         min-width: 126px;
-        min-height: 43px;
+        min-height: 44px;
         padding: 0 14px;
         font-size: 0.72rem;
       }
@@ -1699,8 +1910,8 @@
       }
 
       .nav-toggle {
-        width: 43px;
-        height: 43px;
+        width: 44px;
+        height: 44px;
       }
 
       .hero-copy {
@@ -1749,6 +1960,30 @@
         margin-bottom: 22px;
       }
 
+      .hero-visual {
+        min-height: 505px;
+        margin-top: -22px;
+      }
+
+      .hero-visual::before {
+        right: -26%;
+        bottom: 144px;
+        width: 110%;
+      }
+
+      .hero-food {
+        right: -49%;
+        bottom: 212px;
+        width: 177%;
+      }
+
+      .hero-sizzle {
+        right: 0;
+        bottom: 213px;
+        padding: 7px 12px;
+        font-size: .62rem;
+      }
+
       .hero-perk {
         grid-template-columns: 42px 1fr;
         padding-right: 0;
@@ -1772,10 +2007,11 @@
 
       .offer-card {
         grid-template-columns: 61% 39%;
+        right: 6px;
+        bottom: 12px;
         width: calc(100% - 12px);
         min-height: 198px;
-        margin-top: 12px;
-        margin-right: auto;
+        margin: 0;
         transform: none;
       }
 
@@ -1792,12 +2028,12 @@
       }
 
       .offer-order {
-        min-height: 38px;
+        min-height: 44px;
       }
 
       .promo-seal {
         right: 5px;
-        bottom: 178px;
+        bottom: 228px;
         width: 104px;
         height: 104px;
       }
@@ -1855,6 +2091,13 @@
         gap: 3px;
       }
 
+      .story,
+      .order-path,
+      .spice,
+      .location {
+        padding: 70px 0;
+      }
+
       .section-title {
         font-size: clamp(3.15rem, 15vw, 4.3rem);
       }
@@ -1907,6 +2150,55 @@
         border-left: 0;
       }
 
+      .spice-title {
+        font-size: clamp(3.2rem, 14vw, 4.1rem);
+      }
+
+      .spice-tagline {
+        margin-top: 15px;
+        padding: 9px 20px 12px;
+        font-size: 1.45rem;
+        text-align: center;
+      }
+
+      .spice-guide {
+        border-left-width: 1px;
+        padding: 8px 0 8px 20px;
+      }
+
+      .spice-guide p {
+        font-size: 1.2rem;
+      }
+
+      .spice-grid {
+        grid-auto-columns: minmax(250px, 78vw);
+        gap: 12px;
+        margin-right: calc((100vw - var(--wrap)) / -2);
+        padding-right: 22px;
+      }
+
+      .spice-card {
+        min-height: 500px;
+        padding: 0;
+      }
+
+      .spice-tip {
+        width: 100%;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 9px;
+        padding: 14px 18px;
+        font-size: 1.08rem;
+      }
+
+      .spice-tip span + span {
+        width: 100%;
+        border-top: 1px solid rgba(255,196,0,.26);
+        border-left: 0;
+        padding-top: 9px;
+        padding-left: 0;
+      }
+
       .location-card {
         padding: 27px 23px;
       }
@@ -1934,6 +2226,26 @@
       }
     }
 
+    @media (max-width: 360px) {
+      .hero-ribbon {
+        font-size: .59rem;
+        padding-inline: 10px;
+      }
+
+      .hero h1 {
+        font-size: 3.05rem;
+      }
+
+      .hero-lead {
+        font-size: .88rem;
+      }
+
+      .hero-ctas .button {
+        padding-inline: 9px;
+        font-size: .63rem;
+      }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       html {
         scroll-behavior: auto;
@@ -1947,125 +2259,6 @@
         animation-iteration-count: 1 !important;
       }
     }
-
-
-    /* Spice guide — real markup + styles from the previous Rico’s page,
-       replacing a 786KB screenshot of a design mock. @media context kept
-       intact: flattening it makes the 1-column variant win at every width. */
-    .spice-head {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-        align-items: end;
-        margin-bottom: 3rem;
-      }
-    @media (max-width: 760px) {
-      .spice-head { grid-template-columns: 1fr; }
-    }
-    .spice .eyebrow { color: var(--yellow); }
-    .spice h2 {
-        font-family: var(--display);
-        font-size: clamp(2rem, 5.2vw, 3.6rem);
-        line-height: 1;
-        margin: 0.4rem 0 0;
-      }
-    .spice h2 em { font-style: normal; color: var(--yellow); }
-    .spice-head p {
-        font-size: 1.05rem;
-        max-width: 44ch;
-        margin: 0;
-        color: rgba(255, 245, 216, 0.85);
-      }
-    .spice-scale {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 10px;
-      }
-    @media (max-width: 1100px) {
-      .spice-scale { grid-template-columns: repeat(4, 1fr); }
-    }
-    @media (max-width: 760px) {
-      .spice-scale { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 460px) {
-      .spice-scale { grid-template-columns: 1fr; }
-    }
-    .spice-card {
-        background: var(--ink-soft);
-        border: 2px solid var(--cream);
-        border-radius: var(--radius);
-        padding: 1.25rem 1rem;
-        display: flex; flex-direction: column;
-        transition: transform 0.25s ease, background 0.25s ease;
-        position: relative;
-      }
-    .spice-card:hover {
-        transform: translateY(-4px);
-        background: #2f231e;
-      }
-    .spice-card .icon {
-        font-size: 1.6rem;
-        margin-bottom: 0.5rem;
-        line-height: 1;
-      }
-    .spice-card .meter {
-        display: flex; gap: 3px;
-        margin-bottom: 0.8rem;
-      }
-    .meter-flame {
-        width: 16px; height: 20px;
-        color: rgba(255, 245, 216, 0.18);
-      }
-    .meter-flame.on { color: var(--red); }
-    .meter-flame.extreme { color: var(--yellow); }
-    .spice-card .level {
-        font-family: var(--display);
-        font-size: 1rem;
-        line-height: 1.1;
-        margin: 0 0 0.4rem;
-        color: var(--cream);
-        letter-spacing: 0;
-      }
-    .spice-card .desc {
-        font-size: 0.85rem;
-        color: rgba(255, 245, 216, 0.7);
-        margin: 0;
-        line-height: 1.4;
-      }
-    .spice-card.highlight {
-        background: var(--red);
-        border-color: var(--yellow);
-      }
-    .spice-card.highlight .desc { color: rgba(255, 245, 216, 0.9); }
-    /* Hero photograph. The hero grid is a 2-column layout whose right column
-       was empty — in the mock that space was part of a screenshot. This fills
-       it with the real platter shot, bled off the right edge and feathered on
-       the left so it sits on the red rather than looking pasted on. */
-    .hero-visual {
-      position: relative;
-      align-self: stretch;
-      display: flex;
-      align-items: center;
-      min-width: 0;
-    }
-
-    .hero-visual img {
-      display: block;
-      width: 112%;
-      max-width: none;
-      height: auto;
-      transform: translateX(4%);
-      /* No mask: this is a cut-out on transparency, so it sits on the hero red
-         directly. (The supplied file had the editor checkerboard flattened into
-         it — keyed out when the asset was generated.) */
-    }
-
-    @media (max-width: 980px) {
-      /* Below this the hero is a single column and already carries the offer
-         card, so the photo would only push the CTAs off the first screen. */
-      .hero-visual { display: none; }
-    }
-
   </style>
 </head>
 <body>
@@ -2073,15 +2266,15 @@
 
   <div class="promo-token" hidden aria-hidden="true">{{firstOrderPromoBanner}}</div>
 
-
   <div class="utility" aria-label="Rico's highlights">
     <div class="wrap utility-inner">
       <div class="utility-list">
-        <span class="utility-item"><span class="utility-icon">🔥</span> Freshly grilled</span>
-        <span class="utility-item"><span class="utility-icon">★</span> Big flavour</span>
-        <span class="utility-item"><span class="utility-icon">🛵</span> Fast delivery</span>
-        <span class="utility-item"><span class="utility-icon">🏆</span> York's favourite peri peri</span>
+        <span class="utility-item"><span class="utility-icon">●</span> Freshly grilled</span>
+        <span class="utility-item"><span class="utility-icon">✦</span> Big flavour</span>
+        <span class="utility-item"><span class="utility-icon">07</span> Seven flavour choices</span>
+        <span class="utility-item">4.4★ on Google · York's favourite</span>
       </div>
+      <span class="utility-address" aria-label="Rated 4.4 out of 5 on Google">4.4★ on Google · Collection &amp; local delivery</span>
     </div>
   </div>
 
@@ -2138,7 +2331,7 @@
 
       <div class="wrap hero-inner">
         <div class="hero-copy">
-          <div class="hero-ribbon"><span aria-hidden="true">🔥</span> Char-grilled · York · since 2024</div>
+          <div class="hero-ribbon"><span aria-hidden="true">●</span> Char-grilled · York · since 2024</div>
           <h1 id="hero-title">
             <span>Real fire.</span>
             <span class="yellow">Real flavour.</span>
@@ -2167,75 +2360,77 @@
 
           <div class="hero-perks" aria-label="Ordering highlights">
             <div class="hero-perk">
-              <span class="perk-icon" aria-hidden="true">🔥</span>
-              <span><strong>Freshly grilled</strong><span>Every single order</span></span>
+              <span class="perk-icon" aria-hidden="true">01</span>
+              <span><strong>Char-grilled</strong><span>Cooked to order</span></span>
             </div>
             <div class="hero-perk">
-              <span class="perk-icon" aria-hidden="true">🛵</span>
-              <span><strong>Fast delivery</strong><span>30–45 mins</span></span>
+              <span class="perk-icon" aria-hidden="true">07</span>
+              <span><strong>Seven choices</strong><span>Flavour to full fire</span></span>
             </div>
             <div class="hero-perk">
               <span class="perk-icon" aria-hidden="true">★</span>
-              <span><strong>Open 7 days</strong><span>Late Fri &amp; Sat</span></span>
+              <span><strong>4.4★ on Google</strong><span>York's favourite</span></span>
             </div>
           </div>
-
-          <div class="mobile-food" role="img" aria-label="Char-grilled peri-peri chicken platter with fries and sides"></div>
         </div>
 
         <div class="hero-visual">
-          <picture>
-            <source type="image/webp" media="(max-width: 1200px)" srcset="/assets/hero-cutout-900.webp" />
-            <source type="image/webp" srcset="/assets/hero-cutout.webp" />
-            <img src="/assets/hero-cutout-900.png" width="1500" height="980" fetchpriority="high" decoding="async"
-                 alt="Rico&#39;s char-grilled peri-peri chicken platter with chips, coleslaw, dips and a drink" />
-          </picture>
+          <img
+            class="hero-food"
+            src="/assets/chargrilled-chicken.png"
+            width="1200"
+            height="600"
+            fetchpriority="high"
+            decoding="async"
+            alt="Five pieces of glossy char-grilled peri-peri chicken"
+          />
+          <span class="hero-sizzle"><span aria-hidden="true">●</span> Fresh off the grill</span>
+
+          <aside class="offer-card" aria-label="Family Evening Platter">
+            <div class="offer-copy">
+              <span class="offer-kicker">Made for sharing</span>
+              <h2>Family Evening<br />Platter</h2>
+              <p>Whole chicken · 5 wings<br />2 chips · rice · 4 dips · drink</p>
+              <strong class="offer-price">£28.95</strong>
+              <a class="offer-order" href="order.html">Order now <span aria-hidden="true">→</span></a>
+            </div>
+            <div class="offer-image" role="img" aria-label="Char-grilled chicken"></div>
+          </aside>
         </div>
       </div>
-
-      <aside class="offer-card" aria-label="Family Evening Platter">
-        <div class="offer-copy">
-          <span class="offer-kicker">Made for sharing</span>
-          <h2>Family Evening<br />Platter</h2>
-          <p>Whole chicken · 5 wings<br />2 chips · rice · dips · drink</p>
-          <strong class="offer-price">£28.95</strong>
-          <a class="offer-order" href="order.html">Order now <span aria-hidden="true">→</span></a>
-        </div>
-        <div class="offer-image" role="img" aria-label="Char-grilled chicken"></div>
-      </aside>
 
       {{firstOrderPromoBadge}}
     </section>
 
     <section class="category-strip" aria-label="Menu categories">
       <div class="wrap categories">
-        <a class="category-card" href="order.html"><span class="category-emoji" aria-hidden="true">🍗</span><span>Peri-peri<br />chicken</span></a>
-        <a class="category-card" href="order.html"><span class="category-emoji" aria-hidden="true">🍔</span><span>Burgers</span></a>
-        <a class="category-card" href="order.html"><span class="category-emoji" aria-hidden="true">🌯</span><span>Wraps</span></a>
-        <a class="category-card" href="order.html"><span class="category-emoji" aria-hidden="true">🍚</span><span>Rice boxes</span></a>
-        <a class="category-card" href="order.html"><span class="category-emoji" aria-hidden="true">🍟</span><span>Sides</span></a>
-        <a class="category-card" href="order.html"><span class="category-emoji" aria-hidden="true">🥤</span><span>Drinks</span></a>
-        <a class="category-card" href="order.html"><span class="category-emoji" aria-hidden="true">🍰</span><span>Desserts</span></a>
+        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">01</span><span>Peri-peri<br />chicken</span></a>
+        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">02</span><span>Burgers</span></a>
+        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">03</span><span>Wraps</span></a>
+        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">04</span><span>Rice boxes</span></a>
+        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">05</span><span>Sides</span></a>
+        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">06</span><span>Drinks</span></a>
+        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">07</span><span>Desserts</span></a>
       </div>
     </section>
 
     <section class="trust" aria-label="Why order from Rico's">
       <div class="wrap trust-grid">
         <div class="trust-item">
-          <span class="trust-icon" aria-hidden="true">🏆</span>
-          <span><strong>Top rated takeaway</strong><span>In York</span></span>
+          <span class="trust-icon" aria-hidden="true">Y</span>
+          <span><strong>York's favourite</strong><span>Family run on Blossom Street</span></span>
         </div>
         <div class="trust-item">
-          <span class="trust-icon" aria-hidden="true">👥</span>
-          <span><strong>Over 50,000 orders</strong><span>Delivered to happy customers</span></span>
+          <span class="trust-icon" aria-hidden="true">★</span>
+          <span><strong>4.4★ on Google</strong><span>Rated by local customers</span></span>
         </div>
         <div class="trust-item">
-          <span class="trust-icon" aria-hidden="true">🌿</span>
-          <span><strong>Quality ingredients</strong><span>Always fresh, never frozen</span></span>
+          <span class="trust-icon" aria-hidden="true">07</span>
+          <span><strong>Cooked to order</strong><span>Marinated and char-grilled</span></span>
         </div>
         <div class="trust-item">
-          <span class="trust-icon" aria-hidden="true">🏷</span>
-          <span><strong>Order direct &amp; save</strong><span>Best prices, exclusive offers</span></span>
+          <span class="trust-icon" aria-hidden="true">→</span>
+          <span><strong>Order direct</strong><span>Collection or local delivery</span></span>
         </div>
       </div>
     </section>
@@ -2263,20 +2458,16 @@
             to the full-force Extreme.
           </p>
           <div class="story-proof" aria-label="Why choose Rico's">
-            <div class="story-proof-item"><strong>Real flame</strong><span>Char-grilled, never fried</span></div>
+            <div class="story-proof-item"><strong>Real flame</strong><span>Char-grilled to order</span></div>
             <div class="story-proof-item"><strong>Made your way</strong><span>Seven flavour and heat choices</span></div>
             <div class="story-proof-item"><strong>Open 7 days</strong><span>Late on Friday and Saturday</span></div>
           </div>
         </div>
 
-
         <div class="story-visual" aria-label="Rico's char-grilled chicken">
           <div class="story-image" role="img" aria-label="Fresh char-grilled peri-peri chicken with sides"></div>
-          <div class="story-stamp">Char-grilled<br />never fried</div>
-          <blockquote class="story-quote">
-            “This is the chicken we grew up on. Thanks for being here.”
-            <cite>— The family at Rico's</cite>
-          </blockquote>
+          <div class="story-stamp">Marinated<br />char-grilled</div>
+          <div class="story-quote">Family recipe. Proper fire.<cite>Rico's Peri Peri · York</cite></div>
         </div>
       </div>
     </section>
@@ -2289,111 +2480,124 @@
         </div>
         <article class="order-step">
           <span class="order-step-num" aria-hidden="true">01</span>
-          <span class="order-step-icon" aria-hidden="true">🍗</span>
+          <span class="order-step-icon" aria-hidden="true">Food</span>
           <h3>Pick your food</h3>
           <p>Chicken, burgers, wraps, rice boxes and sides — all in one direct menu.</p>
         </article>
         <article class="order-step">
           <span class="order-step-num" aria-hidden="true">02</span>
-          <span class="order-step-icon" aria-hidden="true">🌶</span>
+          <span class="order-step-icon" aria-hidden="true">Heat</span>
           <h3>Choose your heat</h3>
           <p>Go sweet and smoky, bright and herby, or turn it all the way up.</p>
         </article>
         <article class="order-step">
           <span class="order-step-num" aria-hidden="true">03</span>
-          <span class="order-step-icon" aria-hidden="true">🛵</span>
+          <span class="order-step-icon" aria-hidden="true">Go</span>
           <h3>Get it your way</h3>
           <p>Collect from Blossom Street or choose local delivery within 4.3 miles.</p>
         </article>
       </div>
     </section>
 
-    <section class="spice" id="spice">
-    <div class="wrap">
-      <div class="spice-head reveal">
-        <div>
-          <span class="eyebrow">— 02 / Pick your heat</span>
-          <h2>Seven options.<br>One <em>commitment.</em></h2>
+    <section class="spice" id="spice" aria-labelledby="spice-title">
+      <div class="wrap">
+        <div class="spice-head">
+          <div>
+            <span class="section-kicker">02 / Pick your heat</span>
+            <h2 class="spice-title" id="spice-title">Seven options.<span>One commitment.</span></h2>
+            <p class="spice-tagline"><strong>You choose the heat.</strong> We bring the fire.</p>
+          </div>
+          <div class="spice-guide">
+            <span class="spice-guide-icon" aria-hidden="true">07</span>
+            <p>Every chicken dish can be ordered with any of these flavours and heat levels. Start bright and herby, or go all the way to Extreme.</p>
+          </div>
         </div>
-        <p>
-          Every chicken dish on the menu can be ordered at any of these flavours
-          and heat levels. The first three are flavours, the last four are heat.
-          Ask if you're unsure.
-        </p>
+
+        <div class="spice-grid" aria-label="Rico's flavour and heat choices">
+          <article class="spice-card">
+            <div class="spice-art spice-art--smoky"><span class="spice-art-code" aria-hidden="true">BBQ</span></div>
+            <div class="spice-card-body">
+              <span class="spice-badge" aria-hidden="true">0 / 4</span>
+              <h3>Smoky BBQ</h3><span class="spice-rule" aria-hidden="true"></span>
+              <p>Sweet smoke, no heat. The crowd-pleaser for kids and BBQ heads.</p>
+              <div class="heat-meter" aria-label="No heat"><span>🌶</span><span>🌶</span><span>🌶</span><span>🌶</span></div>
+              <strong class="heat-label">No heat</strong>
+            </div>
+          </article>
+
+          <article class="spice-card">
+            <div class="spice-art"><span class="spice-art-code" aria-hidden="true">M+L</span></div>
+            <div class="spice-card-body">
+              <span class="spice-badge" aria-hidden="true">1 / 4</span>
+              <h3>Mango &amp; Lime</h3><span class="spice-rule" aria-hidden="true"></span>
+              <p>Tropical, tangy, a tiny tickle. Fruity but grown up.</p>
+              <div class="heat-meter" aria-label="Mild"><span class="on">🌶</span><span>🌶</span><span>🌶</span><span>🌶</span></div>
+              <strong class="heat-label">Mild</strong>
+            </div>
+          </article>
+
+          <article class="spice-card">
+            <div class="spice-art"><span class="spice-art-code" aria-hidden="true">L+H</span></div>
+            <div class="spice-card-body">
+              <span class="spice-badge" aria-hidden="true">1 / 4</span>
+              <h3>Lemon &amp; Herb</h3><span class="spice-rule" aria-hidden="true"></span>
+              <p>Sunshine in a marinade. All flavour, zero fire.</p>
+              <div class="heat-meter" aria-label="Mild"><span class="on">🌶</span><span>🌶</span><span>🌶</span><span>🌶</span></div>
+              <strong class="heat-label">Mild</strong>
+            </div>
+          </article>
+
+          <article class="spice-card spice-card--mild">
+            <div class="spice-art spice-art--mild"><span class="spice-art-code" aria-hidden="true">01</span></div>
+            <div class="spice-card-body">
+              <span class="spice-badge" aria-hidden="true">1 / 4</span>
+              <h3>Mild</h3><span class="spice-rule" aria-hidden="true"></span>
+              <p>Where most of York lives. A friendly little kick.</p>
+              <div class="heat-meter" aria-label="Mild"><span class="on">🌶</span><span>🌶</span><span>🌶</span><span>🌶</span></div>
+              <strong class="heat-label">Mild</strong>
+            </div>
+          </article>
+
+          <article class="spice-card spice-card--hot">
+            <div class="spice-art spice-art--hot"><span class="spice-art-code" aria-hidden="true">02</span></div>
+            <div class="spice-card-body">
+              <span class="spice-badge" aria-hidden="true">2 / 4</span>
+              <h3>Hot</h3><span class="spice-rule" aria-hidden="true"></span>
+              <p>Now we're talking. Sweat optional, but likely.</p>
+              <div class="heat-meter" aria-label="Hot"><span class="on">🌶</span><span class="on">🌶</span><span>🌶</span><span>🌶</span></div>
+              <strong class="heat-label">Hot</strong>
+            </div>
+          </article>
+
+          <article class="spice-card spice-card--extra">
+            <div class="spice-art spice-art--extra"><span class="spice-art-code" aria-hidden="true">03</span></div>
+            <div class="spice-card-body">
+              <span class="spice-badge" aria-hidden="true">3 / 4</span>
+              <h3>Extra Hot</h3><span class="spice-rule" aria-hidden="true"></span>
+              <p>Real heat. Order a milkshake on the side.</p>
+              <div class="heat-meter" aria-label="Very hot"><span class="on">🌶</span><span class="on">🌶</span><span class="on">🌶</span><span>🌶</span></div>
+              <strong class="heat-label">Very hot</strong>
+            </div>
+          </article>
+
+          <article class="spice-card spice-card--extreme">
+            <div class="spice-art spice-art--extreme"><span class="spice-art-code" aria-hidden="true">MAX</span></div>
+            <div class="spice-card-body">
+              <span class="spice-badge" aria-hidden="true">4 / 4</span>
+              <h3>Extreme</h3><span class="spice-rule" aria-hidden="true"></span>
+              <p>The full experience. Don't say we didn't warn you.</p>
+              <div class="heat-meter" aria-label="Extreme"><span class="on">🌶</span><span class="on">🌶</span><span class="on">🌶</span><span class="on">🌶</span></div>
+              <strong class="heat-label">Extreme</strong>
+            </div>
+          </article>
+        </div>
+
+        <div class="spice-tip">
+          <span><strong>Not sure?</strong> Start mild and level up next time.</span>
+          <span>You can always go hotter.</span>
+        </div>
       </div>
-      <div class="spice-scale reveal-stagger">
-
-        <!-- 1: Smoky BBQ -->
-        <div class="spice-card">
-          <div class="icon">🍖</div>
-          <h3 class="level">Smoky BBQ</h3>
-          <p class="desc">Sweet smoke, no heat. The crowd-pleaser for kids and BBQ heads.</p>
-        </div>
-
-        <!-- 2: Mango & Lime -->
-        <div class="spice-card">
-          <div class="icon">🥭</div>
-          <h3 class="level">Mango &amp; Lime</h3>
-          <p class="desc">Tropical, tangy, a tiny tickle. Fruity but grown up.</p>
-        </div>
-
-        <!-- 3: Lemon & Herb -->
-        <div class="spice-card">
-          <div class="icon">🍋</div>
-          <h3 class="level">Lemon &amp; Herb</h3>
-          <p class="desc">Sunshine in a marinade. All flavour, zero fire.</p>
-        </div>
-
-        <!-- 4: Mild -->
-        <div class="spice-card">
-          <div class="meter" aria-label="Mild — 1 of 4 heat">
-            <svg class="meter-flame on" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 4 5 4 9a4 4 0 0 1-8 0c0-2 1-3 2-4-1 3 1 4 2 4-1-3 0-6 0-9z"/></svg>
-            <svg class="meter-flame" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 4 5 4 9a4 4 0 0 1-8 0c0-2 1-3 2-4-1 3 1 4 2 4-1-3 0-6 0-9z"/></svg>
-            <svg class="meter-flame" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 4 5 4 9a4 4 0 0 1-8 0c0-2 1-3 2-4-1 3 1 4 2 4-1-3 0-6 0-9z"/></svg>
-            <svg class="meter-flame" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 4 5 4 9a4 4 0 0 1-8 0c0-2 1-3 2-4-1 3 1 4 2 4-1-3 0-6 0-9z"/></svg>
-          </div>
-          <h3 class="level">Mild</h3>
-          <p class="desc">Where most of you live. A friendly little kick.</p>
-        </div>
-
-        <!-- 5: Hot -->
-        <div class="spice-card">
-          <div class="meter" aria-label="Hot — 2 of 4 heat">
-            <svg class="meter-flame on" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 4 5 4 9a4 4 0 0 1-8 0c0-2 1-3 2-4-1 3 1 4 2 4-1-3 0-6 0-9z"/></svg>
-            <svg class="meter-flame on" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 4 5 4 9a4 4 0 0 1-8 0c0-2 1-3 2-4-1 3 1 4 2 4-1-3 0-6 0-9z"/></svg>
-            <svg class="meter-flame" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 4 5 4 9a4 4 0 0 1-8 0c0-2 1-3 2-4-1 3 1 4 2 4-1-3 0-6 0-9z"/></svg>
-            <svg class="meter-flame" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 4 5 4 9a4 4 0 0 1-8 0c0-2 1-3 2-4-1 3 1 4 2 4-1-3 0-6 0-9z"/></svg>
-          </div>
-          <h3 class="level">Hot</h3>
-          <p class="desc">Now we're talking. Sweat optional but likely.</p>
-        </div>
-
-        <!-- 6: Extra Hot -->
-        <div class="spice-card">
-          <div class="meter" aria-label="Extra Hot — 3 of 4 heat">
-            <svg class="meter-flame on" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 4 5 4 9a4 4 0 0 1-8 0c0-2 1-3 2-4-1 3 1 4 2 4-1-3 0-6 0-9z"/></svg>
-            <svg class="meter-flame on" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 4 5 4 9a4 4 0 0 1-8 0c0-2 1-3 2-4-1 3 1 4 2 4-1-3 0-6 0-9z"/></svg>
-            <svg class="meter-flame on" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 4 5 4 9a4 4 0 0 1-8 0c0-2 1-3 2-4-1 3 1 4 2 4-1-3 0-6 0-9z"/></svg>
-            <svg class="meter-flame" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 4 5 4 9a4 4 0 0 1-8 0c0-2 1-3 2-4-1 3 1 4 2 4-1-3 0-6 0-9z"/></svg>
-          </div>
-          <h3 class="level">Extra Hot</h3>
-          <p class="desc">Real heat. Order a milkshake on the side.</p>
-        </div>
-
-        <!-- 7: Extreme -->
-        <div class="spice-card highlight">
-          <div class="meter" aria-label="Extreme — 4 of 4 heat">
-            <svg class="meter-flame extreme" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 4 5 4 9a4 4 0 0 1-8 0c0-2 1-3 2-4-1 3 1 4 2 4-1-3 0-6 0-9z"/></svg>
-            <svg class="meter-flame extreme" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 4 5 4 9a4 4 0 0 1-8 0c0-2 1-3 2-4-1 3 1 4 2 4-1-3 0-6 0-9z"/></svg>
-            <svg class="meter-flame extreme" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 4 5 4 9a4 4 0 0 1-8 0c0-2 1-3 2-4-1 3 1 4 2 4-1-3 0-6 0-9z"/></svg>
-            <svg class="meter-flame extreme" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 4 5 4 9a4 4 0 0 1-8 0c0-2 1-3 2-4-1 3 1 4 2 4-1-3 0-6 0-9z"/></svg>
-          </div>
-          <h3 class="level">Extreme</h3>
-          <p class="desc">The full experience. Don't @ us. Milk on standby.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
     <section class="location" id="find-us" aria-labelledby="location-title">
       <div class="wrap location-grid">
