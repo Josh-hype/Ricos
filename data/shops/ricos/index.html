@@ -1115,6 +1115,12 @@
     }
 
     .spice {
+      /* Contain the section like its siblings. .hero and .story already set
+         overflow-x; .spice did not, so on phones something inside it pushed the
+         section to 405px against a 390px viewport and the whole document
+         scrolled sideways. clip (not hidden) so it cannot become a scroll
+         container and break sticky/anchor behaviour. */
+      overflow-x: clip;
       background:
         radial-gradient(circle at 13% 20%, rgba(255,255,255,.025) 0 1px, transparent 1.5px),
         radial-gradient(circle at 79% 67%, rgba(255,196,0,.03), transparent 26%),
