@@ -396,8 +396,14 @@
     .hero-food {
       position: absolute;
       z-index: 1;
-      right: -24%;
-      bottom: -5px;
+      /* Decorative: never let the (very wide) image swallow clicks meant for
+         the CTAs and the offer card sitting over it. */
+      pointer-events: none;
+      /* Slid right and down rather than scaled down — the size is the point.
+         At -24%/-5px the band ran back under the headline full stop, the
+         View menu button and the perks row. */
+      right: -36%;
+      bottom: -34px;
       width: 147%;
       max-width: none;
       height: auto;
@@ -2038,10 +2044,12 @@
       }
 
       .promo-seal {
-        right: 5px;
-        bottom: 228px;
-        width: 104px;
-        height: 104px;
+        /* Was right:5px/bottom:228px — half off the right edge and sitting on
+           the offer card corner. Tucked fully inside and lifted clear. */
+        right: 14px;
+        bottom: 292px;
+        width: 96px;
+        height: 96px;
       }
 
       .promo-seal-pct {
