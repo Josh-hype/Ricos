@@ -402,8 +402,10 @@
       /* Slid right and down rather than scaled down — the size is the point.
          At -24%/-5px the band ran back under the headline full stop, the
          View menu button and the perks row. */
-      right: -36%;
-      bottom: -34px;
+      /* Pulled in from -36% so the whole platter is on screen rather than
+         bleeding off the right edge. */
+      right: -13%;
+      bottom: -58px;
       width: 147%;
       max-width: none;
       height: auto;
@@ -569,7 +571,9 @@
       position: absolute;
       z-index: 8;
       top: 18px;
-      right: 3.2%;
+      /* Moved in from the right edge to sit nearer the copy, with a deliberate
+         gap so it never crowds the headline. */
+      right: 26%;
       width: 385px;
       min-height: 245px;
       display: grid;
@@ -661,10 +665,12 @@
     .promo-seal {
       position: absolute;
       z-index: 9;
-      right: 1.9%;
-      bottom: 76px;
-      width: 142px;
-      height: 142px;
+      /* Top right, and larger — it is the offer, so it leads. */
+      right: 2.4%;
+      top: 26px;
+      bottom: auto;
+      width: 176px;
+      height: 176px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -720,11 +726,14 @@
     }
 
     .category-card {
+      /* min-width:0 — a grid item will not shrink below its content by default,
+         so adding the icons pushed the 7th card off the right edge. */
+      min-width: 0;
       min-height: 72px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 13px;
+      gap: 9px;
       border: 1px solid rgba(142, 38, 17, 0.22);
       border-radius: 13px;
       background: linear-gradient(145deg, #fffdf8, #fff4d9);
@@ -1785,8 +1794,13 @@
       }
 
       .promo-seal {
+        /* Top-right is a desktop placement — on a phone the hero is one column
+           and the seal would land on the headline. Keep it low and clear. */
+        top: auto;
         right: 18px;
         bottom: 240px;
+        width: 128px;
+        height: 128px;
       }
 
       .categories {
@@ -2273,6 +2287,42 @@
         animation-iteration-count: 1 !important;
       }
     }
+    /* "Fresh off the grill" now sits in the header where Track order was. */
+    .nav-sizzle {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 11px 18px;
+      border: 2px solid rgba(255,255,255,.86);
+      border-radius: 999px;
+      background: rgba(45,0,4,.86);
+      color: var(--white);
+      font-family: var(--display);
+      font-size: .72rem;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .nav-sizzle span { color: var(--yellow); font-size: .8rem; line-height: 1; }
+    @media (max-width: 900px) { .nav-sizzle { display: none; } }
+
+    /* Category icons — inline SVG, because the CSP blocks every CDN. */
+    .category-icon {
+      display: grid;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: rgba(217,8,23,.09);
+      color: var(--red);
+      font-size: 23px;
+      line-height: 1;
+    }
+    .category-card:hover .category-icon { background: rgba(217,8,23,.16); }
+    @media (max-width: 900px) {
+      .category-icon { width: 42px; height: 42px; font-size: 21px; }
+      }
   </style>
 </head>
 <body>
@@ -2307,13 +2357,7 @@
         </ul>
 
         <div class="nav-actions">
-          <a class="nav-btn nav-btn--outline" href="order.html">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z"/>
-              <circle cx="12" cy="9" r="2.4"/>
-            </svg>
-            Track order
-          </a>
+          <span class="nav-sizzle"><span aria-hidden="true">●</span> Fresh off the grill</span>
           <a class="nav-btn nav-btn--primary" href="order.html">
             Order now
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
@@ -2364,12 +2408,6 @@
                 <path d="M5 12h14M14 7l5 5-5 5"/>
               </svg>
             </a>
-            <a class="button button--light" href="order.html">
-              View menu
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <path d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h4"/>
-              </svg>
-            </a>
           </div>
 
           <div class="hero-perks" aria-label="Ordering highlights">
@@ -2380,10 +2418,6 @@
             <div class="hero-perk">
               <span class="perk-icon" aria-hidden="true">07</span>
               <span><strong>Seven choices</strong><span>Flavour to full fire</span></span>
-            </div>
-            <div class="hero-perk">
-              <span class="perk-icon" aria-hidden="true">★</span>
-              <span><strong>4.4★ on Google</strong><span>York's favourite</span></span>
             </div>
           </div>
         </div>
@@ -2398,8 +2432,6 @@
             decoding="async"
             alt="Five pieces of glossy char-grilled peri-peri chicken"
           />
-          <span class="hero-sizzle"><span aria-hidden="true">●</span> Fresh off the grill</span>
-
           <aside class="offer-card" aria-label="Family Evening Platter">
             <div class="offer-copy">
               <span class="offer-kicker">Made for sharing</span>
@@ -2418,13 +2450,13 @@
 
     <section class="category-strip" aria-label="Menu categories">
       <div class="wrap categories">
-        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">01</span><span>Peri-peri<br />chicken</span></a>
-        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">02</span><span>Burgers</span></a>
-        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">03</span><span>Wraps</span></a>
-        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">04</span><span>Rice boxes</span></a>
-        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">05</span><span>Sides</span></a>
-        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">06</span><span>Drinks</span></a>
-        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">07</span><span>Desserts</span></a>
+        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">01</span><span class="category-icon" aria-hidden="true">🍗</span><span>Peri-peri<br />chicken</span></a>
+        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">02</span><span class="category-icon" aria-hidden="true">🍔</span><span>Burgers</span></a>
+        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">03</span><span class="category-icon" aria-hidden="true">🌯</span><span>Wraps</span></a>
+        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">04</span><span class="category-icon" aria-hidden="true">🍚</span><span>Rice boxes</span></a>
+        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">05</span><span class="category-icon" aria-hidden="true">🍟</span><span>Sides</span></a>
+        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">06</span><span class="category-icon" aria-hidden="true">🥤</span><span>Drinks</span></a>
+        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">07</span><span class="category-icon" aria-hidden="true">🍰</span><span>Desserts</span></a>
       </div>
     </section>
 
