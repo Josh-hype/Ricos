@@ -286,6 +286,16 @@ export async function retrievePaymentIntent(id, connectedAccountId, env) {
   return call(`/payment_intents/${encodeURIComponent(id)}`, null, env, opts);
 }
 
+/* Retrieve a Checkout Session. Pay-by-link orders are created from a Session
+   and only learn their PaymentIntent id once the customer pays — which normally
+   arrives on the webhook. When that webhook is misconfigured or failing, this
+   lets the thank-you page recover the id itself. */
+export async function retrieveCheckoutSession(id, connectedAccountId, env) {
+  const opts = { method: "GET" };
+  if (connectedAccountId) opts.stripeAccount = connectedAccountId;
+  return call(`/checkout/sessions/${encodeURIComponent(id)}`, null, env, opts);
+}
+
 /* Create a Customer on the connected account. Used the first time a
    signed-in user opts to save a card for that shop. Customer IDs are
    per-connected-account (one shop's cus_xxx isn't usable elsewhere). */
