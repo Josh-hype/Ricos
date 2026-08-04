@@ -78,6 +78,7 @@
     if (v.s == null) v.s = 100;          // older saved sessions predate these
     if (v.fx == null) v.fx = false;
     if (v.fy == null) v.fy = false;
+    if (v.r == null) v.r = 0;
     return state[i.sel];
   }
   function apply(i) {
@@ -85,6 +86,7 @@
     i.el.style.translate = v.x + 'px ' + v.y + 'px';
     var s = (Number(v.s) || 100) / 100;
     i.el.style.scale = (v.fx ? -s : s) + ' ' + (v.fy ? -s : s);
+    i.el.style.rotate = (Number(v.r) || 0) + 'deg';
   }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
   items.forEach(apply);
@@ -99,6 +101,8 @@
     '<label class="lab">Size %<input data-size type="number" step="5" min="20" max="300"></label>' +
     '<div class="row"><button data-size-step="-5">− smaller</button><button data-size-step="5">+ bigger</button></div>' +
     '<div class="row"><button data-flip="fx">Flip ↔</button><button data-flip="fy">Flip ↕</button></div>' +
+    '<label class="lab">Turn °<input data-rot type="number" step="5"></label>' +
+    '<div class="row"><button data-rot-step="-90">↺ 90°</button><button data-rot-step="-5">↺ 5°</button><button data-rot-step="5">5° ↻</button><button data-rot-step="90">90° ↻</button></div>' +
     '<div class="row" style="margin-top:6px"><button data-reset>Reset this</button><button data-resetall>Reset all</button></div>' +
     '<div class="row" style="margin-top:6px"><button class="go" data-copy>Copy for Claude</button></div>' +
     '<p class="hint">Drag the outlined blocks, or use the arrows. Saved in this browser only — the live site is untouched. Send me the copied text and I\'ll turn it into real layout CSS.</p>';
@@ -117,6 +121,7 @@
     var v = val(cur());
     xI.value = v.x; yI.value = v.y;
     sizeI.value = v.s;
+    rotI.value = v.r || 0;
     panel.querySelectorAll('[data-flip]').forEach(function (b) {
       b.classList.toggle('on', !!v[b.dataset.flip]);
     });
@@ -141,7 +146,18 @@
       v.x += d[0]; v.y += d[1]; apply(cur()); save(); sync();
     });
   });
-    var sizeI = panel.querySelector('[data-size]');
+    var rotI = panel.querySelector('[data-rot]');
+  rotI.addEventListener('input', function () {
+    var v = val(cur()); v.r = Number(rotI.value) || 0; apply(cur()); save();
+  });
+  panel.querySelectorAll('[data-rot-step]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var v = val(cur());
+      v.r = ((Number(v.r) || 0) + Number(b.dataset.rotStep)) % 360;
+      apply(cur()); save(); sync();
+    });
+  });
+  var sizeI = panel.querySelector('[data-size]');
   sizeI.addEventListener('input', function () {
     var v = val(cur());
     v.s = Math.min(300, Math.max(20, Number(sizeI.value) || 100));
@@ -163,19 +179,20 @@
     });
   });
   panel.querySelector('[data-reset]').addEventListener('click', function () {
-    state[cur().sel] = { x: 0, y: 0, s: 100, fx: false, fy: false }; apply(cur()); save(); sync();
+    state[cur().sel] = { x: 0, y: 0, s: 100, fx: false, fy: false, r: 0 }; apply(cur()); save(); sync();
   });
   panel.querySelector('[data-resetall]').addEventListener('click', function () {
     state = {}; items.forEach(apply); save(); sync();
   });
   panel.querySelector('[data-copy]').addEventListener('click', function () {
-    var moved = items.filter(function (i) { var v = val(i); return v.x || v.y || (v.s && v.s !== 100) || v.fx || v.fy; });
+    var moved = items.filter(function (i) { var v = val(i); return v.x || v.y || (v.s && v.s !== 100) || v.fx || v.fy || v.r; });
     var out = moved.length
       ? 'Rico\'s layout changes (' + mode + ', viewport ' + innerWidth + 'px):\n' +
         moved.map(function (i) {
           var v = val(i);
           return '- ' + i.label + '  [' + i.sel + ']  x:' + v.x + 'px  y:' + v.y + 'px'
             + '  size:' + (v.s || 100) + '%'
+            + (v.r ? '  turn:' + v.r + 'deg' : '')
             + (v.fx ? '  FLIPPED-H' : '') + (v.fy ? '  FLIPPED-V' : '');
         }).join('\n') +
         '\n\n(These are preview offsets — convert to real layout CSS, do not paste translate.)'

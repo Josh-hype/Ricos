@@ -1734,7 +1734,9 @@
       }
 
       .hero h1 {
-        font-size: clamp(3.35rem, 14vw, 4.15rem);
+        /* 80% of the previous clamp — set as type size, not transform, so the
+           layout box shrinks too and the copy below moves up with it. */
+        font-size: clamp(2.68rem, 11.2vw, 3.32rem);
         line-height: 0.9;
       }
 
@@ -1743,7 +1745,7 @@
       }
 
       .hero-lead {
-        font-size: 0.94rem;
+        font-size: 0.75rem;
       }
 
       .hero-ctas {
@@ -1782,9 +1784,10 @@
       }
 
       .hero-food {
+        /* 70% of 177%, lifted 158px */
         right: -49%;
-        bottom: 212px;
-        width: 177%;
+        bottom: 370px;
+        width: 124%;
       }
 
       .hero-sizzle {
@@ -1842,7 +1845,7 @@
            card's text. */
         top: auto;
         right: 14px;
-        bottom: 660px;
+        bottom: 614px;
         width: 96px;
         height: 96px;
       }
