@@ -574,11 +574,13 @@
       position: absolute;
       z-index: 8;
       top: 18px;
-      right: 12.4%;
+      /* px, not %, because the containing block here is ~738px wide, not the
+         viewport — percentages moved this far less than they appear to. */
+      right: -20px;
       width: 669px;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 77px;
+      gap: 68px;
       align-items: start;
     }
 
@@ -679,12 +681,10 @@
       position: absolute;
       z-index: 9;
       /* Top right, and larger — it is the offer, so it leads. */
-      /* Top right at full size. The dragged position (x-799) landed in the
-         gap between the headline and the Kings card — that gap is ~175px and
-         the seal is 176px, so at the requested size it always clipped one or
-         the other. Kept large here rather than shrunk to fit. */
-      right: 2.4%;
-      top: 26px;
+      /* Left of the offer cards, as dragged. Fits only because the cards were
+         pushed right: headline text ends ~674, seal 694-885, cards start 905. */
+      right: 48.5%;
+      top: 56px;
       width: 176px;
       height: 176px;
       bottom: auto;
