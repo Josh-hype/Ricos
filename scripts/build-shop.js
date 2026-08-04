@@ -304,6 +304,19 @@ const faviconHref = hasShopIcon ? '/icon.png' : '/logo.png';
   console.log(`build-shop: menu invariant check passed (${warnings.length} warning(s)).`);
 }
 
+/* Shared layout scratchpad (templates/editor.js). Shipped for every shop, but
+   inert unless the page both loads it (?edit=1) and defines the block list —
+   see docs/LAYOUT_EDITOR.md. */
+{
+  const src = path.join(repoRoot, "templates", "editor.js");
+  if (fs.existsSync(src)) {
+    const outAssets = path.join(repoRoot, "public", "assets");
+    fs.mkdirSync(outAssets, { recursive: true });
+    fs.copyFileSync(src, path.join(outAssets, "editor.js"));
+    console.log("build-shop: templates/editor.js -> public/assets/editor.js");
+  }
+}
+
 /* Per-shop static assets (food photos etc.): copy data/shops/<slug>/assets/*
    to public/assets/. Optional — shops without an assets/ folder skip this. */
 {
