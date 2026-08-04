@@ -64,16 +64,27 @@
     '.bbe button.go{background:#ffc400;color:#14100d;border-color:#ffc400;font-weight:700}' +
     '.bbe .hint{margin:8px 0 0;font-size:11px;color:#c9b9a4;line-height:1.35}' +
     '.bbe-on{outline:2px dashed rgba(255,196,0,.85);outline-offset:2px;cursor:grab}' +
+        '.bbe .lab{display:block;font-size:11px;color:#c9b9a4;margin-top:4px}' +
+    '.bbe button.on{background:#ffc400;color:#14100d;border-color:#ffc400;font-weight:700}' +
+    '@media (max-width:700px){.bbe{left:8px;right:8px;bottom:8px;width:auto;padding:9px;font-size:12px}' +
+    '.bbe .hint{display:none}.bbe select,.bbe input{margin:2px 0 5px;padding:5px}' +
+    '.bbe button{padding:9px 6px}}' +
     '.bbe-tag{position:fixed;z-index:99998;background:#ffc400;color:#14100d;font:600 11px system-ui;padding:2px 6px;border-radius:5px;pointer-events:none}';
   document.head.appendChild(css);
 
   function val(i) {
-    if (!state[i.sel]) state[i.sel] = { x: 0, y: 0 };
+    if (!state[i.sel]) state[i.sel] = { x: 0, y: 0, s: 100, fx: false, fy: false };
+    var v = state[i.sel];
+    if (v.s == null) v.s = 100;          // older saved sessions predate these
+    if (v.fx == null) v.fx = false;
+    if (v.fy == null) v.fy = false;
     return state[i.sel];
   }
   function apply(i) {
     var v = val(i);
     i.el.style.translate = v.x + 'px ' + v.y + 'px';
+    var s = (Number(v.s) || 100) / 100;
+    i.el.style.scale = (v.fx ? -s : s) + ' ' + (v.fy ? -s : s);
   }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
   items.forEach(apply);
@@ -85,6 +96,9 @@
     '<select data-pick>' + items.map(function (i, n) { return '<option value="' + n + '">' + i.label + '</option>'; }).join('') + '</select>' +
     '<div class="row"><input data-x type="number" step="1" placeholder="left/right"><input data-y type="number" step="1" placeholder="up/down"></div>' +
     '<div class="row"><button data-nudge="-10,0">←</button><button data-nudge="0,-10">↑</button><button data-nudge="0,10">↓</button><button data-nudge="10,0">→</button></div>' +
+    '<label class="lab">Size %<input data-size type="number" step="5" min="20" max="300"></label>' +
+    '<div class="row"><button data-size-step="-5">− smaller</button><button data-size-step="5">+ bigger</button></div>' +
+    '<div class="row"><button data-flip="fx">Flip ↔</button><button data-flip="fy">Flip ↕</button></div>' +
     '<div class="row" style="margin-top:6px"><button data-reset>Reset this</button><button data-resetall>Reset all</button></div>' +
     '<div class="row" style="margin-top:6px"><button class="go" data-copy>Copy for Claude</button></div>' +
     '<p class="hint">Drag the outlined blocks, or use the arrows. Saved in this browser only — the live site is untouched. Send me the copied text and I\'ll turn it into real layout CSS.</p>';
@@ -102,6 +116,10 @@
   function sync() {
     var v = val(cur());
     xI.value = v.x; yI.value = v.y;
+    sizeI.value = v.s;
+    panel.querySelectorAll('[data-flip]').forEach(function (b) {
+      b.classList.toggle('on', !!v[b.dataset.flip]);
+    });
     items.forEach(function (i) { i.el.classList.toggle('bbe-on', i === cur()); });
     var r = cur().el.getBoundingClientRect();
     tag.textContent = cur().label;
@@ -123,19 +141,42 @@
       v.x += d[0]; v.y += d[1]; apply(cur()); save(); sync();
     });
   });
+    var sizeI = panel.querySelector('[data-size]');
+  sizeI.addEventListener('input', function () {
+    var v = val(cur());
+    v.s = Math.min(300, Math.max(20, Number(sizeI.value) || 100));
+    apply(cur()); save();
+  });
+  panel.querySelectorAll('[data-size-step]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var v = val(cur());
+      v.s = Math.min(300, Math.max(20, (Number(v.s) || 100) + Number(b.dataset.sizeStep)));
+      apply(cur()); save(); sync();
+    });
+  });
+  panel.querySelectorAll('[data-flip]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var v = val(cur());
+      v[b.dataset.flip] = !v[b.dataset.flip];
+      b.classList.toggle('on', v[b.dataset.flip]);
+      apply(cur()); save();
+    });
+  });
   panel.querySelector('[data-reset]').addEventListener('click', function () {
-    state[cur().sel] = { x: 0, y: 0 }; apply(cur()); save(); sync();
+    state[cur().sel] = { x: 0, y: 0, s: 100, fx: false, fy: false }; apply(cur()); save(); sync();
   });
   panel.querySelector('[data-resetall]').addEventListener('click', function () {
     state = {}; items.forEach(apply); save(); sync();
   });
   panel.querySelector('[data-copy]').addEventListener('click', function () {
-    var moved = items.filter(function (i) { var v = val(i); return v.x || v.y; });
+    var moved = items.filter(function (i) { var v = val(i); return v.x || v.y || (v.s && v.s !== 100) || v.fx || v.fy; });
     var out = moved.length
       ? 'Rico\'s layout changes (' + mode + ', viewport ' + innerWidth + 'px):\n' +
         moved.map(function (i) {
           var v = val(i);
-          return '- ' + i.label + '  [' + i.sel + ']  x:' + v.x + 'px  y:' + v.y + 'px';
+          return '- ' + i.label + '  [' + i.sel + ']  x:' + v.x + 'px  y:' + v.y + 'px'
+            + '  size:' + (v.s || 100) + '%'
+            + (v.fx ? '  FLIPPED-H' : '') + (v.fy ? '  FLIPPED-V' : '');
         }).join('\n') +
         '\n\n(These are preview offsets — convert to real layout CSS, do not paste translate.)'
       : 'No changes made.';
