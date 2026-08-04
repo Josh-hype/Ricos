@@ -2758,5 +2758,15 @@
       });
     })();
   </script>
+<script>
+  /* Layout scratchpad loader. The editor itself is a separate file, fetched
+     ONLY when ?edit=1 is present — a normal visitor downloads nothing. */
+  if (new URLSearchParams(location.search).get("edit") === "1") {
+    var s = document.createElement("script");
+    s.src = "/assets/editor.js";
+    s.defer = true;
+    document.head.appendChild(s);
+  }
+</script>
 </body>
 </html>
