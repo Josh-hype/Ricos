@@ -770,21 +770,6 @@
       box-shadow: 0 13px 24px rgba(118, 24, 12, 0.18);
     }
 
-    .category-index {
-      width: 38px;
-      height: 38px;
-      flex: 0 0 auto;
-      display: grid;
-      place-items: center;
-      border: 1px solid rgba(143,0,16,.2);
-      border-radius: 50%;
-      background: var(--red);
-      color: var(--yellow);
-      font-family: var(--condensed);
-      font-size: 1rem;
-      letter-spacing: .04em;
-    }
-
     .trust {
       padding: 14px 0 0;
       background: var(--cream);
@@ -2329,18 +2314,17 @@
     .category-icon {
       display: grid;
       place-items: center;
-      width: 46px;
-      height: 46px;
+      width: 40px;
+      height: 40px;
       flex: 0 0 auto;
-      border-radius: 50%;
-      background: rgba(217,8,23,.09);
-      color: var(--red);
-      font-size: 23px;
+      /* No disc behind it — a small glyph in a pale circle is what made these
+         read as clip-art. Larger, sitting directly on the card. */
+      font-size: 34px;
       line-height: 1;
     }
     .category-card:hover .category-icon { background: rgba(217,8,23,.16); }
     @media (max-width: 900px) {
-      .category-icon { width: 42px; height: 42px; font-size: 21px; }
+      .category-icon { width: 34px; height: 34px; font-size: 27px; }
       }
   </style>
 </head>
@@ -2479,13 +2463,13 @@
 
     <section class="category-strip" aria-label="Menu categories">
       <div class="wrap categories">
-        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">01</span><span class="category-icon" aria-hidden="true">🍗</span><span>Peri-peri<br />chicken</span></a>
-        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">02</span><span class="category-icon" aria-hidden="true">🍔</span><span>Burgers</span></a>
-        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">03</span><span class="category-icon" aria-hidden="true">🌯</span><span>Wraps</span></a>
-        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">04</span><span class="category-icon" aria-hidden="true">🍚</span><span>Rice boxes</span></a>
-        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">05</span><span class="category-icon" aria-hidden="true">🍟</span><span>Sides</span></a>
-        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">06</span><span class="category-icon" aria-hidden="true">🥤</span><span>Drinks</span></a>
-        <a class="category-card" href="order.html"><span class="category-index" aria-hidden="true">07</span><span class="category-icon" aria-hidden="true">🍰</span><span>Desserts</span></a>
+        <a class="category-card" href="order.html"><span class="category-icon" aria-hidden="true">🍗</span><span>Peri-peri<br />chicken</span></a>
+        <a class="category-card" href="order.html"><span class="category-icon" aria-hidden="true">🍔</span><span>Burgers</span></a>
+        <a class="category-card" href="order.html"><span class="category-icon" aria-hidden="true">🌯</span><span>Wraps</span></a>
+        <a class="category-card" href="order.html"><span class="category-icon" aria-hidden="true">🍚</span><span>Rice boxes</span></a>
+        <a class="category-card" href="order.html"><span class="category-icon" aria-hidden="true">🍟</span><span>Sides</span></a>
+        <a class="category-card" href="order.html"><span class="category-icon" aria-hidden="true">🥤</span><span>Drinks</span></a>
+        <a class="category-card" href="order.html"><span class="category-icon" aria-hidden="true">🍰</span><span>Desserts</span></a>
       </div>
     </section>
 
