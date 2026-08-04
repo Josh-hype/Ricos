@@ -2329,11 +2329,23 @@
     /* Perk + trust icons. Solid glyphs sized off the circle they sit in, so
        they scale with the existing responsive rules rather than needing their
        own breakpoints. */
-    .perk-icon svg,
-    .trust-icon svg {
-      width: 52%;
-      height: 52%;
-      display: block;
+    /* These containers declare display:grid + place-items:center, but a later
+       broader rule wins: `.trust-item span { display: block }` is 0,1,1 against
+       `.trust-icon` at 0,1,0, so the grid never applied and the icons sat hard
+       against the top (align-items survived, which is why it looked deliberate).
+       Scoped to the parent here to outrank it. Fixed px too: a percentage height
+       against an auto-sized row does not resolve reliably. */
+    .hero-perk .perk-icon,
+    .trust-item .trust-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .perk-icon svg { width: 24px; height: 24px; display: block; margin: auto; }
+    .trust-icon svg { width: 27px; height: 27px; display: block; margin: auto; }
+    @media (max-width: 900px) {
+      .perk-icon svg { width: 20px; height: 20px; }
+      .trust-icon svg { width: 23px; height: 23px; }
     }
     .perk-icon { color: var(--yellow); }
   </style>
