@@ -161,7 +161,8 @@
   });
   panel.querySelectorAll('[data-nudge]').forEach(function (b) {
     b.addEventListener('click', function () {
-      var d = b.dataset.nudge.split(',').map(Number), v = val(cur());
+      var c = cur(); if (!c) return;
+      var d = b.dataset.nudge.split(',').map(Number), v = val(c);
       v.x += d[0]; v.y += d[1]; apply(c); save(); sync();
     });
   });
@@ -233,6 +234,20 @@
     // block chosen in the dropdown, so picking it there and dragging anywhere
     // moves it.
     var onBlock = items.filter(function (i) { return i.el.contains(e.target) || i.el === e.target; }).pop();
+    if (!onBlock) {
+      // Nothing claimed the event. Some blocks can never be the target — the
+      // chicken is painted under the copy layer — so hit-test their boxes and
+      // take the smallest match, which favours the specific over the sprawling.
+      var under = items.filter(function (i) {
+        var r = i.el.getBoundingClientRect();
+        return r.width && r.height && e.clientX >= r.left && e.clientX <= r.right
+          && e.clientY >= r.top && e.clientY <= r.bottom;
+      }).sort(function (a, z) {
+        var ra = a.el.getBoundingClientRect(), rz = z.el.getBoundingClientRect();
+        return (ra.width * ra.height) - (rz.width * rz.height);
+      });
+      if (under.length) onBlock = under[0];
+    }
     // Falling back to the current selection is what lets an unreachable block
     // (the chicken sits under the copy layer) still be dragged. But it also
     // meant a tap on empty space nudged whatever was selected and there was no
