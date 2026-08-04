@@ -404,8 +404,8 @@
          View menu button and the perks row. */
       /* Pulled in from -36% so the whole platter is on screen rather than
          bleeding off the right edge. */
-      right: -28%;
-      bottom: -74px;
+      right: -25.9%;
+      bottom: -44px;
       width: 147%;
       max-width: none;
       height: auto;
@@ -574,11 +574,18 @@
       position: absolute;
       z-index: 8;
       top: 18px;
-      right: 30%;
-      width: 296px;
+      right: 12.4%;
+      width: 669px;
       display: grid;
-      gap: 12px;
+      grid-template-columns: 1fr 1fr;
+      gap: 77px;
+      align-items: start;
     }
+
+    /* Kings (the cheaper entry point) reads left, Family right — as placed in
+       the editor. Done with order rather than by reshuffling the markup. */
+    .offer-stack .offer-card:nth-child(1) { order: 2; }
+    .offer-stack .offer-card:nth-child(2) { order: 1; }
 
     .offer-card {
       position: relative;
@@ -672,11 +679,15 @@
       position: absolute;
       z-index: 9;
       /* Top right, and larger — it is the offer, so it leads. */
+      /* Top right at full size. The dragged position (x-799) landed in the
+         gap between the headline and the Kings card — that gap is ~175px and
+         the seal is 176px, so at the requested size it always clipped one or
+         the other. Kept large here rather than shrunk to fit. */
       right: 2.4%;
       top: 26px;
-      bottom: auto;
       width: 176px;
       height: 176px;
+      bottom: auto;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -1793,8 +1804,11 @@
          under the copy, or it lands on top of the lede and the CTAs. */
       .offer-stack {
         /* relative, not static — z-index only applies to positioned elements,
-           and static let the hero chicken paint straight over the cards. */
+           and static let the hero chicken paint straight over the cards.
+           right/top are cleared because they still shift a relative box. */
         position: relative;
+        right: auto;
+        top: auto;
         width: 100%;
         margin: 22px 0 0;
         grid-template-columns: 1fr 1fr;
