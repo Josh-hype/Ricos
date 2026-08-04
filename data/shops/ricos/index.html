@@ -1035,102 +1035,6 @@
       text-transform: uppercase;
     }
 
-    .order-path {
-      position: relative;
-      z-index: 2;
-      background: var(--yellow);
-      color: var(--ink);
-      padding: 62px 0;
-    }
-
-    .order-path-grid {
-      display: grid;
-      grid-template-columns: 0.82fr repeat(3, 1fr);
-      gap: 0;
-      overflow: hidden;
-      border: 2px solid var(--ink);
-      border-radius: 20px;
-      background: var(--paper);
-      box-shadow: 0 13px 0 rgba(88, 0, 7, 0.18);
-    }
-
-    .order-path-intro,
-    .order-step {
-      min-height: 178px;
-      padding: 28px;
-    }
-
-    .order-path-intro {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: center;
-      background: var(--red);
-      color: var(--white);
-    }
-
-    .order-path-intro strong {
-      font-family: var(--condensed);
-      font-size: 2.2rem;
-      font-weight: 400;
-      line-height: .95;
-      text-transform: uppercase;
-    }
-
-    .order-path-intro a {
-      margin-top: 18px;
-      color: var(--yellow);
-      font-family: var(--display);
-      font-size: 0.72rem;
-      text-transform: uppercase;
-    }
-
-    .order-step {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      border-left: 1px solid rgba(37, 0, 3, 0.18);
-    }
-
-    .order-step-num {
-      position: absolute;
-      top: 18px;
-      right: 19px;
-      color: rgba(217,8,23,.16);
-      font-family: var(--condensed);
-      font-size: 3.8rem;
-      line-height: 1;
-    }
-
-    .order-step-icon {
-      width: 42px;
-      height: 42px;
-      display: grid;
-      place-items: center;
-      margin-bottom: 12px;
-      border-radius: 50%;
-      background: var(--yellow);
-      font-family: var(--display);
-      font-size: .58rem;
-      letter-spacing: .025em;
-      text-transform: uppercase;
-    }
-
-    .order-step h3 {
-      margin: 0;
-      color: var(--red);
-      font-family: var(--display);
-      font-size: 0.8rem;
-      text-transform: uppercase;
-    }
-
-    .order-step p {
-      margin: 7px 0 0;
-      font-size: 0.82rem;
-      line-height: 1.35;
-    }
-
     .spice {
       /* Contain the section like its siblings. .hero and .story already set
          overflow-x; .spice did not, so on phones something inside it pushed the
@@ -1338,9 +1242,9 @@
     .location {
       position: relative;
       overflow: hidden;
-      background:
-        linear-gradient(110deg, rgba(255,255,255,.54), transparent 45%),
-        var(--cream);
+      /* Same yellow ground as the story section, with the matching sunburst
+         on ::after (the section already uses ::before elsewhere). */
+      background: var(--yellow);
       padding: 105px 0;
     }
 
@@ -1758,24 +1662,6 @@
         min-height: 510px;
       }
 
-      .order-path-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .order-path-intro,
-      .order-step {
-        min-height: 165px;
-      }
-
-      .order-step:nth-child(3) {
-        border-left: 0;
-        border-top: 1px solid rgba(37, 0, 3, 0.18);
-      }
-
-      .order-step:nth-child(4) {
-        border-top: 1px solid rgba(37, 0, 3, 0.18);
-      }
-
       .spice-head {
         display: block;
       }
@@ -2015,11 +1901,6 @@
       }
 
       .story,
-      .order-path,
-      .spice,
-      .location {
-        padding: 70px 0;
-      }
 
       .section-title {
         font-size: clamp(3.15rem, 15vw, 4.3rem);
@@ -2056,21 +1937,6 @@
         max-width: none;
         padding: 17px 18px 16px;
         font-size: 1.28rem;
-      }
-
-      .order-path-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .order-path-intro,
-      .order-step {
-        min-height: 150px;
-        padding: 24px;
-      }
-
-      .order-step {
-        border-top: 1px solid rgba(37, 0, 3, 0.18);
-        border-left: 0;
       }
 
       .spice-title {
@@ -2493,6 +2359,21 @@
         border-color: var(--yellow);
       }
     .spice-card.highlight .desc { color: rgba(255, 245, 216, 0.9); }
+
+    .location::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background:
+        repeating-conic-gradient(
+          from 0deg at 50% 50%,
+          rgba(216, 158, 0, 0.12) 0deg 6deg,
+          transparent 6deg 12deg
+        );
+      pointer-events: none;
+    }
+    .location > * { position: relative; z-index: 1; }
   </style>
 </head>
 <body>
@@ -2701,34 +2582,7 @@
     </div>
   </section>
 
-    <section class="order-path" aria-labelledby="order-path-title">
-      <div class="wrap order-path-grid">
-        <div class="order-path-intro">
-          <strong id="order-path-title">Your order.<br />Your way.</strong>
-          <a href="order.html">Start your order →</a>
-        </div>
-        <article class="order-step">
-          <span class="order-step-num" aria-hidden="true">01</span>
-          <span class="order-step-icon" aria-hidden="true">Food</span>
-          <h3>Pick your food</h3>
-          <p>Chicken, burgers, wraps, rice boxes and sides — all in one direct menu.</p>
-        </article>
-        <article class="order-step">
-          <span class="order-step-num" aria-hidden="true">02</span>
-          <span class="order-step-icon" aria-hidden="true">Heat</span>
-          <h3>Choose your heat</h3>
-          <p>Go sweet and smoky, bright and herby, or turn it all the way up.</p>
-        </article>
-        <article class="order-step">
-          <span class="order-step-num" aria-hidden="true">03</span>
-          <span class="order-step-icon" aria-hidden="true">Go</span>
-          <h3>Get it your way</h3>
-          <p>Collect from Blossom Street or choose local delivery within 4.3 miles.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="spice" id="spice" aria-labelledby="spice-title">
+        <section class="spice" id="spice" aria-labelledby="spice-title">
       <div class="wrap">
         <div class="spice-head">
           <div>
