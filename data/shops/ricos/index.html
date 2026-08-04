@@ -1798,7 +1798,7 @@
            90deg makes its visual box tall, which is the point — the numbers
            below are the dragged position converted from the 440px session. */
         right: -22%;
-        bottom: 196px;
+        bottom: 151px;
         width: 112%;
         rotate: 90deg;
       }
@@ -2399,6 +2399,11 @@
       .hero-copy > .hero-perks {
         max-width: 66%;
       }
+
+      /* The order button is the primary action — give it more width than the
+         body copy rather than leaving it stub-short. */
+      .hero-copy > .hero-ctas { max-width: 86%; }
+      .hero-copy > .hero-ctas .button { width: 100%; }
     }
   </style>
 </head>
