@@ -570,13 +570,18 @@
 
     /* Two offers stacked. The stack owns the positioning; each card is now a
        plain block — the photo column was dropped, so the grid went with it. */
+    /* <main> is the positioning reference now that the stack lives outside the
+       hero. The hero is main's first child, so top is measured from the same
+       place as before. */
+    main { position: relative; }
+
     .offer-stack {
       position: absolute;
       z-index: 8;
       top: 18px;
       /* px, not %, because the containing block here is ~738px wide, not the
          viewport — percentages moved this far less than they appear to. */
-      right: -84px;
+      right: 79px;
       width: 669px;
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1773,7 +1778,11 @@
       }
 
       .hero-visual {
-        min-height: 505px;
+        /* Was 505px — it reserved room for the offer cards, which now sit
+           after the category strip. The chicken is absolutely positioned, so
+           this column needs no height of its own and the hero can close up
+           right after the perks. */
+        min-height: 0;
         margin-top: -22px;
       }
 
@@ -1788,7 +1797,7 @@
            90deg makes its visual box tall, which is the point — the numbers
            below are the dragged position converted from the 440px session. */
         right: -28.8%;
-        bottom: 697px;
+        bottom: 226px;
         width: 112%;
         rotate: 90deg;
       }
@@ -2499,26 +2508,6 @@
             decoding="async"
             alt="Five pieces of glossy char-grilled peri-peri chicken"
           />
-          <div class="offer-stack">
-            <aside class="offer-card" aria-label="Family Evening Platter">
-              <div class="offer-copy">
-                <span class="offer-kicker">Made for sharing</span>
-                <h2>Family Evening Platter</h2>
-                <p>Whole chicken · 5 wings · 2 chips · rice · 4 dips · drink</p>
-                <strong class="offer-price">£28.95</strong>
-                <a class="offer-order" href="order.html">Order now <span aria-hidden="true">→</span></a>
-              </div>
-            </aside>
-            <aside class="offer-card" aria-label="Kings Platter">
-              <div class="offer-copy">
-                <span class="offer-kicker">Feeds one, properly</span>
-                <h2>Kings Platter</h2>
-                <p>¼ chicken · thigh · 2 wings · peri pitta · fries · dip · drink</p>
-                <strong class="offer-price">£12.95</strong>
-                <a class="offer-order" href="order.html">Order now <span aria-hidden="true">→</span></a>
-              </div>
-            </aside>
-          </div>
         </div>
       </div>
 
@@ -2534,6 +2523,33 @@
         <a class="category-card" href="order.html"><span class="category-icon" aria-hidden="true">🍟</span><span>Sides</span></a>
         <a class="category-card" href="order.html"><span class="category-icon" aria-hidden="true">🥤</span><span>Drinks</span></a>
         <a class="category-card" href="order.html"><span class="category-icon" aria-hidden="true">🍰</span><span>Desserts</span></a>
+      </div>
+    </section>
+
+    <!-- Offers. DOM position = the MOBILE order (after the categories, which is
+         what the owner asked for). On desktop the block is absolutely
+         positioned against <main>, so its place in the source does not matter
+         there — it still sits in the hero band, top right. -->
+    <section class="offers" aria-label="Offers">
+      <div class="offer-stack">
+        <aside class="offer-card" aria-label="Family Evening Platter">
+          <div class="offer-copy">
+            <span class="offer-kicker">Made for sharing</span>
+            <h2>Family Evening Platter</h2>
+            <p>Whole chicken · 5 wings · 2 chips · rice · 4 dips · drink</p>
+            <strong class="offer-price">£28.95</strong>
+            <a class="offer-order" href="order.html">Order now <span aria-hidden="true">→</span></a>
+          </div>
+        </aside>
+        <aside class="offer-card" aria-label="Kings Platter">
+          <div class="offer-copy">
+            <span class="offer-kicker">Feeds one, properly</span>
+            <h2>Kings Platter</h2>
+            <p>¼ chicken · thigh · 2 wings · peri pitta · fries · dip · drink</p>
+            <strong class="offer-price">£12.95</strong>
+            <a class="offer-order" href="order.html">Order now <span aria-hidden="true">→</span></a>
+          </div>
+        </aside>
       </div>
     </section>
 
