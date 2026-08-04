@@ -1799,7 +1799,10 @@
            90deg makes its visual box tall, which is the point — the numbers
            below are the dragged position converted from the 440px session. */
         right: -22%;
-        bottom: 306px;
+        /* 320, not 306: the image carries ~32px of transparent padding on the
+           edge that becomes the top once rotated, so aligning the BOX left the
+           visible chicken 14px low. Measured off the rendered pixels. */
+        bottom: 320px;
         width: 112%;
         rotate: 90deg;
       }
