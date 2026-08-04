@@ -2414,6 +2414,19 @@
          reserve any height */
       .offers { padding-bottom: 0; }
     }
+
+    @media (max-width: 900px) {
+      /* Category strip carries the hero red on phones so the two read as one
+         band, instead of the cream break. Same layers as .hero + .hero::after;
+         the cards stay cream and sit on top. */
+      .category-strip {
+        background:
+          radial-gradient(circle at 76% 44%, rgba(255,196,0,.16), transparent 27%),
+          linear-gradient(90deg, rgba(181, 0, 16, 0.99) 0%, rgba(195, 0, 18, 0.96) 39%, rgba(151,0,12,.18) 64%, rgba(100,0,7,.62) 100%),
+          #b0000f;
+        border-bottom: 0;
+      }
+    }
   </style>
 </head>
 <body>
