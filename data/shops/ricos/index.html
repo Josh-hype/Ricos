@@ -2780,6 +2780,31 @@
   /* Layout scratchpad loader. The editor itself is a separate file, fetched
      ONLY when ?edit=1 is present — a normal visitor downloads nothing. */
   if (new URLSearchParams(location.search).get("edit") === "1") {
+    /* Which blocks this page exposes to the editor: [label, selector].
+       The editor itself is shared (templates/editor.js) and knows nothing
+       about this shop — see docs/LAYOUT_EDITOR.md. */
+    window.LAYOUT_EDITOR_BLOCKS = [
+      ["Header buttons", ".nav-actions"],
+      ["Fresh off the grill", ".nav-sizzle"],
+      ["Hero ribbon", ".hero-ribbon"],
+      ["Hero headline", ".hero h1"],
+      ["Hero script line", ".hero-script"],
+      ["Hero paragraph", ".hero-lead"],
+      ["Order button", ".hero-ctas"],
+      ["Hero perks", ".hero-perks"],
+      ["Chicken image", ".hero-food"],
+      ["Offer cards (both)", ".offer-stack"],
+      ["Offer 1 — Family Platter", ".offer-stack .offer-card:nth-child(1)"],
+      ["Offer 2 — Kings Platter", ".offer-stack .offer-card:nth-child(2)"],
+      ["25% seal", ".promo-seal"],
+      ["Category strip", ".categories"],
+      ["Trust row", ".trust-grid"],
+      ["Story section", ".about .wrap"],
+      ["Spice heading", ".spice-head"],
+      ["Heat cards", ".spice-scale"],
+      ["Find us section", ".location .wrap"],
+      ["Footer", "footer .wrap"]
+    ];
     var s = document.createElement("script");
     s.src = "/assets/editor.js";
     s.defer = true;

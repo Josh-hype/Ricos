@@ -15,29 +15,19 @@
   'use strict';
   if (new URLSearchParams(location.search).get('edit') !== '1') return;
 
-  var BLOCKS = [
-    ['Header buttons', '.nav-actions'],
-    ['Fresh off the grill', '.nav-sizzle'],
-    ['Hero ribbon', '.hero-ribbon'],
-    ['Hero headline', '.hero h1'],
-    ['Hero script line', '.hero-script'],
-    ['Hero paragraph', '.hero-lead'],
-    ['Order button', '.hero-ctas'],
-    ['Hero perks', '.hero-perks'],
-    ['Chicken image', '.hero-food'],
-    ['Offer cards (both)', '.offer-stack'],
-    ['Offer 1 — Family Platter', '.offer-stack .offer-card:nth-child(1)'],
-    ['Offer 2 — Kings Platter', '.offer-stack .offer-card:nth-child(2)'],
-    ['25% seal', '.promo-seal'],
-    ['Category strip', '.categories'],
-    ['Story section', '.story .wrap'],
-    ['Spice section', '.spice .wrap'],
-    ['Find us section', '.location .wrap'],
-    ['Footer', 'footer .wrap'],
-  ];
+  // Blocks are supplied per shop: define window.LAYOUT_EDITOR_BLOCKS as an
+  // array of [label, selector] pairs in that shop's index.html, next to the
+  // loader. Selectors that match nothing are skipped, so one list can cover
+  // variations between pages.
+  var BLOCKS = Array.isArray(window.LAYOUT_EDITOR_BLOCKS) ? window.LAYOUT_EDITOR_BLOCKS : [];
+  if (!BLOCKS.length) {
+    console.warn('layout editor: this shop defines no window.LAYOUT_EDITOR_BLOCKS');
+    return;
+  }
+
 
   var mode = matchMedia('(max-width: 900px)').matches ? 'mobile' : 'desktop';
-  var KEY = 'ricos-layout-scratchpad:' + mode;
+  var KEY = 'layout-scratchpad:' + location.hostname + ':' + mode;
   var state = {};
   try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) {}
 
@@ -63,7 +53,7 @@
     '.bbe button{cursor:pointer;padding:7px 8px;border-radius:7px;border:1px solid #4a3a2c;background:#2b211a;color:#fff6e5;font:inherit}' +
     '.bbe button.go{background:#ffc400;color:#14100d;border-color:#ffc400;font-weight:700}' +
     '.bbe .hint{margin:8px 0 0;font-size:11px;color:#c9b9a4;line-height:1.35}' +
-    '.bbe-on{outline:2px dashed rgba(255,196,0,.85);outline-offset:2px;cursor:grab}' +
+    '.bbe-on{outline:2px dashed rgba(255,196,0,.85);outline-offset:2px;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none}' +
         '.bbe .lab{display:block;font-size:11px;color:#c9b9a4;margin-top:4px}' +
     '.bbe button.on{background:#ffc400;color:#14100d;border-color:#ffc400;font-weight:700}' +
     '.bbe .fold{display:block}.bbe.shut .fold{display:none}' +
@@ -113,7 +103,7 @@
     '<div class="row"><button data-rot-step="-90">↺ 90°</button><button data-rot-step="-5">↺ 5°</button><button data-rot-step="5">5° ↻</button><button data-rot-step="90">90° ↻</button></div>' +
     '<div class="row" style="margin-top:6px"><button data-reset>Reset this</button><button data-resetall>Reset all</button></div>' +
     '<div class="row" style="margin-top:6px"><button class="go" data-copy>Copy for Claude</button></div>' +
-    '<p class="hint">Tap a block to select it, drag to move. Tap empty space to deselect. Saved in this browser only.</p>' +
+    '<p class="hint">Tap a block to select it, then drag it to move. Tap empty space to deselect. Tap empty space to deselect. Saved in this browser only.</p>' +
     '</div>';
   document.body.appendChild(panel);
 
@@ -207,7 +197,7 @@
   panel.querySelector('[data-copy]').addEventListener('click', function () {
     var moved = items.filter(function (i) { var v = val(i); return v.x || v.y || (v.s && v.s !== 100) || v.fx || v.fy || v.r; });
     var out = moved.length
-      ? 'Rico\'s layout changes (' + mode + ', viewport ' + innerWidth + 'px):\n' +
+      ? (document.title.split(/[\u2014|\-]/)[0].trim() || 'Layout') + ' changes (' + mode + ', viewport ' + innerWidth + 'px):\n' +
         moved.map(function (i) {
           var v = val(i);
           return '- ' + i.label + '  [' + i.sel + ']  x:' + v.x + 'px  y:' + v.y + 'px'
@@ -225,7 +215,7 @@
   });
 
   // drag straight on the page
-  var drag = null;
+  var drag = null, pendingTap = null;
   document.addEventListener('pointerdown', function (e) {
     if (panel.contains(e.target)) return;
     // Prefer whatever block was actually clicked. Some blocks can never be the
@@ -253,28 +243,43 @@
     // meant a tap on empty space nudged whatever was selected and there was no
     // way to deselect — so a press that never moves is treated as a tap and
     // clears the selection instead. See pointerup.
-    var hit = onBlock || cur();
-    if (!hit) { deselect(); return; }
-    if (onBlock) { pick.value = items.indexOf(onBlock); sync(); }
+    // Selecting is one gesture, dragging is the next. A press only drags when
+    // it lands on the block that is ALREADY selected — that block carries
+    // touch-action:none so the browser hands us the whole gesture instead of
+    // stealing it for a scroll partway through. Press anywhere else and the
+    // page scrolls as normal.
+    if (onBlock && onBlock !== cur()) { pick.value = items.indexOf(onBlock); sync(); return; }
+    var hit = onBlock;
+    if (!hit) { pendingTap = { x: e.clientX, y: e.clientY }; return; }
     var v = val(hit);
-    drag = { i: hit, sx: e.clientX, sy: e.clientY, ox: v.x, oy: v.y, onBlock: !!onBlock, moved: false };
+    drag = { i: hit, sx: e.clientX, sy: e.clientY, ox: v.x, oy: v.y, onBlock: true, moved: false };
+    try { hit.el.setPointerCapture(e.pointerId); } catch (err) {}
     e.preventDefault();
   });
   document.addEventListener('pointermove', function (e) {
     if (!drag) return;
     if (Math.abs(e.clientX - drag.sx) > 4 || Math.abs(e.clientY - drag.sy) > 4) drag.moved = true;
+    if (drag.moved && e.cancelable) e.preventDefault();
     if (!drag.moved) return;
     var v = val(drag.i);
     v.x = drag.ox + (e.clientX - drag.sx);
     v.y = drag.oy + (e.clientY - drag.sy);
     apply(drag.i); sync();
-  });
-  document.addEventListener('pointerup', function () {
+  }, { passive: false });
+  document.addEventListener('pointerup', function (e) {
+    if (pendingTap) {
+      // Never moved => a tap on empty space => deselect. Moved => that was a
+      // page scroll, leave the selection alone.
+      if (Math.abs(e.clientX - pendingTap.x) < 6 && Math.abs(e.clientY - pendingTap.y) < 6) deselect();
+      pendingTap = null;
+    }
     if (!drag) return;
-    // A press on empty space that never moved is a tap: deselect.
-    if (!drag.moved && !drag.onBlock) deselect(); else save();
+    save();
     drag = null;
   });
+  // A cancelled pointer (the browser taking the gesture) must not leave a
+  // half-finished drag armed.
+  document.addEventListener('pointercancel', function () { drag = null; pendingTap = null; });
 
   sync();
 })();
