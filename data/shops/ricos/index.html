@@ -2402,8 +2402,17 @@
 
       /* The order button is the primary action — give it more width than the
          body copy rather than leaving it stub-short. */
-      .hero-copy > .hero-ctas { max-width: 86%; }
+      .hero-copy > .hero-ctas { max-width: 100%; }
       .hero-copy > .hero-ctas .button { width: 100%; }
+    }
+
+    /* The offers now sit in their own section on mobile, directly against the
+       trust row. Give them room. */
+    .offers { padding-bottom: 52px; }
+    @media (min-width: 901px) {
+      /* absolutely positioned on desktop, so the section itself must not
+         reserve any height */
+      .offers { padding-bottom: 0; }
     }
   </style>
 </head>
@@ -2505,15 +2514,19 @@
         </div>
 
         <div class="hero-visual">
-          <img
-            class="hero-food"
-            src="/assets/chargrilled-chicken.png"
-            width="1200"
-            height="600"
-            fetchpriority="high"
-            decoding="async"
-            alt="Five pieces of glossy char-grilled peri-peri chicken"
-          />
+          <picture>
+            <source type="image/webp" media="(max-width: 760px)" srcset="/assets/chargrilled-chicken-700.webp" />
+            <source type="image/webp" srcset="/assets/chargrilled-chicken.webp" />
+            <img
+              class="hero-food"
+              src="/assets/chargrilled-chicken.png"
+              width="1200"
+              height="600"
+              fetchpriority="high"
+              decoding="sync"
+              alt="Five pieces of glossy char-grilled peri-peri chicken"
+            />
+          </picture>
         </div>
       </div>
 
