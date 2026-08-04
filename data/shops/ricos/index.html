@@ -1704,9 +1704,9 @@
       }
 
       .brand img {
-        top: 2px;
-        width: 100px;
-        height: 100px;
+        top: 0;
+        width: 130px;
+        height: 130px;
       }
 
       .nav-actions {
@@ -1799,7 +1799,7 @@
            90deg makes its visual box tall, which is the point — the numbers
            below are the dragged position converted from the 440px session. */
         right: -22%;
-        bottom: 151px;
+        bottom: 306px;
         width: 112%;
         rotate: 90deg;
       }
@@ -2427,6 +2427,17 @@
           #b0000f;
         border-bottom: 0;
       }
+    }
+
+    /* A large rotated image is re-rasterised by iOS Safari on the fly, which
+       can leave a hairline at the layer boundary for a few seconds. Promoting
+       it to its own layer up front, and killing the backface, stops the seam.
+       Not reproducible in a static render — this is device compositing. */
+    .hero-food {
+      will-change: transform;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      transform: translateZ(0);
     }
   </style>
 </head>
