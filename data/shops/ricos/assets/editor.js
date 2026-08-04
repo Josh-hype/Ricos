@@ -25,7 +25,9 @@
     ['Order button', '.hero-ctas'],
     ['Hero perks', '.hero-perks'],
     ['Chicken image', '.hero-food'],
-    ['Offer cards', '.offer-stack'],
+    ['Offer cards (both)', '.offer-stack'],
+    ['Offer 1 — Family Platter', '.offer-stack .offer-card:nth-child(1)'],
+    ['Offer 2 — Kings Platter', '.offer-stack .offer-card:nth-child(2)'],
     ['25% seal', '.promo-seal'],
     ['Category strip', '.categories'],
     ['Story section', '.story .wrap'],
@@ -45,6 +47,11 @@
     if (el) items.push({ label: b[0], sel: b[1], el: el });
   });
   if (!items.length) return;
+
+  // .hero-food (and anything else decorative) sets pointer-events:none so it
+  // cannot swallow clicks on the real site. That also made it undraggable in
+  // here, so turn it back on for managed blocks while the editor is open.
+  items.forEach(function (i) { i.el.style.pointerEvents = 'auto'; });
 
   var css = document.createElement('style');
   css.textContent =
@@ -142,8 +149,14 @@
   // drag straight on the page
   var drag = null;
   document.addEventListener('pointerdown', function (e) {
-    var hit = items.filter(function (i) { return i.el.contains(e.target) || i.el === e.target; }).pop();
-    if (!hit || panel.contains(e.target)) return;
+    if (panel.contains(e.target)) return;
+    // Prefer whatever block was actually clicked. Some blocks can never be the
+    // event target — the chicken sits at z-index 1 under the copy layer, so the
+    // pointer always lands on something above it. In that case fall back to the
+    // block chosen in the dropdown, so picking it there and dragging anywhere
+    // moves it.
+    var hit = items.filter(function (i) { return i.el.contains(e.target) || i.el === e.target; }).pop() || cur();
+    if (!hit) return;
     pick.value = items.indexOf(hit); sync();
     var v = val(hit);
     drag = { i: hit, sx: e.clientX, sy: e.clientY, ox: v.x, oy: v.y };
