@@ -254,16 +254,33 @@ const html = `<!doctype html>
      leading — the same trade the reference sheet makes. Scoped to the panel
      rather than applied globally, so the roomier panels stay roomy. */
   .panel.tight .blk { margin-bottom: 2.5mm; }
-  .panel.tight .blk h3 { font-size: 5.6mm; margin-bottom: 2mm; }
+  .panel.tight .blk h3 { font-size: 5.6mm; margin-bottom: 1.5mm; }
   .panel.tight .items.dense li { padding: .2mm 0; }
 
   /* ---- section blocks ---- */
   .blk { margin-bottom: 5mm; }
+  /* ---- header plaque ----
+     The owner's bitten-corner plaque, levelled (the source art was tilted
+     4.45°) and used as a border-image so the bite and the ragged ends keep
+     their shape while only the middle stretches to the width of the label.
+     Painting it as a plain background would smear the bite wider on a long
+     header and squash it on a short one.
+
+     The slice numbers are source pixels of img/header-plaque.png (809×240) —
+     the right slice has to cover the bite, which starts at x=736. The widths
+     are in em so the plaque stays in proportion on the smaller headings the
+     tight panel uses. No background-colour: the bite is transparent, and a
+     colour behind it would fill the notch back in. */
   .blk h3 {
     display: inline-block;
     margin: 0 0 3mm;
-    padding: 1.4mm 4mm 1mm;
-    background: #ffc400;
+    padding: .22em .3em .18em .55em;
+    border-style: solid; border-color: transparent;
+    /* 18/85/20/25 source px at the height this header renders — solving
+       240k = 1.05 + 0.4 + 38k gives k = 0.00718em per source pixel. Get these
+       wrong and the bite comes out squashed or stretched. */
+    border-width: .129em .61em .144em .179em;
+    border-image: url(img/header-plaque.png) 18 85 20 25 fill stretch;
     color: #111;
     font-family: 'Luckiest Guy', Impact, sans-serif;
     font-size: 6.4mm; line-height: 1.05;
@@ -338,7 +355,7 @@ const html = `<!doctype html>
   .deal {
     background: #fdf6e3; color: #111;
     border: .6mm solid #111; border-radius: 2mm;
-    padding: 4mm 3mm; text-align: center;
+    padding: 3.5mm 3mm; text-align: center;
     box-shadow: 1.2mm 1.2mm 0 rgba(0,0,0,.55);
     display: flex; flex-direction: column; justify-content: center;
   }
@@ -362,9 +379,15 @@ const html = `<!doctype html>
   .tel .lab { display: block; margin-bottom: 6mm; font-size: 3.4mm; font-weight: 800; letter-spacing: .3em; color: #ffc400; }
   .tel b { display: block; font-family: 'Luckiest Guy', Impact, sans-serif; font-size: 15mm; line-height: 1; letter-spacing: .02em; }
 
+  /* The cover's straps are the same device as a section header, so they take
+     the same plaque — a flat yellow bar next to a bitten one would read as an
+     oversight. Text is centred here, so the left/right insets match. */
   .strap {
-    margin: 9mm 0 3mm; padding: 1.2mm 4mm;
-    background: #ffc400; color: #111;
+    margin: 9mm 0 3mm; padding: .2em .35em .16em .35em;
+    border-style: solid; border-color: transparent;
+    border-width: .11em .5em .12em .15em;
+    border-image: url(img/header-plaque.png) 18 85 20 25 fill stretch;
+    color: #111;
     font-family: 'Luckiest Guy', Impact, sans-serif; font-size: 4.4mm;
     text-transform: uppercase;
   }

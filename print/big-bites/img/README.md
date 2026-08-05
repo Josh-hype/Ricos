@@ -1,3 +1,28 @@
+# header-plaque.png
+
+The owner's bitten-corner plaque, used behind **every** section header and the
+cover's straps. The source art was tilted 4.45°, which is levelled out here —
+the header keeps a small CSS rotation instead, which is easier to tune than one
+baked into the pixels. Palette-reduced to 128 colours: the mottled texture
+doesn't compress as truecolour, and that alone took it from 491KB to 77KB.
+
+It's applied as a **`border-image`**, not a background. The bite and the ragged
+ends live in the corner slices and keep their shape while only the middle
+stretches, so the bite comes out the same on `PIZZA` as on
+`MILKSHAKES & COOLERS`. As a plain background it would smear wide on a long
+header and squash on a short one.
+
+The slice numbers (`18 85 20 25`) are **source pixels of this 809×240 file** —
+the right slice has to cover the bite, which starts at x=736. The border widths
+that go with them are in `em`, solved so the caps render at their true
+proportion: `240k = 1.05 + 0.4 + 38k` → `k = 0.00718em` per source pixel. If you
+re-cut this image, redo both.
+
+There is deliberately **no background-colour** on the header: the bite is
+transparent, and a colour behind it would fill the notch straight back in.
+
+---
+
 # Food photography
 
 Cut out of the single contact sheet the owner supplied (ChatGPT-generated,
