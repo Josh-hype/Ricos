@@ -19,6 +19,13 @@ try {
   await installFonts(p);
 } catch (e) { console.warn('font route unavailable:', e.message); }
 
+// A missing typeface silently swaps in a fallback and quietly changes every
+// measurement on the sheet, so fail loudly instead.
+const fontsOK = await p.evaluate(async () => {
+  await document.fonts.ready;
+  return ['Anton', 'Oswald'].every((f) => document.fonts.check(`12px "${f}"`));
+});
+
 await p.goto('file://' + path.join(DIR, 'menu.html'), { waitUntil: 'networkidle' });
 await p.waitForTimeout(1200);
 
@@ -34,6 +41,7 @@ const overflow = await p.evaluate(() => {
   return bad;
 });
 console.log(overflow.length ? 'OVERFLOW:\n  ' + overflow.join('\n  ') : 'panels fit');
+if (!fontsOK) console.log('WARNING: Anton/Oswald did not load — the PDF is set in a fallback face');
 
 await p.pdf({
   path: path.join(DIR, 'big-bites-menu-A3-trifold.pdf'),

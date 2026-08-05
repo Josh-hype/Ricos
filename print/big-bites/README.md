@@ -19,6 +19,31 @@ reprint.** The printed menu cannot drift from what you actually charge.
 - QR is **vector** (segno, error correction H) pointing at
   https://bigbiteseasingwold.co.uk
 
+## Typefaces
+
+**Anton** for the plaques and headline numbers, **Oswald** for everything else.
+This is the single biggest thing that makes the sheet read as the reference
+rather than a generic menu — the condensed widths are what let the type run
+this large inside a 140mm panel. Swapping either for a normal-width face
+(Montserrat, which this used to use) breaks every panel's fit at once.
+
+`render.mjs` checks both faces actually loaded and prints a warning if they
+didn't: a missing typeface silently substitutes a fallback and quietly changes
+every measurement on the sheet.
+
+## Presentation vs. data
+
+A few things are set differently from how the menu data reads, to match the
+reference. None of them change what is on sale or what it costs:
+
+- **Milk Shakes** lists flavours only — the repeated "Milkshake" comes off —
+  and folds the coolers into one *Cooler* row with the flavours named
+  underneath, instead of a row each.
+- **Descriptions** print in red, bracketed, Title Case, with the shop's
+  trailing full stop removed. Pizza inverts it: gold names, white toppings,
+  no brackets.
+- **Prices** carry no currency mark anywhere on the sheet.
+
 ## Panel order
 
 Follows the designer's artwork exactly. `build-menu.mjs` has the same note —

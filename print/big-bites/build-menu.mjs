@@ -24,6 +24,10 @@ const cat = (id) => menu.find((c) => c.id === id) || { name: id, items: [] };
    Kept as one function so a change of mind is one line. */
 const money = (n) => Number(n).toFixed(2);
 const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+/* Descriptions are bracketed on the sheet, and the shop writes them as
+   sentences — "(Brushed With Garlic Butter.)" reads wrong, so the full stop
+   comes off here rather than being edited out of the menu data. */
+const descText = (s) => esc(String(s).trim().replace(/\.+$/, ''));
 
 /* PNG dimensions straight out of the IHDR chunk — needed so a side photo can
    reserve its own height, which CSS can't work out for an absolutely
@@ -92,7 +96,7 @@ function list(id, { dense = false, cols = 1, title = null, desc = false, img = '
     const d = i.desc || (choices ? choiceLine(i) : '');
     return `
       <li>
-        <span class="n">${redCounts(esc(i.name))}${(desc || !dense) && d ? `<em>${esc(d)}</em>` : ''}</span>
+        <span class="n">${redCounts(esc(i.name))}${(desc || !dense) && d ? `<em>${descText(d)}</em>` : ''}</span>
         <span class="dots"></span>
         <span class="p">${money(i.price)}</span>
       </li>`;
@@ -120,7 +124,7 @@ function sizedList(id, optId, headings, { title = null, img = '', secondOnly = n
     const only2 = !opt && secondOnly && secondOnly.test(i.name);
     return `
       <li>
-        <span class="n">${esc(i.name)}${i.desc ? `<em>${esc(i.desc)}</em>` : ''}</span>
+        <span class="n">${esc(i.name)}${i.desc ? `<em>${descText(i.desc)}</em>` : ''}</span>
         <span class="dots"></span>
         <span class="p2">${only2 ? '—' : money(i.price)}</span>
         <span class="p2">${only2 ? money(i.price) : p2 != null ? money(p2) : '—'}</span>
@@ -130,6 +134,29 @@ function sizedList(id, optId, headings, { title = null, img = '', secondOnly = n
     <section class="blk">
       ${header(esc(title || c.name), chips(headings, tone))}
       ${withShot(`<ul class="items sized${tight ? ' withdesc' : ''}${nameTone ? ' ' + nameTone : ''}">${rows}</ul>`, img)}
+    </section>`;
+}
+
+/* The reference sets this list as flavours only — the repeated "Milkshake" is
+   dropped — and folds the coolers into a single Cooler row with the flavours
+   named underneath, rather than listing each one as its own item. Same items,
+   same prices; presentation only. */
+function milkshakes() {
+  const c = cat('milkshakes');
+  const isCooler = (i) => /cooler/i.test(i.name);
+  const shakes = c.items.filter((i) => !isCooler(i));
+  const coolers = c.items.filter(isCooler);
+  const flavour = (n) => n.replace(/\s*(milkshake|cooler)\s*/ig, '').trim();
+  const row = (name, price, sub) => `
+      <li><span class="n">${esc(name)}${sub ? `<em>${descText(sub)}</em>` : ''}</span>
+        <span class="dots"></span><span class="p">${money(price)}</span></li>`;
+  return `
+    <section class="blk">
+      ${header('Milk Shakes')}
+      ${withShot(`<ul class="items">
+        ${shakes.map((i) => row(flavour(i.name), i.price)).join('')}
+        ${coolers.length ? row('Cooler', coolers[0].price, coolers.map((i) => `${flavour(i.name)} Cooler`).join(', ')) : ''}
+      </ul>`, shot('shake', 26))}
     </section>`;
 }
 
@@ -146,7 +173,7 @@ function kidsBox() {
         <ul class="items dense kidslist">
           ${c.items.map((i) => {
             const d = i.desc || choiceLine(i);
-            return `<li><span class="n">${redCounts(esc(i.name))}${d ? `<em>${esc(d)}</em>` : ''}</span>
+            return `<li><span class="n">${redCounts(esc(i.name))}${d ? `<em>${descText(d)}</em>` : ''}</span>
               <span class="dots"></span><span class="p">${money(i.price)}</span></li>`;
           }).join('')}
         </ul>
@@ -269,7 +296,7 @@ const html = `<!doctype html>
 <html lang="en-GB"><head><meta charset="utf-8" />
 <title>Big Bites — A3 trifold menu</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=Luckiest+Guy&family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
 <style>
   /* ---- print geometry -------------------------------------------------
      A3 landscape 420x297mm, 3mm bleed all round -> 426x303mm trim box.
@@ -279,7 +306,11 @@ const html = `<!doctype html>
   @page { size: 426mm 303mm; margin: 0; }
   * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   html, body { margin: 0; padding: 0; background: #111; }
-  body { font-family: 'Montserrat', system-ui, sans-serif; }
+  /* The reference is set in a condensed grotesque throughout — Anton for the
+     plaques and Oswald for everything else. It is the single biggest thing that
+     makes it read as that sheet rather than a generic menu: the condensed
+     widths are what let the type run this large in a 140mm panel. */
+  body { font-family: 'Oswald', 'Montserrat', system-ui, sans-serif; }
 
   .page {
     position: relative;
@@ -303,6 +334,7 @@ const html = `<!doctype html>
     border-right: 0.5mm solid #ffc400;   /* fold guide, and the reference's gold rule */
     background:
       radial-gradient(circle at 30% 12%, rgba(255,196,0,.06), transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(255,255,255,.035) .12mm, transparent .13mm) 0 0 / .9mm .9mm,
       #0b0b0b;
     color: #fff;
     overflow: hidden;
@@ -316,9 +348,14 @@ const html = `<!doctype html>
      leading — the same trade the reference sheet makes. Scoped to the panel
      rather than applied globally, so the roomier panels stay roomy. */
   .panel.tight .blk { margin-bottom: 1.5mm; }
-  .panel.tight .blk h3 { font-size: 5.6mm; margin-bottom: 0; }
+  .panel.tight .blk h3 { font-size: 7mm; margin-bottom: 0; }
   .panel.tight .hrule { margin: .6mm 0 1.5mm; }
-  .panel.tight .items.dense li { padding: .2mm 0; }
+  .panel.tight .items.dense li { padding: 0; font-size: 3mm; }
+  /* Five sections against three elsewhere, and this shop carries a description
+     on nearly every one of them where the reference carries almost none — so
+     the panel keeps the reference's look at a slightly smaller size rather than
+     dropping the descriptions. */
+  .panel.tight .items .n em { font-size: 2.8mm; }
 
   /* ---- section blocks ---- */
   .blk { margin-bottom: 5mm; }
@@ -339,7 +376,9 @@ const html = `<!doctype html>
     /* No bottom margin: the dotted rule sits directly under the plaque, as it
        does on the reference, and carries the spacing itself. */
     margin: 0;
-    padding: .22em .3em .18em .55em;
+    /* The reference's plaques carry a lot of air around the word — that is what
+       makes them read as chunky slabs rather than tight labels. */
+    padding: .21em .55em .21em .8em;
     border-style: solid; border-color: transparent;
     /* 18/85/20/25 source px at the height this header renders — solving
        240k = 1.05 + 0.4 + 38k gives k = 0.00718em per source pixel. Get these
@@ -347,17 +386,17 @@ const html = `<!doctype html>
     border-width: .129em .61em .144em .179em;
     border-image: url(img/header-plaque.png) 18 85 20 25 fill stretch;
     color: #111;
-    font-family: 'Luckiest Guy', Impact, sans-serif;
-    font-size: 6.4mm; line-height: 1.05;
-    letter-spacing: .02em;
+    font-family: 'Anton', Impact, sans-serif;
+    font-size: 9mm; line-height: 1;
+    letter-spacing: .005em;
     text-transform: uppercase;
-    transform: rotate(-1.2deg);
+    transform: rotate(-1.6deg);
   }
   .blk h3 .hdr2 { font-family: 'Montserrat'; font-size: 3.4mm; font-weight: 800; margin-left: 2mm; }
   /* Every heading on the reference has a dotted rule running the full width of
      the panel underneath it. The header itself is inline-block and rotated, so
      the rule is its own element rather than a border. */
-  .hrule { margin: 1mm 0 2.5mm; border-top: .3mm dotted rgba(255,255,255,.38); }
+  .hrule { margin: 1mm 0 2.5mm; border-top: .5mm dotted rgba(255,255,255,.55); }
 
   /* ---- food photography ----
      The cutouts arrive on transparency, so they drop straight onto the panel.
@@ -388,37 +427,46 @@ const html = `<!doctype html>
   .items li {
     display: flex; align-items: baseline; gap: 1.5mm;
     break-inside: avoid;
-    padding: .7mm 0;
-    font-size: 3.15mm; line-height: 1.25;
+    padding: .5mm 0;
+    font-size: 4.2mm; line-height: 1.16;
   }
-  .items.dense li { font-size: 2.85mm; padding: .35mm 0; }
-  .items .n { font-weight: 700; text-transform: uppercase; letter-spacing: .01em; }
+  .items.dense li { font-size: 3.5mm; padding: .15mm 0; }
+  .items .n { font-weight: 500; text-transform: uppercase; letter-spacing: .005em; }
   /* Reference palette: item names white, the line under them red. The pizza
      column inverts it — gold names, white toppings — which is what makes that
      panel read as the headline list. */
+  /* Descriptions run in red and in Title Case on the reference, bracketed on
+     every panel except pizza. capitalize does the casing so the menu data stays
+     as the shop wrote it. */
   .items .n em {
-    display: block; font-style: normal; font-weight: 500;
-    text-transform: none; font-size: 2.6mm; color: #e0483a; margin-top: .3mm;
+    display: block; font-style: normal; font-weight: 400;
+    text-transform: capitalize; font-size: 3.4mm; line-height: 1.1;
+    color: #e8271c; margin-top: .1mm;
   }
+  .items .n em::before { content: '('; }
+  .items .n em::after { content: ')'; }
+  .items.gold .n em::before, .items.gold .n em::after { content: none; }
   .items .n u { text-decoration: none; color: #e0483a; }
-  .items.gold .n { color: #ffc400; }
-  .items.gold .n em { color: #ddd4c4; }
+  /* Pizza inverts it: gold names, white toppings, no brackets. */
+  .items.gold .n { color: #ffc400; font-weight: 600; }
+  .items.gold .n em { color: #fff; }
   /* No leaders on the reference: the rows read on alignment alone, and the only
      dotted rule on the sheet is the one under each heading. The element stays
      as the flexible spacer that pushes the price right (and carries the photo
      gutter reservation). */
   .items .dots { flex: 1; }
-  .items .p { font-weight: 800; color: #ffc400; white-space: nowrap; }
+  /* Prices are white on the reference, not gold, and set at the item size. */
+  .items .p { font-weight: 500; color: #fff; white-space: nowrap; }
   .items.sized li { gap: 2mm; }
-  .items.sized .p2 { width: 11mm; text-align: right; font-weight: 800; color: #ffc400; white-space: nowrap; }
+  .items.sized .p2 { width: 11mm; text-align: center; font-weight: 500; color: #fff; white-space: nowrap; }
 
   /* The reference floats the size chips clear of the plaque, right-aligned so
      they sit over the price columns they label. */
   .headrow { display: flex; align-items: center; justify-content: space-between; gap: 4mm; }
   .sizehdr { display: inline-flex; gap: 2mm; flex: none; }
   .sizehdr i {
-    font-family: 'Montserrat'; font-style: normal; font-size: 2.7mm; font-weight: 800;
-    padding: .5mm 1.6mm; border-radius: .8mm; text-align: center;
+    font-style: normal; font-size: 3.9mm; font-weight: 600;
+    padding: .3mm 1.6mm; border-radius: .8mm; text-align: center;
     /* Same width and gutter as .items.sized .p2, so each chip sits squarely
        over the column of prices it labels. */
     min-width: 11mm;
@@ -427,9 +475,9 @@ const html = `<!doctype html>
   .sizehdr i.gold { background: #ffc400; color: #111; }
   /* 32 pizzas with a topping line each need tighter type than the simple
      lists — the same trade the designer makes. */
-  .items.withdesc li { align-items: flex-start; padding: .38mm 0; font-size: 2.55mm; line-height: 1.12; }
-  .items.withdesc .n em { font-size: 2.1mm; margin-top: .1mm; line-height: 1.15; }
-  .items.withdesc .p2 { font-size: 2.6mm; }
+  .items.withdesc li { align-items: center; padding: 0; font-size: 3.3mm; line-height: 1.02; }
+  .items.withdesc .n em { font-size: 2.85mm; margin-top: 0; line-height: 1.02; }
+  .items.withdesc .p2 { font-size: 3.5mm; }
   .items.withdesc .dots { display: none; }
   .items.withdesc .n { flex: 1; }
   /* Reference: a red plaque hard left, the two supplements sitting in the same
@@ -462,7 +510,7 @@ const html = `<!doctype html>
   }
   .kidsmark {
     flex: none; width: 26mm; text-align: center; color: #fff;
-    font-family: 'Luckiest Guy', Impact, sans-serif; line-height: .95;
+    font-family: 'Anton', Impact, sans-serif; line-height: .95;
   }
   .kidsmark b { display: block; font-size: 6.4mm; }
   .kidsmark span {
@@ -497,7 +545,7 @@ const html = `<!doctype html>
       linear-gradient(#000, #000) 0 1.4mm / 100% calc(100% - 2.8mm) no-repeat;
     border: 0; border-radius: 0; box-shadow: none;
   }
-  .deal b { display: block; font-family: 'Luckiest Guy', Impact, sans-serif; color: #d61313; font-size: 4.6mm; line-height: 1.05; }
+  .deal b { display: block; font-family: 'Anton', Impact, sans-serif; color: #d61313; font-size: 4.6mm; line-height: 1.05; text-transform: uppercase; }
   .deal p { margin: 1.8mm 0 2.2mm; font-size: 2.9mm; line-height: 1.35; font-weight: 600; }
   .deal strong { font-size: 5.6mm; font-weight: 900; }
 
@@ -514,7 +562,7 @@ const html = `<!doctype html>
     display: flex; align-items: center; justify-content: center; gap: 6mm;
     writing-mode: vertical-rl;
   }
-  .spine b { font-family: 'Luckiest Guy', Impact, sans-serif; font-size: 15mm; letter-spacing: .04em; text-transform: uppercase; }
+  .spine b { font-family: 'Anton', Impact, sans-serif; font-size: 15mm; letter-spacing: .04em; text-transform: uppercase; }
   .spine span { font-size: 3.4mm; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #fff; }
 
   /* The reference sets a red disc with a handset beside the phone and one with
@@ -532,7 +580,7 @@ const html = `<!doctype html>
   /* Luckiest Guy draws well above its em box, so the number's glyphs ran over
      the line above even though the two boxes never touched. The margin is
      clearance for the overshoot, not decoration — don't trim it. */
-  .tel b { display: block; margin-top: 3mm; font-family: 'Luckiest Guy', Impact, sans-serif; font-size: 17mm; line-height: 1; letter-spacing: .04em; }
+  .tel b { display: block; margin-top: 3mm; font-family: 'Anton', Impact, sans-serif; font-size: 17mm; line-height: 1; letter-spacing: .04em; }
 
   /* The cover's straps are the same device as a section header, so they take
      the same plaque — a flat yellow bar next to a bitten one would read as an
@@ -550,7 +598,7 @@ const html = `<!doctype html>
     border-width: .11em .5em .12em .15em;
     border-image: url(img/header-plaque.png) 18 85 20 25 fill stretch;
     color: #111;
-    font-family: 'Luckiest Guy', Impact, sans-serif; font-size: 4.4mm;
+    font-family: 'Anton', Impact, sans-serif; font-size: 4.4mm;
     text-transform: uppercase;
   }
   .fine { margin: 0; font-size: 3mm; line-height: 1.5; font-weight: 600; color: #e8dcc6; }
@@ -574,7 +622,7 @@ const html = `<!doctype html>
   .qr { width: 30mm; height: 30mm; background: #fff; padding: 1.5mm; border-radius: 1.5mm; }
   .qr svg { width: 100%; height: 100%; display: block; }
   .qrtxt { text-align: right; }
-  .qrtxt b { display: block; font-family: 'Luckiest Guy', Impact, sans-serif; font-size: 5mm; color: #ffc400; }
+  .qrtxt b { display: block; font-family: 'Anton', Impact, sans-serif; font-size: 5mm; color: #ffc400; }
   .qrtxt span { font-size: 2.9mm; font-weight: 700; }
   .allergy { margin-top: 6mm; }
 
@@ -583,7 +631,7 @@ const html = `<!doctype html>
     position: absolute; left: 3mm; right: 3mm; bottom: 3mm; height: 7mm;
     background: #ffc400; color: #111;
     display: flex; align-items: center; justify-content: center; gap: 2.5mm;
-    font-family: 'Luckiest Guy', Impact, sans-serif; font-size: 3.4mm;
+    font-family: 'Anton', Impact, sans-serif; font-size: 3.4mm;
     letter-spacing: .08em; overflow: hidden; white-space: nowrap;
   }
   .ticker i { color: #d61313; font-style: normal; }
@@ -597,7 +645,7 @@ ${/* Section order and panel assignment follow the designer's artwork exactly:
 ${page('side-a', `
   <div class="panel">
     ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, tight: false, tone: ['gold', 'gold'] })}
-    ${list('milkshakes', { img: shot('shake', 26), title: 'Milk Shakes' })}
+    ${milkshakes()}
     ${list('desserts', { dense: true, desc: true, img: shot('cake', 36) })}
     ${kidsBox()}
   </div>
@@ -615,7 +663,7 @@ ${page('side-b', `
       ${sizedList('pizza', 'size', ['11"', '13"'], { tone: ['red', 'red'], nameTone: 'gold' })}
       ${stuffedCrust()}
     </div>
-    <div class="halftone">${shot('pizza', 50, 'below')}</div>
+    <div class="halftone">${shot('pizza', 42, 'below')}</div>
   </div>
   <div class="panel tight">
     ${sizedList('garlic-bread', 'size', ['11"', '13"'], { tone: ['red', 'red'] })}
