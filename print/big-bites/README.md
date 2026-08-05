@@ -19,6 +19,19 @@ reprint.** The printed menu cannot drift from what you actually charge.
 - QR is **vector** (segno, error correction H) pointing at
   https://bigbiteseasingwold.co.uk
 
+## Panel order
+
+Follows the designer's artwork exactly. `build-menu.mjs` has the same note —
+don't reshuffle without checking the reference sheets again.
+
+| | left panel | middle panel | right panel |
+|---|---|---|---|
+| **outer** | Drinks · Milk Shakes · Desserts · Kids | Dips · Meal Deals | **cover** |
+| **inner** | Pizza | Garlic Bread · Calzone · Kebabs · Parmesan · Wrap | Burgers · Sides · Salad |
+
+The inner middle panel carries five sections against three elsewhere, so it
+runs on tighter leading (`.panel.tight`) — again, as the reference does.
+
 ## Before sending to print
 
 `render.mjs` reports `panels fit` or lists any panel whose content overruns its
@@ -30,9 +43,17 @@ convert with Ghostscript or ask them to do it.
 
 ## Errors this replaced
 
-The ChatGPT-generated artwork had, checked against live data:
+Checked against live data. The ChatGPT-generated artwork had:
 
-- phone **824522** — the real number is **820820**
+- phone **824522** — the real number is **820820**. **The designer's sheets
+  carry the same wrong number.** It is the old Food Station line; the owner
+  confirmed 820820 on 2026-07-30 (see the note in `config.json`). Worth having
+  the designer correct it wherever else that artwork is used
+- **Drinks priced can-only.** The designer's sheet has Can/Bottle columns and
+  the menu data has the bottle option (+£2.00); the first draft here printed
+  only the can price, so a bottle looked like £1.50
+- **Kids Sunny with no detail** — its choice ("(4) & chips or Tenders (3) &
+  chips") lives in a required option rather than a description field
 - Burger Sauce and Chilli Mayo priced at **£1.90**; they are £1. The £1.90 pots
   are **Pot Curry** and **Pot Gravy**
 - "COLDER" instead of Mango Cooler / Strawberry Cooler

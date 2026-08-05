@@ -23,19 +23,50 @@ const cat = (id) => menu.find((c) => c.id === id) || { name: id, items: [] };
 const money = (n) => '£' + Number(n).toFixed(2);
 const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 
+/* Food photography, cut out of the sheet the owner supplied — see img/README.
+   `place: 'side'` sits it next to the list (short sections), 'below' centres it
+   underneath (long ones, where a side column would leave a tall gap). Widths
+   are capped by the source resolution; img/README records the dpi each lands
+   at, and nothing here is scaled past its own pixels. */
+function shot(name, width, place = 'side') {
+  return name
+    ? `<img class="shot ${place}" src="img/${name}.png" alt="" style="width:${width}mm" />`
+    : '';
+}
+
+/* Wraps a list (or anything) so a photo can sit beside it without the two
+   overlapping — a float would narrow every row of the list, not just the ones
+   level with the picture. */
+function withShot(inner, img) {
+  if (!img) return inner;
+  if (img.includes('below')) return `${inner}${img}`;
+  return `<div class="blkrow">${inner}${img}</div>`;
+}
+
+/* Some items carry their whole description in a required choice rather than a
+   desc field — Kids Sunny is "(4) & chips or Tenders (3) & chips". Printing
+   just the name would lose that, as the first draft did. */
+function choiceLine(i) {
+  const o = (i.options || []).find((x) => x.required && x.select === 'single');
+  return o ? o.choices.map((c) => c.label).join(' or ') : '';
+}
+
 /* A price list. `dense` drops the description to fit more in. */
-function list(id, { dense = false, cols = 1, title = null, desc = false } = {}) {
+function list(id, { dense = false, cols = 1, title = null, desc = false, img = '', choices = false } = {}) {
   const c = cat(id);
-  const rows = c.items.map((i) => `
+  const rows = c.items.map((i) => {
+    const d = i.desc || (choices ? choiceLine(i) : '');
+    return `
       <li>
-        <span class="n">${esc(i.name)}${(desc || !dense) && i.desc ? `<em>${esc(i.desc)}</em>` : ''}</span>
+        <span class="n">${esc(i.name)}${(desc || !dense) && d ? `<em>${esc(d)}</em>` : ''}</span>
         <span class="dots"></span>
         <span class="p">${money(i.price)}</span>
-      </li>`).join('');
+      </li>`;
+  }).join('');
   return `
     <section class="blk">
       <h3>${esc(title || c.name)}</h3>
-      <ul class="items${cols > 1 ? ' two' : ''}${dense ? ' dense' : ''}">${rows}</ul>
+      ${withShot(`<ul class="items${cols > 1 ? ' two' : ''}${dense ? ' dense' : ''}">${rows}</ul>`, img)}
     </section>`;
 }
 
@@ -44,24 +75,27 @@ function list(id, { dense = false, cols = 1, title = null, desc = false } = {}) 
    prices in their own columns, with the topping line under the name — exactly
    as the designer's sheet does. Items without the option get one price and a
    dash, which is how the reference handles Tray Doner and the like. */
-function sizedList(id, optId, headings, { title = null } = {}) {
+function sizedList(id, optId, headings, { title = null, img = '', secondOnly = null, tight = true } = {}) {
   const c = cat(id);
   const rows = c.items.map((i) => {
     const opt = (i.options || []).find((o) => o.id === optId);
     const up = opt && opt.choices[1];
     const p2 = up ? Number(i.price) + Number(up.price || 0) : null;
+    /* A few items only exist in the second size — a 500ml water is a bottle,
+       not a can — so their single price belongs in the right-hand column. */
+    const only2 = !opt && secondOnly && secondOnly.test(i.name);
     return `
       <li>
         <span class="n">${esc(i.name)}${i.desc ? `<em>${esc(i.desc)}</em>` : ''}</span>
         <span class="dots"></span>
-        <span class="p2">${money(i.price)}</span>
-        <span class="p2">${p2 != null ? money(p2) : '—'}</span>
+        <span class="p2">${only2 ? '—' : money(i.price)}</span>
+        <span class="p2">${only2 ? money(i.price) : p2 != null ? money(p2) : '—'}</span>
       </li>`;
   }).join('');
   return `
     <section class="blk">
       <h3>${esc(title || c.name)} <span class="sizehdr"><i>${headings[0]}</i><i>${headings[1]}</i></span></h3>
-      <ul class="items sized withdesc">${rows}</ul>
+      ${withShot(`<ul class="items sized${tight ? ' withdesc' : ''}">${rows}</ul>`, img)}
     </section>`;
 }
 
@@ -83,16 +117,18 @@ function deals() {
 }
 
 /* Dips: the flat-rate ones as a tick list, the dearer pots called out. */
-function dips() {
+function dips({ img = '' } = {}) {
   const c = cat('dips');
   const cheap = c.items.filter((i) => Number(i.price) === 1);
   const dear = c.items.filter((i) => Number(i.price) !== 1);
   return `
     <section class="blk">
       <h3>Dips <span class="hdr2">£1.00</span></h3>
+      ${withShot(`<div>
       <ul class="chips">${cheap.map((i) => `<li>${esc(i.name)}</li>`).join('')}</ul>
       <ul class="items dense">${dear.map((i) => `
         <li><span class="n">${esc(i.name)}</span><span class="dots"></span><span class="p">${money(i.price)}</span></li>`).join('')}</ul>
+      </div>`, img)}
     </section>`;
 }
 
@@ -182,6 +218,10 @@ const html = `<!doctype html>
 
   .panel {
     position: relative;
+    /* Spread the sections down the panel instead of stacking them at the top
+       and leaving a hole above the fold ticker — the reference sheet does the
+       same. On a panel that exactly fills, this is a no-op. */
+    display: flex; flex-direction: column; justify-content: space-between;
     padding: 8mm 7mm 13mm;
     border-right: 0.4mm dashed rgba(255,255,255,.14);   /* fold guide */
     background:
@@ -190,10 +230,20 @@ const html = `<!doctype html>
     color: #fff;
     overflow: hidden;
   }
+  /* Sections keep their natural height; only the gaps between them stretch. */
+  .panel > * { flex: none; }
   .panel:last-of-type { border-right: 0; }
 
+  /* Following the designer's section order puts five blocks on the inner
+     middle panel against three elsewhere, so that one panel carries tighter
+     leading — the same trade the reference sheet makes. Scoped to the panel
+     rather than applied globally, so the roomier panels stay roomy. */
+  .panel.tight .blk { margin-bottom: 3mm; }
+  .panel.tight .blk h3 { font-size: 5.6mm; margin-bottom: 2mm; }
+  .panel.tight .items.dense li { padding: .2mm 0; }
+
   /* ---- section blocks ---- */
-  .blk { margin-bottom: 6mm; }
+  .blk { margin-bottom: 5mm; }
   .blk h3 {
     display: inline-block;
     margin: 0 0 3mm;
@@ -207,6 +257,16 @@ const html = `<!doctype html>
     transform: rotate(-1.2deg);
   }
   .blk h3 .hdr2 { font-family: 'Montserrat'; font-size: 3.4mm; font-weight: 800; margin-left: 2mm; }
+
+  /* ---- food photography ----
+     The cutouts arrive on transparency, so they drop straight onto the panel.
+     The shadow is added here rather than baked in, so it stays consistent and
+     survives a colour change to the panel. */
+  .blkrow { display: flex; align-items: flex-start; gap: 4mm; }
+  .blkrow > :first-child { flex: 1; min-width: 0; }
+  .shot { flex: none; height: auto; display: block; filter: drop-shadow(0 1.2mm 1.8mm rgba(0,0,0,.65)); }
+  .shot.side { align-self: center; }
+  .shot.below { margin: 3mm auto 0; }
 
   .items { list-style: none; margin: 0; padding: 0; }
   .items.two { column-count: 2; column-gap: 6mm; }
@@ -247,24 +307,29 @@ const html = `<!doctype html>
   }
   .supp b { width: 13mm; text-align: right; }
 
-  .chips { list-style: none; margin: 0 0 2mm; padding: 0; column-count: 2; column-gap: 5mm; }
-  .chips li { font-size: 3mm; font-weight: 700; text-transform: uppercase; padding: .5mm 0; break-inside: avoid; }
+  .chips { list-style: none; margin: 0 0 3mm; padding: 0; column-count: 2; column-gap: 5mm; }
+  .chips li { font-size: 3.3mm; font-weight: 700; text-transform: uppercase; padding: 1.1mm 0; break-inside: avoid; }
   .chips li::before { content: '•'; color: #ffc400; margin-right: 1.6mm; }
 
   /* ---- meal deal boxes ---- */
-  .deals { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; }
+  /* The deals are the upsell and the reference gives them a third of the
+     panel, so they're sized to fill rather than left as small boxes. */
+  .deals { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
   .deal {
     background: #fdf6e3; color: #111;
     border: .6mm solid #111; border-radius: 2mm;
-    padding: 2.6mm 2.4mm; text-align: center;
-    box-shadow: 1mm 1mm 0 rgba(0,0,0,.55);
+    padding: 4mm 3mm; text-align: center;
+    box-shadow: 1.2mm 1.2mm 0 rgba(0,0,0,.55);
+    display: flex; flex-direction: column; justify-content: center;
   }
-  .deal b { display: block; font-family: 'Luckiest Guy', Impact, sans-serif; color: #d61313; font-size: 3.9mm; line-height: 1.05; }
-  .deal p { margin: 1mm 0 1.4mm; font-size: 2.55mm; line-height: 1.3; font-weight: 600; }
-  .deal strong { font-size: 4.6mm; font-weight: 900; }
+  .deal b { display: block; font-family: 'Luckiest Guy', Impact, sans-serif; color: #d61313; font-size: 4.6mm; line-height: 1.05; }
+  .deal p { margin: 1.8mm 0 2.2mm; font-size: 2.9mm; line-height: 1.35; font-weight: 600; }
+  .deal strong { font-size: 5.6mm; font-weight: 900; }
 
   /* ---- cover panel ---- */
-  .cover { display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: 6mm; }
+  /* The cover balances itself (the QR block takes the slack with margin-top:
+     auto), so it opts out of the panel's space-between. */
+  .cover { justify-content: flex-start; align-items: center; text-align: center; padding-top: 6mm; }
   /* The supplied wordmark, keyed to transparency so the panel's own black and
      its faint yellow glow read through instead of a slightly-off black box.
      105mm wide keeps the source above 300dpi at print size. */
@@ -316,15 +381,20 @@ const html = `<!doctype html>
 </style></head>
 <body>
 
+${/* Section order and panel assignment follow the designer's artwork exactly:
+      outer face  — Drinks/Milk Shakes/Desserts/Kids | Dips/Meal Deals | cover
+      inner face  — Pizza | Garlic Bread/Calzone/Kebabs/Parmesan/Wrap | Burgers/Sides/Salad
+      Don't reshuffle these without checking the reference sheets again. */''}
 ${page('side-a', `
   <div class="panel">
-    ${list('drinks')}
-    ${list('milkshakes')}
-    ${list('desserts', { dense: true, desc: true })}
+    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, tight: false })}
+    ${list('milkshakes', { img: shot('shake', 26) })}
+    ${list('desserts', { dense: true, desc: true, img: shot('cake', 36) })}
+    ${list('kids', { choices: true })}
   </div>
   <div class="panel">
     ${dips()}
-    ${list('kids')}
+    ${shot('burger-meal', 62, 'below')}
     ${deals()}
   </div>
   ${cover}
@@ -332,20 +402,23 @@ ${page('side-a', `
 
 ${page('side-b', `
   <div class="panel">
-    ${sizedList('pizza', 'size', ['11"', '13"'])}
-    ${stuffedCrust()}
-    ${sizedList('garlic-bread', 'size', ['11"', '13"'])}
+    <div>
+      ${sizedList('pizza', 'size', ['11"', '13"'])}
+      ${stuffedCrust()}
+    </div>
+    ${shot('pizza', 50, 'below')}
   </div>
-  <div class="panel">
-    ${sizedList('kebab', 'size', ['MED', 'LGE'], { title: 'Kebabs' })}
-    ${list('wraps', { dense: true, desc: true })}
-    ${list('calzone', { dense: true, desc: true })}
+  <div class="panel tight">
+    ${sizedList('garlic-bread', 'size', ['11"', '13"'])}
+    ${list('calzone', { dense: true, desc: true, img: shot('calzone', 40) })}
+    ${sizedList('kebab', 'size', ['MED', 'LGE'], { title: 'Kebabs', img: shot('kebab', 34) })}
+    ${list('parmesan', { dense: true, desc: true })}
+    ${list('wraps', { dense: true, desc: true, img: shot('wrap', 38) })}
   </div>
   <div class="panel">
     ${sizedList('burgers', 'size', ['¼lb', '½lb'])}
-    ${list('sides', { dense: true, cols: 2 })}
-    ${list('parmesan', { dense: true, desc: true })}
-    ${list('salad', { dense: true, desc: true })}
+    ${list('sides', { dense: true, cols: 2, img: shot('sides', 36, 'below') })}
+    ${list('salad', { dense: true, desc: true, img: shot('salad', 40) })}
   </div>
 `)}
 
