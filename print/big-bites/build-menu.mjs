@@ -24,11 +24,11 @@ const money = (n) => '£' + Number(n).toFixed(2);
 const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 
 /* A price list. `dense` drops the description to fit more in. */
-function list(id, { dense = false, cols = 1, title = null } = {}) {
+function list(id, { dense = false, cols = 1, title = null, desc = false } = {}) {
   const c = cat(id);
   const rows = c.items.map((i) => `
       <li>
-        <span class="n">${esc(i.name)}${!dense && i.desc ? `<em>${esc(i.desc)}</em>` : ''}</span>
+        <span class="n">${esc(i.name)}${(desc || !dense) && i.desc ? `<em>${esc(i.desc)}</em>` : ''}</span>
         <span class="dots"></span>
         <span class="p">${money(i.price)}</span>
       </li>`).join('');
@@ -39,25 +39,29 @@ function list(id, { dense = false, cols = 1, title = null } = {}) {
     </section>`;
 }
 
-/* Pizzas carry a second price for 13". */
-function pizzaList() {
-  const c = cat('pizza');
+/* Any list whose items carry a two-choice size option (pizza 11"/13",
+   garlic bread the same, burgers ¼lb/½lb, kebabs medium/large). Prints both
+   prices in their own columns, with the topping line under the name — exactly
+   as the designer's sheet does. Items without the option get one price and a
+   dash, which is how the reference handles Tray Doner and the like. */
+function sizedList(id, optId, headings, { title = null } = {}) {
+  const c = cat(id);
   const rows = c.items.map((i) => {
-    const up = (i.options || []).find((o) => o.id === 'size');
-    const big = up && up.choices.find((x) => x.id === 'sz13');
-    const p13 = big ? Number(i.price) + Number(big.price || 0) : null;
+    const opt = (i.options || []).find((o) => o.id === optId);
+    const up = opt && opt.choices[1];
+    const p2 = up ? Number(i.price) + Number(up.price || 0) : null;
     return `
       <li>
-        <span class="n">${esc(i.name)}</span>
+        <span class="n">${esc(i.name)}${i.desc ? `<em>${esc(i.desc)}</em>` : ''}</span>
         <span class="dots"></span>
         <span class="p2">${money(i.price)}</span>
-        <span class="p2">${p13 != null ? money(p13) : '—'}</span>
+        <span class="p2">${p2 != null ? money(p2) : '—'}</span>
       </li>`;
   }).join('');
   return `
     <section class="blk">
-      <h3>Pizza <span class="hdr2">11"&nbsp;&nbsp;&nbsp;13"</span></h3>
-      <ul class="items sized">${rows}</ul>
+      <h3>${esc(title || c.name)} <span class="sizehdr"><i>${headings[0]}</i><i>${headings[1]}</i></span></h3>
+      <ul class="items sized withdesc">${rows}</ul>
     </section>`;
 }
 
@@ -90,6 +94,18 @@ function dips() {
       <ul class="items dense">${dear.map((i) => `
         <li><span class="n">${esc(i.name)}</span><span class="dots"></span><span class="p">${money(i.price)}</span></li>`).join('')}</ul>
     </section>`;
+}
+
+/* The stuffed-crust supplement is a per-size modifier on every pizza; read it
+   off the first one rather than hard-coding it. */
+function stuffedCrust() {
+  const pz = cat('pizza').items[0] || {};
+  const crust = (pz.options || []).find((o) => o.id === 'crust');
+  const st = crust && crust.choices.find((x) => x.id === 'stuffed');
+  if (!st) return '';
+  const by = st.priceBySize || {};
+  const p13 = by.sz13 != null ? by.sz13 : st.price;
+  return `<div class="supp">Stuffed Crust Supplement <b>+${money(st.price)}</b> <b>+${money(p13)}</b></div>`;
 }
 
 const hours = [
@@ -169,7 +185,7 @@ const html = `<!doctype html>
 
   .panel {
     position: relative;
-    padding: 10mm 8mm 14mm;
+    padding: 8mm 7mm 13mm;
     border-right: 0.4mm dashed rgba(255,255,255,.14);   /* fold guide */
     background:
       radial-gradient(circle at 30% 12%, rgba(255,196,0,.06), transparent 45%),
@@ -203,7 +219,7 @@ const html = `<!doctype html>
     padding: .7mm 0;
     font-size: 3.15mm; line-height: 1.25;
   }
-  .items.dense li { font-size: 3mm; padding: .45mm 0; }
+  .items.dense li { font-size: 2.85mm; padding: .35mm 0; }
   .items .n { font-weight: 700; text-transform: uppercase; letter-spacing: .01em; }
   .items .n em {
     display: block; font-style: normal; font-weight: 500;
@@ -213,6 +229,26 @@ const html = `<!doctype html>
   .items .p { font-weight: 800; color: #ffc400; white-space: nowrap; }
   .items.sized li { gap: 2mm; }
   .items.sized .p2 { width: 13mm; text-align: right; font-weight: 800; color: #ffc400; white-space: nowrap; }
+
+  .blk h3 .sizehdr { display: inline-flex; gap: 1.5mm; margin-left: 2.5mm; vertical-align: middle; }
+  .blk h3 .sizehdr i {
+    font-family: 'Montserrat'; font-style: normal; font-size: 2.7mm; font-weight: 800;
+    background: #111; color: #fff; padding: .5mm 1.6mm; border-radius: .8mm; min-width: 9mm; text-align: center;
+  }
+  /* 32 pizzas with a topping line each need tighter type than the simple
+     lists — the same trade the designer makes. */
+  .items.withdesc li { align-items: flex-start; padding: .38mm 0; font-size: 2.55mm; line-height: 1.12; }
+  .items.withdesc .n em { font-size: 2.1mm; margin-top: .1mm; line-height: 1.15; }
+  .items.withdesc .p2 { font-size: 2.6mm; }
+  .items.withdesc .dots { display: none; }
+  .items.withdesc .n { flex: 1; }
+  .supp {
+    display: flex; justify-content: flex-end; gap: 2mm;
+    margin-top: 1.5mm; padding: 1mm 2mm;
+    background: #d61313; color: #fff;
+    font-size: 2.8mm; font-weight: 800; text-transform: uppercase;
+  }
+  .supp b { width: 13mm; text-align: right; }
 
   .chips { list-style: none; margin: 0 0 2mm; padding: 0; column-count: 2; column-gap: 5mm; }
   .chips li { font-size: 3mm; font-weight: 700; text-transform: uppercase; padding: .5mm 0; break-inside: avoid; }
@@ -287,7 +323,7 @@ ${page('side-a', `
   <div class="panel">
     ${list('drinks')}
     ${list('milkshakes')}
-    ${list('desserts', { dense: true })}
+    ${list('desserts', { dense: true, desc: true })}
   </div>
   <div class="panel">
     ${dips()}
@@ -299,19 +335,20 @@ ${page('side-a', `
 
 ${page('side-b', `
   <div class="panel">
-    ${pizzaList()}
-    ${list('garlic-bread', { dense: true })}
+    ${sizedList('pizza', 'size', ['11"', '13"'])}
+    ${stuffedCrust()}
+    ${sizedList('garlic-bread', 'size', ['11"', '13"'])}
   </div>
   <div class="panel">
-    ${list('kebab', { dense: true })}
-    ${list('wraps', { dense: true })}
-    ${list('calzone', { dense: true })}
+    ${sizedList('kebab', 'size', ['MED', 'LGE'], { title: 'Kebabs' })}
+    ${list('wraps', { dense: true, desc: true })}
+    ${list('calzone', { dense: true, desc: true })}
   </div>
   <div class="panel">
-    ${list('burgers', { dense: true })}
+    ${sizedList('burgers', 'size', ['¼lb', '½lb'])}
     ${list('sides', { dense: true, cols: 2 })}
-    ${list('parmesan', { dense: true })}
-    ${list('salad', { dense: true })}
+    ${list('parmesan', { dense: true, desc: true })}
+    ${list('salad', { dense: true, desc: true })}
   </div>
 `)}
 

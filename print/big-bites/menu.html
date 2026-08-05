@@ -28,7 +28,7 @@
 
   .panel {
     position: relative;
-    padding: 10mm 8mm 14mm;
+    padding: 8mm 7mm 13mm;
     border-right: 0.4mm dashed rgba(255,255,255,.14);   /* fold guide */
     background:
       radial-gradient(circle at 30% 12%, rgba(255,196,0,.06), transparent 45%),
@@ -62,7 +62,7 @@
     padding: .7mm 0;
     font-size: 3.15mm; line-height: 1.25;
   }
-  .items.dense li { font-size: 3mm; padding: .45mm 0; }
+  .items.dense li { font-size: 2.85mm; padding: .35mm 0; }
   .items .n { font-weight: 700; text-transform: uppercase; letter-spacing: .01em; }
   .items .n em {
     display: block; font-style: normal; font-weight: 500;
@@ -72,6 +72,26 @@
   .items .p { font-weight: 800; color: #ffc400; white-space: nowrap; }
   .items.sized li { gap: 2mm; }
   .items.sized .p2 { width: 13mm; text-align: right; font-weight: 800; color: #ffc400; white-space: nowrap; }
+
+  .blk h3 .sizehdr { display: inline-flex; gap: 1.5mm; margin-left: 2.5mm; vertical-align: middle; }
+  .blk h3 .sizehdr i {
+    font-family: 'Montserrat'; font-style: normal; font-size: 2.7mm; font-weight: 800;
+    background: #111; color: #fff; padding: .5mm 1.6mm; border-radius: .8mm; min-width: 9mm; text-align: center;
+  }
+  /* 32 pizzas with a topping line each need tighter type than the simple
+     lists — the same trade the designer makes. */
+  .items.withdesc li { align-items: flex-start; padding: .38mm 0; font-size: 2.55mm; line-height: 1.12; }
+  .items.withdesc .n em { font-size: 2.1mm; margin-top: .1mm; line-height: 1.15; }
+  .items.withdesc .p2 { font-size: 2.6mm; }
+  .items.withdesc .dots { display: none; }
+  .items.withdesc .n { flex: 1; }
+  .supp {
+    display: flex; justify-content: flex-end; gap: 2mm;
+    margin-top: 1.5mm; padding: 1mm 2mm;
+    background: #d61313; color: #fff;
+    font-size: 2.8mm; font-weight: 800; text-transform: uppercase;
+  }
+  .supp b { width: 13mm; text-align: right; }
 
   .chips { list-style: none; margin: 0 0 2mm; padding: 0; column-count: 2; column-gap: 5mm; }
   .chips li { font-size: 3mm; font-weight: 700; text-transform: uppercase; padding: .5mm 0; break-inside: avoid; }
@@ -241,12 +261,12 @@
       <h3>Desserts</h3>
       <ul class="items dense">
       <li>
-        <span class="n">Chocolate Cake</span>
+        <span class="n">Chocolate Cake<em>Rich chocolate fudge cake.</em></span>
         <span class="dots"></span>
         <span class="p">£4.50</span>
       </li>
       <li>
-        <span class="n">Cheese Cake</span>
+        <span class="n">Cheese Cake<em>Creamy baked cheesecake.</em></span>
         <span class="dots"></span>
         <span class="p">£4.50</span>
       </li>
@@ -266,7 +286,7 @@
         <span class="p">£4.50</span>
       </li>
       <li>
-        <span class="n">Ben and Jerry's Cake</span>
+        <span class="n">Ben and Jerry's Cake<em>Tub of Ben &amp; Jerry’s ice cream.</em></span>
         <span class="dots"></span>
         <span class="p">£7.50</span>
       </li></ul>
@@ -375,291 +395,308 @@
   <div class="panel">
     
     <section class="blk">
-      <h3>Pizza <span class="hdr2">11"&nbsp;&nbsp;&nbsp;13"</span></h3>
-      <ul class="items sized">
+      <h3>Pizza <span class="sizehdr"><i>11"</i><i>13"</i></span></h3>
+      <ul class="items sized withdesc">
       <li>
-        <span class="n">Margherita</span>
+        <span class="n">Margherita<em>Cheese and tomato</em></span>
         <span class="dots"></span>
         <span class="p2">£9.50</span>
         <span class="p2">£10.90</span>
       </li>
       <li>
-        <span class="n">BBQ Margherita</span>
+        <span class="n">BBQ Margherita<em>BBQ base, cheese, tomato</em></span>
         <span class="dots"></span>
         <span class="p2">£9.50</span>
         <span class="p2">£10.90</span>
       </li>
       <li>
-        <span class="n">Four Cheese</span>
+        <span class="n">Four Cheese<em>Mozzarella, feta, parmesan cheese, halloumi cheese</em></span>
         <span class="dots"></span>
         <span class="p2">£10.50</span>
         <span class="p2">£11.90</span>
       </li>
       <li>
-        <span class="n">Halloumi Pizza</span>
+        <span class="n">Halloumi Pizza<em>Halloumi cheese, red onions, peppers, garlic butter</em></span>
         <span class="dots"></span>
         <span class="p2">£10.50</span>
         <span class="p2">£11.90</span>
       </li>
       <li>
-        <span class="n">Vegi Garden</span>
+        <span class="n">Vegi Garden<em>Peppers, red onions, mushrooms, sweetcorn, olives, cherry tomato</em></span>
         <span class="dots"></span>
         <span class="p2">£10.50</span>
         <span class="p2">£11.90</span>
       </li>
       <li>
-        <span class="n">Al Funghi</span>
+        <span class="n">Al Funghi<em>Mushrooms, mozzarella cheese</em></span>
         <span class="dots"></span>
         <span class="p2">£10.50</span>
         <span class="p2">£11.90</span>
       </li>
       <li>
-        <span class="n">Volcano Veg</span>
+        <span class="n">Volcano Veg<em>Red onions, mushrooms, fresh chilli, cherry tomato, garlic</em></span>
         <span class="dots"></span>
         <span class="p2">£10.50</span>
         <span class="p2">£11.90</span>
       </li>
       <li>
-        <span class="n">London Pizza</span>
+        <span class="n">London Pizza<em>Mozzarella cheese, chips</em></span>
         <span class="dots"></span>
         <span class="p2">£10.50</span>
         <span class="p2">£11.90</span>
       </li>
       <li>
-        <span class="n">Ham Pizza</span>
+        <span class="n">Ham Pizza<em>Mozzarella cheese with ham</em></span>
         <span class="dots"></span>
         <span class="p2">£10.50</span>
         <span class="p2">£11.90</span>
       </li>
       <li>
-        <span class="n">Farm House</span>
+        <span class="n">Farm House<em>Ham, mushrooms and mozzarella cheese</em></span>
         <span class="dots"></span>
         <span class="p2">£10.90</span>
         <span class="p2">£12.50</span>
       </li>
       <li>
-        <span class="n">Hawaiian</span>
+        <span class="n">Hawaiian<em>Ham, pineapple, mozzarella cheese</em></span>
         <span class="dots"></span>
         <span class="p2">£10.90</span>
         <span class="p2">£12.50</span>
       </li>
       <li>
-        <span class="n">Pepperoni</span>
+        <span class="n">Pepperoni<em>Pepperoni with mozzarella cheese</em></span>
         <span class="dots"></span>
         <span class="p2">£10.90</span>
         <span class="p2">£12.50</span>
       </li>
       <li>
-        <span class="n">Chorizo</span>
+        <span class="n">Chorizo<em>Chorizo with mozzarella cheese</em></span>
         <span class="dots"></span>
         <span class="p2">£10.90</span>
         <span class="p2">£12.50</span>
       </li>
       <li>
-        <span class="n">Double Bite</span>
+        <span class="n">Double Bite<em>Double pepperoni, double cheese</em></span>
         <span class="dots"></span>
         <span class="p2">£10.90</span>
         <span class="p2">£12.50</span>
       </li>
       <li>
-        <span class="n">Bacon</span>
+        <span class="n">Bacon<em>Bacon, red onions, peppers, mozzarella cheese</em></span>
         <span class="dots"></span>
         <span class="p2">£10.90</span>
         <span class="p2">£12.50</span>
       </li>
       <li>
-        <span class="n">Meat Supreme</span>
+        <span class="n">Meat Supreme<em>Pepperoni, ham, salami, chorizo</em></span>
         <span class="dots"></span>
         <span class="p2">£11.50</span>
         <span class="p2">£13.50</span>
       </li>
       <li>
-        <span class="n">Kiev</span>
+        <span class="n">Kiev<em>Ham, chilli, garlic, mozzarella cheese</em></span>
         <span class="dots"></span>
         <span class="p2">£10.90</span>
         <span class="p2">£12.50</span>
       </li>
       <li>
-        <span class="n">BBQ Chicken</span>
+        <span class="n">BBQ Chicken<em>BBQ base, chicken, cheese</em></span>
         <span class="dots"></span>
         <span class="p2">£10.90</span>
         <span class="p2">£12.50</span>
       </li>
       <li>
-        <span class="n">Chicken Supreme</span>
+        <span class="n">Chicken Supreme<em>Chicken, red onions, mushrooms, peppers, garlic butter, cheese</em></span>
         <span class="dots"></span>
         <span class="p2">£10.90</span>
         <span class="p2">£12.50</span>
       </li>
       <li>
-        <span class="n">Doner Pizza</span>
+        <span class="n">Doner Pizza<em>Doner, mushrooms, red onions, cheese</em></span>
         <span class="dots"></span>
         <span class="p2">£10.90</span>
         <span class="p2">£12.50</span>
       </li>
       <li>
-        <span class="n">Bolognese Pizza</span>
+        <span class="n">Bolognese Pizza<em>Bolognese, red onions, cherry tomato</em></span>
         <span class="dots"></span>
         <span class="p2">£10.90</span>
         <span class="p2">£12.50</span>
       </li>
       <li>
-        <span class="n">Mexicano Pizza</span>
+        <span class="n">Mexicano Pizza<em>Bolognese, red onions, fresh chilli</em></span>
         <span class="dots"></span>
         <span class="p2">£10.90</span>
         <span class="p2">£12.50</span>
       </li>
       <li>
-        <span class="n">BBQ Porker</span>
+        <span class="n">BBQ Porker<em>BBQ base, ham, salami, pepperoni, bacon, chorizo</em></span>
         <span class="dots"></span>
         <span class="p2">£10.90</span>
         <span class="p2">£12.50</span>
       </li>
       <li>
-        <span class="n">Hot Lips</span>
+        <span class="n">Hot Lips<em>Pepperoni, red onions, fresh chilli, garlic</em></span>
         <span class="dots"></span>
         <span class="p2">£10.90</span>
         <span class="p2">£12.50</span>
       </li>
       <li>
-        <span class="n">BBQ Meaty</span>
+        <span class="n">BBQ Meaty<em>Mighty BBQ base, chicken, pepperoni, bacon</em></span>
         <span class="dots"></span>
         <span class="p2">£10.90</span>
         <span class="p2">£12.50</span>
       </li>
       <li>
-        <span class="n">Dragon's Breath</span>
+        <span class="n">Dragon's Breath<em>Chicken, pepperoni, fresh chilli, red onions, chilli flakes</em></span>
         <span class="dots"></span>
         <span class="p2">£10.90</span>
         <span class="p2">£12.50</span>
       </li>
       <li>
-        <span class="n">Devil's Delight</span>
+        <span class="n">Devil's Delight<em>Hot BBQ base, spicy chicken, chorizo, fresh chilli</em></span>
         <span class="dots"></span>
         <span class="p2">£10.90</span>
         <span class="p2">£12.50</span>
       </li>
       <li>
-        <span class="n">Four Seasons</span>
+        <span class="n">Four Seasons<em>Ham, onions, mushrooms, peppers</em></span>
         <span class="dots"></span>
         <span class="p2">£10.90</span>
         <span class="p2">£12.50</span>
       </li>
       <li>
-        <span class="n">Tuna Pizza</span>
+        <span class="n">Tuna Pizza<em>Tuna, onions, cherry tomato</em></span>
         <span class="dots"></span>
         <span class="p2">£10.90</span>
         <span class="p2">£12.50</span>
       </li>
       <li>
-        <span class="n">Seafood</span>
+        <span class="n">Seafood<em>Tuna, prawns</em></span>
         <span class="dots"></span>
         <span class="p2">£10.90</span>
         <span class="p2">£12.50</span>
       </li>
       <li>
-        <span class="n">Half &amp; Half</span>
+        <span class="n">Half &amp; Half<em>Two halves, two toppings</em></span>
         <span class="dots"></span>
         <span class="p2">£12.00</span>
         <span class="p2">£14.00</span>
       </li>
       <li>
-        <span class="n">D.I.Y</span>
+        <span class="n">D.I.Y<em>Combination of your 4 toppings</em></span>
         <span class="dots"></span>
         <span class="p2">£12.00</span>
         <span class="p2">£14.00</span>
       </li></ul>
     </section>
+    <div class="supp">Stuffed Crust Supplement <b>+£2.50</b> <b>+£3.50</b></div>
     
     <section class="blk">
-      <h3>Garlic Bread</h3>
-      <ul class="items dense">
+      <h3>Garlic Bread <span class="sizehdr"><i>11"</i><i>13"</i></span></h3>
+      <ul class="items sized withdesc">
       <li>
-        <span class="n">Plain Garlic Bread</span>
+        <span class="n">Plain Garlic Bread<em>Brushed with garlic butter.</em></span>
         <span class="dots"></span>
-        <span class="p">£6.00</span>
+        <span class="p2">£6.00</span>
+        <span class="p2">£8.00</span>
       </li>
       <li>
-        <span class="n">Garlic Bread Tomato</span>
+        <span class="n">Garlic Bread Tomato<em>Garlic butter, tomato.</em></span>
         <span class="dots"></span>
-        <span class="p">£7.00</span>
+        <span class="p2">£7.00</span>
+        <span class="p2">£9.00</span>
       </li>
       <li>
-        <span class="n">Garlic Bread Cheese</span>
+        <span class="n">Garlic Bread Cheese<em>Garlic butter, melted mozzarella.</em></span>
         <span class="dots"></span>
-        <span class="p">£8.50</span>
+        <span class="p2">£8.50</span>
+        <span class="p2">£10.90</span>
       </li>
       <li>
         <span class="n">Garlic Bread Cheese &amp; Chilli</span>
         <span class="dots"></span>
-        <span class="p">£10.90</span>
+        <span class="p2">£10.90</span>
+        <span class="p2">£12.50</span>
       </li>
       <li>
-        <span class="n">Garlic Bread Cheese &amp; Doner</span>
+        <span class="n">Garlic Bread Cheese &amp; Doner<em>Garlic butter, doner, mozzarella.</em></span>
         <span class="dots"></span>
-        <span class="p">£10.90</span>
+        <span class="p2">£10.90</span>
+        <span class="p2">£12.50</span>
       </li>
       <li>
-        <span class="n">Garlic Bread Cheese &amp; Pepperoni</span>
+        <span class="n">Garlic Bread Cheese &amp; Pepperoni<em>Garlic butter, pepperoni, mozzarella.</em></span>
         <span class="dots"></span>
-        <span class="p">£10.90</span>
+        <span class="p2">£10.90</span>
+        <span class="p2">£12.50</span>
       </li></ul>
     </section>
   </div>
   <div class="panel">
     
     <section class="blk">
-      <h3>Kebabs</h3>
-      <ul class="items dense">
+      <h3>Kebabs <span class="sizehdr"><i>MED</i><i>LGE</i></span></h3>
+      <ul class="items sized withdesc">
       <li>
         <span class="n">Lamb Doner</span>
         <span class="dots"></span>
-        <span class="p">£8.50</span>
+        <span class="p2">£8.50</span>
+        <span class="p2">£9.90</span>
       </li>
       <li>
-        <span class="n">Tray Doner</span>
+        <span class="n">Tray Doner<em>Just the meat.</em></span>
         <span class="dots"></span>
-        <span class="p">£4.00</span>
+        <span class="p2">£4.00</span>
+        <span class="p2">—</span>
       </li>
       <li>
         <span class="n">Doner Meat &amp; Chips</span>
         <span class="dots"></span>
-        <span class="p">£9.00</span>
+        <span class="p2">£9.00</span>
+        <span class="p2">—</span>
       </li>
       <li>
-        <span class="n">Chicken Shawarma</span>
+        <span class="n">Chicken Shawarma<em>Chargrilled chicken, salad, pitta, sauce.</em></span>
         <span class="dots"></span>
-        <span class="p">£8.50</span>
+        <span class="p2">£8.50</span>
+        <span class="p2">£9.90</span>
       </li>
       <li>
         <span class="n">Tray Shawarma</span>
         <span class="dots"></span>
-        <span class="p">£6.00</span>
+        <span class="p2">£6.00</span>
+        <span class="p2">—</span>
       </li>
       <li>
         <span class="n">Chicken Shawarma &amp; Chips</span>
         <span class="dots"></span>
-        <span class="p">£9.00</span>
+        <span class="p2">£9.00</span>
+        <span class="p2">—</span>
       </li>
       <li>
         <span class="n">Kofta Kebab</span>
         <span class="dots"></span>
-        <span class="p">£10.50</span>
+        <span class="p2">£10.50</span>
+        <span class="p2">—</span>
       </li>
       <li>
         <span class="n">Chicken Shish</span>
         <span class="dots"></span>
-        <span class="p">£11.00</span>
+        <span class="p2">£11.00</span>
+        <span class="p2">—</span>
       </li>
       <li>
-        <span class="n">Combo Kebab</span>
+        <span class="n">Combo Kebab<em>Combination of lamb doner and shawarma</em></span>
         <span class="dots"></span>
-        <span class="p">£14.00</span>
+        <span class="p2">£14.00</span>
+        <span class="p2">—</span>
       </li>
       <li>
-        <span class="n">Mixed Kebab</span>
+        <span class="n">Mixed Kebab<em>Lamb doner, chicken doner, kofte kebab, chicken shish, salad, 2× pot sauce, 2× pitta bread</em></span>
         <span class="dots"></span>
-        <span class="p">£22.00</span>
+        <span class="p2">£22.00</span>
+        <span class="p2">—</span>
       </li></ul>
     </section>
     
@@ -667,7 +704,7 @@
       <h3>Wraps</h3>
       <ul class="items dense">
       <li>
-        <span class="n">Chips &amp; Cheese Wrap</span>
+        <span class="n">Chips &amp; Cheese Wrap<em>Cheese and chips, rolled.</em></span>
         <span class="dots"></span>
         <span class="p">£7.00</span>
       </li>
@@ -677,12 +714,12 @@
         <span class="p">£8.50</span>
       </li>
       <li>
-        <span class="n">Chicken Shawarma Wrap</span>
+        <span class="n">Chicken Shawarma Wrap<em>Chargrilled chicken, salad, sauce.</em></span>
         <span class="dots"></span>
         <span class="p">£8.50</span>
       </li>
       <li>
-        <span class="n">Chicken Tenders Wrap</span>
+        <span class="n">Chicken Tenders Wrap<em>Chicken tenders, salad, sauce.</em></span>
         <span class="dots"></span>
         <span class="p">£8.50</span>
       </li>
@@ -697,12 +734,12 @@
         <span class="p">£9.50</span>
       </li>
       <li>
-        <span class="n">Combo Wrap</span>
+        <span class="n">Combo Wrap<em>Chicken &amp; doner.</em></span>
         <span class="dots"></span>
         <span class="p">£10.50</span>
       </li>
       <li>
-        <span class="n">Doner Meat &amp; Chips Wrap</span>
+        <span class="n">Doner Meat &amp; Chips Wrap<em>Doner and chips, rolled.</em></span>
         <span class="dots"></span>
         <span class="p">£9.00</span>
       </li>
@@ -717,17 +754,17 @@
       <h3>Calzone</h3>
       <ul class="items dense">
       <li>
-        <span class="n">Doner Calzone</span>
+        <span class="n">Doner Calzone<em>Doner, onion, mushroom.</em></span>
         <span class="dots"></span>
         <span class="p">£12.50</span>
       </li>
       <li>
-        <span class="n">Kiev Calzone</span>
+        <span class="n">Kiev Calzone<em>Chicken, ham, garlic butter.</em></span>
         <span class="dots"></span>
         <span class="p">£12.50</span>
       </li>
       <li>
-        <span class="n">Meat Calzone</span>
+        <span class="n">Meat Calzone<em>Pepperoni, salami, ham, bacon.</em></span>
         <span class="dots"></span>
         <span class="p">£12.50</span>
       </li>
@@ -737,7 +774,7 @@
         <span class="p">£12.50</span>
       </li>
       <li>
-        <span class="n">Hot Calzone</span>
+        <span class="n">Hot Calzone<em>Pepperoni, onion, jalapeno.</em></span>
         <span class="dots"></span>
         <span class="p">£12.50</span>
       </li></ul>
@@ -746,57 +783,67 @@
   <div class="panel">
     
     <section class="blk">
-      <h3>Burgers</h3>
-      <ul class="items dense">
+      <h3>Burgers <span class="sizehdr"><i>¼lb</i><i>½lb</i></span></h3>
+      <ul class="items sized withdesc">
       <li>
-        <span class="n">Beef Burger</span>
+        <span class="n">Beef Burger<em>Served with chips</em></span>
         <span class="dots"></span>
-        <span class="p">£6.50</span>
+        <span class="p2">£6.50</span>
+        <span class="p2">£7.50</span>
       </li>
       <li>
-        <span class="n">Cheese Burger</span>
+        <span class="n">Cheese Burger<em>Served with chips</em></span>
         <span class="dots"></span>
-        <span class="p">£8.00</span>
+        <span class="p2">£8.00</span>
+        <span class="p2">£9.00</span>
       </li>
       <li>
-        <span class="n">Chicken Burger</span>
+        <span class="n">Chicken Burger<em>Served with chips</em></span>
         <span class="dots"></span>
-        <span class="p">£8.00</span>
+        <span class="p2">£8.00</span>
+        <span class="p2">£9.00</span>
       </li>
       <li>
-        <span class="n">Bacon Supreme</span>
+        <span class="n">Bacon Supreme<em>Cheese burger with bacon · Served with chips</em></span>
         <span class="dots"></span>
-        <span class="p">£8.50</span>
+        <span class="p2">£8.50</span>
+        <span class="p2">£9.50</span>
       </li>
       <li>
-        <span class="n">Monster Burger</span>
+        <span class="n">Monster Burger<em>Cheese burger, bacon, doner, spicy sauce · ¼lb · Served with chips</em></span>
         <span class="dots"></span>
-        <span class="p">£9.50</span>
+        <span class="p2">£9.50</span>
+        <span class="p2">—</span>
       </li>
       <li>
-        <span class="n">Big Bites Burger</span>
+        <span class="n">Big Bites Burger<em>Cheese burger, chicken burger, doner · ¼lb · Served with chips</em></span>
         <span class="dots"></span>
-        <span class="p">£9.50</span>
+        <span class="p2">£9.50</span>
+        <span class="p2">—</span>
       </li>
       <li>
-        <span class="n">Pineapple Paradise Burger</span>
+        <span class="n">Pineapple Paradise Burger<em>Cheese burger with pineapple · Served with chips</em></span>
         <span class="dots"></span>
-        <span class="p">£8.00</span>
+        <span class="p2">£8.00</span>
+        <span class="p2">£9.00</span>
       </li>
       <li>
-        <span class="n">Piggy Burger</span>
+        <span class="n">Piggy Burger<em>Cheese burger, pepperoni, bacon, chorizo · ½lb · Served with chips</em></span>
         <span class="dots"></span>
-        <span class="p">£10.00</span>
+        <span class="p2">£10.00</span>
+        <span class="p2">—</span>
       </li>
       <li>
-        <span class="n">Halloumi Burger</span>
+        <span class="n">Halloumi Burger<em>Beef burger with halloumi cheese · Served with chips</em></span>
         <span class="dots"></span>
-        <span class="p">£9.00</span>
+        <span class="p2">£9.00</span>
+        <span class="p2">£10.00</span>
       </li>
       <li>
-        <span class="n">Vegetarian Burger</span>
+        <span class="n">Vegetarian Burger<em>Served with chips</em></span>
         <span class="dots"></span>
-        <span class="p">£9.00</span>
+        <span class="p2">£9.00</span>
+        <span class="p2">£10.00</span>
       </li></ul>
     </section>
     
@@ -929,17 +976,17 @@
       <h3>Parmesan</h3>
       <ul class="items dense">
       <li>
-        <span class="n">Plain Parmesan</span>
+        <span class="n">Plain Parmesan<em>Pounded chicken, golden crumb, bechamel &amp; cheese.</em></span>
         <span class="dots"></span>
         <span class="p">£10.50</span>
       </li>
       <li>
-        <span class="n">BBQ Parmesan</span>
+        <span class="n">BBQ Parmesan<em>Parmo topped with BBQ sauce &amp; cheese.</em></span>
         <span class="dots"></span>
         <span class="p">£12.00</span>
       </li>
       <li>
-        <span class="n">Hot Parmesan</span>
+        <span class="n">Hot Parmesan<em>Pepperoni, jalapeno, garlic butter.</em></span>
         <span class="dots"></span>
         <span class="p">£12.00</span>
       </li>
@@ -949,7 +996,7 @@
         <span class="p">£12.00</span>
       </li>
       <li>
-        <span class="n">Doner Parmesan</span>
+        <span class="n">Doner Parmesan<em>Doner &amp; cheese.</em></span>
         <span class="dots"></span>
         <span class="p">£12.00</span>
       </li></ul>
@@ -959,17 +1006,17 @@
       <h3>Salad</h3>
       <ul class="items dense">
       <li>
-        <span class="n">Side Salad</span>
+        <span class="n">Side Salad<em>Fresh mixed salad.</em></span>
         <span class="dots"></span>
         <span class="p">£4.00</span>
       </li>
       <li>
-        <span class="n">Chicken Salad</span>
+        <span class="n">Chicken Salad<em>Mixed salad topped with chargrilled chicken.</em></span>
         <span class="dots"></span>
         <span class="p">£7.50</span>
       </li>
       <li>
-        <span class="n">Tuna Salad</span>
+        <span class="n">Tuna Salad<em>Mixed salad with tuna.</em></span>
         <span class="dots"></span>
         <span class="p">£7.50</span>
       </li></ul>
