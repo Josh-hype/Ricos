@@ -38,30 +38,37 @@ function imgSize(name) {
 }
 
 /* Food photography, cut out of the sheet the owner supplied — see img/README.
-   `place: 'side'` drops it into the gutter between the item names and the price
-   column, as the designer's sheets do; 'below' centres it underneath. `clear`
-   is how much room the prices need on the right — two-column price lists need
-   more than one. Widths are capped by the source resolution; img/README records
-   the dpi each lands at. */
-function shot(name, width, place = 'side', clear = 15) {
+   On the reference the photo sits at the panel's RIGHT EDGE and the price
+   columns hug the item names to its left — prices are not flush right.
+   `place: 'side'` does that; 'below' centres it underneath. Widths are capped
+   by the source resolution; img/README records the dpi each lands at. */
+function shot(name, width, place = 'side') {
   if (!name) return '';
   const { w, h } = imgSize(name);
   const tall = (width * h / w).toFixed(1);
   return `<img class="shot ${place}" src="img/${name}.png" alt=""
-    style="width:${width}mm;--clear:${clear}mm;--shoth:${tall}mm" />`;
+    style="width:${width}mm;--shoth:${tall}mm" />`;
 }
 
-/* Prices stay pinned to the right edge of the panel — the photo is lifted out
-   of the flow and dropped into the gutter rather than narrowing the list, which
-   is what pulled the prices inwards before. The gutter is reserved on the row
-   so a long item name can never run underneath the picture. */
-function withShot(inner, img) {
-  if (!img) return inner;
-  if (img.includes('below')) return `${inner}${img}`;
+/* The list reserves the photo's column with padding, so the price column lands
+   just left of the picture and a long name wraps instead of running under it.
+   `slot` reserves the same column with nothing in it — how a section whose
+   artwork is still missing keeps the reference's geometry (the space stays
+   empty until the asset exists). */
+function withShot(inner, img, slot = 0) {
+  if (!img && !slot) return inner;
+  if (img && img.includes('below')) return `${inner}${img}`;
   const num = (k) => +(new RegExp(`${k}:([\\d.]+)mm`).exec(img)?.[1] || 0);
-  const w = num('width') || 30;
-  return `<div class="blkrow" style="--gutter:${(w + num('--clear') + 4).toFixed(1)}mm;
+  const w = img ? (num('width') || 30) : slot;
+  return `<div class="blkrow" style="--slot:${(w + 4).toFixed(1)}mm;
     --rowmin:${(num('--shoth') + 3).toFixed(1)}mm">${inner}${img}</div>`;
+}
+
+/* How far a section's size chips shift left so they sit over the price columns
+   when a photo column is reserved to their right. */
+function slotOf(img, slot) {
+  if (img) return +(/width:([\d.]+)mm/.exec(img)?.[1] || 30) + 4;
+  return slot ? slot + 4 : 0;
 }
 
 /* Every section header on the reference is a plaque with a dotted rule running
@@ -73,8 +80,9 @@ function header(inner, aside = '') {
 /* Size chips. The reference colours them per section: both red where the two
    sizes are the same kind of thing (11"/13"), gold then red where they are a
    step up (MEDIUM/LARGE, 1/4lb/1/2lb). */
-function chips(headings, tone = ['gold', 'red']) {
-  return `<span class="sizehdr">${headings.map((h, i) => `<i class="${tone[i]}">${h}</i>`).join('')}</span>`;
+function chips(headings, tone = ['gold', 'red'], shift = 0) {
+  const style = shift ? ` style="margin-right:${shift.toFixed(1)}mm"` : '';
+  return `<span class="sizehdr"${style}>${headings.map((h, i) => `<i class="${tone[i]}">${h}</i>`).join('')}</span>`;
 }
 
 /* Some items carry their whole description in a required choice rather than a
@@ -90,7 +98,7 @@ function choiceLine(i) {
 }
 
 /* A price list. `dense` drops the description to fit more in. */
-function list(id, { dense = false, cols = 1, title = null, desc = false, img = '', choices = false, tone = '' } = {}) {
+function list(id, { dense = false, cols = 1, title = null, desc = false, img = '', choices = false, tone = '', slot = 0 } = {}) {
   const c = cat(id);
   const rows = c.items.map((i) => {
     const d = i.desc || (choices ? choiceLine(i) : '');
@@ -104,7 +112,7 @@ function list(id, { dense = false, cols = 1, title = null, desc = false, img = '
   return `
     <section class="blk">
       ${header(esc(title || c.name))}
-      ${withShot(`<ul class="items${cols > 1 ? ' two' : ''}${dense ? ' dense' : ''}${tone ? ' ' + tone : ''}">${rows}</ul>`, img)}
+      ${withShot(`<ul class="items${cols > 1 ? ' two' : ''}${dense ? ' dense' : ''}${tone ? ' ' + tone : ''}">${rows}</ul>`, img, slot)}
     </section>`;
 }
 
@@ -113,7 +121,7 @@ function list(id, { dense = false, cols = 1, title = null, desc = false, img = '
    prices in their own columns, with the topping line under the name — exactly
    as the designer's sheet does. Items without the option get one price and a
    dash, which is how the reference handles Tray Doner and the like. */
-function sizedList(id, optId, headings, { title = null, img = '', secondOnly = null, tight = true, tone = ['gold', 'red'], nameTone = '' } = {}) {
+function sizedList(id, optId, headings, { title = null, img = '', secondOnly = null, tight = true, tone = ['gold', 'red'], nameTone = '', slot = 0 } = {}) {
   const c = cat(id);
   const rows = c.items.map((i) => {
     const opt = (i.options || []).find((o) => o.id === optId);
@@ -126,14 +134,14 @@ function sizedList(id, optId, headings, { title = null, img = '', secondOnly = n
       <li>
         <span class="n">${esc(i.name)}${i.desc ? `<em>${descText(i.desc)}</em>` : ''}</span>
         <span class="dots"></span>
-        <span class="p2">${only2 ? '—' : money(i.price)}</span>
-        <span class="p2">${only2 ? money(i.price) : p2 != null ? money(p2) : '—'}</span>
+        <span class="p2">${only2 ? '-' : money(i.price)}</span>
+        <span class="p2">${only2 ? money(i.price) : p2 != null ? money(p2) : '-'}</span>
       </li>`;
   }).join('');
   return `
     <section class="blk">
-      ${header(esc(title || c.name), chips(headings, tone))}
-      ${withShot(`<ul class="items sized${tight ? ' withdesc' : ''}${nameTone ? ' ' + nameTone : ''}">${rows}</ul>`, img)}
+      ${header(esc(title || c.name), chips(headings, tone, slotOf(img, slot)))}
+      ${withShot(`<ul class="items sized${tight ? ' withdesc' : ''}${nameTone ? ' ' + nameTone : ''}">${rows}</ul>`, img, slot)}
     </section>`;
 }
 
@@ -147,53 +155,80 @@ function milkshakes() {
   const shakes = c.items.filter((i) => !isCooler(i));
   const coolers = c.items.filter(isCooler);
   const flavour = (n) => n.replace(/\s*(milkshake|cooler)\s*/ig, '').trim();
-  const row = (name, price, sub) => `
-      <li><span class="n">${esc(name)}${sub ? `<em>${descText(sub)}</em>` : ''}</span>
+  const row = (name, price, sub, cls = '') => `
+      <li><span class="n">${esc(name)}${sub ? `<em${cls ? ` class="${cls}"` : ''}>${descText(sub)}</em>` : ''}</span>
         <span class="dots"></span><span class="p">${money(price)}</span></li>`;
   return `
     <section class="blk">
       ${header('Milk Shakes')}
       ${withShot(`<ul class="items">
         ${shakes.map((i) => row(flavour(i.name), i.price)).join('')}
-        ${coolers.length ? row('Cooler', coolers[0].price, coolers.map((i) => `${flavour(i.name)} Cooler`).join(', ')) : ''}
-      </ul>`, shot('shake', 26))}
+        ${coolers.length ? row('Cooler', coolers[0].price, coolers.map((i) => `${flavour(i.name)} Cooler`).join(', '), 'plain') : ''}
+      </ul>`, shot('shake', 32))}
     </section>`;
 }
 
 /* The reference gives Kids its own red box with a yellow keyline rather than a
    plaque heading — the "KIDS MENU / BIG BITES" ribbon does the heading's job.
    That ribbon is artwork we don't have, so the space is left for it. */
+function joinKid(name, desc) {
+  if (!desc) return esc(name);
+  const words = name.split(' ');
+  for (let k = 0; k < words.length; k++) {
+    const suffix = words.slice(k).join(' ').toLowerCase();
+    if (desc.toLowerCase().startsWith(suffix)) {
+      const rest = desc.slice(suffix.length).replace(/^[,\s]+/, '');
+      return esc(name) + (rest ? (rest.startsWith('(') ? ` ${descText(rest)}` : `, ${descText(rest)}`) : '');
+    }
+  }
+  return `${esc(name)}, ${descText(desc)}`;
+}
+
 function kidsBox() {
   const c = cat('kids');
   return `
     <section class="blk kidsbox">
-      <div class="kidsinner">
         <!-- ASSET GAP: the KIDS MENU / BIG BITES ribbon lockup goes here. -->
         <div class="kidsmark"><b>Kids</b><b>Menu</b><span>Big Bites</span></div>
-        <ul class="items dense kidslist">
+        <div class="kidsticket">
+        <ul class="items kidslist">
           ${c.items.map((i) => {
             const d = i.desc || choiceLine(i);
-            return `<li><span class="n">${redCounts(esc(i.name))}${d ? `<em>${descText(d)}</em>` : ''}</span>
-              <span class="dots"></span><span class="p">${money(i.price)}</span></li>`;
+            return `<li><span class="n">${joinKid(i.name, d)}</span>
+              <span class="dots"></span><span class="p">£${money(i.price)}</span></li>`;
           }).join('')}
         </ul>
-      </div>
+        </div>
     </section>`;
 }
 
-/* Meal deals get boxes, as on the reference. */
+/* Meal deals get boxes, as on the reference: centred plaque, the deal's
+   components each on their own line, and — alone on the sheet — a £ on the
+   price, exactly as the reference sets these boxes. The reference also folds
+   the two pizza deals into ONE box with a price per line; same deals, same
+   prices, one box. */
 function deals() {
   const c = cat('meal-deals');
-  return `
-    <section class="blk">
-      ${header('Meal Deals')}
-      <div class="deals">
-        ${c.items.map((i) => `
+  const lines = (s) => esc(s || '').split(/,\s*/).join('<br />');
+  const pizzaDeals = c.items.filter((i) => /^pizza deal/i.test(i.name));
+  const rest = c.items.filter((i) => !/^pizza deal/i.test(i.name));
+  const box = (i) => `
         <div class="deal">
           <b>${esc(i.name)}</b>
-          <p>${esc(i.desc || '')}</p>
-          <strong>${money(i.price)}</strong>
-        </div>`).join('')}
+          <p>${lines(i.desc)}</p>
+          <strong>£${money(i.price)}</strong>
+        </div>`;
+  const pizzaBox = pizzaDeals.length ? `
+        <div class="deal">
+          <b>Pizza Deal</b>
+          ${pizzaDeals.map((i) => `<p class="pd">${lines(i.desc)}<strong>£${money(i.price)}</strong></p>`).join('')}
+        </div>` : '';
+  return `
+    <section class="blk">
+      <div class="center">${header('Meal Deals')}</div>
+      <div class="deals">
+        ${rest.map(box).join('')}
+        ${pizzaBox}
       </div>
     </section>`;
 }
@@ -226,11 +261,11 @@ function stuffedCrust() {
 }
 
 const hours = [
-  ['Sunday – Thursday', cfg.hours.sunday.windows[0]],
-  ['Friday – Saturday', cfg.hours.friday.windows[0]],
+  ['Sunday - Thursday', cfg.hours.sunday.windows[0]],
+  ['Friday - Saturday', cfg.hours.friday.windows[0]],
 ].map(([label, w]) => {
-  const t = (s) => { const [h, m] = s.split(':').map(Number); const ap = h >= 12 ? 'pm' : 'am'; const hh = h % 12 || 12; return m ? `${hh}.${String(m).padStart(2, '0')}${ap}` : `${hh}${ap}`; };
-  return `<div><span>${label}</span><b>${t(w.open)} – ${t(w.close)}</b></div>`;
+  const t = (s) => { const [h, m] = s.split(':').map(Number); const ap = h >= 12 ? 'pm' : 'am'; const hh = h % 12 || 12; return m ? `${hh}.${String(m).padStart(2, '0')} ${ap}` : `${hh} ${ap}`; };
+  return `<div><span>${label}</span><b>${t(w.open)} - ${t(w.close)}</b></div>`;
 }).join('');
 
 const del = cfg.fulfillment.delivery;
@@ -255,6 +290,7 @@ const cover = `
   <div class="panel cover">
     <div class="coverbody">
       <img class="brandmark" src="logo.png" alt="Big Bites — Slice It! Fresh &amp; Loaded" />
+      <div class="coverrule"></div>
       <div class="tel">
         <span class="telline">${icon('phone')}Tel : ${phoneCode}</span>
         <b>${phoneRest.join(' ')}</b>
@@ -326,6 +362,11 @@ const html = `<!doctype html>
 
   .panel {
     position: relative;
+    /* Pinned, not implicit: as a grid item the panel would otherwise STRETCH
+       to its content and push past the 303mm page, and the overflow check
+       (scrollHeight vs clientHeight, both grown) would pass while the print
+       clipped — which is exactly what happened to the kids box. */
+    height: 297mm;
     /* Spread the sections down the panel instead of stacking them at the top
        and leaving a hole above the fold ticker — the reference sheet does the
        same. On a panel that exactly fills, this is a no-op. */
@@ -397,6 +438,13 @@ const html = `<!doctype html>
      the panel underneath it. The header itself is inline-block and rotated, so
      the rule is its own element rather than a border. */
   .hrule { margin: 1mm 0 2.5mm; border-top: .5mm dotted rgba(255,255,255,.55); }
+  /* The outer face runs its dotted rules BETWEEN sections instead — under the
+     lists, not under the plaques. Same rule, different position. */
+  .side-a .hrule { display: none; }
+  .side-a .panel .blk:not(:last-of-type) {
+    border-bottom: .5mm dotted rgba(255,255,255,.55); padding-bottom: 4mm;
+  }
+  .side-a .kidsbox { border-bottom: 0; }
 
   /* ---- food photography ----
      The cutouts arrive on transparency, so they drop straight onto the panel.
@@ -404,8 +452,8 @@ const html = `<!doctype html>
      survives a colour change to the panel. */
   .blkrow { position: relative; min-height: var(--rowmin, 0); }
   .shot { height: auto; display: block; filter: drop-shadow(0 1.2mm 1.8mm rgba(0,0,0,.65)); }
-  /* Sits in the gutter, clear of the prices, which stay hard right. */
-  .shot.side { position: absolute; top: 50%; translate: 0 -50%; right: var(--clear, 15mm); }
+  /* At the panel's right edge; the list's own padding keeps the text clear. */
+  .shot.side { position: absolute; top: 50%; translate: 0 -50%; right: 0; }
   .shot.below { margin: 3mm auto 0; }
   /* The reference sets the pizza on a gold halftone. Generated, not drawn. */
   .halftone {
@@ -416,11 +464,7 @@ const html = `<!doctype html>
     -webkit-mask: radial-gradient(circle at 50% 62%, #000 26%, transparent 68%);
             mask: radial-gradient(circle at 50% 62%, #000 26%, transparent 68%);
   }
-  /* The reservation: the leaders refuse to shrink past the gutter, so a long
-     name wraps instead of running under the photo. Lists that hide their
-     leaders reserve it on the name itself. */
-  .blkrow .items .dots { min-width: var(--gutter); }
-  .blkrow .items.withdesc .n { padding-right: var(--gutter); }
+  .blkrow .items { padding-right: var(--slot, 0mm); }
 
   .items { list-style: none; margin: 0; padding: 0; }
   .items.two { column-count: 2; column-gap: 6mm; }
@@ -446,10 +490,16 @@ const html = `<!doctype html>
   .items .n em::before { content: '('; }
   .items .n em::after { content: ')'; }
   .items.gold .n em::before, .items.gold .n em::after { content: none; }
+  /* A sub-line that is part of the name, not a description — the cooler
+     flavours. White, unbracketed. */
+  .items .n em.plain { color: #fff; }
+  .items .n em.plain::before, .items .n em.plain::after { content: none; }
   .items .n u { text-decoration: none; color: #e0483a; }
-  /* Pizza inverts it: gold names, white toppings, no brackets. */
+  /* Pizza inverts it: gold names, white toppings, no brackets — and the
+     topping runs INLINE after the name, which is what lets the reference set
+     32 pizzas this large in one column. */
   .items.gold .n { color: #ffc400; font-weight: 600; }
-  .items.gold .n em { color: #fff; }
+  .items.gold .n em { color: #fff; display: inline; margin-left: 1.5mm; }
   /* No leaders on the reference: the rows read on alignment alone, and the only
      dotted rule on the sheet is the one under each heading. The element stays
      as the flexible spacer that pushes the price right (and carries the photo
@@ -494,32 +544,37 @@ const html = `<!doctype html>
      tinted off the gold one by luminance, since a CSS hue-rotate took the gold
      to brown (the art is not a pure hue) and also recoloured the text. */
   .redhead h3 { border-image-source: url(img/header-plaque-red.png); color: #fff; }
-  .redhead h3 .hdr2 { color: #ffc400; }
+  .redhead h3 .hdr2 { color: #fff; }
 
+  /* Reference: plain white bullet list, white prices, roomy rows. */
   .chips { list-style: none; margin: 0 0 3mm; padding: 0; column-count: 2; column-gap: 5mm; }
   .chips.three { column-count: 3; column-gap: 4mm; }
-  .chips b { color: #ffc400; font-weight: 800; }
-  .chips li { font-size: 3.3mm; font-weight: 700; text-transform: uppercase; padding: 1.1mm 0; break-inside: avoid; }
-  .chips li::before { content: '•'; color: #ffc400; margin-right: 1.6mm; }
+  .chips b { color: #fff; font-weight: 600; }
+  .chips li { font-size: 3.7mm; font-weight: 500; color: #fff; text-transform: uppercase; padding: 1.3mm 0; break-inside: avoid; }
+  .chips li::before { content: '•'; color: #fff; margin-right: 1.6mm; }
 
   /* ---- kids box ---- */
-  .kidsbox { background: #d61313; border-radius: 3mm; padding: 2.2mm; }
-  .kidsinner {
-    border: .4mm dashed rgba(255,196,0,.9); border-radius: 2mm;
-    padding: 3mm; display: flex; align-items: center; gap: 4mm;
-  }
+  /* Reference: red box, ribbon lockup on the left (asset gap — plain type
+     holds its place), and the items on a YELLOW ticket in black, with dotted
+     leaders and a £ — the one list on the sheet that keeps both. */
+  .kidsbox { background: #d61313; border-radius: 3mm; padding: 3mm 3.5mm; display: flex; align-items: center; gap: 4mm; }
   .kidsmark {
-    flex: none; width: 26mm; text-align: center; color: #fff;
+    flex: none; width: 25mm; text-align: center; color: #fff;
     font-family: 'Anton', Impact, sans-serif; line-height: .95;
   }
-  .kidsmark b { display: block; font-size: 6.4mm; }
+  .kidsmark b { display: block; font-size: 6.8mm; }
   .kidsmark span {
     display: block; margin-top: 1.2mm; padding: .6mm 0;
-    background: #ffc400; color: #111; font-size: 3.2mm; border-radius: 1mm;
+    background: #ffc400; color: #111; font-size: 3.4mm; border-radius: 1mm;
   }
-  .kidslist { flex: 1; min-width: 0; }
-  .kidsbox .items .n, .kidsbox .items .p { color: #fff; }
-  .kidsbox .items .n em { color: #ffe08a; }
+  .kidsticket {
+    flex: 1; min-width: 0; background: #ffc400; border-radius: 2mm;
+    padding: 2.5mm 3.5mm;
+  }
+  .kidslist li { font-size: 3.4mm; }
+  .kidsticket .items .n { text-transform: none; }
+  .kidsticket .items .n, .kidsticket .items .p { color: #111; font-weight: 600; }
+  .kidsticket .items .dots { border-bottom: .45mm dotted #111; margin: 0 1mm 1mm; align-self: flex-end; }
 
   /* ---- meal deal boxes ---- */
   /* The deals are the upsell and the reference gives them a third of the
@@ -528,7 +583,7 @@ const html = `<!doctype html>
   .deal {
     background: #fdf6e3; color: #111;
     border: .6mm solid #111; border-radius: 2mm;
-    padding: 3.5mm 3mm; text-align: center;
+    padding: 2.6mm 3mm; text-align: center;
     box-shadow: 1.2mm 1.2mm 0 rgba(0,0,0,.55);
     display: flex; flex-direction: column; justify-content: center;
   }
@@ -545,9 +600,11 @@ const html = `<!doctype html>
       linear-gradient(#000, #000) 0 1.4mm / 100% calc(100% - 2.8mm) no-repeat;
     border: 0; border-radius: 0; box-shadow: none;
   }
-  .deal b { display: block; font-family: 'Anton', Impact, sans-serif; color: #d61313; font-size: 4.6mm; line-height: 1.05; text-transform: uppercase; }
-  .deal p { margin: 1.8mm 0 2.2mm; font-size: 2.9mm; line-height: 1.35; font-weight: 600; }
-  .deal strong { font-size: 5.6mm; font-weight: 900; }
+  .center { text-align: center; }
+  .deal b { display: block; font-family: 'Anton', Impact, sans-serif; color: #d61313; font-size: 5mm; line-height: 1.05; text-transform: uppercase; }
+  .deal p { margin: 1.3mm 0 1.5mm; font-size: 3.2mm; line-height: 1.25; font-weight: 500; text-transform: capitalize; }
+  .deal strong { font-family: 'Anton', Impact, sans-serif; font-size: 5.4mm; font-weight: 400; color: #111; }
+  .deal .pd strong { display: block; margin-top: .6mm; font-size: 4.6mm; }
 
   /* ---- cover panel ---- */
   /* The reference splits this panel: the cover proper, and a red spine down the
@@ -573,14 +630,15 @@ const html = `<!doctype html>
   /* The supplied wordmark, keyed to transparency so the panel's own black and
      its faint yellow glow read through instead of a slightly-off black box.
      105mm wide keeps the source above 300dpi at print size. */
-  .brandmark { width: 112mm; height: auto; display: block; }
+  .brandmark { width: 120mm; height: auto; display: block; }
+  .coverrule { width: 100%; margin-top: 4mm; border-top: .5mm dotted rgba(255,255,255,.55); }
 
   .tel { margin-top: 6mm; }
   .telline { display: flex; align-items: center; justify-content: center; font-size: 7.5mm; font-weight: 600; letter-spacing: .02em; }
   /* Luckiest Guy draws well above its em box, so the number's glyphs ran over
      the line above even though the two boxes never touched. The margin is
      clearance for the overshoot, not decoration — don't trim it. */
-  .tel b { display: block; margin-top: 3mm; font-family: 'Anton', Impact, sans-serif; font-size: 17mm; line-height: 1; letter-spacing: .04em; }
+  .tel b { display: block; margin-top: 3mm; font-family: 'Anton', Impact, sans-serif; font-size: 17mm; line-height: 1; letter-spacing: .04em; color: #f3ead8; }
 
   /* The cover's straps are the same device as a section header, so they take
      the same plaque — a flat yellow bar next to a bitten one would read as an
@@ -601,9 +659,9 @@ const html = `<!doctype html>
     font-family: 'Anton', Impact, sans-serif; font-size: 4.4mm;
     text-transform: uppercase;
   }
-  .fine { margin: 0; font-size: 3mm; line-height: 1.5; font-weight: 600; color: #e8dcc6; }
-  .hours { width: 100%; }
-  .hours div { display: flex; justify-content: space-between; font-size: 3.2mm; padding: 2mm 0; border-bottom: .2mm dotted rgba(255,255,255,.25); }
+  .fine { margin: 0; font-size: 3.5mm; line-height: 1.5; font-weight: 400; color: #fff; }
+  .hours { width: 86%; }
+  .hours div { display: flex; justify-content: space-between; font-size: 3.9mm; font-weight: 500; padding: 1.2mm 0; }
   /* Straight from the shop's config, not written here — the same wording the
      website shows at checkout. */
   .allergy {
@@ -612,7 +670,7 @@ const html = `<!doctype html>
     font-size: 2.9mm; line-height: 1.45; font-weight: 600; color: #e8dcc6;
   }
   .allergy b { color: #ffc400; text-transform: uppercase; letter-spacing: .08em; }
-  .hours b { color: #ffc400; }
+  .hours b { color: #fff; font-weight: 500; }
 
   .qrwrap { display: flex; align-items: center; justify-content: center; gap: 3mm; padding-top: 3mm; }
   .qrtxt .arrow { display: block; font-size: 6mm; color: #ffc400; line-height: 1; }
@@ -644,14 +702,14 @@ ${/* Section order and panel assignment follow the designer's artwork exactly:
       Don't reshuffle these without checking the reference sheets again. */''}
 ${page('side-a', `
   <div class="panel">
-    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, tight: false, tone: ['gold', 'gold'] })}
+    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, tight: false, tone: ['gold', 'gold'], slot: 34 })}
     ${milkshakes()}
-    ${list('desserts', { dense: true, desc: true, img: shot('cake', 36) })}
+    ${list('desserts', { dense: true, desc: true, img: shot('cake', 40) })}
     ${kidsBox()}
   </div>
   <div class="panel">
     ${dips()}
-    ${shot('burger-meal', 94, 'below')}
+    ${shot('burger-meal', 108, 'below')}
     ${deals()}
   </div>
   ${cover}
@@ -663,17 +721,17 @@ ${page('side-b', `
       ${sizedList('pizza', 'size', ['11"', '13"'], { tone: ['red', 'red'], nameTone: 'gold' })}
       ${stuffedCrust()}
     </div>
-    <div class="halftone">${shot('pizza', 42, 'below')}</div>
+    <div class="halftone">${shot('pizza', 58, 'below')}</div>
   </div>
   <div class="panel tight">
-    ${sizedList('garlic-bread', 'size', ['11"', '13"'], { tone: ['red', 'red'] })}
+    ${sizedList('garlic-bread', 'size', ['11"', '13"'], { tone: ['red', 'red'], slot: 30 })}
     ${list('calzone', { dense: true, desc: true, img: shot('calzone', 34) })}
     ${sizedList('kebab', 'size', ['MEDIUM', 'LARGE'], { title: 'Kebabs', img: shot('kebab', 27, 'side', 25) })}
-    ${list('parmesan', { dense: true, desc: true })}
+    ${list('parmesan', { dense: true, desc: true, slot: 30 })}
     ${list('wraps', { dense: true, desc: true, img: shot('wrap', 33), title: 'Wrap' })}
   </div>
   <div class="panel">
-    ${sizedList('burgers', 'size', ['1/4 lb', '1/2 lb'])}
+    ${sizedList('burgers', 'size', ['1/4 lb', '1/2 lb'], { slot: 16 })}
     ${list('sides', { dense: true, img: shot('sides', 40), title: 'Sides' })}
     ${list('salad', { dense: true, desc: true, img: shot('salad', 40) })}
   </div>

@@ -32,6 +32,11 @@
 
   .panel {
     position: relative;
+    /* Pinned, not implicit: as a grid item the panel would otherwise STRETCH
+       to its content and push past the 303mm page, and the overflow check
+       (scrollHeight vs clientHeight, both grown) would pass while the print
+       clipped — which is exactly what happened to the kids box. */
+    height: 297mm;
     /* Spread the sections down the panel instead of stacking them at the top
        and leaving a hole above the fold ticker — the reference sheet does the
        same. On a panel that exactly fills, this is a no-op. */
@@ -103,6 +108,13 @@
      the panel underneath it. The header itself is inline-block and rotated, so
      the rule is its own element rather than a border. */
   .hrule { margin: 1mm 0 2.5mm; border-top: .5mm dotted rgba(255,255,255,.55); }
+  /* The outer face runs its dotted rules BETWEEN sections instead — under the
+     lists, not under the plaques. Same rule, different position. */
+  .side-a .hrule { display: none; }
+  .side-a .panel .blk:not(:last-of-type) {
+    border-bottom: .5mm dotted rgba(255,255,255,.55); padding-bottom: 4mm;
+  }
+  .side-a .kidsbox { border-bottom: 0; }
 
   /* ---- food photography ----
      The cutouts arrive on transparency, so they drop straight onto the panel.
@@ -110,8 +122,8 @@
      survives a colour change to the panel. */
   .blkrow { position: relative; min-height: var(--rowmin, 0); }
   .shot { height: auto; display: block; filter: drop-shadow(0 1.2mm 1.8mm rgba(0,0,0,.65)); }
-  /* Sits in the gutter, clear of the prices, which stay hard right. */
-  .shot.side { position: absolute; top: 50%; translate: 0 -50%; right: var(--clear, 15mm); }
+  /* At the panel's right edge; the list's own padding keeps the text clear. */
+  .shot.side { position: absolute; top: 50%; translate: 0 -50%; right: 0; }
   .shot.below { margin: 3mm auto 0; }
   /* The reference sets the pizza on a gold halftone. Generated, not drawn. */
   .halftone {
@@ -122,11 +134,7 @@
     -webkit-mask: radial-gradient(circle at 50% 62%, #000 26%, transparent 68%);
             mask: radial-gradient(circle at 50% 62%, #000 26%, transparent 68%);
   }
-  /* The reservation: the leaders refuse to shrink past the gutter, so a long
-     name wraps instead of running under the photo. Lists that hide their
-     leaders reserve it on the name itself. */
-  .blkrow .items .dots { min-width: var(--gutter); }
-  .blkrow .items.withdesc .n { padding-right: var(--gutter); }
+  .blkrow .items { padding-right: var(--slot, 0mm); }
 
   .items { list-style: none; margin: 0; padding: 0; }
   .items.two { column-count: 2; column-gap: 6mm; }
@@ -152,10 +160,16 @@
   .items .n em::before { content: '('; }
   .items .n em::after { content: ')'; }
   .items.gold .n em::before, .items.gold .n em::after { content: none; }
+  /* A sub-line that is part of the name, not a description — the cooler
+     flavours. White, unbracketed. */
+  .items .n em.plain { color: #fff; }
+  .items .n em.plain::before, .items .n em.plain::after { content: none; }
   .items .n u { text-decoration: none; color: #e0483a; }
-  /* Pizza inverts it: gold names, white toppings, no brackets. */
+  /* Pizza inverts it: gold names, white toppings, no brackets — and the
+     topping runs INLINE after the name, which is what lets the reference set
+     32 pizzas this large in one column. */
   .items.gold .n { color: #ffc400; font-weight: 600; }
-  .items.gold .n em { color: #fff; }
+  .items.gold .n em { color: #fff; display: inline; margin-left: 1.5mm; }
   /* No leaders on the reference: the rows read on alignment alone, and the only
      dotted rule on the sheet is the one under each heading. The element stays
      as the flexible spacer that pushes the price right (and carries the photo
@@ -200,32 +214,37 @@
      tinted off the gold one by luminance, since a CSS hue-rotate took the gold
      to brown (the art is not a pure hue) and also recoloured the text. */
   .redhead h3 { border-image-source: url(img/header-plaque-red.png); color: #fff; }
-  .redhead h3 .hdr2 { color: #ffc400; }
+  .redhead h3 .hdr2 { color: #fff; }
 
+  /* Reference: plain white bullet list, white prices, roomy rows. */
   .chips { list-style: none; margin: 0 0 3mm; padding: 0; column-count: 2; column-gap: 5mm; }
   .chips.three { column-count: 3; column-gap: 4mm; }
-  .chips b { color: #ffc400; font-weight: 800; }
-  .chips li { font-size: 3.3mm; font-weight: 700; text-transform: uppercase; padding: 1.1mm 0; break-inside: avoid; }
-  .chips li::before { content: '•'; color: #ffc400; margin-right: 1.6mm; }
+  .chips b { color: #fff; font-weight: 600; }
+  .chips li { font-size: 3.7mm; font-weight: 500; color: #fff; text-transform: uppercase; padding: 1.3mm 0; break-inside: avoid; }
+  .chips li::before { content: '•'; color: #fff; margin-right: 1.6mm; }
 
   /* ---- kids box ---- */
-  .kidsbox { background: #d61313; border-radius: 3mm; padding: 2.2mm; }
-  .kidsinner {
-    border: .4mm dashed rgba(255,196,0,.9); border-radius: 2mm;
-    padding: 3mm; display: flex; align-items: center; gap: 4mm;
-  }
+  /* Reference: red box, ribbon lockup on the left (asset gap — plain type
+     holds its place), and the items on a YELLOW ticket in black, with dotted
+     leaders and a £ — the one list on the sheet that keeps both. */
+  .kidsbox { background: #d61313; border-radius: 3mm; padding: 3mm 3.5mm; display: flex; align-items: center; gap: 4mm; }
   .kidsmark {
-    flex: none; width: 26mm; text-align: center; color: #fff;
+    flex: none; width: 25mm; text-align: center; color: #fff;
     font-family: 'Anton', Impact, sans-serif; line-height: .95;
   }
-  .kidsmark b { display: block; font-size: 6.4mm; }
+  .kidsmark b { display: block; font-size: 6.8mm; }
   .kidsmark span {
     display: block; margin-top: 1.2mm; padding: .6mm 0;
-    background: #ffc400; color: #111; font-size: 3.2mm; border-radius: 1mm;
+    background: #ffc400; color: #111; font-size: 3.4mm; border-radius: 1mm;
   }
-  .kidslist { flex: 1; min-width: 0; }
-  .kidsbox .items .n, .kidsbox .items .p { color: #fff; }
-  .kidsbox .items .n em { color: #ffe08a; }
+  .kidsticket {
+    flex: 1; min-width: 0; background: #ffc400; border-radius: 2mm;
+    padding: 2.5mm 3.5mm;
+  }
+  .kidslist li { font-size: 3.4mm; }
+  .kidsticket .items .n { text-transform: none; }
+  .kidsticket .items .n, .kidsticket .items .p { color: #111; font-weight: 600; }
+  .kidsticket .items .dots { border-bottom: .45mm dotted #111; margin: 0 1mm 1mm; align-self: flex-end; }
 
   /* ---- meal deal boxes ---- */
   /* The deals are the upsell and the reference gives them a third of the
@@ -234,7 +253,7 @@
   .deal {
     background: #fdf6e3; color: #111;
     border: .6mm solid #111; border-radius: 2mm;
-    padding: 3.5mm 3mm; text-align: center;
+    padding: 2.6mm 3mm; text-align: center;
     box-shadow: 1.2mm 1.2mm 0 rgba(0,0,0,.55);
     display: flex; flex-direction: column; justify-content: center;
   }
@@ -251,9 +270,11 @@
       linear-gradient(#000, #000) 0 1.4mm / 100% calc(100% - 2.8mm) no-repeat;
     border: 0; border-radius: 0; box-shadow: none;
   }
-  .deal b { display: block; font-family: 'Anton', Impact, sans-serif; color: #d61313; font-size: 4.6mm; line-height: 1.05; text-transform: uppercase; }
-  .deal p { margin: 1.8mm 0 2.2mm; font-size: 2.9mm; line-height: 1.35; font-weight: 600; }
-  .deal strong { font-size: 5.6mm; font-weight: 900; }
+  .center { text-align: center; }
+  .deal b { display: block; font-family: 'Anton', Impact, sans-serif; color: #d61313; font-size: 5mm; line-height: 1.05; text-transform: uppercase; }
+  .deal p { margin: 1.3mm 0 1.5mm; font-size: 3.2mm; line-height: 1.25; font-weight: 500; text-transform: capitalize; }
+  .deal strong { font-family: 'Anton', Impact, sans-serif; font-size: 5.4mm; font-weight: 400; color: #111; }
+  .deal .pd strong { display: block; margin-top: .6mm; font-size: 4.6mm; }
 
   /* ---- cover panel ---- */
   /* The reference splits this panel: the cover proper, and a red spine down the
@@ -279,14 +300,15 @@
   /* The supplied wordmark, keyed to transparency so the panel's own black and
      its faint yellow glow read through instead of a slightly-off black box.
      105mm wide keeps the source above 300dpi at print size. */
-  .brandmark { width: 112mm; height: auto; display: block; }
+  .brandmark { width: 120mm; height: auto; display: block; }
+  .coverrule { width: 100%; margin-top: 4mm; border-top: .5mm dotted rgba(255,255,255,.55); }
 
   .tel { margin-top: 6mm; }
   .telline { display: flex; align-items: center; justify-content: center; font-size: 7.5mm; font-weight: 600; letter-spacing: .02em; }
   /* Luckiest Guy draws well above its em box, so the number's glyphs ran over
      the line above even though the two boxes never touched. The margin is
      clearance for the overshoot, not decoration — don't trim it. */
-  .tel b { display: block; margin-top: 3mm; font-family: 'Anton', Impact, sans-serif; font-size: 17mm; line-height: 1; letter-spacing: .04em; }
+  .tel b { display: block; margin-top: 3mm; font-family: 'Anton', Impact, sans-serif; font-size: 17mm; line-height: 1; letter-spacing: .04em; color: #f3ead8; }
 
   /* The cover's straps are the same device as a section header, so they take
      the same plaque — a flat yellow bar next to a bitten one would read as an
@@ -307,9 +329,9 @@
     font-family: 'Anton', Impact, sans-serif; font-size: 4.4mm;
     text-transform: uppercase;
   }
-  .fine { margin: 0; font-size: 3mm; line-height: 1.5; font-weight: 600; color: #e8dcc6; }
-  .hours { width: 100%; }
-  .hours div { display: flex; justify-content: space-between; font-size: 3.2mm; padding: 2mm 0; border-bottom: .2mm dotted rgba(255,255,255,.25); }
+  .fine { margin: 0; font-size: 3.5mm; line-height: 1.5; font-weight: 400; color: #fff; }
+  .hours { width: 86%; }
+  .hours div { display: flex; justify-content: space-between; font-size: 3.9mm; font-weight: 500; padding: 1.2mm 0; }
   /* Straight from the shop's config, not written here — the same wording the
      website shows at checkout. */
   .allergy {
@@ -318,7 +340,7 @@
     font-size: 2.9mm; line-height: 1.45; font-weight: 600; color: #e8dcc6;
   }
   .allergy b { color: #ffc400; text-transform: uppercase; letter-spacing: .08em; }
-  .hours b { color: #ffc400; }
+  .hours b { color: #fff; font-weight: 500; }
 
   .qrwrap { display: flex; align-items: center; justify-content: center; gap: 3mm; padding-top: 3mm; }
   .qrtxt .arrow { display: block; font-size: 6mm; color: #ffc400; line-height: 1; }
@@ -351,8 +373,9 @@
   <div class="panel">
     
     <section class="blk">
-      <div class="headrow"><h3>Drinks</h3><span class="sizehdr"><i class="gold">CAN</i><i class="gold">BOTTLE</i></span></div><div class="hrule"></div>
-      <ul class="items sized">
+      <div class="headrow"><h3>Drinks</h3><span class="sizehdr" style="margin-right:38.0mm"><i class="gold">CAN</i><i class="gold">BOTTLE</i></span></div><div class="hrule"></div>
+      <div class="blkrow" style="--slot:38.0mm;
+    --rowmin:3.0mm"><ul class="items sized">
       <li>
         <span class="n">Coke</span>
         <span class="dots"></span>
@@ -381,38 +404,38 @@
         <span class="n">Fanta Lemon</span>
         <span class="dots"></span>
         <span class="p2">1.50</span>
-        <span class="p2">—</span>
+        <span class="p2">-</span>
       </li>
       <li>
         <span class="n">7 Up</span>
         <span class="dots"></span>
         <span class="p2">1.50</span>
-        <span class="p2">—</span>
+        <span class="p2">-</span>
       </li>
       <li>
         <span class="n">Dr Pepper</span>
         <span class="dots"></span>
         <span class="p2">1.50</span>
-        <span class="p2">—</span>
+        <span class="p2">-</span>
       </li>
       <li>
         <span class="n">Monster</span>
         <span class="dots"></span>
         <span class="p2">2.50</span>
-        <span class="p2">—</span>
+        <span class="p2">-</span>
       </li>
       <li>
         <span class="n">Water (500ml)</span>
         <span class="dots"></span>
-        <span class="p2">—</span>
+        <span class="p2">-</span>
         <span class="p2">1.20</span>
-      </li></ul>
+      </li></ul></div>
     </section>
     
     <section class="blk">
       <div class="headrow"><h3>Milk Shakes</h3></div><div class="hrule"></div>
-      <div class="blkrow" style="--gutter:45.0mm;
-    --rowmin:41.9mm"><ul class="items">
+      <div class="blkrow" style="--slot:36.0mm;
+    --rowmin:50.9mm"><ul class="items">
         
       <li><span class="n">Oreo</span>
         <span class="dots"></span><span class="p">6.00</span></li>
@@ -425,16 +448,16 @@
       <li><span class="n">Strawberry</span>
         <span class="dots"></span><span class="p">6.00</span></li>
         
-      <li><span class="n">Cooler<em>Mango Cooler, Strawberry Cooler</em></span>
+      <li><span class="n">Cooler<em class="plain">Mango Cooler, Strawberry Cooler</em></span>
         <span class="dots"></span><span class="p">6.00</span></li>
       </ul><img class="shot side" src="img/shake.png" alt=""
-    style="width:26mm;--clear:15mm;--shoth:38.9mm" /></div>
+    style="width:32mm;--shoth:47.9mm" /></div>
     </section>
     
     <section class="blk">
       <div class="headrow"><h3>Desserts</h3></div><div class="hrule"></div>
-      <div class="blkrow" style="--gutter:55.0mm;
-    --rowmin:28.8mm"><ul class="items dense">
+      <div class="blkrow" style="--slot:44.0mm;
+    --rowmin:31.6mm"><ul class="items dense">
       <li>
         <span class="n">Chocolate Cake<em>Rich chocolate fudge cake</em></span>
         <span class="dots"></span>
@@ -465,19 +488,19 @@
         <span class="dots"></span>
         <span class="p">7.50</span>
       </li></ul><img class="shot side" src="img/cake.png" alt=""
-    style="width:36mm;--clear:15mm;--shoth:25.8mm" /></div>
+    style="width:40mm;--shoth:28.6mm" /></div>
     </section>
     
     <section class="blk kidsbox">
-      <div class="kidsinner">
         <!-- ASSET GAP: the KIDS MENU / BIG BITES ribbon lockup goes here. -->
         <div class="kidsmark"><b>Kids</b><b>Menu</b><span>Big Bites</span></div>
-        <ul class="items dense kidslist">
-          <li><span class="n">Kids Popcorn Chicken<em>Popcorn chicken, nuggets (5), chips</em></span>
-              <span class="dots"></span><span class="p">6.00</span></li><li><span class="n">Kids Sunny<em>Sunny (4) &amp; chips or Tenders (3) &amp; chips</em></span>
-              <span class="dots"></span><span class="p">6.00</span></li>
+        <div class="kidsticket">
+        <ul class="items kidslist">
+          <li><span class="n">Kids Popcorn Chicken, nuggets (5), chips</span>
+              <span class="dots"></span><span class="p">£6.00</span></li><li><span class="n">Kids Sunny (4) &amp; chips or Tenders (3) &amp; chips</span>
+              <span class="dots"></span><span class="p">£6.00</span></li>
         </ul>
-      </div>
+        </div>
     </section>
   </div>
   <div class="panel">
@@ -489,46 +512,41 @@
       </div>
     </section>
     <img class="shot below" src="img/burger-meal.png" alt=""
-    style="width:94mm;--clear:15mm;--shoth:54.2mm" />
+    style="width:108mm;--shoth:62.2mm" />
     
     <section class="blk">
-      <div class="headrow"><h3>Meal Deals</h3></div><div class="hrule"></div>
+      <div class="center"><div class="headrow"><h3>Meal Deals</h3></div><div class="hrule"></div></div>
       <div class="deals">
         
         <div class="deal">
           <b>Goodie Box</b>
-          <p>11" Margherita, doner, chips, 4 nuggets, 4 onion rings, can of drink</p>
-          <strong>17.00</strong>
+          <p>11" Margherita<br />doner<br />chips<br />4 nuggets<br />4 onion rings<br />can of drink</p>
+          <strong>£17.00</strong>
         </div>
         <div class="deal">
           <b>Burger Box</b>
-          <p>¼ cheese, ¼ chicken, 2 × chips, 2 × can of Pepsi</p>
-          <strong>20.00</strong>
+          <p>¼ cheese<br />¼ chicken<br />2 × chips<br />2 × can of Pepsi</p>
+          <strong>£20.00</strong>
         </div>
         <div class="deal">
           <b>Big Bites Deal</b>
-          <p>Any 2 × 11" pizza, 2 × chips, 2 × can of Pepsi</p>
-          <strong>24.00</strong>
+          <p>Any 2 × 11" pizza<br />2 × chips<br />2 × can of Pepsi</p>
+          <strong>£24.00</strong>
         </div>
         <div class="deal">
           <b>Personal Deal</b>
-          <p>Any 11" pizza, chips, can of Coke</p>
-          <strong>12.00</strong>
+          <p>Any 11" pizza<br />chips<br />can of Coke</p>
+          <strong>£12.00</strong>
         </div>
         <div class="deal">
           <b>Family Meal Deal</b>
-          <p>Any 13" pizza, ¼ cheese burger, chips, 1L bottle of drink</p>
-          <strong>20.00</strong>
+          <p>Any 13" pizza<br />¼ cheese burger<br />chips<br />1L bottle of drink</p>
+          <strong>£20.00</strong>
         </div>
+        
         <div class="deal">
-          <b>Pizza Deal 11"</b>
-          <p>Any 3 × 11" pizza</p>
-          <strong>25.00</strong>
-        </div>
-        <div class="deal">
-          <b>Pizza Deal 13"</b>
-          <p>Any 3 × 13" pizza</p>
-          <strong>30.00</strong>
+          <b>Pizza Deal</b>
+          <p class="pd">Any 3 × 11" pizza<strong>£25.00</strong></p><p class="pd">Any 3 × 13" pizza<strong>£30.00</strong></p>
         </div>
       </div>
     </section>
@@ -537,6 +555,7 @@
   <div class="panel cover">
     <div class="coverbody">
       <img class="brandmark" src="logo.png" alt="Big Bites — Slice It! Fresh &amp; Loaded" />
+      <div class="coverrule"></div>
       <div class="tel">
         <span class="telline"><i class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#d61313"/><path fill="#fff" d="M9.1 5.6c.5-.2 1 0 1.3.5l1.1 2c.2.5.1 1-.3 1.3l-.9.8c-.1.1-.2.3-.1.5a8.6 8.6 0 0 0 3.1 3.1c.2.1.4 0 .5-.1l.8-.9c.3-.4.8-.5 1.3-.3l2 1.1c.5.3.7.8.5 1.3l-.5 1.4c-.2.6-.8 1-1.5.9-2.3-.2-4.6-1.4-6.4-3.2S5.1 9.5 4.9 7.2c-.1-.7.3-1.3.9-1.5z"/></svg></i>Tel : 01347</span>
         <b>820820</b>
@@ -548,7 +567,7 @@
         Minimum order £12.
       </p>
       <div class="strap"><i class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#d61313"/><circle cx="12" cy="12" r="7.4" fill="none" stroke="#fff" stroke-width="1.6"/><path fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" d="M12 7.6V12l3 1.9"/></svg></i>Opening Time</div>
-      <div class="hours"><div><span>Sunday – Thursday</span><b>4pm – 10pm</b></div><div><span>Friday – Saturday</span><b>4pm – 11pm</b></div></div>
+      <div class="hours"><div><span>Sunday - Thursday</span><b>4 pm - 10 pm</b></div><div><span>Friday - Saturday</span><b>4 pm - 11 pm</b></div></div>
       <div class="strap red website">bigbiteseasingwold.co.uk</div>
       <div class="qrwrap">
         <div class="qrtxt"><b>SCAN<br />ME</b><span class="arrow">→</span></div>
@@ -774,13 +793,14 @@
       <div class="supp"><span>Stuffed Crust Supplement</span><i></i><b>+2.50</b><b>+3.50</b></div>
     </div>
     <div class="halftone"><img class="shot below" src="img/pizza.png" alt=""
-    style="width:42mm;--clear:15mm;--shoth:23.0mm" /></div>
+    style="width:58mm;--shoth:31.7mm" /></div>
   </div>
   <div class="panel tight">
     
     <section class="blk">
-      <div class="headrow"><h3>Garlic Bread</h3><span class="sizehdr"><i class="red">11"</i><i class="red">13"</i></span></div><div class="hrule"></div>
-      <ul class="items sized withdesc">
+      <div class="headrow"><h3>Garlic Bread</h3><span class="sizehdr" style="margin-right:34.0mm"><i class="red">11"</i><i class="red">13"</i></span></div><div class="hrule"></div>
+      <div class="blkrow" style="--slot:34.0mm;
+    --rowmin:3.0mm"><ul class="items sized withdesc">
       <li>
         <span class="n">Plain Garlic Bread<em>Brushed with garlic butter</em></span>
         <span class="dots"></span>
@@ -816,12 +836,12 @@
         <span class="dots"></span>
         <span class="p2">10.90</span>
         <span class="p2">12.50</span>
-      </li></ul>
+      </li></ul></div>
     </section>
     
     <section class="blk">
       <div class="headrow"><h3>Calzone</h3></div><div class="hrule"></div>
-      <div class="blkrow" style="--gutter:53.0mm;
+      <div class="blkrow" style="--slot:38.0mm;
     --rowmin:24.1mm"><ul class="items dense">
       <li>
         <span class="n">Doner Calzone<em>Doner, onion, mushroom</em></span>
@@ -848,12 +868,12 @@
         <span class="dots"></span>
         <span class="p">12.50</span>
       </li></ul><img class="shot side" src="img/calzone.png" alt=""
-    style="width:34mm;--clear:15mm;--shoth:21.1mm" /></div>
+    style="width:34mm;--shoth:21.1mm" /></div>
     </section>
     
     <section class="blk">
-      <div class="headrow"><h3>Kebabs</h3><span class="sizehdr"><i class="gold">MEDIUM</i><i class="red">LARGE</i></span></div><div class="hrule"></div>
-      <div class="blkrow" style="--gutter:56.0mm;
+      <div class="headrow"><h3>Kebabs</h3><span class="sizehdr" style="margin-right:31.0mm"><i class="gold">MEDIUM</i><i class="red">LARGE</i></span></div><div class="hrule"></div>
+      <div class="blkrow" style="--slot:31.0mm;
     --rowmin:22.1mm"><ul class="items sized withdesc">
       <li>
         <span class="n">Lamb Doner</span>
@@ -865,13 +885,13 @@
         <span class="n">Tray Doner<em>Just the meat</em></span>
         <span class="dots"></span>
         <span class="p2">4.00</span>
-        <span class="p2">—</span>
+        <span class="p2">-</span>
       </li>
       <li>
         <span class="n">Doner Meat &amp; Chips</span>
         <span class="dots"></span>
         <span class="p2">9.00</span>
-        <span class="p2">—</span>
+        <span class="p2">-</span>
       </li>
       <li>
         <span class="n">Chicken Shawarma<em>Chargrilled chicken, salad, pitta, sauce</em></span>
@@ -883,44 +903,45 @@
         <span class="n">Tray Shawarma</span>
         <span class="dots"></span>
         <span class="p2">6.00</span>
-        <span class="p2">—</span>
+        <span class="p2">-</span>
       </li>
       <li>
         <span class="n">Chicken Shawarma &amp; Chips</span>
         <span class="dots"></span>
         <span class="p2">9.00</span>
-        <span class="p2">—</span>
+        <span class="p2">-</span>
       </li>
       <li>
         <span class="n">Kofta Kebab</span>
         <span class="dots"></span>
         <span class="p2">10.50</span>
-        <span class="p2">—</span>
+        <span class="p2">-</span>
       </li>
       <li>
         <span class="n">Chicken Shish</span>
         <span class="dots"></span>
         <span class="p2">11.00</span>
-        <span class="p2">—</span>
+        <span class="p2">-</span>
       </li>
       <li>
         <span class="n">Combo Kebab<em>Combination of lamb doner and shawarma</em></span>
         <span class="dots"></span>
         <span class="p2">14.00</span>
-        <span class="p2">—</span>
+        <span class="p2">-</span>
       </li>
       <li>
         <span class="n">Mixed Kebab<em>Lamb doner, chicken doner, kofte kebab, chicken shish, salad, 2× pot sauce, 2× pitta bread</em></span>
         <span class="dots"></span>
         <span class="p2">22.00</span>
-        <span class="p2">—</span>
+        <span class="p2">-</span>
       </li></ul><img class="shot side" src="img/kebab.png" alt=""
-    style="width:27mm;--clear:25mm;--shoth:19.1mm" /></div>
+    style="width:27mm;--shoth:19.1mm" /></div>
     </section>
     
     <section class="blk">
       <div class="headrow"><h3>Parmesan</h3></div><div class="hrule"></div>
-      <ul class="items dense">
+      <div class="blkrow" style="--slot:34.0mm;
+    --rowmin:3.0mm"><ul class="items dense">
       <li>
         <span class="n">Plain Parmesan<em>Pounded chicken, golden crumb, bechamel &amp; cheese</em></span>
         <span class="dots"></span>
@@ -945,12 +966,12 @@
         <span class="n">Doner Parmesan<em>Doner &amp; cheese</em></span>
         <span class="dots"></span>
         <span class="p">12.00</span>
-      </li></ul>
+      </li></ul></div>
     </section>
     
     <section class="blk">
       <div class="headrow"><h3>Wrap</h3></div><div class="hrule"></div>
-      <div class="blkrow" style="--gutter:52.0mm;
+      <div class="blkrow" style="--slot:37.0mm;
     --rowmin:24.3mm"><ul class="items dense">
       <li>
         <span class="n">Chips &amp; Cheese Wrap<em>Cheese and chips, rolled</em></span>
@@ -997,14 +1018,15 @@
         <span class="dots"></span>
         <span class="p">9.00</span>
       </li></ul><img class="shot side" src="img/wrap.png" alt=""
-    style="width:33mm;--clear:15mm;--shoth:21.3mm" /></div>
+    style="width:33mm;--shoth:21.3mm" /></div>
     </section>
   </div>
   <div class="panel">
     
     <section class="blk">
-      <div class="headrow"><h3>Burgers</h3><span class="sizehdr"><i class="gold">1/4 lb</i><i class="red">1/2 lb</i></span></div><div class="hrule"></div>
-      <ul class="items sized withdesc">
+      <div class="headrow"><h3>Burgers</h3><span class="sizehdr" style="margin-right:20.0mm"><i class="gold">1/4 lb</i><i class="red">1/2 lb</i></span></div><div class="hrule"></div>
+      <div class="blkrow" style="--slot:20.0mm;
+    --rowmin:3.0mm"><ul class="items sized withdesc">
       <li>
         <span class="n">Beef Burger<em>Served with chips</em></span>
         <span class="dots"></span>
@@ -1033,13 +1055,13 @@
         <span class="n">Monster Burger<em>Cheese burger, bacon, doner, spicy sauce · ¼lb · Served with chips</em></span>
         <span class="dots"></span>
         <span class="p2">9.50</span>
-        <span class="p2">—</span>
+        <span class="p2">-</span>
       </li>
       <li>
         <span class="n">Big Bites Burger<em>Cheese burger, chicken burger, doner · ¼lb · Served with chips</em></span>
         <span class="dots"></span>
         <span class="p2">9.50</span>
-        <span class="p2">—</span>
+        <span class="p2">-</span>
       </li>
       <li>
         <span class="n">Pineapple Paradise Burger<em>Cheese burger with pineapple · Served with chips</em></span>
@@ -1051,7 +1073,7 @@
         <span class="n">Piggy Burger<em>Cheese burger, pepperoni, bacon, chorizo · ½lb · Served with chips</em></span>
         <span class="dots"></span>
         <span class="p2">10.00</span>
-        <span class="p2">—</span>
+        <span class="p2">-</span>
       </li>
       <li>
         <span class="n">Halloumi Burger<em>Beef burger with halloumi cheese · Served with chips</em></span>
@@ -1064,12 +1086,12 @@
         <span class="dots"></span>
         <span class="p2">9.00</span>
         <span class="p2">10.00</span>
-      </li></ul>
+      </li></ul></div>
     </section>
     
     <section class="blk">
       <div class="headrow"><h3>Sides</h3></div><div class="hrule"></div>
-      <div class="blkrow" style="--gutter:59.0mm;
+      <div class="blkrow" style="--slot:44.0mm;
     --rowmin:42.2mm"><ul class="items dense">
       <li>
         <span class="n">Chips</span>
@@ -1191,12 +1213,12 @@
         <span class="dots"></span>
         <span class="p">9.00</span>
       </li></ul><img class="shot side" src="img/sides.png" alt=""
-    style="width:40mm;--clear:15mm;--shoth:39.2mm" /></div>
+    style="width:40mm;--shoth:39.2mm" /></div>
     </section>
     
     <section class="blk">
       <div class="headrow"><h3>Salad</h3></div><div class="hrule"></div>
-      <div class="blkrow" style="--gutter:59.0mm;
+      <div class="blkrow" style="--slot:44.0mm;
     --rowmin:29.4mm"><ul class="items dense">
       <li>
         <span class="n">Side Salad<em>Fresh mixed salad</em></span>
@@ -1213,7 +1235,7 @@
         <span class="dots"></span>
         <span class="p">7.50</span>
       </li></ul><img class="shot side" src="img/salad.png" alt=""
-    style="width:40mm;--clear:15mm;--shoth:26.4mm" /></div>
+    style="width:40mm;--shoth:26.4mm" /></div>
     </section>
   </div>
 
