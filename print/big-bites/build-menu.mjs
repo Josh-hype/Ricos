@@ -122,11 +122,7 @@ const perMile = (del.radius?.bands?.[0]?.feePence ?? 100) / 100;
 
 const cover = `
   <div class="panel cover">
-    <div class="brandmark">
-      <span class="big">BIG</span><span class="big">BITES</span>
-      <span class="slice">SLICE IT!</span>
-      <span class="fresh">★ FRESH &amp; LOADED ★</span>
-    </div>
+    <img class="brandmark" src="logo.png" alt="Big Bites — Slice It! Fresh &amp; Loaded" />
     <div class="tel">
       <span class="lab">Tel</span>
       <b>${esc(cfg.business.phone)}</b>
@@ -139,6 +135,7 @@ const cover = `
     </p>
     <div class="strap">Opening Times</div>
     <div class="hours">${hours}</div>
+    ${cfg.allergens?.noticeAtCheckout ? `<p class="allergy"><b>Allergies?</b> ${esc(cfg.allergens.noticeAtCheckout)}</p>` : ''}
     <div class="qrwrap">
       <div class="qr">${qr}</div>
       <div class="qrtxt"><b>SCAN ME</b><span>bigbiteseasingwold.co.uk</span></div>
@@ -267,36 +264,36 @@ const html = `<!doctype html>
   .deal strong { font-size: 4.6mm; font-weight: 900; }
 
   /* ---- cover panel ---- */
-  .cover { display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: 12mm; }
-  .brandmark { display: flex; flex-direction: column; align-items: center; line-height: .84; }
-  .brandmark .big {
-    font-family: 'Luckiest Guy', Impact, sans-serif;
-    font-size: 26mm; color: #ffc400;
-    -webkit-text-stroke: 1.1mm #111;
-    text-shadow: 1.6mm 1.6mm 0 #d61313;
-    letter-spacing: .01em;
-  }
-  .brandmark .slice {
-    margin-top: 2.5mm; padding: .8mm 4mm;
-    background: #d61313; color: #fff;
-    font-family: 'Luckiest Guy', Impact, sans-serif; font-size: 5.4mm;
-    transform: rotate(-2deg);
-  }
-  .brandmark .fresh { margin-top: 2mm; font-size: 3.4mm; font-weight: 800; letter-spacing: .18em; color: #ffc400; }
+  .cover { display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: 6mm; }
+  /* The supplied wordmark, keyed to transparency so the panel's own black and
+     its faint yellow glow read through instead of a slightly-off black box.
+     105mm wide keeps the source above 300dpi at print size. */
+  .brandmark { width: 112mm; height: auto; display: block; }
 
-  .tel { margin-top: 8mm; }
-  .tel .lab { display: block; font-size: 3.4mm; font-weight: 800; letter-spacing: .3em; color: #ffc400; }
-  .tel b { display: block; font-family: 'Luckiest Guy', Impact, sans-serif; font-size: 15mm; letter-spacing: .02em; }
+  .tel { margin-top: 7mm; }
+  /* Luckiest Guy draws well above its em box, so the number's glyphs ran over
+     the label even though the two boxes never touched. The margin is clearance
+     for the overshoot, not decoration — don't trim it. */
+  .tel .lab { display: block; margin-bottom: 6mm; font-size: 3.4mm; font-weight: 800; letter-spacing: .3em; color: #ffc400; }
+  .tel b { display: block; font-family: 'Luckiest Guy', Impact, sans-serif; font-size: 15mm; line-height: 1; letter-spacing: .02em; }
 
   .strap {
-    margin: 6mm 0 2mm; padding: 1.2mm 4mm;
+    margin: 9mm 0 3mm; padding: 1.2mm 4mm;
     background: #ffc400; color: #111;
     font-family: 'Luckiest Guy', Impact, sans-serif; font-size: 4.4mm;
     text-transform: uppercase;
   }
   .fine { margin: 0; font-size: 3mm; line-height: 1.5; font-weight: 600; color: #e8dcc6; }
   .hours { width: 100%; }
-  .hours div { display: flex; justify-content: space-between; font-size: 3.2mm; padding: .9mm 0; border-bottom: .2mm dotted rgba(255,255,255,.25); }
+  .hours div { display: flex; justify-content: space-between; font-size: 3.2mm; padding: 2mm 0; border-bottom: .2mm dotted rgba(255,255,255,.25); }
+  /* Straight from the shop's config, not written here — the same wording the
+     website shows at checkout. */
+  .allergy {
+    margin: 9mm 0 0; padding: 2.4mm 4mm;
+    border: .35mm solid rgba(255,196,0,.55); border-radius: 1.5mm;
+    font-size: 2.9mm; line-height: 1.45; font-weight: 600; color: #e8dcc6;
+  }
+  .allergy b { color: #ffc400; text-transform: uppercase; letter-spacing: .08em; }
   .hours b { color: #ffc400; }
 
   .qrwrap { margin-top: auto; display: flex; align-items: center; gap: 4mm; padding-top: 6mm; }
