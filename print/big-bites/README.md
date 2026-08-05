@@ -34,6 +34,11 @@ runs on tighter leading (`.panel.tight`) — again, as the reference does.
 
 ## Before sending to print
 
+    node print/big-bites/check-collisions.mjs
+
+reports any item name or price that runs under a food photo — run it after
+resizing one. It measures the rendered glyphs, not the boxes.
+
 `render.mjs` reports `panels fit` or lists any panel whose content overruns its
 box. Never send a PDF that reported an overflow — content will be cut at the
 fold.

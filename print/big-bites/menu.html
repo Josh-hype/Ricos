@@ -48,7 +48,7 @@
      middle panel against three elsewhere, so that one panel carries tighter
      leading — the same trade the reference sheet makes. Scoped to the panel
      rather than applied globally, so the roomier panels stay roomy. */
-  .panel.tight .blk { margin-bottom: 3mm; }
+  .panel.tight .blk { margin-bottom: 2.5mm; }
   .panel.tight .blk h3 { font-size: 5.6mm; margin-bottom: 2mm; }
   .panel.tight .items.dense li { padding: .2mm 0; }
 
@@ -72,11 +72,16 @@
      The cutouts arrive on transparency, so they drop straight onto the panel.
      The shadow is added here rather than baked in, so it stays consistent and
      survives a colour change to the panel. */
-  .blkrow { display: flex; align-items: flex-start; gap: 4mm; }
-  .blkrow > :first-child { flex: 1; min-width: 0; }
-  .shot { flex: none; height: auto; display: block; filter: drop-shadow(0 1.2mm 1.8mm rgba(0,0,0,.65)); }
-  .shot.side { align-self: center; }
+  .blkrow { position: relative; min-height: var(--rowmin, 0); }
+  .shot { height: auto; display: block; filter: drop-shadow(0 1.2mm 1.8mm rgba(0,0,0,.65)); }
+  /* Sits in the gutter, clear of the prices, which stay hard right. */
+  .shot.side { position: absolute; top: 50%; translate: 0 -50%; right: var(--clear, 15mm); }
   .shot.below { margin: 3mm auto 0; }
+  /* The reservation: the leaders refuse to shrink past the gutter, so a long
+     name wraps instead of running under the photo. Lists that hide their
+     leaders reserve it on the name itself. */
+  .blkrow .items .dots { min-width: var(--gutter); }
+  .blkrow .items.withdesc .n { padding-right: var(--gutter); }
 
   .items { list-style: none; margin: 0; padding: 0; }
   .items.two { column-count: 2; column-gap: 6mm; }
@@ -95,7 +100,7 @@
   .items .dots { flex: 1; border-bottom: .3mm dotted rgba(255,255,255,.32); transform: translateY(-.8mm); }
   .items .p { font-weight: 800; color: #ffc400; white-space: nowrap; }
   .items.sized li { gap: 2mm; }
-  .items.sized .p2 { width: 13mm; text-align: right; font-weight: 800; color: #ffc400; white-space: nowrap; }
+  .items.sized .p2 { width: 11mm; text-align: right; font-weight: 800; color: #ffc400; white-space: nowrap; }
 
   .blk h3 .sizehdr { display: inline-flex; gap: 1.5mm; margin-left: 2.5mm; vertical-align: middle; }
   .blk h3 .sizehdr i {
@@ -258,7 +263,8 @@
     
     <section class="blk">
       <h3>Milkshakes &amp; Coolers</h3>
-      <div class="blkrow"><ul class="items">
+      <div class="blkrow" style="--gutter:45.0mm;
+    --rowmin:41.9mm"><ul class="items">
       <li>
         <span class="n">Oreo Milkshake</span>
         <span class="dots"></span>
@@ -293,12 +299,14 @@
         <span class="n">Strawberry Cooler</span>
         <span class="dots"></span>
         <span class="p">£6.00</span>
-      </li></ul><img class="shot side" src="img/shake.png" alt="" style="width:26mm" /></div>
+      </li></ul><img class="shot side" src="img/shake.png" alt=""
+    style="width:26mm;--clear:15mm;--shoth:38.9mm" /></div>
     </section>
     
     <section class="blk">
       <h3>Desserts</h3>
-      <div class="blkrow"><ul class="items dense">
+      <div class="blkrow" style="--gutter:55.0mm;
+    --rowmin:28.8mm"><ul class="items dense">
       <li>
         <span class="n">Chocolate Cake<em>Rich chocolate fudge cake.</em></span>
         <span class="dots"></span>
@@ -328,7 +336,8 @@
         <span class="n">Ben and Jerry's Cake<em>Tub of Ben &amp; Jerry’s ice cream.</em></span>
         <span class="dots"></span>
         <span class="p">£7.50</span>
-      </li></ul><img class="shot side" src="img/cake.png" alt="" style="width:36mm" /></div>
+      </li></ul><img class="shot side" src="img/cake.png" alt=""
+    style="width:36mm;--clear:15mm;--shoth:25.8mm" /></div>
     </section>
     
     <section class="blk">
@@ -357,7 +366,8 @@
         <li><span class="n">Pot Gravy</span><span class="dots"></span><span class="p">£1.90</span></li></ul>
       </div>
     </section>
-    <img class="shot below" src="img/burger-meal.png" alt="" style="width:62mm" />
+    <img class="shot below" src="img/burger-meal.png" alt=""
+    style="width:96mm;--clear:15mm;--shoth:55.3mm" />
     
     <section class="blk">
       <h3>Meal Deals</h3>
@@ -632,7 +642,8 @@
     </section>
       <div class="supp">Stuffed Crust Supplement <b>+£2.50</b> <b>+£3.50</b></div>
     </div>
-    <img class="shot below" src="img/pizza.png" alt="" style="width:50mm" />
+    <img class="shot below" src="img/pizza.png" alt=""
+    style="width:50mm;--clear:15mm;--shoth:27.3mm" />
   </div>
   <div class="panel tight">
     
@@ -679,7 +690,8 @@
     
     <section class="blk">
       <h3>Calzone</h3>
-      <div class="blkrow"><ul class="items dense">
+      <div class="blkrow" style="--gutter:53.0mm;
+    --rowmin:24.1mm"><ul class="items dense">
       <li>
         <span class="n">Doner Calzone<em>Doner, onion, mushroom.</em></span>
         <span class="dots"></span>
@@ -704,12 +716,14 @@
         <span class="n">Hot Calzone<em>Pepperoni, onion, jalapeno.</em></span>
         <span class="dots"></span>
         <span class="p">£12.50</span>
-      </li></ul><img class="shot side" src="img/calzone.png" alt="" style="width:40mm" /></div>
+      </li></ul><img class="shot side" src="img/calzone.png" alt=""
+    style="width:34mm;--clear:15mm;--shoth:21.1mm" /></div>
     </section>
     
     <section class="blk">
       <h3>Kebabs <span class="sizehdr"><i>MED</i><i>LGE</i></span></h3>
-      <div class="blkrow"><ul class="items sized withdesc">
+      <div class="blkrow" style="--gutter:56.0mm;
+    --rowmin:22.1mm"><ul class="items sized withdesc">
       <li>
         <span class="n">Lamb Doner</span>
         <span class="dots"></span>
@@ -769,7 +783,8 @@
         <span class="dots"></span>
         <span class="p2">£22.00</span>
         <span class="p2">—</span>
-      </li></ul><img class="shot side" src="img/kebab.png" alt="" style="width:34mm" /></div>
+      </li></ul><img class="shot side" src="img/kebab.png" alt=""
+    style="width:27mm;--clear:25mm;--shoth:19.1mm" /></div>
     </section>
     
     <section class="blk">
@@ -804,7 +819,8 @@
     
     <section class="blk">
       <h3>Wraps</h3>
-      <div class="blkrow"><ul class="items dense">
+      <div class="blkrow" style="--gutter:52.0mm;
+    --rowmin:24.3mm"><ul class="items dense">
       <li>
         <span class="n">Chips &amp; Cheese Wrap<em>Cheese and chips, rolled.</em></span>
         <span class="dots"></span>
@@ -849,7 +865,8 @@
         <span class="n">Chicken Shawarma &amp; Chips Wrap</span>
         <span class="dots"></span>
         <span class="p">£9.00</span>
-      </li></ul><img class="shot side" src="img/wrap.png" alt="" style="width:38mm" /></div>
+      </li></ul><img class="shot side" src="img/wrap.png" alt=""
+    style="width:33mm;--clear:15mm;--shoth:21.3mm" /></div>
     </section>
   </div>
   <div class="panel">
@@ -1041,12 +1058,14 @@
         <span class="n">Halloumi Fries</span>
         <span class="dots"></span>
         <span class="p">£9.00</span>
-      </li></ul><img class="shot below" src="img/sides.png" alt="" style="width:36mm" />
+      </li></ul><img class="shot below" src="img/sides.png" alt=""
+    style="width:36mm;--clear:15mm;--shoth:35.3mm" />
     </section>
     
     <section class="blk">
       <h3>Salad</h3>
-      <div class="blkrow"><ul class="items dense">
+      <div class="blkrow" style="--gutter:59.0mm;
+    --rowmin:29.4mm"><ul class="items dense">
       <li>
         <span class="n">Side Salad<em>Fresh mixed salad.</em></span>
         <span class="dots"></span>
@@ -1061,7 +1080,8 @@
         <span class="n">Tuna Salad<em>Mixed salad with tuna.</em></span>
         <span class="dots"></span>
         <span class="p">£7.50</span>
-      </li></ul><img class="shot side" src="img/salad.png" alt="" style="width:40mm" /></div>
+      </li></ul><img class="shot side" src="img/salad.png" alt=""
+    style="width:40mm;--clear:15mm;--shoth:26.4mm" /></div>
     </section>
   </div>
 

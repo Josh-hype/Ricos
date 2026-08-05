@@ -19,23 +19,41 @@ Two of the items on that sheet are **deliberately not here**:
   That leaves Burgers without its own picture; one clean burger cutout is all
   it needs.
 
+## Where they sit
+
+Side photos are **absolutely positioned in the gutter between the item names
+and the price column**, as the designer's sheets do — they are not in the flow.
+That is deliberate: a photo in the flow narrows the list, which drags the
+prices in from the right edge and leaves each section's prices at a different
+margin. `--gutter` reserves the space on the leaders (or on the name, for lists
+that hide their leaders) so a long item name wraps rather than running under
+the picture, and `--rowmin` keeps the section at least as tall as its photo.
+
+`scratchpad/collide.mjs` measures the **ink**, not the boxes — `.n` is `flex:1`
+with the gutter as padding, so its box reaches under the photo by design while
+the glyphs don't. Re-run it after resizing any photo.
+
 ## Resolution
 
-Print wants 300dpi. These are what the source allows:
+Print wants 300dpi. These are what the source allows at the sizes actually used:
 
 | file | pixels | printed at | dpi |
 |------|--------|-----------|-----|
-| burger-meal | 635×366 | 62mm | 260 |
+| kebab | 300×212 | 27mm | 282 |
+| wrap | 356×230 | 33mm | 274 |
 | pizza | 516×282 | 50mm | 262 |
+| calzone | 349×217 | 34mm | 261 |
 | salad | 373×246 | 40mm | 237 |
-| wrap | 356×230 | 38mm | 238 |
-| calzone | 349×217 | 40mm | 222 |
 | sides | 318×312 | 36mm | 224 |
-| kebab | 300×212 | 34mm | 224 |
 | cake | 285×204 | 36mm | 201 |
 | shake | 201×301 | 26mm | 196 |
+| **burger-meal** | 635×366 | **96mm** | **168** |
 
-220–260dpi is fine for a takeaway menu on uncoated stock and none of them are
-scaled past their own pixels, but they are **not** 300dpi — don't enlarge them
-further. If the shop ever wants a glossy run, reshoot or regenerate at
-1500px+ per item and the sizes above can grow.
+200–280dpi is fine for a takeaway menu on uncoated stock. **The burger hero is
+not** — at 96mm it is running at 168dpi to fill the panel above Meal Deals, and
+it is the one image on the sheet that will look visibly soft in print. It is
+the largest source file there is, so the only fix is a bigger original: 1200px
+wide would put it back over 300dpi at the same size.
+
+Nothing here is scaled past its own pixels other than that hero. If the shop
+ever wants a glossy run, regenerate at 1500px+ per item.

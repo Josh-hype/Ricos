@@ -23,24 +23,39 @@ const cat = (id) => menu.find((c) => c.id === id) || { name: id, items: [] };
 const money = (n) => '£' + Number(n).toFixed(2);
 const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 
-/* Food photography, cut out of the sheet the owner supplied — see img/README.
-   `place: 'side'` sits it next to the list (short sections), 'below' centres it
-   underneath (long ones, where a side column would leave a tall gap). Widths
-   are capped by the source resolution; img/README records the dpi each lands
-   at, and nothing here is scaled past its own pixels. */
-function shot(name, width, place = 'side') {
-  return name
-    ? `<img class="shot ${place}" src="img/${name}.png" alt="" style="width:${width}mm" />`
-    : '';
+/* PNG dimensions straight out of the IHDR chunk — needed so a side photo can
+   reserve its own height, which CSS can't work out for an absolutely
+   positioned image. */
+function imgSize(name) {
+  const b = fs.readFileSync(path.join(import.meta.dirname, 'img', `${name}.png`));
+  return { w: b.readUInt32BE(16), h: b.readUInt32BE(20) };
 }
 
-/* Wraps a list (or anything) so a photo can sit beside it without the two
-   overlapping — a float would narrow every row of the list, not just the ones
-   level with the picture. */
+/* Food photography, cut out of the sheet the owner supplied — see img/README.
+   `place: 'side'` drops it into the gutter between the item names and the price
+   column, as the designer's sheets do; 'below' centres it underneath. `clear`
+   is how much room the prices need on the right — two-column price lists need
+   more than one. Widths are capped by the source resolution; img/README records
+   the dpi each lands at. */
+function shot(name, width, place = 'side', clear = 15) {
+  if (!name) return '';
+  const { w, h } = imgSize(name);
+  const tall = (width * h / w).toFixed(1);
+  return `<img class="shot ${place}" src="img/${name}.png" alt=""
+    style="width:${width}mm;--clear:${clear}mm;--shoth:${tall}mm" />`;
+}
+
+/* Prices stay pinned to the right edge of the panel — the photo is lifted out
+   of the flow and dropped into the gutter rather than narrowing the list, which
+   is what pulled the prices inwards before. The gutter is reserved on the row
+   so a long item name can never run underneath the picture. */
 function withShot(inner, img) {
   if (!img) return inner;
   if (img.includes('below')) return `${inner}${img}`;
-  return `<div class="blkrow">${inner}${img}</div>`;
+  const num = (k) => +(new RegExp(`${k}:([\\d.]+)mm`).exec(img)?.[1] || 0);
+  const w = num('width') || 30;
+  return `<div class="blkrow" style="--gutter:${(w + num('--clear') + 4).toFixed(1)}mm;
+    --rowmin:${(num('--shoth') + 3).toFixed(1)}mm">${inner}${img}</div>`;
 }
 
 /* Some items carry their whole description in a required choice rather than a
@@ -238,7 +253,7 @@ const html = `<!doctype html>
      middle panel against three elsewhere, so that one panel carries tighter
      leading — the same trade the reference sheet makes. Scoped to the panel
      rather than applied globally, so the roomier panels stay roomy. */
-  .panel.tight .blk { margin-bottom: 3mm; }
+  .panel.tight .blk { margin-bottom: 2.5mm; }
   .panel.tight .blk h3 { font-size: 5.6mm; margin-bottom: 2mm; }
   .panel.tight .items.dense li { padding: .2mm 0; }
 
@@ -262,11 +277,16 @@ const html = `<!doctype html>
      The cutouts arrive on transparency, so they drop straight onto the panel.
      The shadow is added here rather than baked in, so it stays consistent and
      survives a colour change to the panel. */
-  .blkrow { display: flex; align-items: flex-start; gap: 4mm; }
-  .blkrow > :first-child { flex: 1; min-width: 0; }
-  .shot { flex: none; height: auto; display: block; filter: drop-shadow(0 1.2mm 1.8mm rgba(0,0,0,.65)); }
-  .shot.side { align-self: center; }
+  .blkrow { position: relative; min-height: var(--rowmin, 0); }
+  .shot { height: auto; display: block; filter: drop-shadow(0 1.2mm 1.8mm rgba(0,0,0,.65)); }
+  /* Sits in the gutter, clear of the prices, which stay hard right. */
+  .shot.side { position: absolute; top: 50%; translate: 0 -50%; right: var(--clear, 15mm); }
   .shot.below { margin: 3mm auto 0; }
+  /* The reservation: the leaders refuse to shrink past the gutter, so a long
+     name wraps instead of running under the photo. Lists that hide their
+     leaders reserve it on the name itself. */
+  .blkrow .items .dots { min-width: var(--gutter); }
+  .blkrow .items.withdesc .n { padding-right: var(--gutter); }
 
   .items { list-style: none; margin: 0; padding: 0; }
   .items.two { column-count: 2; column-gap: 6mm; }
@@ -285,7 +305,7 @@ const html = `<!doctype html>
   .items .dots { flex: 1; border-bottom: .3mm dotted rgba(255,255,255,.32); transform: translateY(-.8mm); }
   .items .p { font-weight: 800; color: #ffc400; white-space: nowrap; }
   .items.sized li { gap: 2mm; }
-  .items.sized .p2 { width: 13mm; text-align: right; font-weight: 800; color: #ffc400; white-space: nowrap; }
+  .items.sized .p2 { width: 11mm; text-align: right; font-weight: 800; color: #ffc400; white-space: nowrap; }
 
   .blk h3 .sizehdr { display: inline-flex; gap: 1.5mm; margin-left: 2.5mm; vertical-align: middle; }
   .blk h3 .sizehdr i {
@@ -394,7 +414,7 @@ ${page('side-a', `
   </div>
   <div class="panel">
     ${dips()}
-    ${shot('burger-meal', 62, 'below')}
+    ${shot('burger-meal', 96, 'below')}
     ${deals()}
   </div>
   ${cover}
@@ -410,10 +430,10 @@ ${page('side-b', `
   </div>
   <div class="panel tight">
     ${sizedList('garlic-bread', 'size', ['11"', '13"'])}
-    ${list('calzone', { dense: true, desc: true, img: shot('calzone', 40) })}
-    ${sizedList('kebab', 'size', ['MED', 'LGE'], { title: 'Kebabs', img: shot('kebab', 34) })}
+    ${list('calzone', { dense: true, desc: true, img: shot('calzone', 34) })}
+    ${sizedList('kebab', 'size', ['MED', 'LGE'], { title: 'Kebabs', img: shot('kebab', 27, 'side', 25) })}
     ${list('parmesan', { dense: true, desc: true })}
-    ${list('wraps', { dense: true, desc: true, img: shot('wrap', 38) })}
+    ${list('wraps', { dense: true, desc: true, img: shot('wrap', 33) })}
   </div>
   <div class="panel">
     ${sizedList('burgers', 'size', ['¼lb', '½lb'])}
