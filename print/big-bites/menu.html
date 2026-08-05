@@ -33,7 +33,7 @@
        same. On a panel that exactly fills, this is a no-op. */
     display: flex; flex-direction: column; justify-content: space-between;
     padding: 8mm 7mm 13mm;
-    border-right: 0.4mm dashed rgba(255,255,255,.14);   /* fold guide */
+    border-right: 0.5mm solid #ffc400;   /* fold guide, and the reference's gold rule */
     background:
       radial-gradient(circle at 30% 12%, rgba(255,196,0,.06), transparent 45%),
       #0b0b0b;
@@ -42,14 +42,15 @@
   }
   /* Sections keep their natural height; only the gaps between them stretch. */
   .panel > * { flex: none; }
-  .panel:last-of-type { border-right: 0; }
+  .panel:nth-child(3) { border-right: 0; }
 
   /* Following the designer's section order puts five blocks on the inner
      middle panel against three elsewhere, so that one panel carries tighter
      leading — the same trade the reference sheet makes. Scoped to the panel
      rather than applied globally, so the roomier panels stay roomy. */
-  .panel.tight .blk { margin-bottom: 2.5mm; }
-  .panel.tight .blk h3 { font-size: 5.6mm; margin-bottom: 1.5mm; }
+  .panel.tight .blk { margin-bottom: 1.5mm; }
+  .panel.tight .blk h3 { font-size: 5.6mm; margin-bottom: 0; }
+  .panel.tight .hrule { margin: .6mm 0 1.5mm; }
   .panel.tight .items.dense li { padding: .2mm 0; }
 
   /* ---- section blocks ---- */
@@ -68,7 +69,9 @@
      colour behind it would fill the notch back in. */
   .blk h3 {
     display: inline-block;
-    margin: 0 0 3mm;
+    /* No bottom margin: the dotted rule sits directly under the plaque, as it
+       does on the reference, and carries the spacing itself. */
+    margin: 0;
     padding: .22em .3em .18em .55em;
     border-style: solid; border-color: transparent;
     /* 18/85/20/25 source px at the height this header renders — solving
@@ -84,6 +87,10 @@
     transform: rotate(-1.2deg);
   }
   .blk h3 .hdr2 { font-family: 'Montserrat'; font-size: 3.4mm; font-weight: 800; margin-left: 2mm; }
+  /* Every heading on the reference has a dotted rule running the full width of
+     the panel underneath it. The header itself is inline-block and rotated, so
+     the rule is its own element rather than a border. */
+  .hrule { margin: 1mm 0 2.5mm; border-top: .3mm dotted rgba(255,255,255,.38); }
 
   /* ---- food photography ----
      The cutouts arrive on transparency, so they drop straight onto the panel.
@@ -94,6 +101,15 @@
   /* Sits in the gutter, clear of the prices, which stay hard right. */
   .shot.side { position: absolute; top: 50%; translate: 0 -50%; right: var(--clear, 15mm); }
   .shot.below { margin: 3mm auto 0; }
+  /* The reference sets the pizza on a gold halftone. Generated, not drawn. */
+  .halftone {
+    position: relative; display: flex; justify-content: center;
+    background:
+      radial-gradient(circle at center, rgba(255,196,0,.85) 22%, transparent 23%) 0 0 / 3.2mm 3.2mm,
+      radial-gradient(circle at center, rgba(255,196,0,.85) 22%, transparent 23%) 1.6mm 1.6mm / 3.2mm 3.2mm;
+    -webkit-mask: radial-gradient(circle at 50% 62%, #000 26%, transparent 68%);
+            mask: radial-gradient(circle at 50% 62%, #000 26%, transparent 68%);
+  }
   /* The reservation: the leaders refuse to shrink past the gutter, so a long
      name wraps instead of running under the photo. Lists that hide their
      leaders reserve it on the name itself. */
@@ -110,20 +126,38 @@
   }
   .items.dense li { font-size: 2.85mm; padding: .35mm 0; }
   .items .n { font-weight: 700; text-transform: uppercase; letter-spacing: .01em; }
+  /* Reference palette: item names white, the line under them red. The pizza
+     column inverts it — gold names, white toppings — which is what makes that
+     panel read as the headline list. */
   .items .n em {
     display: block; font-style: normal; font-weight: 500;
-    text-transform: none; font-size: 2.6mm; color: #c9bda8; margin-top: .3mm;
+    text-transform: none; font-size: 2.6mm; color: #e0483a; margin-top: .3mm;
   }
-  .items .dots { flex: 1; border-bottom: .3mm dotted rgba(255,255,255,.32); transform: translateY(-.8mm); }
+  .items .n u { text-decoration: none; color: #e0483a; }
+  .items.gold .n { color: #ffc400; }
+  .items.gold .n em { color: #ddd4c4; }
+  /* No leaders on the reference: the rows read on alignment alone, and the only
+     dotted rule on the sheet is the one under each heading. The element stays
+     as the flexible spacer that pushes the price right (and carries the photo
+     gutter reservation). */
+  .items .dots { flex: 1; }
   .items .p { font-weight: 800; color: #ffc400; white-space: nowrap; }
   .items.sized li { gap: 2mm; }
   .items.sized .p2 { width: 11mm; text-align: right; font-weight: 800; color: #ffc400; white-space: nowrap; }
 
-  .blk h3 .sizehdr { display: inline-flex; gap: 1.5mm; margin-left: 2.5mm; vertical-align: middle; }
-  .blk h3 .sizehdr i {
+  /* The reference floats the size chips clear of the plaque, right-aligned so
+     they sit over the price columns they label. */
+  .headrow { display: flex; align-items: center; justify-content: space-between; gap: 4mm; }
+  .sizehdr { display: inline-flex; gap: 2mm; flex: none; }
+  .sizehdr i {
     font-family: 'Montserrat'; font-style: normal; font-size: 2.7mm; font-weight: 800;
-    background: #111; color: #fff; padding: .5mm 1.6mm; border-radius: .8mm; min-width: 9mm; text-align: center;
+    padding: .5mm 1.6mm; border-radius: .8mm; text-align: center;
+    /* Same width and gutter as .items.sized .p2, so each chip sits squarely
+       over the column of prices it labels. */
+    min-width: 11mm;
   }
+  .sizehdr i.red { background: #d61313; color: #fff; }
+  .sizehdr i.gold { background: #ffc400; color: #111; }
   /* 32 pizzas with a topping line each need tighter type than the simple
      lists — the same trade the designer makes. */
   .items.withdesc li { align-items: flex-start; padding: .38mm 0; font-size: 2.55mm; line-height: 1.12; }
@@ -131,17 +165,46 @@
   .items.withdesc .p2 { font-size: 2.6mm; }
   .items.withdesc .dots { display: none; }
   .items.withdesc .n { flex: 1; }
-  .supp {
-    display: flex; justify-content: flex-end; gap: 2mm;
-    margin-top: 1.5mm; padding: 1mm 2mm;
-    background: #d61313; color: #fff;
+  /* Reference: a red plaque hard left, the two supplements sitting in the same
+     columns as the pizza prices above them. */
+  .supp { display: flex; align-items: center; gap: 2mm; margin-top: 2mm; }
+  .supp span {
+    padding: 1mm 3mm; background: #d61313; color: #fff;
     font-size: 2.8mm; font-weight: 800; text-transform: uppercase;
   }
-  .supp b { width: 13mm; text-align: right; }
+  .supp i { flex: 1; }
+  .supp b { width: 11mm; text-align: right; color: #ffc400; font-size: 2.9mm; }
+
+  /* The reference singles Dips out with a red plaque. It is its own asset —
+     tinted off the gold one by luminance, since a CSS hue-rotate took the gold
+     to brown (the art is not a pure hue) and also recoloured the text. */
+  .redhead h3 { border-image-source: url(img/header-plaque-red.png); color: #fff; }
+  .redhead h3 .hdr2 { color: #ffc400; }
 
   .chips { list-style: none; margin: 0 0 3mm; padding: 0; column-count: 2; column-gap: 5mm; }
+  .chips.three { column-count: 3; column-gap: 4mm; }
+  .chips b { color: #ffc400; font-weight: 800; }
   .chips li { font-size: 3.3mm; font-weight: 700; text-transform: uppercase; padding: 1.1mm 0; break-inside: avoid; }
   .chips li::before { content: '•'; color: #ffc400; margin-right: 1.6mm; }
+
+  /* ---- kids box ---- */
+  .kidsbox { background: #d61313; border-radius: 3mm; padding: 2.2mm; }
+  .kidsinner {
+    border: .4mm dashed rgba(255,196,0,.9); border-radius: 2mm;
+    padding: 3mm; display: flex; align-items: center; gap: 4mm;
+  }
+  .kidsmark {
+    flex: none; width: 26mm; text-align: center; color: #fff;
+    font-family: 'Luckiest Guy', Impact, sans-serif; line-height: .95;
+  }
+  .kidsmark b { display: block; font-size: 6.4mm; }
+  .kidsmark span {
+    display: block; margin-top: 1.2mm; padding: .6mm 0;
+    background: #ffc400; color: #111; font-size: 3.2mm; border-radius: 1mm;
+  }
+  .kidslist { flex: 1; min-width: 0; }
+  .kidsbox .items .n, .kidsbox .items .p { color: #fff; }
+  .kidsbox .items .n em { color: #ffe08a; }
 
   /* ---- meal deal boxes ---- */
   /* The deals are the upsell and the reference gives them a third of the
@@ -154,31 +217,68 @@
     box-shadow: 1.2mm 1.2mm 0 rgba(0,0,0,.55);
     display: flex; flex-direction: column; justify-content: center;
   }
+  /* The reference tears the top and bottom edge of each deal box. A repeating
+     radial mask bites the same scallops out of a plain box — no artwork. */
+  .deal {
+    -webkit-mask:
+      radial-gradient(1.4mm at 1.4mm 1.4mm, transparent 99%, #000) 0 0 / 2.8mm 2.8mm repeat-x,
+      radial-gradient(1.4mm at 1.4mm -0.4mm, transparent 99%, #000) 0 100% / 2.8mm 2.8mm repeat-x,
+      linear-gradient(#000, #000) 0 1.4mm / 100% calc(100% - 2.8mm) no-repeat;
+            mask:
+      radial-gradient(1.4mm at 1.4mm 1.4mm, transparent 99%, #000) 0 0 / 2.8mm 2.8mm repeat-x,
+      radial-gradient(1.4mm at 1.4mm -0.4mm, transparent 99%, #000) 0 100% / 2.8mm 2.8mm repeat-x,
+      linear-gradient(#000, #000) 0 1.4mm / 100% calc(100% - 2.8mm) no-repeat;
+    border: 0; border-radius: 0; box-shadow: none;
+  }
   .deal b { display: block; font-family: 'Luckiest Guy', Impact, sans-serif; color: #d61313; font-size: 4.6mm; line-height: 1.05; }
   .deal p { margin: 1.8mm 0 2.2mm; font-size: 2.9mm; line-height: 1.35; font-weight: 600; }
   .deal strong { font-size: 5.6mm; font-weight: 900; }
 
   /* ---- cover panel ---- */
-  /* The cover balances itself (the QR block takes the slack with margin-top:
-     auto), so it opts out of the panel's space-between. */
-  .cover { justify-content: flex-start; align-items: center; text-align: center; padding-top: 6mm; }
+  /* The reference splits this panel: the cover proper, and a red spine down the
+     right edge carrying the brand name and the address. */
+  .cover { flex-direction: row; padding: 0; overflow: visible; }
+  .coverbody {
+    flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center;
+    text-align: center; padding: 6mm 6mm 13mm;
+  }
+  .spine {
+    flex: none; width: 23mm; background: #d61313; color: #ffc400;
+    display: flex; align-items: center; justify-content: center; gap: 6mm;
+    writing-mode: vertical-rl;
+  }
+  .spine b { font-family: 'Luckiest Guy', Impact, sans-serif; font-size: 15mm; letter-spacing: .04em; text-transform: uppercase; }
+  .spine span { font-size: 3.4mm; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #fff; }
+
+  /* The reference sets a red disc with a handset beside the phone and one with
+     a clock beside the opening times. Both are inline SVG — drawn, so they stay
+     vector in the PDF and need no asset. */
+  .ico { display: inline-block; vertical-align: middle; margin-right: 2mm; width: 6mm; height: 6mm; }
+  .ico svg { display: block; width: 100%; height: 100%; }
   /* The supplied wordmark, keyed to transparency so the panel's own black and
      its faint yellow glow read through instead of a slightly-off black box.
      105mm wide keeps the source above 300dpi at print size. */
   .brandmark { width: 112mm; height: auto; display: block; }
 
-  .tel { margin-top: 7mm; }
+  .tel { margin-top: 6mm; }
+  .telline { display: flex; align-items: center; justify-content: center; font-size: 7.5mm; font-weight: 600; letter-spacing: .02em; }
   /* Luckiest Guy draws well above its em box, so the number's glyphs ran over
-     the label even though the two boxes never touched. The margin is clearance
-     for the overshoot, not decoration — don't trim it. */
-  .tel .lab { display: block; margin-bottom: 6mm; font-size: 3.4mm; font-weight: 800; letter-spacing: .3em; color: #ffc400; }
-  .tel b { display: block; font-family: 'Luckiest Guy', Impact, sans-serif; font-size: 15mm; line-height: 1; letter-spacing: .02em; }
+     the line above even though the two boxes never touched. The margin is
+     clearance for the overshoot, not decoration — don't trim it. */
+  .tel b { display: block; margin-top: 3mm; font-family: 'Luckiest Guy', Impact, sans-serif; font-size: 17mm; line-height: 1; letter-spacing: .04em; }
 
   /* The cover's straps are the same device as a section header, so they take
      the same plaque — a flat yellow bar next to a bitten one would read as an
      oversight. Text is centred here, so the left/right insets match. */
+  .strap.plain {
+    border: 0; background: none; padding: 0; margin: 5mm 0 2mm;
+    color: #ffc400; font-size: 5mm;
+  }
+  .strap.red { border-image-source: url(img/header-plaque-red.png); color: #fff; }
+  .strap.website { font-size: 4.6mm; letter-spacing: .01em; text-transform: none; }
   .strap {
-    margin: 9mm 0 3mm; padding: .2em .35em .16em .35em;
+    display: flex; align-items: center; justify-content: center;
+    margin: 6mm 0 3mm; padding: .2em .35em .16em .35em;
     border-style: solid; border-color: transparent;
     border-width: .11em .5em .12em .15em;
     border-image: url(img/header-plaque.png) 18 85 20 25 fill stretch;
@@ -199,13 +299,17 @@
   .allergy b { color: #ffc400; text-transform: uppercase; letter-spacing: .08em; }
   .hours b { color: #ffc400; }
 
-  .qrwrap { margin-top: auto; display: flex; align-items: center; gap: 4mm; padding-top: 6mm; }
+  .qrwrap { display: flex; align-items: center; justify-content: center; gap: 3mm; padding-top: 3mm; }
+  .qrtxt .arrow { display: block; font-size: 6mm; color: #ffc400; line-height: 1; }
+  /* Reserved for the pizza / basil / tomato photograph the reference floods the
+     lower half of the cover with. Empty until that asset exists. */
+  .coverart { flex: 1; min-height: 20mm; }
   .qr { width: 30mm; height: 30mm; background: #fff; padding: 1.5mm; border-radius: 1.5mm; }
   .qr svg { width: 100%; height: 100%; display: block; }
-  .qrtxt { text-align: left; }
+  .qrtxt { text-align: right; }
   .qrtxt b { display: block; font-family: 'Luckiest Guy', Impact, sans-serif; font-size: 5mm; color: #ffc400; }
   .qrtxt span { font-size: 2.9mm; font-weight: 700; }
-  .addr { margin-top: 4mm; font-size: 3mm; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #e8dcc6; }
+  .allergy { margin-top: 6mm; }
 
   /* ---- foot ticker ---- */
   .ticker {
@@ -226,236 +330,239 @@
   <div class="panel">
     
     <section class="blk">
-      <h3>Drinks <span class="sizehdr"><i>CAN</i><i>BOTTLE</i></span></h3>
+      <div class="headrow"><h3>Drinks</h3><span class="sizehdr"><i class="gold">CAN</i><i class="gold">BOTTLE</i></span></div><div class="hrule"></div>
       <ul class="items sized">
       <li>
         <span class="n">Coke</span>
         <span class="dots"></span>
-        <span class="p2">£1.50</span>
-        <span class="p2">£3.50</span>
+        <span class="p2">1.50</span>
+        <span class="p2">3.50</span>
       </li>
       <li>
         <span class="n">Diet Coke</span>
         <span class="dots"></span>
-        <span class="p2">£1.50</span>
-        <span class="p2">£3.50</span>
+        <span class="p2">1.50</span>
+        <span class="p2">3.50</span>
       </li>
       <li>
         <span class="n">Fanta</span>
         <span class="dots"></span>
-        <span class="p2">£1.50</span>
-        <span class="p2">£3.50</span>
+        <span class="p2">1.50</span>
+        <span class="p2">3.50</span>
       </li>
       <li>
         <span class="n">Pepsi</span>
         <span class="dots"></span>
-        <span class="p2">£1.50</span>
-        <span class="p2">£3.50</span>
+        <span class="p2">1.50</span>
+        <span class="p2">3.50</span>
       </li>
       <li>
         <span class="n">Fanta Lemon</span>
         <span class="dots"></span>
-        <span class="p2">£1.50</span>
+        <span class="p2">1.50</span>
         <span class="p2">—</span>
       </li>
       <li>
         <span class="n">7 Up</span>
         <span class="dots"></span>
-        <span class="p2">£1.50</span>
+        <span class="p2">1.50</span>
         <span class="p2">—</span>
       </li>
       <li>
         <span class="n">Dr Pepper</span>
         <span class="dots"></span>
-        <span class="p2">£1.50</span>
+        <span class="p2">1.50</span>
         <span class="p2">—</span>
       </li>
       <li>
         <span class="n">Monster</span>
         <span class="dots"></span>
-        <span class="p2">£2.50</span>
+        <span class="p2">2.50</span>
         <span class="p2">—</span>
       </li>
       <li>
         <span class="n">Water (500ml)</span>
         <span class="dots"></span>
         <span class="p2">—</span>
-        <span class="p2">£1.20</span>
+        <span class="p2">1.20</span>
       </li></ul>
     </section>
     
     <section class="blk">
-      <h3>Milkshakes &amp; Coolers</h3>
+      <div class="headrow"><h3>Milk Shakes</h3></div><div class="hrule"></div>
       <div class="blkrow" style="--gutter:45.0mm;
     --rowmin:41.9mm"><ul class="items">
       <li>
         <span class="n">Oreo Milkshake</span>
         <span class="dots"></span>
-        <span class="p">£6.00</span>
+        <span class="p">6.00</span>
       </li>
       <li>
         <span class="n">Biscoff Milkshake</span>
         <span class="dots"></span>
-        <span class="p">£6.00</span>
+        <span class="p">6.00</span>
       </li>
       <li>
         <span class="n">Chocolate Milkshake</span>
         <span class="dots"></span>
-        <span class="p">£6.00</span>
+        <span class="p">6.00</span>
       </li>
       <li>
         <span class="n">Vanilla Milkshake</span>
         <span class="dots"></span>
-        <span class="p">£6.00</span>
+        <span class="p">6.00</span>
       </li>
       <li>
         <span class="n">Strawberry Milkshake</span>
         <span class="dots"></span>
-        <span class="p">£6.00</span>
+        <span class="p">6.00</span>
       </li>
       <li>
         <span class="n">Mango Cooler</span>
         <span class="dots"></span>
-        <span class="p">£6.00</span>
+        <span class="p">6.00</span>
       </li>
       <li>
         <span class="n">Strawberry Cooler</span>
         <span class="dots"></span>
-        <span class="p">£6.00</span>
+        <span class="p">6.00</span>
       </li></ul><img class="shot side" src="img/shake.png" alt=""
     style="width:26mm;--clear:15mm;--shoth:38.9mm" /></div>
     </section>
     
     <section class="blk">
-      <h3>Desserts</h3>
+      <div class="headrow"><h3>Desserts</h3></div><div class="hrule"></div>
       <div class="blkrow" style="--gutter:55.0mm;
     --rowmin:28.8mm"><ul class="items dense">
       <li>
         <span class="n">Chocolate Cake<em>Rich chocolate fudge cake.</em></span>
         <span class="dots"></span>
-        <span class="p">£4.50</span>
+        <span class="p">4.50</span>
       </li>
       <li>
         <span class="n">Cheese Cake<em>Creamy baked cheesecake.</em></span>
         <span class="dots"></span>
-        <span class="p">£4.50</span>
+        <span class="p">4.50</span>
       </li>
       <li>
         <span class="n">Carrot Cake</span>
         <span class="dots"></span>
-        <span class="p">£4.50</span>
+        <span class="p">4.50</span>
       </li>
       <li>
         <span class="n">Lemon Cake</span>
         <span class="dots"></span>
-        <span class="p">£4.50</span>
+        <span class="p">4.50</span>
       </li>
       <li>
         <span class="n">Biscoff Cake</span>
         <span class="dots"></span>
-        <span class="p">£4.50</span>
+        <span class="p">4.50</span>
       </li>
       <li>
         <span class="n">Ben and Jerry's Cake<em>Tub of Ben &amp; Jerry’s ice cream.</em></span>
         <span class="dots"></span>
-        <span class="p">£7.50</span>
+        <span class="p">7.50</span>
       </li></ul><img class="shot side" src="img/cake.png" alt=""
     style="width:36mm;--clear:15mm;--shoth:25.8mm" /></div>
     </section>
     
-    <section class="blk">
-      <h3>Kids Meals</h3>
-      <ul class="items">
-      <li>
-        <span class="n">Kids Popcorn Chicken<em>Popcorn chicken, nuggets (5), chips</em></span>
-        <span class="dots"></span>
-        <span class="p">£6.00</span>
-      </li>
-      <li>
-        <span class="n">Kids Sunny<em>Sunny (4) &amp; chips or Tenders (3) &amp; chips</em></span>
-        <span class="dots"></span>
-        <span class="p">£6.00</span>
-      </li></ul>
+    <section class="blk kidsbox">
+      <div class="kidsinner">
+        <!-- ASSET GAP: the KIDS MENU / BIG BITES ribbon lockup goes here. -->
+        <div class="kidsmark"><b>Kids</b><b>Menu</b><span>Big Bites</span></div>
+        <ul class="items dense kidslist">
+          <li><span class="n">Kids Popcorn Chicken<em>Popcorn chicken, nuggets (5), chips</em></span>
+              <span class="dots"></span><span class="p">6.00</span></li><li><span class="n">Kids Sunny<em>Sunny (4) &amp; chips or Tenders (3) &amp; chips</em></span>
+              <span class="dots"></span><span class="p">6.00</span></li>
+        </ul>
+      </div>
     </section>
   </div>
   <div class="panel">
     
     <section class="blk">
-      <h3>Dips <span class="hdr2">£1.00</span></h3>
+      <div class="redhead"><div class="headrow"><h3>Dips <span class="hdr2">(£1.00)</span></h3></div><div class="hrule"></div></div>
       <div>
-      <ul class="chips"><li>Mayo</li><li>Garlic Mayo</li><li>Garlic Yoghurt</li><li>Ketchup</li><li>BBQ Sauce</li><li>Sweet Chilli</li><li>Chilli</li><li>Burger Sauce</li><li>Relish</li><li>Chilli Mayo</li></ul>
-      <ul class="items dense">
-        <li><span class="n">Pot Curry</span><span class="dots"></span><span class="p">£1.90</span></li>
-        <li><span class="n">Pot Gravy</span><span class="dots"></span><span class="p">£1.90</span></li></ul>
+      <ul class="chips three"><li>Mayo</li><li>Garlic Mayo</li><li>Garlic Yoghurt</li><li>Ketchup</li><li>BBQ Sauce</li><li>Sweet Chilli</li><li>Chilli</li><li>Burger Sauce</li><li>Relish</li><li>Chilli Mayo</li><li>Pot Curry <b>1.90</b></li><li>Pot Gravy <b>1.90</b></li></ul>
       </div>
     </section>
     <img class="shot below" src="img/burger-meal.png" alt=""
-    style="width:96mm;--clear:15mm;--shoth:55.3mm" />
+    style="width:94mm;--clear:15mm;--shoth:54.2mm" />
     
     <section class="blk">
-      <h3>Meal Deals</h3>
+      <div class="headrow"><h3>Meal Deals</h3></div><div class="hrule"></div>
       <div class="deals">
         
         <div class="deal">
           <b>Goodie Box</b>
           <p>11" Margherita, doner, chips, 4 nuggets, 4 onion rings, can of drink</p>
-          <strong>£17.00</strong>
+          <strong>17.00</strong>
         </div>
         <div class="deal">
           <b>Burger Box</b>
           <p>¼ cheese, ¼ chicken, 2 × chips, 2 × can of Pepsi</p>
-          <strong>£20.00</strong>
+          <strong>20.00</strong>
         </div>
         <div class="deal">
           <b>Big Bites Deal</b>
           <p>Any 2 × 11" pizza, 2 × chips, 2 × can of Pepsi</p>
-          <strong>£24.00</strong>
+          <strong>24.00</strong>
         </div>
         <div class="deal">
           <b>Personal Deal</b>
           <p>Any 11" pizza, chips, can of Coke</p>
-          <strong>£12.00</strong>
+          <strong>12.00</strong>
         </div>
         <div class="deal">
           <b>Family Meal Deal</b>
           <p>Any 13" pizza, ¼ cheese burger, chips, 1L bottle of drink</p>
-          <strong>£20.00</strong>
+          <strong>20.00</strong>
         </div>
         <div class="deal">
           <b>Pizza Deal 11"</b>
           <p>Any 3 × 11" pizza</p>
-          <strong>£25.00</strong>
+          <strong>25.00</strong>
         </div>
         <div class="deal">
           <b>Pizza Deal 13"</b>
           <p>Any 3 × 13" pizza</p>
-          <strong>£30.00</strong>
+          <strong>30.00</strong>
         </div>
       </div>
     </section>
   </div>
   
   <div class="panel cover">
-    <img class="brandmark" src="logo.png" alt="Big Bites — Slice It! Fresh &amp; Loaded" />
-    <div class="tel">
-      <span class="lab">Tel</span>
-      <b>01347 820820</b>
-    </div>
-    <div class="strap">Delivery Service or Collection</div>
-    <p class="fine">
-      Order on our website for collection or delivery.<br />
-      Easingwold — £1.00 per mile, up to 5 miles.<br />
-      Minimum order £12.
-    </p>
-    <div class="strap">Opening Times</div>
-    <div class="hours"><div><span>Sunday – Thursday</span><b>4pm – 10pm</b></div><div><span>Friday – Saturday</span><b>4pm – 11pm</b></div></div>
-    <p class="allergy"><b>Allergies?</b> For allergens please contact the restaurant before ordering.</p>
-    <div class="qrwrap">
-      <div class="qr"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37 37"><path fill="#fff" d="M0 0h37v37h-37z"/><path stroke="#000" d="M2 2.5h7m4 0h1m2 0h1m3 0h1m2 0h2m1 0h1m1 0h7m-33 1h1m5 0h1m5 0h1m2 0h2m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m1 0h2m2 0h2m4 0h2m1 0h1m1 0h2m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h1m8 0h5m1 0h2m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m4 0h3m1 0h3m2 0h1m1 0h3m1 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m4 0h1m1 0h1m1 0h3m1 0h3m1 0h1m2 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-24 1h1m1 0h1m3 0h1m3 0h2m1 0h3m-22 1h2m1 0h2m2 0h1m4 0h1m2 0h1m1 0h1m2 0h2m4 0h2m-31 1h1m1 0h3m2 0h1m3 0h3m1 0h1m1 0h1m1 0h2m1 0h2m1 0h1m1 0h2m1 0h1m-30 1h7m1 0h1m3 0h1m1 0h1m5 0h1m1 0h1m2 0h2m2 0h3m-33 1h3m2 0h1m3 0h4m1 0h2m2 0h1m3 0h1m3 0h3m1 0h1m1 0h1m-33 1h1m1 0h2m2 0h3m1 0h1m2 0h2m1 0h1m1 0h7m1 0h2m3 0h2m-33 1h1m2 0h1m3 0h1m1 0h3m1 0h1m1 0h5m1 0h1m1 0h1m1 0h1m3 0h1m1 0h1m-28 1h1m1 0h3m1 0h1m1 0h4m3 0h2m3 0h1m1 0h1m-26 1h1m2 0h1m4 0h1m3 0h1m4 0h1m1 0h1m6 0h1m1 0h2m1 0h1m-32 1h1m2 0h4m3 0h1m5 0h1m5 0h1m1 0h5m2 0h1m-32 1h5m1 0h1m1 0h1m6 0h2m4 0h1m1 0h1m1 0h4m2 0h1m-33 1h1m1 0h1m2 0h2m1 0h1m2 0h4m2 0h4m1 0h2m4 0h5m-32 1h2m2 0h1m1 0h2m1 0h1m1 0h1m1 0h2m2 0h1m1 0h1m1 0h4m2 0h5m-31 1h1m1 0h4m1 0h1m3 0h2m2 0h1m1 0h2m3 0h1m2 0h1m1 0h1m-30 1h1m1 0h2m1 0h1m4 0h2m2 0h1m1 0h1m1 0h6m1 0h1m1 0h2m-29 1h1m1 0h1m1 0h1m1 0h2m3 0h1m1 0h1m4 0h1m1 0h4m2 0h1m1 0h1m1 0h3m-33 1h1m3 0h1m5 0h3m3 0h2m2 0h1m1 0h2m3 0h2m1 0h2m-32 1h5m1 0h3m2 0h7m5 0h7m2 0h1m-25 1h6m3 0h5m1 0h2m3 0h1m1 0h2m-32 1h7m1 0h1m4 0h1m1 0h1m1 0h1m5 0h2m1 0h1m1 0h2m-30 1h1m5 0h1m2 0h1m1 0h2m1 0h1m3 0h1m1 0h5m3 0h4m-32 1h1m1 0h3m1 0h1m1 0h1m3 0h4m1 0h1m3 0h9m1 0h1m-32 1h1m1 0h3m1 0h1m1 0h3m5 0h1m2 0h1m2 0h1m2 0h1m1 0h1m1 0h2m1 0h1m-33 1h1m1 0h3m1 0h1m2 0h1m1 0h1m3 0h3m2 0h2m2 0h1m3 0h1m2 0h2m-33 1h1m5 0h1m2 0h1m3 0h2m1 0h2m4 0h2m1 0h1m3 0h4m-33 1h7m2 0h1m5 0h1m1 0h1m1 0h1m1 0h4m3 0h1"/></svg>
+    <div class="coverbody">
+      <img class="brandmark" src="logo.png" alt="Big Bites — Slice It! Fresh &amp; Loaded" />
+      <div class="tel">
+        <span class="telline"><i class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#d61313"/><path fill="#fff" d="M9.1 5.6c.5-.2 1 0 1.3.5l1.1 2c.2.5.1 1-.3 1.3l-.9.8c-.1.1-.2.3-.1.5a8.6 8.6 0 0 0 3.1 3.1c.2.1.4 0 .5-.1l.8-.9c.3-.4.8-.5 1.3-.3l2 1.1c.5.3.7.8.5 1.3l-.5 1.4c-.2.6-.8 1-1.5.9-2.3-.2-4.6-1.4-6.4-3.2S5.1 9.5 4.9 7.2c-.1-.7.3-1.3.9-1.5z"/></svg></i>Tel : 01347</span>
+        <b>820820</b>
+      </div>
+      <div class="strap plain">Delivery Service or Collection</div>
+      <p class="fine">
+        Order on our website for collection or delivery.<br />
+        Easingwold — £1.00 per mile, up to 5 miles.<br />
+        Minimum order £12.
+      </p>
+      <div class="strap"><i class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#d61313"/><circle cx="12" cy="12" r="7.4" fill="none" stroke="#fff" stroke-width="1.6"/><path fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" d="M12 7.6V12l3 1.9"/></svg></i>Opening Time</div>
+      <div class="hours"><div><span>Sunday – Thursday</span><b>4pm – 10pm</b></div><div><span>Friday – Saturday</span><b>4pm – 11pm</b></div></div>
+      <div class="strap red website">bigbiteseasingwold.co.uk</div>
+      <div class="qrwrap">
+        <div class="qrtxt"><b>SCAN<br />ME</b><span class="arrow">→</span></div>
+        <div class="qr"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37 37"><path fill="#fff" d="M0 0h37v37h-37z"/><path stroke="#000" d="M2 2.5h7m4 0h1m2 0h1m3 0h1m2 0h2m1 0h1m1 0h7m-33 1h1m5 0h1m5 0h1m2 0h2m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m1 0h2m2 0h2m4 0h2m1 0h1m1 0h2m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h1m8 0h5m1 0h2m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m4 0h3m1 0h3m2 0h1m1 0h3m1 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m4 0h1m1 0h1m1 0h3m1 0h3m1 0h1m2 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-24 1h1m1 0h1m3 0h1m3 0h2m1 0h3m-22 1h2m1 0h2m2 0h1m4 0h1m2 0h1m1 0h1m2 0h2m4 0h2m-31 1h1m1 0h3m2 0h1m3 0h3m1 0h1m1 0h1m1 0h2m1 0h2m1 0h1m1 0h2m1 0h1m-30 1h7m1 0h1m3 0h1m1 0h1m5 0h1m1 0h1m2 0h2m2 0h3m-33 1h3m2 0h1m3 0h4m1 0h2m2 0h1m3 0h1m3 0h3m1 0h1m1 0h1m-33 1h1m1 0h2m2 0h3m1 0h1m2 0h2m1 0h1m1 0h7m1 0h2m3 0h2m-33 1h1m2 0h1m3 0h1m1 0h3m1 0h1m1 0h5m1 0h1m1 0h1m1 0h1m3 0h1m1 0h1m-28 1h1m1 0h3m1 0h1m1 0h4m3 0h2m3 0h1m1 0h1m-26 1h1m2 0h1m4 0h1m3 0h1m4 0h1m1 0h1m6 0h1m1 0h2m1 0h1m-32 1h1m2 0h4m3 0h1m5 0h1m5 0h1m1 0h5m2 0h1m-32 1h5m1 0h1m1 0h1m6 0h2m4 0h1m1 0h1m1 0h4m2 0h1m-33 1h1m1 0h1m2 0h2m1 0h1m2 0h4m2 0h4m1 0h2m4 0h5m-32 1h2m2 0h1m1 0h2m1 0h1m1 0h1m1 0h2m2 0h1m1 0h1m1 0h4m2 0h5m-31 1h1m1 0h4m1 0h1m3 0h2m2 0h1m1 0h2m3 0h1m2 0h1m1 0h1m-30 1h1m1 0h2m1 0h1m4 0h2m2 0h1m1 0h1m1 0h6m1 0h1m1 0h2m-29 1h1m1 0h1m1 0h1m1 0h2m3 0h1m1 0h1m4 0h1m1 0h4m2 0h1m1 0h1m1 0h3m-33 1h1m3 0h1m5 0h3m3 0h2m2 0h1m1 0h2m3 0h2m1 0h2m-32 1h5m1 0h3m2 0h7m5 0h7m2 0h1m-25 1h6m3 0h5m1 0h2m3 0h1m1 0h2m-32 1h7m1 0h1m4 0h1m1 0h1m1 0h1m5 0h2m1 0h1m1 0h2m-30 1h1m5 0h1m2 0h1m1 0h2m1 0h1m3 0h1m1 0h5m3 0h4m-32 1h1m1 0h3m1 0h1m1 0h1m3 0h4m1 0h1m3 0h9m1 0h1m-32 1h1m1 0h3m1 0h1m1 0h3m5 0h1m2 0h1m2 0h1m2 0h1m1 0h1m1 0h2m1 0h1m-33 1h1m1 0h3m1 0h1m2 0h1m1 0h1m3 0h3m2 0h2m2 0h1m3 0h1m2 0h2m-33 1h1m5 0h1m2 0h1m3 0h2m1 0h2m4 0h2m1 0h1m3 0h4m-33 1h7m2 0h1m5 0h1m1 0h1m1 0h1m1 0h4m3 0h1"/></svg>
 </div>
-      <div class="qrtxt"><b>SCAN ME</b><span>bigbiteseasingwold.co.uk</span></div>
+      </div>
+      <p class="allergy"><b>Allergies?</b> For allergens please contact the restaurant before ordering.</p>
+      <!-- ASSET GAP: the reference floods the lower half of this panel with a
+           pizza / basil / tomato photograph. Left empty until one exists. -->
+      <div class="coverart" aria-hidden="true"></div>
     </div>
-    <div class="addr">56 Long Street, Easingwold, YO61 3HT</div>
+    <div class="spine">
+      <b>Big Bites</b>
+      <span>56 Long Street, Easingwold, YO61 3HT</span>
+    </div>
   </div>
 
     <div class="ticker"><span>SLICE IT</span><i>★</i><span>BIG BITES</span><i>★</i><span>FRESH &amp; LOADED</span><i>★</i><span>SLICE IT</span><i>★</i><span>BIG BITES</span><i>★</i><span>FRESH &amp; LOADED</span><i>★</i><span>SLICE IT</span><i>★</i><span>BIG BITES</span><i>★</i><span>FRESH &amp; LOADED</span><i>★</i><span>SLICE IT</span><i>★</i><span>BIG BITES</span><i>★</i><span>FRESH &amp; LOADED</span><i>★</i><span>SLICE IT</span><i>★</i><span>BIG BITES</span><i>★</i><span>FRESH &amp; LOADED</span><i>★</i><span>SLICE IT</span><i>★</i><span>BIG BITES</span><i>★</i><span>FRESH &amp; LOADED</span><i>★</i></div>
@@ -468,426 +575,426 @@
     <div>
       
     <section class="blk">
-      <h3>Pizza <span class="sizehdr"><i>11"</i><i>13"</i></span></h3>
-      <ul class="items sized withdesc">
+      <div class="headrow"><h3>Pizza</h3><span class="sizehdr"><i class="red">11"</i><i class="red">13"</i></span></div><div class="hrule"></div>
+      <ul class="items sized withdesc gold">
       <li>
         <span class="n">Margherita<em>Cheese and tomato</em></span>
         <span class="dots"></span>
-        <span class="p2">£9.50</span>
-        <span class="p2">£10.90</span>
+        <span class="p2">9.50</span>
+        <span class="p2">10.90</span>
       </li>
       <li>
         <span class="n">BBQ Margherita<em>BBQ base, cheese, tomato</em></span>
         <span class="dots"></span>
-        <span class="p2">£9.50</span>
-        <span class="p2">£10.90</span>
+        <span class="p2">9.50</span>
+        <span class="p2">10.90</span>
       </li>
       <li>
         <span class="n">Four Cheese<em>Mozzarella, feta, parmesan cheese, halloumi cheese</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.50</span>
-        <span class="p2">£11.90</span>
+        <span class="p2">10.50</span>
+        <span class="p2">11.90</span>
       </li>
       <li>
         <span class="n">Halloumi Pizza<em>Halloumi cheese, red onions, peppers, garlic butter</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.50</span>
-        <span class="p2">£11.90</span>
+        <span class="p2">10.50</span>
+        <span class="p2">11.90</span>
       </li>
       <li>
         <span class="n">Vegi Garden<em>Peppers, red onions, mushrooms, sweetcorn, olives, cherry tomato</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.50</span>
-        <span class="p2">£11.90</span>
+        <span class="p2">10.50</span>
+        <span class="p2">11.90</span>
       </li>
       <li>
         <span class="n">Al Funghi<em>Mushrooms, mozzarella cheese</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.50</span>
-        <span class="p2">£11.90</span>
+        <span class="p2">10.50</span>
+        <span class="p2">11.90</span>
       </li>
       <li>
         <span class="n">Volcano Veg<em>Red onions, mushrooms, fresh chilli, cherry tomato, garlic</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.50</span>
-        <span class="p2">£11.90</span>
+        <span class="p2">10.50</span>
+        <span class="p2">11.90</span>
       </li>
       <li>
         <span class="n">London Pizza<em>Mozzarella cheese, chips</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.50</span>
-        <span class="p2">£11.90</span>
+        <span class="p2">10.50</span>
+        <span class="p2">11.90</span>
       </li>
       <li>
         <span class="n">Ham Pizza<em>Mozzarella cheese with ham</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.50</span>
-        <span class="p2">£11.90</span>
+        <span class="p2">10.50</span>
+        <span class="p2">11.90</span>
       </li>
       <li>
         <span class="n">Farm House<em>Ham, mushrooms and mozzarella cheese</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li>
       <li>
         <span class="n">Hawaiian<em>Ham, pineapple, mozzarella cheese</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li>
       <li>
         <span class="n">Pepperoni<em>Pepperoni with mozzarella cheese</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li>
       <li>
         <span class="n">Chorizo<em>Chorizo with mozzarella cheese</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li>
       <li>
         <span class="n">Double Bite<em>Double pepperoni, double cheese</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li>
       <li>
         <span class="n">Bacon<em>Bacon, red onions, peppers, mozzarella cheese</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li>
       <li>
         <span class="n">Meat Supreme<em>Pepperoni, ham, salami, chorizo</em></span>
         <span class="dots"></span>
-        <span class="p2">£11.50</span>
-        <span class="p2">£13.50</span>
+        <span class="p2">11.50</span>
+        <span class="p2">13.50</span>
       </li>
       <li>
         <span class="n">Kiev<em>Ham, chilli, garlic, mozzarella cheese</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li>
       <li>
         <span class="n">BBQ Chicken<em>BBQ base, chicken, cheese</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li>
       <li>
         <span class="n">Chicken Supreme<em>Chicken, red onions, mushrooms, peppers, garlic butter, cheese</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li>
       <li>
         <span class="n">Doner Pizza<em>Doner, mushrooms, red onions, cheese</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li>
       <li>
         <span class="n">Bolognese Pizza<em>Bolognese, red onions, cherry tomato</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li>
       <li>
         <span class="n">Mexicano Pizza<em>Bolognese, red onions, fresh chilli</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li>
       <li>
         <span class="n">BBQ Porker<em>BBQ base, ham, salami, pepperoni, bacon, chorizo</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li>
       <li>
         <span class="n">Hot Lips<em>Pepperoni, red onions, fresh chilli, garlic</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li>
       <li>
         <span class="n">BBQ Meaty<em>Mighty BBQ base, chicken, pepperoni, bacon</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li>
       <li>
         <span class="n">Dragon's Breath<em>Chicken, pepperoni, fresh chilli, red onions, chilli flakes</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li>
       <li>
         <span class="n">Devil's Delight<em>Hot BBQ base, spicy chicken, chorizo, fresh chilli</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li>
       <li>
         <span class="n">Four Seasons<em>Ham, onions, mushrooms, peppers</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li>
       <li>
         <span class="n">Tuna Pizza<em>Tuna, onions, cherry tomato</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li>
       <li>
         <span class="n">Seafood<em>Tuna, prawns</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li>
       <li>
         <span class="n">Half &amp; Half<em>Two halves, two toppings</em></span>
         <span class="dots"></span>
-        <span class="p2">£12.00</span>
-        <span class="p2">£14.00</span>
+        <span class="p2">12.00</span>
+        <span class="p2">14.00</span>
       </li>
       <li>
         <span class="n">D.I.Y<em>Combination of your 4 toppings</em></span>
         <span class="dots"></span>
-        <span class="p2">£12.00</span>
-        <span class="p2">£14.00</span>
+        <span class="p2">12.00</span>
+        <span class="p2">14.00</span>
       </li></ul>
     </section>
-      <div class="supp">Stuffed Crust Supplement <b>+£2.50</b> <b>+£3.50</b></div>
+      <div class="supp"><span>Stuffed Crust Supplement</span><i></i><b>+2.50</b><b>+3.50</b></div>
     </div>
-    <img class="shot below" src="img/pizza.png" alt=""
-    style="width:50mm;--clear:15mm;--shoth:27.3mm" />
+    <div class="halftone"><img class="shot below" src="img/pizza.png" alt=""
+    style="width:50mm;--clear:15mm;--shoth:27.3mm" /></div>
   </div>
   <div class="panel tight">
     
     <section class="blk">
-      <h3>Garlic Bread <span class="sizehdr"><i>11"</i><i>13"</i></span></h3>
+      <div class="headrow"><h3>Garlic Bread</h3><span class="sizehdr"><i class="red">11"</i><i class="red">13"</i></span></div><div class="hrule"></div>
       <ul class="items sized withdesc">
       <li>
         <span class="n">Plain Garlic Bread<em>Brushed with garlic butter.</em></span>
         <span class="dots"></span>
-        <span class="p2">£6.00</span>
-        <span class="p2">£8.00</span>
+        <span class="p2">6.00</span>
+        <span class="p2">8.00</span>
       </li>
       <li>
         <span class="n">Garlic Bread Tomato<em>Garlic butter, tomato.</em></span>
         <span class="dots"></span>
-        <span class="p2">£7.00</span>
-        <span class="p2">£9.00</span>
+        <span class="p2">7.00</span>
+        <span class="p2">9.00</span>
       </li>
       <li>
         <span class="n">Garlic Bread Cheese<em>Garlic butter, melted mozzarella.</em></span>
         <span class="dots"></span>
-        <span class="p2">£8.50</span>
-        <span class="p2">£10.90</span>
+        <span class="p2">8.50</span>
+        <span class="p2">10.90</span>
       </li>
       <li>
         <span class="n">Garlic Bread Cheese &amp; Chilli</span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li>
       <li>
         <span class="n">Garlic Bread Cheese &amp; Doner<em>Garlic butter, doner, mozzarella.</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li>
       <li>
         <span class="n">Garlic Bread Cheese &amp; Pepperoni<em>Garlic butter, pepperoni, mozzarella.</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.90</span>
-        <span class="p2">£12.50</span>
+        <span class="p2">10.90</span>
+        <span class="p2">12.50</span>
       </li></ul>
     </section>
     
     <section class="blk">
-      <h3>Calzone</h3>
+      <div class="headrow"><h3>Calzone</h3></div><div class="hrule"></div>
       <div class="blkrow" style="--gutter:53.0mm;
     --rowmin:24.1mm"><ul class="items dense">
       <li>
         <span class="n">Doner Calzone<em>Doner, onion, mushroom.</em></span>
         <span class="dots"></span>
-        <span class="p">£12.50</span>
+        <span class="p">12.50</span>
       </li>
       <li>
         <span class="n">Kiev Calzone<em>Chicken, ham, garlic butter.</em></span>
         <span class="dots"></span>
-        <span class="p">£12.50</span>
+        <span class="p">12.50</span>
       </li>
       <li>
         <span class="n">Meat Calzone<em>Pepperoni, salami, ham, bacon.</em></span>
         <span class="dots"></span>
-        <span class="p">£12.50</span>
+        <span class="p">12.50</span>
       </li>
       <li>
         <span class="n">Veg Calzone</span>
         <span class="dots"></span>
-        <span class="p">£12.50</span>
+        <span class="p">12.50</span>
       </li>
       <li>
         <span class="n">Hot Calzone<em>Pepperoni, onion, jalapeno.</em></span>
         <span class="dots"></span>
-        <span class="p">£12.50</span>
+        <span class="p">12.50</span>
       </li></ul><img class="shot side" src="img/calzone.png" alt=""
     style="width:34mm;--clear:15mm;--shoth:21.1mm" /></div>
     </section>
     
     <section class="blk">
-      <h3>Kebabs <span class="sizehdr"><i>MED</i><i>LGE</i></span></h3>
+      <div class="headrow"><h3>Kebabs</h3><span class="sizehdr"><i class="gold">MEDIUM</i><i class="red">LARGE</i></span></div><div class="hrule"></div>
       <div class="blkrow" style="--gutter:56.0mm;
     --rowmin:22.1mm"><ul class="items sized withdesc">
       <li>
         <span class="n">Lamb Doner</span>
         <span class="dots"></span>
-        <span class="p2">£8.50</span>
-        <span class="p2">£9.90</span>
+        <span class="p2">8.50</span>
+        <span class="p2">9.90</span>
       </li>
       <li>
         <span class="n">Tray Doner<em>Just the meat.</em></span>
         <span class="dots"></span>
-        <span class="p2">£4.00</span>
+        <span class="p2">4.00</span>
         <span class="p2">—</span>
       </li>
       <li>
         <span class="n">Doner Meat &amp; Chips</span>
         <span class="dots"></span>
-        <span class="p2">£9.00</span>
+        <span class="p2">9.00</span>
         <span class="p2">—</span>
       </li>
       <li>
         <span class="n">Chicken Shawarma<em>Chargrilled chicken, salad, pitta, sauce.</em></span>
         <span class="dots"></span>
-        <span class="p2">£8.50</span>
-        <span class="p2">£9.90</span>
+        <span class="p2">8.50</span>
+        <span class="p2">9.90</span>
       </li>
       <li>
         <span class="n">Tray Shawarma</span>
         <span class="dots"></span>
-        <span class="p2">£6.00</span>
+        <span class="p2">6.00</span>
         <span class="p2">—</span>
       </li>
       <li>
         <span class="n">Chicken Shawarma &amp; Chips</span>
         <span class="dots"></span>
-        <span class="p2">£9.00</span>
+        <span class="p2">9.00</span>
         <span class="p2">—</span>
       </li>
       <li>
         <span class="n">Kofta Kebab</span>
         <span class="dots"></span>
-        <span class="p2">£10.50</span>
+        <span class="p2">10.50</span>
         <span class="p2">—</span>
       </li>
       <li>
         <span class="n">Chicken Shish</span>
         <span class="dots"></span>
-        <span class="p2">£11.00</span>
+        <span class="p2">11.00</span>
         <span class="p2">—</span>
       </li>
       <li>
         <span class="n">Combo Kebab<em>Combination of lamb doner and shawarma</em></span>
         <span class="dots"></span>
-        <span class="p2">£14.00</span>
+        <span class="p2">14.00</span>
         <span class="p2">—</span>
       </li>
       <li>
         <span class="n">Mixed Kebab<em>Lamb doner, chicken doner, kofte kebab, chicken shish, salad, 2× pot sauce, 2× pitta bread</em></span>
         <span class="dots"></span>
-        <span class="p2">£22.00</span>
+        <span class="p2">22.00</span>
         <span class="p2">—</span>
       </li></ul><img class="shot side" src="img/kebab.png" alt=""
     style="width:27mm;--clear:25mm;--shoth:19.1mm" /></div>
     </section>
     
     <section class="blk">
-      <h3>Parmesan</h3>
+      <div class="headrow"><h3>Parmesan</h3></div><div class="hrule"></div>
       <ul class="items dense">
       <li>
         <span class="n">Plain Parmesan<em>Pounded chicken, golden crumb, bechamel &amp; cheese.</em></span>
         <span class="dots"></span>
-        <span class="p">£10.50</span>
+        <span class="p">10.50</span>
       </li>
       <li>
         <span class="n">BBQ Parmesan<em>Parmo topped with BBQ sauce &amp; cheese.</em></span>
         <span class="dots"></span>
-        <span class="p">£12.00</span>
+        <span class="p">12.00</span>
       </li>
       <li>
         <span class="n">Hot Parmesan<em>Pepperoni, jalapeno, garlic butter.</em></span>
         <span class="dots"></span>
-        <span class="p">£12.00</span>
+        <span class="p">12.00</span>
       </li>
       <li>
         <span class="n">Kiev Parmesan</span>
         <span class="dots"></span>
-        <span class="p">£12.00</span>
+        <span class="p">12.00</span>
       </li>
       <li>
         <span class="n">Doner Parmesan<em>Doner &amp; cheese.</em></span>
         <span class="dots"></span>
-        <span class="p">£12.00</span>
+        <span class="p">12.00</span>
       </li></ul>
     </section>
     
     <section class="blk">
-      <h3>Wraps</h3>
+      <div class="headrow"><h3>Wrap</h3></div><div class="hrule"></div>
       <div class="blkrow" style="--gutter:52.0mm;
     --rowmin:24.3mm"><ul class="items dense">
       <li>
         <span class="n">Chips &amp; Cheese Wrap<em>Cheese and chips, rolled.</em></span>
         <span class="dots"></span>
-        <span class="p">£7.00</span>
+        <span class="p">7.00</span>
       </li>
       <li>
         <span class="n">Lamb Doner Wrap</span>
         <span class="dots"></span>
-        <span class="p">£8.50</span>
+        <span class="p">8.50</span>
       </li>
       <li>
         <span class="n">Chicken Shawarma Wrap<em>Chargrilled chicken, salad, sauce.</em></span>
         <span class="dots"></span>
-        <span class="p">£8.50</span>
+        <span class="p">8.50</span>
       </li>
       <li>
         <span class="n">Chicken Tenders Wrap<em>Chicken tenders, salad, sauce.</em></span>
         <span class="dots"></span>
-        <span class="p">£8.50</span>
+        <span class="p">8.50</span>
       </li>
       <li>
         <span class="n">Kofta Kebab Wrap</span>
         <span class="dots"></span>
-        <span class="p">£9.00</span>
+        <span class="p">9.00</span>
       </li>
       <li>
         <span class="n">Chicken Shish Wrap</span>
         <span class="dots"></span>
-        <span class="p">£9.50</span>
+        <span class="p">9.50</span>
       </li>
       <li>
         <span class="n">Combo Wrap<em>Chicken &amp; doner.</em></span>
         <span class="dots"></span>
-        <span class="p">£10.50</span>
+        <span class="p">10.50</span>
       </li>
       <li>
         <span class="n">Doner Meat &amp; Chips Wrap<em>Doner and chips, rolled.</em></span>
         <span class="dots"></span>
-        <span class="p">£9.00</span>
+        <span class="p">9.00</span>
       </li>
       <li>
         <span class="n">Chicken Shawarma &amp; Chips Wrap</span>
         <span class="dots"></span>
-        <span class="p">£9.00</span>
+        <span class="p">9.00</span>
       </li></ul><img class="shot side" src="img/wrap.png" alt=""
     style="width:33mm;--clear:15mm;--shoth:21.3mm" /></div>
     </section>
@@ -895,214 +1002,215 @@
   <div class="panel">
     
     <section class="blk">
-      <h3>Burgers <span class="sizehdr"><i>¼lb</i><i>½lb</i></span></h3>
+      <div class="headrow"><h3>Burgers</h3><span class="sizehdr"><i class="gold">1/4 lb</i><i class="red">1/2 lb</i></span></div><div class="hrule"></div>
       <ul class="items sized withdesc">
       <li>
         <span class="n">Beef Burger<em>Served with chips</em></span>
         <span class="dots"></span>
-        <span class="p2">£6.50</span>
-        <span class="p2">£7.50</span>
+        <span class="p2">6.50</span>
+        <span class="p2">7.50</span>
       </li>
       <li>
         <span class="n">Cheese Burger<em>Served with chips</em></span>
         <span class="dots"></span>
-        <span class="p2">£8.00</span>
-        <span class="p2">£9.00</span>
+        <span class="p2">8.00</span>
+        <span class="p2">9.00</span>
       </li>
       <li>
         <span class="n">Chicken Burger<em>Served with chips</em></span>
         <span class="dots"></span>
-        <span class="p2">£8.00</span>
-        <span class="p2">£9.00</span>
+        <span class="p2">8.00</span>
+        <span class="p2">9.00</span>
       </li>
       <li>
         <span class="n">Bacon Supreme<em>Cheese burger with bacon · Served with chips</em></span>
         <span class="dots"></span>
-        <span class="p2">£8.50</span>
-        <span class="p2">£9.50</span>
+        <span class="p2">8.50</span>
+        <span class="p2">9.50</span>
       </li>
       <li>
         <span class="n">Monster Burger<em>Cheese burger, bacon, doner, spicy sauce · ¼lb · Served with chips</em></span>
         <span class="dots"></span>
-        <span class="p2">£9.50</span>
+        <span class="p2">9.50</span>
         <span class="p2">—</span>
       </li>
       <li>
         <span class="n">Big Bites Burger<em>Cheese burger, chicken burger, doner · ¼lb · Served with chips</em></span>
         <span class="dots"></span>
-        <span class="p2">£9.50</span>
+        <span class="p2">9.50</span>
         <span class="p2">—</span>
       </li>
       <li>
         <span class="n">Pineapple Paradise Burger<em>Cheese burger with pineapple · Served with chips</em></span>
         <span class="dots"></span>
-        <span class="p2">£8.00</span>
-        <span class="p2">£9.00</span>
+        <span class="p2">8.00</span>
+        <span class="p2">9.00</span>
       </li>
       <li>
         <span class="n">Piggy Burger<em>Cheese burger, pepperoni, bacon, chorizo · ½lb · Served with chips</em></span>
         <span class="dots"></span>
-        <span class="p2">£10.00</span>
+        <span class="p2">10.00</span>
         <span class="p2">—</span>
       </li>
       <li>
         <span class="n">Halloumi Burger<em>Beef burger with halloumi cheese · Served with chips</em></span>
         <span class="dots"></span>
-        <span class="p2">£9.00</span>
-        <span class="p2">£10.00</span>
+        <span class="p2">9.00</span>
+        <span class="p2">10.00</span>
       </li>
       <li>
         <span class="n">Vegetarian Burger<em>Served with chips</em></span>
         <span class="dots"></span>
-        <span class="p2">£9.00</span>
-        <span class="p2">£10.00</span>
+        <span class="p2">9.00</span>
+        <span class="p2">10.00</span>
       </li></ul>
     </section>
     
     <section class="blk">
-      <h3>Side Orders</h3>
-      <ul class="items two dense">
+      <div class="headrow"><h3>Sides</h3></div><div class="hrule"></div>
+      <div class="blkrow" style="--gutter:59.0mm;
+    --rowmin:42.2mm"><ul class="items dense">
       <li>
         <span class="n">Chips</span>
         <span class="dots"></span>
-        <span class="p">£3.50</span>
+        <span class="p">3.50</span>
       </li>
       <li>
         <span class="n">Large Chips</span>
         <span class="dots"></span>
-        <span class="p">£5.00</span>
+        <span class="p">5.00</span>
       </li>
       <li>
         <span class="n">Cheesy Chips</span>
         <span class="dots"></span>
-        <span class="p">£5.50</span>
+        <span class="p">5.50</span>
       </li>
       <li>
         <span class="n">Chips &amp; Curry</span>
         <span class="dots"></span>
-        <span class="p">£6.00</span>
+        <span class="p">6.00</span>
       </li>
       <li>
         <span class="n">Chips &amp; Gravy</span>
         <span class="dots"></span>
-        <span class="p">£6.00</span>
+        <span class="p">6.00</span>
       </li>
       <li>
         <span class="n">Chips, Cheese &amp; Pepperoni</span>
         <span class="dots"></span>
-        <span class="p">£8.00</span>
+        <span class="p">8.00</span>
       </li>
       <li>
         <span class="n">Chips, Cheese &amp; Bacon</span>
         <span class="dots"></span>
-        <span class="p">£8.00</span>
+        <span class="p">8.00</span>
       </li>
       <li>
         <span class="n">Chips, Cheese &amp; Ham</span>
         <span class="dots"></span>
-        <span class="p">£8.00</span>
+        <span class="p">8.00</span>
       </li>
       <li>
-        <span class="n">Mozzarella Sticks (5)</span>
+        <span class="n">Mozzarella Sticks <u>(5)</u></span>
         <span class="dots"></span>
-        <span class="p">£6.00</span>
+        <span class="p">6.00</span>
       </li>
       <li>
-        <span class="n">Mozzarella Sticks (5) with Chips</span>
+        <span class="n">Mozzarella Sticks <u>(5)</u> with Chips</span>
         <span class="dots"></span>
-        <span class="p">£7.50</span>
+        <span class="p">7.50</span>
       </li>
       <li>
-        <span class="n">Chilli Peppers (5)</span>
+        <span class="n">Chilli Peppers <u>(5)</u></span>
         <span class="dots"></span>
-        <span class="p">£5.00</span>
+        <span class="p">5.00</span>
       </li>
       <li>
-        <span class="n">Chilli Peppers (5) with Chips</span>
+        <span class="n">Chilli Peppers <u>(5)</u> with Chips</span>
         <span class="dots"></span>
-        <span class="p">£6.50</span>
+        <span class="p">6.50</span>
       </li>
       <li>
-        <span class="n">Hash Browns (5)</span>
+        <span class="n">Hash Browns <u>(5)</u></span>
         <span class="dots"></span>
-        <span class="p">£4.50</span>
+        <span class="p">4.50</span>
       </li>
       <li>
-        <span class="n">Onion Rings (8)</span>
+        <span class="n">Onion Rings <u>(8)</u></span>
         <span class="dots"></span>
-        <span class="p">£5.00</span>
+        <span class="p">5.00</span>
       </li>
       <li>
-        <span class="n">Popcorn Chicken (12)</span>
+        <span class="n">Popcorn Chicken <u>(12)</u></span>
         <span class="dots"></span>
-        <span class="p">£6.00</span>
+        <span class="p">6.00</span>
       </li>
       <li>
-        <span class="n">Popcorn Chicken (12) with Chips</span>
+        <span class="n">Popcorn Chicken <u>(12)</u> with Chips</span>
         <span class="dots"></span>
-        <span class="p">£7.50</span>
+        <span class="p">7.50</span>
       </li>
       <li>
         <span class="n">Chicken Nuggets</span>
         <span class="dots"></span>
-        <span class="p">£6.00</span>
+        <span class="p">6.00</span>
       </li>
       <li>
         <span class="n">Chicken Nuggets with Chips</span>
         <span class="dots"></span>
-        <span class="p">£7.50</span>
+        <span class="p">7.50</span>
       </li>
       <li>
         <span class="n">Potato Wedges</span>
         <span class="dots"></span>
-        <span class="p">£6.00</span>
+        <span class="p">6.00</span>
       </li>
       <li>
-        <span class="n">Spicy Wings (6)</span>
+        <span class="n">Spicy Wings <u>(6)</u></span>
         <span class="dots"></span>
-        <span class="p">£6.00</span>
+        <span class="p">6.00</span>
       </li>
       <li>
         <span class="n">Garlic Mushrooms &amp; Cheese</span>
         <span class="dots"></span>
-        <span class="p">£6.00</span>
+        <span class="p">6.00</span>
       </li>
       <li>
-        <span class="n">Chicken Tenders (5)</span>
+        <span class="n">Chicken Tenders <u>(5)</u></span>
         <span class="dots"></span>
-        <span class="p">£6.50</span>
+        <span class="p">6.50</span>
       </li>
       <li>
-        <span class="n">Chicken Tenders (5) with Chips</span>
+        <span class="n">Chicken Tenders <u>(5)</u> with Chips</span>
         <span class="dots"></span>
-        <span class="p">£8.00</span>
+        <span class="p">8.00</span>
       </li>
       <li>
         <span class="n">Halloumi Fries</span>
         <span class="dots"></span>
-        <span class="p">£9.00</span>
-      </li></ul><img class="shot below" src="img/sides.png" alt=""
-    style="width:36mm;--clear:15mm;--shoth:35.3mm" />
+        <span class="p">9.00</span>
+      </li></ul><img class="shot side" src="img/sides.png" alt=""
+    style="width:40mm;--clear:15mm;--shoth:39.2mm" /></div>
     </section>
     
     <section class="blk">
-      <h3>Salad</h3>
+      <div class="headrow"><h3>Salad</h3></div><div class="hrule"></div>
       <div class="blkrow" style="--gutter:59.0mm;
     --rowmin:29.4mm"><ul class="items dense">
       <li>
         <span class="n">Side Salad<em>Fresh mixed salad.</em></span>
         <span class="dots"></span>
-        <span class="p">£4.00</span>
+        <span class="p">4.00</span>
       </li>
       <li>
         <span class="n">Chicken Salad<em>Mixed salad topped with chargrilled chicken.</em></span>
         <span class="dots"></span>
-        <span class="p">£7.50</span>
+        <span class="p">7.50</span>
       </li>
       <li>
         <span class="n">Tuna Salad<em>Mixed salad with tuna.</em></span>
         <span class="dots"></span>
-        <span class="p">£7.50</span>
+        <span class="p">7.50</span>
       </li></ul><img class="shot side" src="img/salad.png" alt=""
     style="width:40mm;--clear:15mm;--shoth:26.4mm" /></div>
     </section>

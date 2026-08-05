@@ -32,6 +32,25 @@ don't reshuffle without checking the reference sheets again.
 The inner middle panel carries five sections against three elsewhere, so it
 runs on tighter leading (`.panel.tight`) — again, as the reference does.
 
+## Assets still needed
+
+Seven gaps. Each one is a hole the reference fills and this sheet currently
+leaves empty — nothing is faked or substituted.
+
+| # | Asset | Where it goes | Spec |
+|---|-------|---------------|------|
+| 1 | **Burger, on its own** | Burgers, inner right panel — the panel's empty upper right | Transparent PNG, ≥1200px wide. The supplied sheet welds the burger to the nuggets and the cola, so it can't be cut free without a visible slice |
+| 2 | **Garlic bread** | Garlic Bread, inner middle panel | Transparent PNG, ≥1000px wide |
+| 3 | **Parmesan** | Parmesan, inner middle panel | Transparent PNG, ≥1000px wide |
+| 4 | **Drink cans** | Drinks, outer left panel | Real Pepsi + Coca-Cola. The generated pair spell "pepc" and a garbled Coca-Cola script — a printed menu carrying a botched trademark is not something to send to press. The brands' own press images are the safe source |
+| 5 | **Kids Menu ribbon lockup** | Inside the red Kids box, replacing the plain type there now | "KIDS MENU / BIG BITES" ribbon with the cutlery and food illustrations, transparent PNG ≥1200px wide |
+| 6 | **Cover background** | Lower half of the cover panel | The pizza / basil / tomato flood. No transparency needed, but it must be big: ~1500 × 1800px |
+| 7 | **Bigger burger hero** | Above Meal Deals — already in place, but soft | The current file is 635px, which is 168dpi at 96mm. ≥1200px wide puts it back over 300 |
+
+Everything else on the sheet is either live menu data or generated here (the
+plaques, the halftone, the torn deal-box edges, the phone and clock icons, the
+QR) and needs no artwork.
+
 ## Before sending to print
 
     node print/big-bites/check-collisions.mjs
