@@ -107,8 +107,9 @@ runs on tighter leading (`.panel.tight`) — again, as the reference does.
 
 The owner replaced most of the missing artwork on 2026-08-06: the **Kids Menu
 lockup**, the **cover pizza**, then `hero`, `parmasan`, `calzone` and
-`doner-pit`. Nine photographs are placed — the cover pizza, the meal-deal
-lockup, the pizza, cake, shake, wrap, calzone, parmesan and doner spit.
+`doner-pit`. Eleven photographs are placed — the cover pizza, the meal-deal
+lockup, the pizza, cake, shake, wrap, calzone, parmesan, doner spit, the drink
+cans and the Sides/Salad column.
 
 ### The drink cans, and why `pepsi-coke.png` is generated
 
@@ -139,8 +140,9 @@ the two shipped defects scores **0.77%** (the gash) and **6.02%** (the flat
 tops), which is what the 0.3% threshold is set against — 1%, the obvious round
 number, would have passed the gash.
 
-`sides-salad.png`, `burger-meal.png` and `kebab.png` are **off the sheet** on
-the owner's instruction, and stay in `img/` cut and keyed.
+`sides-salad.png` is back on the inner right panel, at the width and position
+it had before. `burger-meal.png` and `kebab.png` are **off the sheet** on the
+owner's instruction, and stay in `img/` cut and keyed.
 Putting one back is a one-line change at its section's call site — but note
 that `slotOf()` returns the greater of the photo's width and the section's
 `slot`, so removing a photo means releasing its gutter too or the list keeps a
