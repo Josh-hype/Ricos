@@ -195,14 +195,14 @@ function sidesSaladColumn() {
    pizza photograph; this is the owner's. It runs off the panel's left, right
    and bottom edges into the bleed, so there is no hard cut on the trim. */
 function coverArt() {
-  const file = path.join(import.meta.dirname, 'img', 'pizza-hero.png');
+  const file = path.join(import.meta.dirname, 'img', 'gpt-hero.png');
   if (!fs.existsSync(file)) return '<div class="coverart" aria-hidden="true"></div>';
-  const { w, h } = imgSize('pizza-hero');
+  const { w, h } = imgSize('gpt-hero');
   const WIDE = 152;                       // 143mm panel + 9mm of bleed either side
   const dpi = w / (WIDE / 25.4);
-  if (dpi < 140) throw new Error(`pizza-hero.png at ${WIDE}mm is ${dpi.toFixed(1)}dpi — too soft to print`);
-  shotDpi.push({ name: 'pizza-hero', px: `${w}x${h}`, mm: WIDE, dpi: Math.round(dpi) });
-  return `<div class="coverart" aria-hidden="true"><img src="img/pizza-hero.png" alt="" /></div>`;
+  if (dpi < 140) throw new Error(`gpt-hero.png at ${WIDE}mm is ${dpi.toFixed(1)}dpi — too soft to print`);
+  shotDpi.push({ name: 'gpt-hero', px: `${w}x${h}`, mm: WIDE, dpi: Math.round(dpi) });
+  return `<div class="coverart" aria-hidden="true"><img src="img/gpt-hero.png" alt="" /></div>`;
 }
 
 function kidsLockup() {
@@ -1277,15 +1277,16 @@ const html = `<!doctype html>
      perfectly on screen, which is how this photo came to be in preview.png and
      absent from the PDF. */
   .coverart {
-    position: absolute; left: 0; right: 24mm; bottom: 22.4mm; height: 62mm;
+    position: absolute; left: 0; right: 24mm; bottom: 22.4mm; height: 98mm;
     z-index: 0; pointer-events: none; overflow: hidden;
   }
   .coverart img {
-    /* contain, not cover: the owner wants the whole photograph, and cover was
-       showing about a third of its height. It is portrait and this slot is
-       landscape, so containing it leaves black either side — the editor is
-       there to retune the slot. */
-    width: 119mm; height: 62mm; object-fit: contain; object-position: 50% 100%;
+    /* Anchored to the BOTTOM and filling the width. This photograph is built
+       with headroom — its top 60% is empty black — so the part that falls
+       outside the frame is background, not content. That is the difference
+       from the old one, where cover was throwing away a third of the actual
+       picture. */
+    width: 119mm; height: 98mm; object-fit: cover; object-position: 50% 100%;
   }
   .coverbody { position: relative; z-index: 1; }
   .qr { width: 30mm; height: 30mm; background: #fff; padding: 1.5mm; border-radius: 1.5mm; }
