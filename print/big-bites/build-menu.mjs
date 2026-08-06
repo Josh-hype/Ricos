@@ -22,6 +22,13 @@ const qr = fs.readFileSync(path.join(import.meta.dirname, 'qr.svg'), 'utf8')
 /* A renamed or missing category must kill the build — the fallback used to
    print a bare slug over zero items, and every check passed because less
    content never overflows. */
+/* Drawn, not typed: no vendored face carries U+2605 or U+2192, so Chromium was
+   quietly embedding DejaVu off the build machine for the star and the arrow.
+   The sheet would set differently on another machine — or print .notdef boxes
+   on a bare one — and the name-only font check could not see it. */
+const STAR = '<svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z"/></svg>';
+const ARROW = '<svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M3 12h17M13 5l7 7-7 7"/></svg>';
+
 const cat = (id) => {
   const c = menu.find((x) => x.id === id);
   if (!c || !c.items.length) throw new Error(`menu category "${id}" is missing or empty`);
@@ -49,10 +56,17 @@ function imgSize(name) {
    columns hug the item names to its left — prices are not flush right.
    `place: 'side'` does that; 'below' centres it underneath. Widths are capped
    by the source resolution; img/README records the dpi each lands at. */
+const shotDpi = [];
 function shot(name, width, place = 'side') {
   if (!name) return '';
   const { w, h } = imgSize(name);
   const tall = (width * h / w).toFixed(1);
+  /* Record what each placement actually resolves to, so the documented figures
+     cannot drift from the sheet the way they did when the photos were
+     enlarged. Below 120dpi is too soft to send anywhere. */
+  const dpi = Math.round(w / (width / 25.4));
+  shotDpi.push({ name, px: `${w}x${h}`, mm: width, dpi });
+  if (dpi < 140) throw new Error(`${name}.png at ${width}mm is ${dpi}dpi — too soft to print`);
   return `<img class="shot ${place}" src="img/${name}.png" alt=""
     style="width:${width}mm;--shoth:${tall}mm" />`;
 }
@@ -186,7 +200,7 @@ function milkshakes() {
             throw new Error('coolers no longer share one price — they cannot fold into a single row');
           return row('Cooler', coolers[0].price, coolers.map((i) => `${flavour(i.name)} Cooler`).join(', '), 'plain');
         })() : ''}
-      </ul>`, shot('shake', 42), 52)}
+      </ul>`, shot('shake', 36), 52)}
     </section>`;
 }
 
@@ -258,11 +272,18 @@ function deals() {
 /* Dips: the flat-rate ones as a tick list, the dearer pots called out. */
 function dips({ img = '' } = {}) {
   const c = cat('dips');
-  const cheap = c.items.filter((i) => Number(i.price) === 1);
-  const dear = c.items.filter((i) => Number(i.price) !== 1);
+  /* The headline price is READ from the data, not typed: the flat-rate dips
+     are whichever price most of them share, and it must actually be flat. */
+  const counts = {};
+  c.items.forEach((i) => { counts[i.price] = (counts[i.price] || 0) + 1; });
+  const base = Number(Object.entries(counts).sort((x, y) => y[1] - x[1])[0][0]);
+  const flat = money(base);
+  const cheap = c.items.filter((i) => Number(i.price) === base);
+  const dear = c.items.filter((i) => Number(i.price) !== base);
+  if (cheap.length < 2) throw new Error('dips no longer share a flat rate — the "(£x)" headline would lie');
   return `
     <section class="blk">
-      <div class="redhead">${header('Dips <span class="hdr2">(£1.00)</span>')}</div>
+      <div class="redhead">${header(`Dips <span class="hdr2">(£${flat})</span>`)}</div>
       ${withShot(`<div>
       <ul class="chips three">${cheap.map((i) => `<li>${esc(i.name)}</li>`).join('')}${
         dear.map((i) => `<li>${esc(i.name)} <b>${money(i.price)}</b></li>`).join('')}</ul>
@@ -348,13 +369,13 @@ const cover = `
       <p class="fine">
         Order on our website for collection or delivery.<br />
         Easingwold — £${perMile.toFixed(2)} per mile, up to ${maxMiles} miles.<br />
-        Minimum order £${(del.minimumOrderPence / 100).toFixed(0)}.
+        Minimum order £${(del.minimumOrderPence / 100).toFixed(2).replace(/\.00$/, '')}.
       </p>
       <div class="strapline">${icon('clock')}<div class="strap">Opening Time</div></div>
       <div class="hours">${hours}</div>
       <div class="strap red website">bigbiteseasingwold.co.uk</div>
       <div class="qrwrap">
-        <div class="qrtxt"><b>SCAN<br />ME</b><span class="arrow">→</span></div>
+        <div class="qrtxt"><b>SCAN<br />ME</b><span class="arrow">${ARROW}</span></div>
         <div class="qr">${qr}</div>
       </div>
       ${cfg.allergens?.noticeAtCheckout ? `<p class="allergy"><b>Allergies?</b> ${esc(cfg.allergens.noticeAtCheckout)}</p>` : ''}
@@ -369,7 +390,7 @@ const cover = `
   </div>`;
 
 const ticker = (n = 6) =>
-  `<div class="ticker">${Array.from({ length: n }, () => '<span>SLICE IT</span><i>★</i><span>BIG BITES</span><i>★</i><span>FRESH &amp; LOADED</span><i>★</i>').join('')}</div>`;
+  `<div class="ticker">${Array.from({ length: n }, () => `<span>SLICE IT</span><i>${STAR}</i><span>BIG BITES</span><i>${STAR}</i><span>FRESH &amp; LOADED</span><i>${STAR}</i>`).join('')}</div>`;
 
 const page = (cls, panels, foot = true) => `
   <div class="page ${cls}">
@@ -423,9 +444,12 @@ const html = `<!doctype html>
   .page {
     position: relative;
     width: 426mm; height: 303mm;
-    padding: 3mm;                 /* the bleed */
     display: grid;
-    grid-template-columns: 140mm 140mm 140mm;
+    /* The outer columns are 3mm wider than the trim panel: that extra strip IS
+       the bleed, and it belongs to the panel so its own overflow:hidden stops
+       clipping every element that is meant to run off the sheet. Giving the
+       page the padding instead put a hard cut exactly on the trim line. */
+    grid-template-columns: 143mm 140mm 143mm;
     background: #030303;
     overflow: hidden;
     page-break-after: always;
@@ -434,22 +458,23 @@ const html = `<!doctype html>
 
   /* The inner face bleeds its header plaques off the top trim and carries no
      ticker, so its panels run tighter to every edge. */
-  .side-b .panel { padding: 3mm 3mm 4mm; }
+  .side-b .panel { --pt: 3mm; --pr: 3mm; --pb: 4mm; --pl: 3mm; }
   .side-b .blk:first-child h3 { margin-top: -3.5mm; }
   /* The outer face runs nearly as tight to its edges as the inner one. */
-  .side-a .panel { padding: 5mm 4mm 13mm; }
+  .side-a .panel { --pt: 5mm; --pr: 4mm; --pb: 13mm; --pl: 4mm; }
   .panel {
     position: relative;
     /* Pinned, not implicit: as a grid item the panel would otherwise STRETCH
        to its content and push past the 303mm page, and the overflow check
        (scrollHeight vs clientHeight, both grown) would pass while the print
        clipped — which is exactly what happened to the kids box. */
-    height: 297mm;
+    height: 303mm;
     /* Spread the sections down the panel instead of stacking them at the top
        and leaving a hole above the fold ticker — the reference sheet does the
        same. On a panel that exactly fills, this is a no-op. */
     display: flex; flex-direction: column; justify-content: space-between;
-    padding: 8mm 7mm 13mm;
+    --pt: 8mm; --pr: 7mm; --pb: 13mm; --pl: 7mm;
+    padding: calc(var(--pt) + 3mm) var(--pr) calc(var(--pb) + 3mm) var(--pl);
     border-right: 0.5mm solid #f9b902;   /* fold guide, and the reference's gold rule */
     background:
       radial-gradient(circle at 30% 12%, rgba(255,196,0,.06), transparent 45%),
@@ -461,6 +486,9 @@ const html = `<!doctype html>
   /* Sections keep their natural height; only the gaps between them stretch. */
   .panel > * { flex: none; }
   .panel:nth-child(3) { border-right: 0; }
+  /* The bleed strip sits on the outer edge of the outer panels. */
+  .page > .panel:nth-child(1) { padding-left: calc(var(--pl) + 3mm); }
+  .page > .panel:nth-child(3) { padding-right: calc(var(--pr) + 3mm); }
 
   /* Following the designer's section order puts five blocks on the inner
      middle panel against three elsewhere, so that one panel carries tighter
@@ -751,14 +779,18 @@ const html = `<!doctype html>
   /* ---- cover panel ---- */
   /* The reference splits this panel: the cover proper, and a red spine down the
      right edge carrying the brand name and the address. */
-  .cover { flex-direction: row; padding: 0; overflow: visible; }
+  /* .side-a .panel (0,2,0) was beating a bare .cover (0,1,0), so this panel
+     silently kept 5/4/13mm of padding and held the spine back from three trim
+     edges. The panel now carries the bleed itself, so the spine needs no
+     negative margins to reach it. */
+  .side-a .panel.cover { padding: 0; flex-direction: row; overflow: hidden; }
   .coverbody {
     flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center;
-    text-align: center; padding: 5mm 5mm 12mm;
+    text-align: center; padding: 8mm 5mm 15mm 8mm;
   }
   .spine {
     /* Floods the bleed on its three outer edges and carries a faint weave. */
-    flex: none; width: 27mm; margin: -3mm -3mm -3mm 0;
+    flex: none; width: 30mm;
     background:
       repeating-linear-gradient(45deg, rgba(0,0,0,.05) 0 .5mm, transparent .5mm 1.6mm),
       repeating-linear-gradient(-45deg, rgba(0,0,0,.05) 0 .5mm, transparent .5mm 1.6mm),
@@ -849,6 +881,7 @@ const html = `<!doctype html>
     font-size: 3.4mm; letter-spacing: .08em; overflow: hidden; white-space: nowrap;
   }
   .ticker i { color: #d61313; font-style: normal; }
+  .gl { width: 1em; height: 1em; display: inline-block; vertical-align: -.14em; }
 </style></head>
 <body>
 
@@ -888,7 +921,7 @@ ${page('side-b', `
   </div>
   <div class="panel">
     ${sizedList('burgers', 'size', ['1/4 lb', '1/2 lb'], { slot: 8 })}
-    ${list('sides', { dense: true, img: shot('sides', 68), title: 'Sides', slot: 56, dots: true })}
+    ${list('sides', { dense: true, img: shot('sides', 57), title: 'Sides', slot: 56, dots: true })}
     ${list('salad', { dense: true, desc: true, img: shot('salad', 62), slot: 56, dots: true })}
   </div>
 `, false)}
@@ -898,4 +931,6 @@ ${page('side-b', `
 fs.writeFileSync(path.join(import.meta.dirname, 'menu.html'), html);
 const n = menu.reduce((a, c) => a + c.items.length, 0);
 console.log(`menu.html written — ${n} items across ${menu.length} categories`);
+console.log('photo dpi: ' + shotDpi.sort((a, b) => a.dpi - b.dpi)
+  .map((s) => `${s.name} ${s.mm}mm=${s.dpi}`).join('  '));
 console.log(`phone ${cfg.business.phone} · min £${del.minimumOrderPence / 100} · £${perMile}/mile to ${maxMiles} miles`);

@@ -44,9 +44,12 @@
   .page {
     position: relative;
     width: 426mm; height: 303mm;
-    padding: 3mm;                 /* the bleed */
     display: grid;
-    grid-template-columns: 140mm 140mm 140mm;
+    /* The outer columns are 3mm wider than the trim panel: that extra strip IS
+       the bleed, and it belongs to the panel so its own overflow:hidden stops
+       clipping every element that is meant to run off the sheet. Giving the
+       page the padding instead put a hard cut exactly on the trim line. */
+    grid-template-columns: 143mm 140mm 143mm;
     background: #030303;
     overflow: hidden;
     page-break-after: always;
@@ -55,22 +58,23 @@
 
   /* The inner face bleeds its header plaques off the top trim and carries no
      ticker, so its panels run tighter to every edge. */
-  .side-b .panel { padding: 3mm 3mm 4mm; }
+  .side-b .panel { --pt: 3mm; --pr: 3mm; --pb: 4mm; --pl: 3mm; }
   .side-b .blk:first-child h3 { margin-top: -3.5mm; }
   /* The outer face runs nearly as tight to its edges as the inner one. */
-  .side-a .panel { padding: 5mm 4mm 13mm; }
+  .side-a .panel { --pt: 5mm; --pr: 4mm; --pb: 13mm; --pl: 4mm; }
   .panel {
     position: relative;
     /* Pinned, not implicit: as a grid item the panel would otherwise STRETCH
        to its content and push past the 303mm page, and the overflow check
        (scrollHeight vs clientHeight, both grown) would pass while the print
        clipped — which is exactly what happened to the kids box. */
-    height: 297mm;
+    height: 303mm;
     /* Spread the sections down the panel instead of stacking them at the top
        and leaving a hole above the fold ticker — the reference sheet does the
        same. On a panel that exactly fills, this is a no-op. */
     display: flex; flex-direction: column; justify-content: space-between;
-    padding: 8mm 7mm 13mm;
+    --pt: 8mm; --pr: 7mm; --pb: 13mm; --pl: 7mm;
+    padding: calc(var(--pt) + 3mm) var(--pr) calc(var(--pb) + 3mm) var(--pl);
     border-right: 0.5mm solid #f9b902;   /* fold guide, and the reference's gold rule */
     background:
       radial-gradient(circle at 30% 12%, rgba(255,196,0,.06), transparent 45%),
@@ -82,6 +86,9 @@
   /* Sections keep their natural height; only the gaps between them stretch. */
   .panel > * { flex: none; }
   .panel:nth-child(3) { border-right: 0; }
+  /* The bleed strip sits on the outer edge of the outer panels. */
+  .page > .panel:nth-child(1) { padding-left: calc(var(--pl) + 3mm); }
+  .page > .panel:nth-child(3) { padding-right: calc(var(--pr) + 3mm); }
 
   /* Following the designer's section order puts five blocks on the inner
      middle panel against three elsewhere, so that one panel carries tighter
@@ -372,14 +379,18 @@
   /* ---- cover panel ---- */
   /* The reference splits this panel: the cover proper, and a red spine down the
      right edge carrying the brand name and the address. */
-  .cover { flex-direction: row; padding: 0; overflow: visible; }
+  /* .side-a .panel (0,2,0) was beating a bare .cover (0,1,0), so this panel
+     silently kept 5/4/13mm of padding and held the spine back from three trim
+     edges. The panel now carries the bleed itself, so the spine needs no
+     negative margins to reach it. */
+  .side-a .panel.cover { padding: 0; flex-direction: row; overflow: hidden; }
   .coverbody {
     flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center;
-    text-align: center; padding: 5mm 5mm 12mm;
+    text-align: center; padding: 8mm 5mm 15mm 8mm;
   }
   .spine {
     /* Floods the bleed on its three outer edges and carries a faint weave. */
-    flex: none; width: 27mm; margin: -3mm -3mm -3mm 0;
+    flex: none; width: 30mm;
     background:
       repeating-linear-gradient(45deg, rgba(0,0,0,.05) 0 .5mm, transparent .5mm 1.6mm),
       repeating-linear-gradient(-45deg, rgba(0,0,0,.05) 0 .5mm, transparent .5mm 1.6mm),
@@ -470,6 +481,7 @@
     font-size: 3.4mm; letter-spacing: .08em; overflow: hidden; white-space: nowrap;
   }
   .ticker i { color: #d61313; font-style: normal; }
+  .gl { width: 1em; height: 1em; display: inline-block; vertical-align: -.14em; }
 </style></head>
 <body>
 
@@ -543,7 +555,7 @@
     <section class="blk">
       <div class="headrow"><h3>Milk Shakes</h3></div><div class="hrule"></div>
       <div class="blkrow" style="--slot:52.0mm;
-    --rowmin:65.9mm"><ul class="items">
+    --rowmin:56.9mm"><ul class="items">
         
       <li><span class="n">Oreo</span>
         <span class="dots"></span><span class="p">6.00</span></li>
@@ -559,7 +571,7 @@
       <li><span class="n">Cooler<em class="plain">Mango Cooler, Strawberry Cooler</em></span>
         <span class="dots"></span><span class="p">6.00</span></li>
       </ul><img class="shot side" src="img/shake.png" alt=""
-    style="width:42mm;--shoth:62.9mm" /></div>
+    style="width:36mm;--shoth:53.9mm" /></div>
     </section>
     
     <section class="blk">
@@ -678,7 +690,7 @@
       <div class="hours"><div><span>Sunday - Thursday</span><b>4 pm - 10 pm</b></div><div><span>Friday - Saturday</span><b>4 pm - 11 pm</b></div></div>
       <div class="strap red website">bigbiteseasingwold.co.uk</div>
       <div class="qrwrap">
-        <div class="qrtxt"><b>SCAN<br />ME</b><span class="arrow">→</span></div>
+        <div class="qrtxt"><b>SCAN<br />ME</b><span class="arrow"><svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M3 12h17M13 5l7 7-7 7"/></svg></span></div>
         <div class="qr"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37 37"><path fill="#fff" d="M0 0h37v37h-37z"/><path stroke="#000" d="M2 2.5h7m4 0h1m2 0h1m3 0h1m2 0h2m1 0h1m1 0h7m-33 1h1m5 0h1m5 0h1m2 0h2m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m1 0h2m2 0h2m4 0h2m1 0h1m1 0h2m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h1m8 0h5m1 0h2m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m4 0h3m1 0h3m2 0h1m1 0h3m1 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m4 0h1m1 0h1m1 0h3m1 0h3m1 0h1m2 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-24 1h1m1 0h1m3 0h1m3 0h2m1 0h3m-22 1h2m1 0h2m2 0h1m4 0h1m2 0h1m1 0h1m2 0h2m4 0h2m-31 1h1m1 0h3m2 0h1m3 0h3m1 0h1m1 0h1m1 0h2m1 0h2m1 0h1m1 0h2m1 0h1m-30 1h7m1 0h1m3 0h1m1 0h1m5 0h1m1 0h1m2 0h2m2 0h3m-33 1h3m2 0h1m3 0h4m1 0h2m2 0h1m3 0h1m3 0h3m1 0h1m1 0h1m-33 1h1m1 0h2m2 0h3m1 0h1m2 0h2m1 0h1m1 0h7m1 0h2m3 0h2m-33 1h1m2 0h1m3 0h1m1 0h3m1 0h1m1 0h5m1 0h1m1 0h1m1 0h1m3 0h1m1 0h1m-28 1h1m1 0h3m1 0h1m1 0h4m3 0h2m3 0h1m1 0h1m-26 1h1m2 0h1m4 0h1m3 0h1m4 0h1m1 0h1m6 0h1m1 0h2m1 0h1m-32 1h1m2 0h4m3 0h1m5 0h1m5 0h1m1 0h5m2 0h1m-32 1h5m1 0h1m1 0h1m6 0h2m4 0h1m1 0h1m1 0h4m2 0h1m-33 1h1m1 0h1m2 0h2m1 0h1m2 0h4m2 0h4m1 0h2m4 0h5m-32 1h2m2 0h1m1 0h2m1 0h1m1 0h1m1 0h2m2 0h1m1 0h1m1 0h4m2 0h5m-31 1h1m1 0h4m1 0h1m3 0h2m2 0h1m1 0h2m3 0h1m2 0h1m1 0h1m-30 1h1m1 0h2m1 0h1m4 0h2m2 0h1m1 0h1m1 0h6m1 0h1m1 0h2m-29 1h1m1 0h1m1 0h1m1 0h2m3 0h1m1 0h1m4 0h1m1 0h4m2 0h1m1 0h1m1 0h3m-33 1h1m3 0h1m5 0h3m3 0h2m2 0h1m1 0h2m3 0h2m1 0h2m-32 1h5m1 0h3m2 0h7m5 0h7m2 0h1m-25 1h6m3 0h5m1 0h2m3 0h1m1 0h2m-32 1h7m1 0h1m4 0h1m1 0h1m1 0h1m5 0h2m1 0h1m1 0h2m-30 1h1m5 0h1m2 0h1m1 0h2m1 0h1m3 0h1m1 0h5m3 0h4m-32 1h1m1 0h3m1 0h1m1 0h1m3 0h4m1 0h1m3 0h9m1 0h1m-32 1h1m1 0h3m1 0h1m1 0h3m5 0h1m2 0h1m2 0h1m2 0h1m1 0h1m1 0h2m1 0h1m-33 1h1m1 0h3m1 0h1m2 0h1m1 0h1m3 0h3m2 0h2m2 0h1m3 0h1m2 0h2m-33 1h1m5 0h1m2 0h1m3 0h2m1 0h2m4 0h2m1 0h1m3 0h4m-33 1h7m2 0h1m5 0h1m1 0h1m1 0h1m1 0h4m3 0h1"/></svg>
 </div>
       </div>
@@ -693,7 +705,7 @@
     </div>
   </div>
 
-    <div class="ticker"><span>SLICE IT</span><i>★</i><span>BIG BITES</span><i>★</i><span>FRESH &amp; LOADED</span><i>★</i><span>SLICE IT</span><i>★</i><span>BIG BITES</span><i>★</i><span>FRESH &amp; LOADED</span><i>★</i><span>SLICE IT</span><i>★</i><span>BIG BITES</span><i>★</i><span>FRESH &amp; LOADED</span><i>★</i><span>SLICE IT</span><i>★</i><span>BIG BITES</span><i>★</i><span>FRESH &amp; LOADED</span><i>★</i><span>SLICE IT</span><i>★</i><span>BIG BITES</span><i>★</i><span>FRESH &amp; LOADED</span><i>★</i><span>SLICE IT</span><i>★</i><span>BIG BITES</span><i>★</i><span>FRESH &amp; LOADED</span><i>★</i></div>
+    <div class="ticker"><span>SLICE IT</span><i><svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z"/></svg></i><span>BIG BITES</span><i><svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z"/></svg></i><span>FRESH &amp; LOADED</span><i><svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z"/></svg></i><span>SLICE IT</span><i><svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z"/></svg></i><span>BIG BITES</span><i><svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z"/></svg></i><span>FRESH &amp; LOADED</span><i><svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z"/></svg></i><span>SLICE IT</span><i><svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z"/></svg></i><span>BIG BITES</span><i><svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z"/></svg></i><span>FRESH &amp; LOADED</span><i><svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z"/></svg></i><span>SLICE IT</span><i><svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z"/></svg></i><span>BIG BITES</span><i><svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z"/></svg></i><span>FRESH &amp; LOADED</span><i><svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z"/></svg></i><span>SLICE IT</span><i><svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z"/></svg></i><span>BIG BITES</span><i><svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z"/></svg></i><span>FRESH &amp; LOADED</span><i><svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z"/></svg></i><span>SLICE IT</span><i><svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z"/></svg></i><span>BIG BITES</span><i><svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z"/></svg></i><span>FRESH &amp; LOADED</span><i><svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z"/></svg></i></div>
   </div>
 
 
@@ -1198,9 +1210,9 @@
     </section>
     
     <section class="blk">
-      <div class="headrow"><h3>Sides</h3></div><div class="hrule" style="margin-right:72.0mm"></div>
-      <div class="blkrow dots" style="--slot:72.0mm;
-    --rowmin:69.7mm"><ul class="items dense">
+      <div class="headrow"><h3>Sides</h3></div><div class="hrule" style="margin-right:61.0mm"></div>
+      <div class="blkrow dots" style="--slot:61.0mm;
+    --rowmin:58.9mm"><ul class="items dense">
       <li>
         <span class="n">Chips</span>
         <span class="dots"></span>
@@ -1321,7 +1333,7 @@
         <span class="dots"></span>
         <span class="p">9.00</span>
       </li></ul><img class="shot side" src="img/sides.png" alt=""
-    style="width:68mm;--shoth:66.7mm" /></div>
+    style="width:57mm;--shoth:55.9mm" /></div>
     </section>
     
     <section class="blk">

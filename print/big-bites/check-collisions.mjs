@@ -11,7 +11,7 @@ await p.goto('file://' + path.join(import.meta.dirname, 'menu.html'), { waitUnti
 // Measure in the shipping faces, not a fallback — same reason as render.mjs.
 await p.evaluate(() => document.fonts.ready);
 await p.waitForTimeout(400);
-console.log(await p.evaluate(() => {
+const hits = await p.evaluate(() => {
   const hits = [];
   const over = (a, c) => !(a.right <= c.left + 1 || a.left >= c.right - 1 || a.bottom <= c.top + 1 || a.top >= c.bottom - 1);
   // Measure the ink, not the box: .n is flex:1 with the gutter as padding, so
@@ -42,6 +42,10 @@ console.log(await p.evaluate(() => {
     const ir = img.getBoundingClientRect(), br = blk.getBoundingClientRect();
     if (ir.top < br.top - 1 || ir.bottom > br.bottom + 1) hits.push(`${img.getAttribute('src')} escapes its section by ${Math.round(Math.max(br.top - ir.top, ir.bottom - br.bottom))}px`);
   });
-  return hits.length ? hits.join('\n') : 'clean: no text runs under a photo, no photo escapes its section';
-}));
+  return hits;
+});
 await b.close();
+console.log(hits.length ? hits.join('\n') : 'clean: no text runs under a photo, no photo escapes its section');
+// Exit non-zero so this can actually gate a build. It is the only check that
+// polices the absolutely-positioned photos, which the overflow gate skips.
+process.exit(hits.length ? 1 : 0);

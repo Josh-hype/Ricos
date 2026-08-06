@@ -21,15 +21,20 @@ reprint.** The printed menu cannot drift from what you actually charge.
 
 ## Typefaces
 
-**Anton** for the plaques and headline numbers, **Oswald** for everything else.
-This is the single biggest thing that makes the sheet read as the reference
-rather than a generic menu — the condensed widths are what let the type run
-this large inside a 140mm panel. Swapping either for a normal-width face
-(Montserrat, which this used to use) breaks every panel's fit at once.
+**Archivo Black** for the plaques, spine, kids ribbon, deal titles, phone
+number and ticker; **Oswald** for the price lists; **Montserrat** for marketing
+copy (dips list, deal bodies, the cover's delivery and hours block).
+Three families, because the reference uses three. Measured at matched cap
+height its headings are 36% WIDER than a condensed poster face, and its
+marketing copy is 34% wider than its price lists — setting the whole sheet in
+one condensed face was wrong twice over. All are vendored in `fonts/`.
 
-`render.mjs` checks both faces actually loaded and prints a warning if they
-didn't: a missing typeface silently substitutes a fallback and quietly changes
-every measurement on the sheet.
+`render.mjs` refuses to write the PDF unless all three loaded — **and then
+reads the finished PDF's own font list**, failing if anything outside the repo
+got embedded. A name-only check cannot catch this: `document.fonts.check()`
+returns true for a family even when the glyph asked for is missing from it,
+which is how ★ and → were quietly pulling DejaVu off the build machine. Both
+are drawn as inline SVG now.
 
 ## Presentation vs. data
 
@@ -89,6 +94,21 @@ fold.
 
 The PDF is **RGB**. Most printers convert, but ask: if they want CMYK supplied,
 convert with Ghostscript or ask them to do it.
+
+It carries a **TrimBox** of 420×297mm centred in the 426×303 sheet, so preflight
+reads the trim geometrically rather than relying on being told. There are no
+crop marks and no OutputIntent — say so when you send it.
+
+**Bleed is real, not decorative.** The outer panels are 143mm wide, not 140:
+that extra 3mm strip IS the bleed and belongs to the panel, so plaques, photos
+and the spine run off the sheet instead of being clipped exactly on the trim
+line. Giving the page the padding instead — which is what this did originally —
+put a hard cut on the trim and left a dark hairline wherever the guillotine
+drifted outward.
+
+Some printers' preflight flags **Type 3** fonts; Archivo Black emits a few
+(vector CharProcs, embedded, with ToUnicode). They print correctly — mention it
+so nobody bounces the file.
 
 ## Errors this replaced
 

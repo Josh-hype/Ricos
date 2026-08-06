@@ -60,25 +60,23 @@ the glyphs don't. Re-run it after resizing any photo.
 
 ## Resolution
 
-Print wants 300dpi. These are what the source allows at the sizes actually used:
+**Generated, not typed.** `build-menu.mjs` computes each placement's dpi from
+the PNG's own IHDR and the millimetres it is asked for, prints the table on
+every build, and **throws below 140dpi** — this list went stale the moment the
+photos were resized, and now it cannot.
 
-| file | pixels | printed at | dpi |
-|------|--------|-----------|-----|
-| wrap | 356×230 | 30mm | 301 |
-| kebab | 300×212 | 26mm | 293 |
-| calzone | 349×217 | 31mm | 286 |
-| salad | 373×246 | 40mm | 237 |
-| pizza | 516×282 | 58mm | 226 |
-| sides | 318×312 | 40mm | 202 |
-| cake | 285×204 | 42mm | 172 |
-| shake | 201×301 | 34mm | 150 |
-| burger-meal | 635×366 | 108mm | 149 |
+| file | printed at | dpi |
+|------|-----------|-----|
+| shake | 36mm | 142 |
+| sides | 57mm | 142 |
+| cake | 50mm | 145 |
+| burger-meal | 108mm | 149 |
+| salad | 62mm | 153 |
+| pizza | 82mm | 160 |
+| kebab | 42mm | 181 |
+| calzone | 46mm | 193 |
+| wrap | 46mm | 197 |
 
-200–280dpi is fine for a takeaway menu on uncoated stock. **The burger hero is
-not** — at 108mm it is running at ~149dpi to fill the panel above Meal Deals, and
-it is the one image on the sheet that will look visibly soft in print. It is
-the largest source file there is, so the only fix is a bigger original: 1200px
-wide would put it back over 300dpi at the same size.
-
-Nothing here is scaled past its own pixels other than that hero. If the shop
-ever wants a glossy run, regenerate at 1500px+ per item.
+The reference runs its photography larger than these files can carry, so the
+sizes here are set by the resolution floor rather than by the reference. That
+is the single biggest remaining gap to it, and only bigger originals close it.
