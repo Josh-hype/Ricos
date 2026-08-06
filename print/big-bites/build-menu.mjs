@@ -10,12 +10,32 @@
  * A3 landscape 420x297mm + 3mm bleed = 426x303mm, three 140mm panels.
  */
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import path from 'node:path';
 
 const ROOT = path.resolve(import.meta.dirname, '../..');
 const SHOP = path.join(ROOT, 'data/shops/food-station');
+const OUT = path.join(import.meta.dirname, 'menu.html');
+/* Delete the previous sheet BEFORE doing anything that can throw. Every one of
+   the guards below writes nothing and exits 1 — which used to leave the last
+   good menu.html sitting on disk for render.mjs to print. The operator sees a
+   failed build, runs render anyway (the README lists them as two commands),
+   and gets a PDF of yesterday's prices with every gate green. */
+fs.rmSync(OUT, { force: true });
+
 const menu = JSON.parse(fs.readFileSync(path.join(SHOP, 'menu-visual.json'), 'utf8'));
 const cfg = JSON.parse(fs.readFileSync(path.join(SHOP, 'config.json'), 'utf8'));
+/* Fingerprint of everything the sheet is generated FROM. render.mjs refuses
+   to print a menu.html whose stamp doesn't match a freshly computed one, so a
+   sheet that was never rebuilt after a data edit cannot reach the PDF. */
+const BUILD_SRC = crypto.createHash('sha256').update(
+  fs.readFileSync(path.join(SHOP, 'menu-visual.json')),
+).update(
+  fs.readFileSync(path.join(SHOP, 'config.json')),
+).update(
+  fs.readFileSync(new URL(import.meta.url)),
+).digest('hex').slice(0, 16);
+
 const qr = fs.readFileSync(path.join(import.meta.dirname, 'qr.svg'), 'utf8')
   .replace(/<\?xml[^>]*\?>\s*/, '');
 
@@ -60,7 +80,15 @@ const cat = (id) => {
 };
 /* The reference prints bare numbers — no currency mark anywhere on the sheet.
    Kept as one function so a change of mind is one line. */
-const money = (n) => Number(n).toFixed(2);
+const money = (n) => {
+  /* Number(null) is 0, so a cleared price printed "0.00" — the item FREE —
+     and the NaN backstop never saw a NaN. An admin console or a hand edit
+     writes null for a cleared field, so this is the likely shape of the
+     mistake, not an exotic one. Demand a real number. */
+  if (typeof n !== 'number' || !Number.isFinite(n))
+    throw new Error(`price is ${JSON.stringify(n)} — fix the shop data; do not print this.`);
+  return n.toFixed(2);
+};
 const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 /* Descriptions are bracketed on the sheet, and the shop writes them as
    sentences — "(Brushed With Garlic Butter.)" reads wrong, so the full stop
@@ -93,9 +121,11 @@ function shot(name, width, place = 'side') {
   /* Record what each placement actually resolves to, so the documented figures
      cannot drift from the sheet the way they did when the photos were
      enlarged. Below 140dpi is too soft to send anywhere. */
-  const dpi = Math.round(w / (width / 25.4));
+  const exact = w / (width / 25.4);
+  const dpi = Math.round(exact);
   shotDpi.push({ name, px: `${w}x${h}`, mm: width, dpi });
-  if (dpi < 140) throw new Error(`${name}.png at ${width}mm is ${dpi}dpi — too soft to print`);
+  // Test the exact value: rounding let 139.5dpi through a "140dpi floor".
+  if (exact < 140) throw new Error(`${name}.png at ${width}mm is ${exact.toFixed(1)}dpi — too soft to print`);
   return `<img class="shot ${place}" src="img/${name}.png" alt=""
     style="width:${width}mm;--shoth:${tall}mm" />`;
 }
@@ -241,7 +271,7 @@ function milkshakes() {
             throw new Error('coolers no longer share one price — they cannot fold into a single row');
           return row('Cooler', coolers[0].price, coolers.map((i) => `${flavour(i.name)} Cooler`).join(', '), 'plain');
         })() : ''}
-      </ul>`, shot('shake', 36), 52)}
+      </ul>`, shot('shake', 30), 52)}
     </section>`;
 }
 
@@ -286,7 +316,13 @@ function kidsBox() {
    prices, one box. */
 function deals() {
   const c = cat('meal-deals');
-  const lines = (s) => esc(s || '');
+  /* NOT `s || ''`: that turned a missing description into a deal box printed
+     blank under a £17 price, which is exactly what the NaN/undefined backstop
+     exists to catch — and it erased the evidence first. */
+  const lines = (s) => {
+    if (!String(s || '').trim()) throw new Error('a meal deal has no description — the box would print blank');
+    return esc(s);
+  };
   const pizzaDeals = c.items.filter((i) => /^pizza deal/i.test(i.name));
   const rest = c.items.filter((i) => !/^pizza deal/i.test(i.name));
   const box = (i) => `
@@ -456,6 +492,7 @@ const page = (cls, panels, foot = true) => `
 
 const html = `<!doctype html>
 <html lang="en-GB"><head><meta charset="utf-8" />
+<meta name="build-src" content="${BUILD_SRC}" />
 <title>Big Bites — A3 trifold menu</title>
 <style>
   /* Vendored, not fetched: the sheet must set identically on any machine, and
@@ -503,7 +540,7 @@ const html = `<!doctype html>
      adjustable after the fact (letter-spacing, below); the weight is not,
      so the weight picks the face. */
   body { font-family: 'Oswald', system-ui, sans-serif; }
-  .blk h3, .strap, .spine b, .kidsmark, .ticker, .tel b, .qrtxt b {
+  .blk h3, .strap, .spine b, .kidsmark, .tel b, .qrtxt b {
     font-family: 'BarlowCond', 'Oswald', system-ui, sans-serif; font-weight: 900;
   }
   /* Marketing copy — not the price lists — is a normal-width sans on the
@@ -580,8 +617,12 @@ const html = `<!doctype html>
      middle panel against three elsewhere, so that one panel carries tighter
      leading — the same trade the reference sheet makes. Scoped to the panel
      rather than applied globally, so the roomier panels stay roomy. */
-  .panel.tight .blk { margin-bottom: .6mm; }
-  .panel.tight .blk h3 { font-size: 10mm; margin-bottom: 0; }
+  /* Five sections against three elsewhere. The plaques are held at the
+     reference's size (0.94x the roomy panels) and the 1.3mm that costs is
+     taken out of the gaps between blocks instead — render.mjs reported a 5px
+     overrun here when it was not. */
+  .panel.tight .blk { margin-bottom: .1mm; }
+  .panel.tight .blk h3 { font-size: 11.5mm; margin-bottom: 0; }
   .panel.tight .hrule { margin: .4mm 0 .9mm; }
   .panel.tight .items.dense li { padding: 0; font-size: 2.95mm; }
   /* Five sections against three elsewhere, and this shop carries a description
@@ -620,7 +661,7 @@ const html = `<!doctype html>
     border-width: .129em .61em .144em .179em;
     border-image: url(img/header-plaque.png) 18 85 20 25 fill stretch;
     color: #111;
-    font-size: 11.5mm; line-height: 1;
+    font-size: 12.2mm; line-height: 1;
     /* Width is set by tracking, not by the face — see the type note above.
        Barlow Condensed Black measures 0.648 advance/cap; the reference's
        inner face is 0.665, so the inner needs almost nothing. Tracking adds
@@ -638,7 +679,11 @@ const html = `<!doctype html>
      tail so they stop overshooting. Kept as its own rule — folding it into the
      block above once swallowed the plaque, the black text and the caps for the
      whole outer face. */
-  .side-b .blk h3 { min-width: 34mm; }
+  /* The reference's inner plaques never go below 46mm of slab and mostly run
+     54mm+; at 34mm the short words (PIZZA, WRAP, SALAD) came out 25-34% narrow
+     and read as labels rather than the chunky slabs next to them. The
+     border-image slices add ~9mm at this size, so 46 puts the floor at ~55. */
+  .side-b .blk h3 { min-width: 46mm; }
   /* Part of the headline on the reference — same size, weight and baseline. */
   .blk h3 .hdr2 { margin-left: 2mm; }
   /* Every heading on the reference has a dotted rule running the full width of
@@ -660,9 +705,17 @@ const html = `<!doctype html>
      The outer face is also set noticeably WIDER than the inner: 0.767
      advance/cap against 0.665. That is a real difference on the artwork, not
      an accident of measurement — all four outer headings sit above every one
-     of the nine inner ones. 0.10em of tracking carries Barlow's 0.648 up to
+     of the nine inner ones. 0.08em of tracking carries Barlow's 0.648 up to
      it. */
-  .side-a .blk h3 { min-width: 52mm; font-size: 10.5mm; letter-spacing: .08em; }
+  .side-a .blk h3 {
+    min-width: 52mm; font-size: 12.2mm; letter-spacing: .08em;
+    /* The reference's outer plaques measure stem/cap 0.322 against 0.266 on
+       its own inner ones — all three outer readings clear all eight inner
+       ones, so it is a deliberate step, not noise. Barlow Condensed Black is
+       the heaviest weight the family ships, so the difference can only come
+       from a stroke: (0.2686*c + w)/(c + w) = 0.3218 gives w = 0.055em. */
+    -webkit-text-stroke: .055em currentColor;
+  }
   .side-a .redhead h3 { min-width: 56mm; }
   /* MEAL DEALS is stepped down hard on the reference — its plaque measures
      42px tall against DRINKS' 63px on the same sheet, 0.67x. It sits over the
@@ -671,17 +724,30 @@ const html = `<!doctype html>
      Scoped ".side-a .dealshead h3" (0,2,1), NOT ".dealshead h3" (0,1,1):
      the plain form loses to ".side-a .blk h3" above and was silently doing
      nothing, which is why this heading measured the same size as DRINKS. */
-  .side-a .dealshead h3 { font-size: 7mm; min-width: 44mm; letter-spacing: .08em; }
+  .side-a .dealshead h3 { font-size: 8.1mm; min-width: 44mm; letter-spacing: .08em; -webkit-text-stroke: .055em currentColor; }
   /* Same bold dots as .hrule — these were left on a thin dotted border when
      the header rules were rebuilt, so they read as a hairline. */
-  .side-a .panel .blk:not(:last-of-type):not(:nth-last-of-type(2)) {
+  /* Every section on the outer face closes with a dotted rule EXCEPT the one
+     directly above the Kids box (its own border does that job). That used to
+     be expressed as :nth-last-of-type(2) — second from last — which is true of
+     the block above the kids box on the four-block left panel, but ALSO true
+     of Dips on the two-block middle panel. So the middle panel, which has
+     exactly one divider to draw, drew none, and the dips grid trailed off into
+     black. Target the kids box directly instead of counting positions. */
+  .side-a .panel .blk:not(:last-of-type) {
     padding-bottom: 2.5mm; position: relative;
   }
-  .side-a .panel .blk:not(:last-of-type):not(:nth-last-of-type(2))::after {
+  .side-a .panel .blk:not(:last-of-type)::after {
     content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: .45mm;
     background: repeating-linear-gradient(to right,
       rgba(255,255,255,.92) 0 .3mm, transparent .3mm 1.5mm);
   }
+  /* AFTER the rule above, not before it: content:none set first is simply
+     overwritten by content:'' and the exclusion does nothing. An explicit
+     class, not :has(+ .kidsbox) — the marker belongs on the block that opts
+     out, where it can be read at the call site. */
+  .side-a .panel .blk.norule { padding-bottom: 0; }
+  .side-a .panel .blk.norule::after { content: none; }
   .side-a .kidsbox { border-bottom: 0; }
 
   /* ---- food photography ----
@@ -696,6 +762,11 @@ const html = `<!doctype html>
   /* The reference holds its outer-face photos well clear of the fold; a crease
      through artwork sitting on the rule is a real print risk. */
   .side-a .shot.side { right: 12mm; }
+  /* The reference runs its cake hard against the panel edge, which is what
+     lets the Desserts prices reach the same right margin as Milk Shakes'.
+     Inset 12mm like the others, the photo ate the column and the prices sat
+     11mm further left than every other section on the panel. */
+  .side-a .dessertblk .shot.side { right: 2mm; }
   .shot.mid { position: absolute; top: 50%; translate: 0 -50%; right: 30mm; z-index: 0; }
   .blkrow .items { position: relative; z-index: 1; }
   .shot.below { margin: 3mm auto 0; }
@@ -707,17 +778,30 @@ const html = `<!doctype html>
     /* Behind the prices: the reference tucks the pizza under the stuffed-crust
        line rather than over it, and white numerals on a photo are unreadable. */
     z-index: 0;
-    /* Dots grow toward the food and thin outward — three grids, each masked
-       to its own band, which is what makes it read as a spray, not a tint. */
+    /* Dots grow toward the food and thin outward. THREE grids at three
+       different pitches was the original idea and it did not work: a CSS mask
+       applies to the whole element, so all three painted everywhere at once
+       and the field came out bimodal — 0.29mm satellites sitting between
+       2.3mm primaries, reading as basket-weave rather than a spray. (Those
+       satellites were also too fine to hold on press.)
+       Same pitch and same phase on both layers instead, differing only in
+       radius: exactly one dot per cell, big near the food (::before, masked
+       to the core) and small away from it. */
     background:
-      radial-gradient(circle at center, #e8901a 42%, transparent 43%) 0 0 / 3.4mm 3.4mm,
-      radial-gradient(circle at center, #e8901a 30%, transparent 31%) 1.1mm 1.1mm / 2.2mm 2.2mm,
-      radial-gradient(circle at center, #e8901a 22%, transparent 23%) .7mm .7mm / 1.4mm 1.4mm;
+      radial-gradient(circle at center, #e8901a 22%, transparent 23%) 0 0 / 3.4mm 3.4mm;
     /* Radiates up-and-LEFT out of the crust, filling the gap beside the
        supplement bar rather than the gutter to its right. */
     -webkit-mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 18%, rgba(0,0,0,.7) 40%, rgba(0,0,0,.3) 64%, transparent 88%);
             mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 18%, rgba(0,0,0,.7) 40%, rgba(0,0,0,.3) 64%, transparent 88%);
     padding: 30mm 0 10mm 62mm;
+  }
+  /* The big-dot layer. ::before paints after the element background and before
+     the pizza, so it never covers the photo. */
+  .halftone::before {
+    content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background: radial-gradient(circle at center, #e8901a 38%, transparent 39%) 0 0 / 3.4mm 3.4mm;
+    -webkit-mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 10%, rgba(0,0,0,.55) 30%, transparent 58%);
+            mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 10%, rgba(0,0,0,.55) 30%, transparent 58%);
   }
   .blkrow .items { padding-right: var(--slot, 0mm); }
   /* The reference repeats its halftone behind the right-panel photos. Same
@@ -726,12 +810,17 @@ const html = `<!doctype html>
     content: ''; position: absolute; right: -14mm; top: 50%; translate: 0 -50%;
     width: 96mm; height: 84mm; z-index: 0;
     background:
-      radial-gradient(circle at center, #e8901a 42%, transparent 43%) 0 0 / 3.4mm 3.4mm,
-      radial-gradient(circle at center, #e8901a 30%, transparent 31%) 1.1mm 1.1mm / 2.2mm 2.2mm,
-      radial-gradient(circle at center, #e8901a 22%, transparent 23%) .7mm .7mm / 1.4mm 1.4mm;
+      radial-gradient(circle at center, #e8901a 22%, transparent 23%) 0 0 / 3.4mm 3.4mm;
     /* Graded so it dissolves rather than ending on a straight edge. */
     -webkit-mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 14%, rgba(0,0,0,.62) 38%, rgba(0,0,0,.22) 62%, transparent 82%);
             mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 14%, rgba(0,0,0,.62) 38%, rgba(0,0,0,.22) 62%, transparent 82%);
+  }
+  .blkrow.dots::before {
+    content: ''; position: absolute; right: -14mm; top: 50%; translate: 0 -50%;
+    width: 96mm; height: 84mm; z-index: 0; pointer-events: none;
+    background: radial-gradient(circle at center, #e8901a 38%, transparent 39%) 0 0 / 3.4mm 3.4mm;
+    -webkit-mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 8%, rgba(0,0,0,.55) 26%, transparent 52%);
+            mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 8%, rgba(0,0,0,.55) 26%, transparent 52%);
   }
   .blkrow.dots .shot { position: absolute; z-index: 1; }
 
@@ -748,11 +837,12 @@ const html = `<!doctype html>
      twenty-four. The reference sets it 1.4x the Sides line rather than
      leaving a short list stranded in white space — measured off the artwork,
      Sides 10px band against Salad 14px. Scoped to this section only. */
+  .saladblk { margin-top: 7.5mm; }
   .saladblk .items.dense li { font-size: 4.75mm; padding: .5mm 0; }
   .saladblk .items .n em { font-size: 3.3mm; }
   /* Reference stem/cap is ~0.15 — a Regular. This was set a full weight
      heavier, which is why the lists read as shouty next to it. */
-  .items .n { font-weight: 400; text-transform: uppercase; letter-spacing: .005em; }
+  .items .n { font-weight: 500; text-transform: uppercase; letter-spacing: .005em; }
   /* Reference palette: item names white, the line under them red. The pizza
      column inverts it — gold names, white toppings — which is what makes that
      panel read as the headline list. */
@@ -763,7 +853,7 @@ const html = `<!doctype html>
     display: block; font-style: normal; font-weight: 400;
     text-transform: capitalize; font-size: 3.7mm; line-height: 1.1;
     /* see descText: capitalize would render "¼lb" as "¼Lb" */
-    color: #e93326; margin-top: .1mm;
+    color: #f73a2e; margin-top: .1mm;
   }
   .items .n em::before { content: '('; }
   .items .n em::after { content: ')'; }
@@ -773,7 +863,8 @@ const html = `<!doctype html>
   .items .n em .unit { text-transform: none; }
   .items .n em.plain { color: #fff; }
   .items .n em.plain::before, .items .n em.plain::after { content: none; }
-  .items .n u { text-decoration: none; color: #e0483a; }
+  /* Same red as the descriptions — the reference uses one. */
+  .items .n u { text-decoration: none; color: #f73a2e; }
   /* Pizza inverts it: gold names, white toppings on their own line, no
      brackets — an ~7.4mm two-line pitch, which is what makes the reference's
      pizza column fill the panel top to bottom. */
@@ -788,10 +879,10 @@ const html = `<!doctype html>
      gutter reservation). */
   .items .dots { flex: 1; }
   /* Prices are white on the reference, not gold, and set at the item size. */
-  .items .p { font-weight: 400; color: #fff; white-space: nowrap; }
+  .items .p { font-weight: 500; color: #fff; white-space: nowrap; }
   .items.sized li { gap: 4mm; }
   .items.sized .p2 {
-    width: 14mm; text-align: center; font-weight: 400; color: #fff; white-space: nowrap;
+    width: 14mm; text-align: center; font-weight: 500; color: #fff; white-space: nowrap;
     text-shadow: 0 0 1.2mm #000, 0 0 .5mm #000;
   }
 
@@ -807,7 +898,7 @@ const html = `<!doctype html>
      size the type to fit it. */
   .chiprow .sizehdr i { width: 14mm; min-width: 0; font-size: 3.5mm; padding-left: 0; padding-right: 0; }
   .sizehdr i {
-    font-style: normal; font-size: 4.4mm; font-weight: 600;
+    font-style: normal; font-weight: 600;
     padding: .55mm 1.8mm; border-radius: 0; text-align: center;
     /* Same width and gutter as .items.sized .p2, so each chip sits squarely
        over the column of prices it labels. */
@@ -902,7 +993,7 @@ const html = `<!doctype html>
   /* ---- meal deal boxes ---- */
   /* The deals are the upsell and the reference gives them a third of the
      panel, so they're sized to fill rather than left as small boxes. */
-  .deals { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  .deals { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; margin-bottom: 12mm; }
   /* The reference runs its cards from under the hero photo down to the footer;
      letting the grid grow fills that column instead of leaving a void above. */
   .deals.grow { flex: 1; grid-auto-rows: 1fr; }
@@ -921,22 +1012,44 @@ const html = `<!doctype html>
      out of the top-right corner — not torn edges. The bite is a disc of the
      page colour laid over the corner. */
   .deal { position: relative; overflow: hidden; }
+  /* A torn corner, not a punched hole. The reference bites ~9mm x 8mm out of
+     each card in a chain of three or four scalloped lobes — the same torn-
+     ticket language as the plaques, which already get a real bite from the
+     border-image. A single smooth disc was less than half the size in each
+     dimension and had no serration at all, so the cards were the one element
+     on the sheet speaking a different language.
+     The corner is cut on a diagonal (the linear-gradient) and that cut is
+     scalloped by three lobes whose centres sit ON the cut line. Centres must
+     be on the line: placed further in they stop being a torn edge and become
+     black blobs printed inside the card. */
   .deal::after {
-    content: ''; position: absolute; top: -3.4mm; right: -3.4mm;
-    width: 6.8mm; height: 6.8mm; border-radius: 50%;
-    background: #030303; border: .5mm solid #1a1a1a;
+    content: ''; position: absolute; top: 0; right: 0;
+    width: 8.5mm; height: 7.5mm; pointer-events: none;
+    background:
+      radial-gradient(circle at 25% 25%, #030303 1.55mm, transparent 1.65mm),
+      radial-gradient(circle at 52% 52%, #030303 1.65mm, transparent 1.75mm),
+      radial-gradient(circle at 78% 78%, #030303 1.5mm, transparent 1.6mm),
+      linear-gradient(to top right, transparent 49.5%, #030303 50%);
   }
+  /* Keep the title out of the bite — it is centred, so this shifts it a couple
+     of millimetres left rather than clipping "FAMILY MEAL DEAL". */
+  /* Clearance for the bite. The reference runs this title nearly the full
+     card width, which means its bite sits ABOVE the title line rather than
+     beside it — matching that needs card height this panel does not have. So
+     the title keeps clear of the notch instead, and "Family Meal Deal" takes
+     two lines. A wrapped title reads; letters sitting on a dark notch do not. */
+  .deal b { padding-right: 4.5mm; font-size: 4.8mm; }
   .pzcol { position: relative; z-index: 1; }
   .dealshead .headrow { justify-content: center; }
   .center { text-align: center; }
   /* Size lives on ".side-a .dealshead h3" above — a bare ".dealshead h3"
      cannot outrank ".side-a .blk h3" and would be dead weight here. */
   .deal b { display: block; color: #bb0e12; font-size: 5mm; line-height: 1.05; text-transform: uppercase; font-weight: 700; }
-  .deal p { margin: 1.4mm 0 1.6mm; font-size: 3.5mm; line-height: 1.3; font-weight: 700; text-transform: capitalize; }
+  .deal p { margin: 1.4mm 0 1.6mm; font-size: 4.4mm; line-height: 1.3; font-weight: 600; text-transform: capitalize; }
   /* The card's anchor: same face and weight as the body copy above it, which
      is how the reference sets it. It was the condensed face at Regular —
      measured 30% lighter and 13% narrower than the reference's price. */
-  .deal strong { font-size: 4.6mm; font-weight: 700; color: #111; }
+  .deal strong { font-size: 5.2mm; font-weight: 600; color: #111; }
   .deal .pd strong { display: block; margin-top: .6mm; font-size: 4mm; }
 
   /* ---- cover panel ---- */
@@ -953,7 +1066,7 @@ const html = `<!doctype html>
   }
   .spine {
     /* Floods the bleed on its three outer edges and carries a faint weave. */
-    flex: none; width: 30mm;
+    flex: none; width: 32mm;
     background:
       repeating-linear-gradient(45deg, rgba(0,0,0,.05) 0 .5mm, transparent .5mm 1.6mm),
       repeating-linear-gradient(-45deg, rgba(0,0,0,.05) 0 .5mm, transparent .5mm 1.6mm),
@@ -966,7 +1079,7 @@ const html = `<!doctype html>
      address has to clear it or the postcode prints cut in half. */
   .spine { justify-content: space-between; padding: 6mm 0; }
   .side-a .spine { padding-bottom: 19mm; }
-  .spine b { font-size: 19mm; letter-spacing: .16em; letter-spacing: .04em; text-transform: uppercase; }
+  .spine b { font-size: 19mm; letter-spacing: .04em; text-transform: uppercase; }
   .spine span { font-size: 4.6mm; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #fff; }
 
   /* The reference sets a red disc with a handset beside the phone and one with
@@ -983,11 +1096,11 @@ const html = `<!doctype html>
   .tel { margin-top: 4mm; }
   /* Cream, not white: the reference ties this line to the big numerals
      directly beneath it, and white broke the pair apart. */
-  .telline { display: flex; align-items: center; justify-content: center; font-size: 9.5mm; font-weight: 600; letter-spacing: .02em; color: #f8e3bf; }
-  /* Anton draws well above its em box, so the number's glyphs ran over
+  .telline { display: flex; align-items: center; justify-content: center; font-size: 13mm; font-weight: 600; letter-spacing: .02em; color: #f8e3bf; }
+  /* The display face draws well above its em box, so the number's glyphs ran over
      the line above even though the two boxes never touched. The margin is
      clearance for the overshoot, not decoration — don't trim it. */
-  .tel b { display: block; margin-top: 2mm; font-size: 23mm; line-height: 1; letter-spacing: .04em; color: #f8e3bf; }
+  .tel b { display: block; margin-top: 2mm; font-size: 29.5mm; line-height: 1; letter-spacing: .04em; color: #f8e3bf; }
 
   /* The cover's straps are the same device as a section header, so they take
      the same plaque — a flat yellow bar next to a bitten one would read as an
@@ -1046,7 +1159,12 @@ const html = `<!doctype html>
     padding: 0 3mm 3mm;
     background: #f9b902; color: #111;
     display: flex; align-items: center; justify-content: center; gap: 2.5mm;
-    font-size: 4.4mm; letter-spacing: .14em; overflow: hidden; white-space: nowrap;
+    /* NOT the display face: the reference's ticker measures stem/cap 0.208,
+       which is SemiBold territory — Barlow Condensed Black's 0.269 made it
+       27% heavy and, being condensed, 18% small at the same size. The band
+       repeats and is clipped by the sheet edge, so length is not a risk. */
+    font-family: 'Oswald', system-ui, sans-serif; font-weight: 600;
+    font-size: 4.55mm; letter-spacing: .14em; overflow: hidden; white-space: nowrap;
   }
   .ticker i { color: #d61313; font-style: normal; }
   .gl { width: 1em; height: 1em; display: inline-block; vertical-align: -.14em; }
@@ -1059,9 +1177,9 @@ ${/* Section order and panel assignment follow the designer's artwork exactly:
       Don't reshuffle these without checking the reference sheets again. */''}
 ${page('side-a', `
   <div class="panel">
-    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], slot: 48, chipsBelow: true })}
+    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], slot: 44, chipsBelow: true })}
     ${milkshakes()}
-    ${list('desserts', { desc: true, img: shot('cake', 50), slot: 63 })}
+    ${list('desserts', { desc: true, img: shot('cake', 46), slot: 52, cls: 'dessertblk norule' })}
     ${kidsBox()}
   </div>
   <div class="panel">
@@ -1088,7 +1206,7 @@ ${page('side-b', `
     ${list('wraps', { dense: true, desc: true, img: shot('wrap', 46), slot: 48, title: 'Wrap' })}
   </div>
   <div class="panel">
-    ${sizedList('burgers', 'size', ['1/4 lb', '1/2 lb'], { slot: 18, firstOnly: /¼\s*lb/i, secondOnly: /½\s*lb/i })}
+    ${sizedList('burgers', 'size', ['1/4 lb', '1/2 lb'], { slot: 12, firstOnly: /¼\s*lb/i, secondOnly: /½\s*lb/i })}
     ${list('sides', { dense: true, img: shot('sides', 57), title: 'Sides', slot: 56, dots: true })}
     ${list('salad', { dense: true, desc: true, img: shot('salad', 62), slot: 56, cls: 'saladblk' })}
   </div>
@@ -1099,7 +1217,7 @@ ${page('side-b', `
 /* Nothing on this sheet may be a missing field rendered as text. Dropping
    minimumOrderPence printed "Minimum order £NaN." on the cover and every check
    stayed green, because NaN is content like any other. */
-const bad = html.match(/NaN|undefined|Infinity/);
+const bad = html.match(/NaN|undefined|Infinity|null/);
 if (bad) throw new Error(`generated sheet contains "${bad[0]}" — a data field is missing. Fix the shop data; do not print this.`);
 
 const orphans = menu.map((c) => c.id).filter((id) => !usedCats.has(id));
@@ -1108,7 +1226,7 @@ if (orphans.length) {
     '  Add them to a panel in build-menu.mjs, or the printed sheet will under-advertise the menu.');
 }
 
-fs.writeFileSync(path.join(import.meta.dirname, 'menu.html'), html);
+fs.writeFileSync(OUT, html);
 const n = menu.reduce((a, c) => a + c.items.length, 0);
 console.log(`menu.html written — ${n} items across ${menu.length} categories`);
 console.log('photo dpi: ' + shotDpi.sort((a, b) => a.dpi - b.dpi)

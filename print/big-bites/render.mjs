@@ -7,8 +7,34 @@
 import pw from '/opt/node22/lib/node_modules/playwright/index.js';
 import path from 'node:path';
 import fs from 'node:fs';
+import crypto from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 
 const DIR = import.meta.dirname;
+const SHOP = path.resolve(DIR, '../../data/shops/food-station');
+
+/* menu.html is an intermediate file, and nothing used to tie it to the data it
+   came from. Every guard in build-menu.mjs writes nothing and exits 1, leaving
+   the PREVIOUS sheet on disk — and an operator who edits a price and forgets
+   to rebuild at all gets the same result. Either way this printed a PDF of
+   stale prices and reported every gate green, which is the one failure the
+   tool exists to prevent. Recompute the fingerprint and refuse to print a
+   sheet that doesn't carry it. */
+const wantStamp = crypto.createHash('sha256')
+  .update(fs.readFileSync(path.join(SHOP, 'menu-visual.json')))
+  .update(fs.readFileSync(path.join(SHOP, 'config.json')))
+  .update(fs.readFileSync(path.join(DIR, 'build-menu.mjs')))
+  .digest('hex').slice(0, 16);
+const sheet = fs.existsSync(path.join(DIR, 'menu.html'))
+  ? fs.readFileSync(path.join(DIR, 'menu.html'), 'utf8') : '';
+const gotStamp = /<meta name="build-src" content="([a-f0-9]+)"/.exec(sheet)?.[1];
+if (gotStamp !== wantStamp) {
+  console.error(gotStamp
+    ? `FAIL: menu.html was built from different data or a different generator (${gotStamp} != ${wantStamp}).`
+    : 'FAIL: menu.html is missing or carries no build stamp.');
+  console.error('  Run: node print/big-bites/build-menu.mjs');
+  process.exit(1);
+}
 const b = await pw.chromium.launch({ args: ['--no-proxy-server'] });
 // 426x303mm at 96dpi, so the panels lay out at their true print size and the
 // overflow check below means something.
@@ -57,15 +83,39 @@ const overflow = await p.evaluate(() => {
     if (low > bottom + 1) {
       bad.push(`panel ${i + 1}: in-flow content overruns its box by ${Math.round(low - bottom)}px`);
     }
-    /* Photos are cropped by the panel edge on purpose, so scrollWidth is not
-       the test — clipped TEXT is. Measure the ink of every text run against
-       the panel box instead. */
-    el.querySelectorAll('.n, .p, .p2, h3, .deal, .fine, .hours, .strap, .qrtxt').forEach((tx) => {
-      const r = tx.getBoundingClientRect();
-      if (r.width && (r.right > box.right + 1 || r.left < box.left - 1)) {
-        bad.push(`panel ${i + 1}: "${tx.textContent.trim().slice(0, 28)}" is clipped by the panel edge`);
+  });
+  /* Clipped text is measured against the TRIM, once, for the whole sheet —
+     not per panel and not against a hand-written selector list.
+     The per-panel version had four holes: its boundary was the panel's BLEED
+     edge, so the outer 3mm was a blind strip and text cut off by the
+     guillotine passed; on inner panels the boundary was the fold crease, so a
+     price ending on the fold passed; the cover was reassigned to .coverbody
+     before the box was taken, so the spine was never tested at all; and the
+     selector list missed .telline, .tel b, .allergy, .chips li, .kidsmark,
+     .sizehdr, .spine b and .ticker. Walking text nodes needs no list. */
+  const PX = 1610 / 426;                       // px per mm at this viewport
+  document.querySelectorAll('.page').forEach((page, pi) => {
+    const pr = page.getBoundingClientRect();
+    const safe = { l: pr.left + 3 * PX, r: pr.right - 3 * PX, t: pr.top + 3 * PX, b: pr.bottom - 3 * PX };
+    const w = document.createTreeWalker(page, NodeFilter.SHOW_TEXT);
+    const seen = new Set();
+    for (let n; (n = w.nextNode());) {
+      if (!n.textContent.trim()) continue;
+      // The ticker band is a repeating strip cropped by the sheet edge by
+      // design; everything else must sit inside the trim.
+      if (n.parentElement.closest('.ticker')) continue;
+      const rg = document.createRange(); rg.selectNodeContents(n);
+      for (const r of rg.getClientRects()) {
+        if (!r.width || !r.height) continue;
+        if (r.right > safe.r + 1 || r.left < safe.l - 1 || r.bottom > safe.b + 1 || r.top < safe.t - 1) {
+          const key = n.textContent.trim().slice(0, 30);
+          if (seen.has(key)) break;
+          seen.add(key);
+          bad.push(`page ${pi + 1}: "${key}" crosses the trim line`);
+          break;
+        }
       }
-    });
+    }
   });
   return bad;
 });
@@ -79,39 +129,17 @@ if (!fontsOK || overflow.length) {
   process.exit(1);
 }
 
-// The collision check is the only gate covering the absolutely-positioned
-// photos, which the overflow gate deliberately skips — so run it here rather
-// than trusting someone to run it by hand.
-const collisions = await p.evaluate(() => {
-  const hits = [];
-  const over = (a, c) => !(a.right <= c.left + 1 || a.left >= c.right - 1 || a.bottom <= c.top + 1 || a.top >= c.bottom - 1);
-  const ink = (el) => {
-    const out = [];
-    const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
-    for (let n; (n = w.nextNode());) {
-      if (!n.textContent.trim()) continue;
-      const r = document.createRange(); r.selectNodeContents(n);
-      out.push(...r.getClientRects());
-    }
-    return out;
-  };
-  document.querySelectorAll('.shot.side, .shot.mid').forEach((img) => {
-    const ir = img.getBoundingClientRect();
-    // A 'mid' photo sits behind the prices by design, as the reference does —
-    // there the test is whether the numerals still carry, not whether they
-    // overlap. Anything on a mid photo without a shadow is a real fault.
-    const mid = img.classList.contains('mid');
-    img.closest('.blkrow').querySelectorAll('.n, .p, .p2').forEach((el) => {
-      if (mid && getComputedStyle(el).textShadow !== 'none') return;
-      for (const r of ink(el)) if (over(r, ir)) { hits.push(`"${el.textContent.trim().slice(0, 30)}" under ${img.getAttribute('src')}`); break; }
-    });
-  });
-  return hits;
-});
-if (collisions.length) {
-  console.error('COLLISIONS:\n  ' + collisions.join('\n  '));
+/* Run check-collisions.mjs itself rather than an inlined copy. The copy had
+   drifted: it carried two of that script's three tests and silently dropped
+   "photo escapes its section", so photos landing 13-24mm outside their section
+   — over the section below — passed this gate while the standalone script
+   exited 1 on five of them. A subset that calls itself the check is worse than
+   no check, because it is trusted. */
+try {
+  execFileSync(process.execPath, [path.join(DIR, 'check-collisions.mjs')], { stdio: 'inherit' });
+} catch {
   await b.close();
-  console.error('PDF NOT written — fix the failure above first.');
+  console.error('PDF NOT written — fix the collisions above first.');
   process.exit(1);
 }
 
@@ -124,6 +152,20 @@ await p.pdf({
   margin: { top: 0, right: 0, bottom: 0, left: 0 },
   preferCSSPageSize: true,
 });
+/* The TrimBox below is stamped from constants. If the page did not come out
+   426x303 those constants describe the wrong rectangle, and a preflight-driven
+   cut follows the stamp — so assert the size the PDF actually has. */
+{
+  const mb = /\/MediaBox\s*\[\s*0\s+0\s+([\d.]+)\s+([\d.]+)/.exec(fs.readFileSync(TMP).toString('latin1'));
+  if (!mb) throw new Error('no MediaBox found in the PDF');
+  const [w, h] = [Number(mb[1]), Number(mb[2])];
+  if (Math.abs(w - 1207.92) > 0.5 || Math.abs(h - 858.96) > 0.5) {
+    fs.unlinkSync(TMP);
+    console.error(`FAIL: page is ${(w * 25.4 / 72).toFixed(1)}x${(h * 25.4 / 72).toFixed(1)}mm, not 426x303 — the TrimBox constants do not apply.`);
+    process.exit(1);
+  }
+}
+
 /* The preview is what anyone reviews the sheet from, and at 1x its subpixel
    antialiasing invents letterspacing faults that do not exist in the PDF —
    verified by rasterising the real file at 300dpi. Render it at 2x so the
@@ -194,19 +236,28 @@ const kb = Math.round(fs.statSync(TMP).size / 1024);
    for a family even when the glyph asked for is not in it, so Chromium was
    embedding DejaVu off the build machine for characters no vendored face
    carried. Read the PDF's own font list instead — that is the ground truth. */
-const { execFileSync } = await import('node:child_process');
 try {
   /* TMP, not FINAL: the rename happens below, so pointing this at the final
      path made it inspect the PREVIOUS run's PDF — the gate reported the old
      file's fonts and would have passed a new one that embedded a stray. */
-  const fonts = execFileSync('pdffonts', [TMP], { encoding: 'utf8' })
-    .split('\n').slice(2).map((l) => l.trim().split(/\s+/)[0]).filter(Boolean)
-    .map((n) => n.replace(/^[A-Z]{6}\+/, ''));
+  /* Column 0 alone is not the test. pdffonts also reports emb/sub, and a font
+     that is NAMED acceptably but not embedded travels as a reference to the
+     printer's machine — the gate would print "fonts embedded: Oswald" about a
+     font that is not in the file. Same shape as the name-only
+     document.fonts.check() bug this replaced. */
+  const rows = execFileSync('pdffonts', [TMP], { encoding: 'utf8' })
+    .split('\n').slice(2).map((l) => l.trim().split(/\s+/)).filter((c) => c.length >= 6);
+  if (!rows.length) throw new Error('pdffonts reported no fonts at all');
   const allowed = /^(Oswald|Montserrat|BarlowCondensed)/;
-  const strays = [...new Set(fonts)].filter((f) => !allowed.test(f));
+  const name = (r) => r[0].replace(/^[A-Z]{6}\+/, '');
+  const fonts = rows.map(name);
+  const strays = [...new Set(rows.filter((r) => {
+    const emb = r[r.length - 4], sub = r[r.length - 3];
+    return !allowed.test(name(r)) || emb !== 'yes' || sub !== 'yes';
+  }).map((r) => `${name(r)}(emb=${r[r.length - 4]},sub=${r[r.length - 3]})`))];
   if (strays.length) {
     fs.unlinkSync(TMP);
-    console.error(`FAIL: the PDF embeds fonts from this machine, not the repo: ${strays.join(', ')}`);
+    console.error(`FAIL: a font is not embedded, not subset, or not from the repo: ${strays.join(', ')}`);
     process.exit(1);
   }
   console.log(`fonts embedded: ${[...new Set(fonts)].join(', ')}`);
