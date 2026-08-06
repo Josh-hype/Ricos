@@ -6,7 +6,10 @@
      a blocked network was silently swapping in fallback faces. Static per-
      weight files — the css2 endpoint serves one variable file for every
      weight, which Chromium faux-bolds into broken letterspacing. */
-  @font-face { font-family: 'Anton'; font-weight: 400; src: url(fonts/Anton-400.ttf) format('truetype'); }
+  @font-face { font-family: 'Archivo Black'; font-weight: 400; src: url(fonts/ArchivoBlack-400.ttf) format('truetype'); }
+  @font-face { font-family: 'Montserrat'; font-weight: 400; src: url(fonts/Montserrat-400.ttf) format('truetype'); }
+  @font-face { font-family: 'Montserrat'; font-weight: 600; src: url(fonts/Montserrat-600.ttf) format('truetype'); }
+  @font-face { font-family: 'Montserrat'; font-weight: 700; src: url(fonts/Montserrat-700.ttf) format('truetype'); }
   @font-face { font-family: 'Oswald'; font-weight: 400; src: url(fonts/Oswald-400.ttf) format('truetype'); }
   @font-face { font-family: 'Oswald'; font-weight: 500; src: url(fonts/Oswald-500.ttf) format('truetype'); }
   @font-face { font-family: 'Oswald'; font-weight: 600; src: url(fonts/Oswald-600.ttf) format('truetype'); }
@@ -25,7 +28,18 @@
      plaques and Oswald for everything else. It is the single biggest thing that
      makes it read as that sheet rather than a generic menu: the condensed
      widths are what let the type run this large in a 140mm panel. */
+  /* Three families, as the reference uses: a WIDE heavy poster face for the
+     plaques (Anton is 36% too narrow at matched cap height), condensed Oswald
+     for the item lists, and a normal-width sans for marketing copy. */
   body { font-family: 'Oswald', system-ui, sans-serif; }
+  .blk h3, .strap, .spine b, .kidsmark, .deal b, .deal strong, .ticker, .tel b, .qrtxt b {
+    font-family: 'Archivo Black', Impact, sans-serif; font-weight: 400;
+  }
+  /* Marketing copy — not the price lists — is a normal-width sans on the
+     reference, where this sheet had the condensed face everywhere. */
+  .deal p, .chips li, .fine, .hours, .allergy, .sizehdr i, .qrtxt span, .telline {
+    font-family: 'Montserrat', system-ui, sans-serif;
+  }
 
   .page {
     position: relative;
@@ -74,7 +88,7 @@
      leading — the same trade the reference sheet makes. Scoped to the panel
      rather than applied globally, so the roomier panels stay roomy. */
   .panel.tight .blk { margin-bottom: 1.5mm; }
-  .panel.tight .blk h3 { font-size: 8.6mm; margin-bottom: 0; }
+  .panel.tight .blk h3 { font-size: 6.8mm; margin-bottom: 0; }
   .panel.tight .hrule { margin: .7mm 0 1.6mm; }
   .panel.tight .items.dense li { padding: 0; font-size: 2.9mm; }
   /* Five sections against three elsewhere, and this shop carries a description
@@ -113,8 +127,7 @@
     border-width: .129em .61em .144em .179em;
     border-image: url(img/header-plaque.png) 18 85 20 25 fill stretch;
     color: #111;
-    font-family: 'Anton', Impact, sans-serif;
-    font-size: 11mm; line-height: 1;
+    font-size: 8.6mm; line-height: 1;
     letter-spacing: .005em;
     text-transform: uppercase;
     transform: rotate(-1.6deg);
@@ -137,7 +150,7 @@
   .side-a .hrule { display: none; }
   /* The 11mm plaque is the inner face's scale — the reference's outer face
      runs a slightly smaller one over shorter lists. */
-  .side-a .blk h3 { min-width: 70mm; font-size: 9.4mm; }
+  .side-a .blk h3 { min-width: 70mm; font-size: 7.4mm; }
   .side-a .redhead h3 { min-width: 56mm; }
   .side-a .panel .blk:not(:last-of-type) {
     border-bottom: .5mm dotted rgba(255,255,255,.55); padding-bottom: 4mm;
@@ -218,7 +231,8 @@
   /* Pizza inverts it: gold names, white toppings on their own line, no
      brackets — an ~7.4mm two-line pitch, which is what makes the reference's
      pizza column fill the panel top to bottom. */
-  .items.gold .n { color: #f9b902; font-weight: 600; }
+  /* Two distinct golds on the reference: names lighter than the plaques. */
+  .items.gold .n { color: #fbcc02; font-weight: 600; }
   .items.gold .n em { color: #fff; display: block; margin: .2mm 0 0; }
   .items.gold li { padding: .45mm 0; font-size: 4.1mm; }
   .items.gold .n em { font-size: 3.35mm; line-height: 1.06; }
@@ -292,10 +306,9 @@
     outline: .5mm dashed rgba(249,185,2,.85); outline-offset: -2.2mm;
   }
   .kidsmark {
-    flex: none; width: 44mm; text-align: center; color: #fdf3d8;
-    font-family: 'Anton', Impact, sans-serif; line-height: .95;
+    flex: none; width: 44mm; text-align: center; color: #fdf3d8; line-height: .95;
   }
-  .kidsmark b { display: block; font-size: 8mm; }
+  .kidsmark b { display: block; font-size: 6.4mm; }
   .kidsmark span {
     display: block; margin-top: 1.6mm; padding: .8mm 0;
     background: #111; color: #f9b902; font-size: 3.6mm; border-radius: 1mm;
@@ -351,10 +364,10 @@
   .dealshead .headrow { justify-content: center; }
   .center { text-align: center; }
   .dealshead h3 { min-width: 62mm; font-size: 7.2mm; }
-  .deal b { display: block; font-family: 'Anton', Impact, sans-serif; color: #dd1516; font-size: 5.2mm; line-height: 1.05; text-transform: uppercase; }
+  .deal b { display: block; color: #bb0e12; font-size: 5mm; line-height: 1.05; text-transform: uppercase; }
   .deal p { margin: 1.4mm 0 1.6mm; font-size: 3.5mm; line-height: 1.3; font-weight: 700; text-transform: capitalize; }
-  .deal strong { font-family: 'Anton', Impact, sans-serif; font-size: 5.4mm; font-weight: 400; color: #111; }
-  .deal .pd strong { display: block; margin-top: .6mm; font-size: 4.6mm; }
+  .deal strong { font-size: 4.6mm; font-weight: 400; color: #111; }
+  .deal .pd strong { display: block; margin-top: .6mm; font-size: 4mm; }
 
   /* ---- cover panel ---- */
   /* The reference splits this panel: the cover proper, and a red spine down the
@@ -376,7 +389,7 @@
     writing-mode: vertical-rl;
   }
   .spine { justify-content: space-between; padding: 6mm 0; }
-  .spine b { font-family: 'Anton', Impact, sans-serif; font-size: 21mm; letter-spacing: .04em; text-transform: uppercase; }
+  .spine b { font-size: 16mm; letter-spacing: .04em; text-transform: uppercase; }
   .spine span { font-size: 3.4mm; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #fff; }
 
   /* The reference sets a red disc with a handset beside the phone and one with
@@ -395,7 +408,7 @@
   /* Anton draws well above its em box, so the number's glyphs ran over
      the line above even though the two boxes never touched. The margin is
      clearance for the overshoot, not decoration — don't trim it. */
-  .tel b { display: block; margin-top: 2mm; font-family: 'Anton', Impact, sans-serif; font-size: 22mm; line-height: 1; letter-spacing: .06em; color: #fbefd2; }
+  .tel b { display: block; margin-top: 2mm; font-size: 17mm; line-height: 1; letter-spacing: .06em; color: #fbefd2; }
 
   /* The cover's straps are the same device as a section header, so they take
      the same plaque — a flat yellow bar next to a bitten one would read as an
@@ -414,8 +427,7 @@
     border-style: solid; border-color: transparent;
     border-width: .11em .5em .12em .15em;
     border-image: url(img/header-plaque.png) 18 85 20 25 fill stretch;
-    color: #111;
-    font-family: 'Anton', Impact, sans-serif; font-size: 4.4mm;
+    color: #111; font-size: 4.4mm;
     text-transform: uppercase;
   }
   .fine { margin: 0; width: 100%; font-size: 4.1mm; line-height: 1.45; font-weight: 400; color: #fff; }
@@ -444,7 +456,7 @@
   .qr { width: 30mm; height: 30mm; background: #fff; padding: 1.5mm; border-radius: 1.5mm; }
   .qr svg { width: 100%; height: 100%; display: block; }
   .qrtxt { text-align: right; }
-  .qrtxt b { display: block; font-family: 'Anton', Impact, sans-serif; font-size: 5.6mm; color: #f9b902; transform: skewX(-8deg); }
+  .qrtxt b { display: block; font-size: 4.6mm; color: #f9b902; transform: skewX(-8deg); }
   .qrtxt span { font-size: 2.9mm; font-weight: 700; }
   .allergy { margin-top: 6mm; }
 
@@ -455,8 +467,7 @@
     padding: 0 3mm 3mm;
     background: #f9b902; color: #111;
     display: flex; align-items: center; justify-content: center; gap: 2.5mm;
-    font-family: 'Anton', Impact, sans-serif; font-size: 4mm;
-    letter-spacing: .08em; overflow: hidden; white-space: nowrap;
+    font-size: 3.4mm; letter-spacing: .08em; overflow: hidden; white-space: nowrap;
   }
   .ticker i { color: #d61313; font-style: normal; }
 </style></head>

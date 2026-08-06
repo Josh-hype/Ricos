@@ -20,7 +20,7 @@ await p.goto('file://' + path.join(DIR, 'menu.html'), { waitUntil: 'networkidle'
 // false negative for the sheet that ships.
 const fontsOK = await p.evaluate(async () => {
   await document.fonts.ready;
-  return ['Anton', 'Oswald'].every((f) => document.fonts.check(`12px "${f}"`));
+  return ['Archivo Black', 'Oswald', 'Montserrat'].every((f) => document.fonts.check(`12px "${f}"`));
 });
 await p.waitForTimeout(400);
 
