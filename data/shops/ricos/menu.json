@@ -868,12 +868,12 @@
     "name": "Platters",
     "items": [
       {
-        "id": "wings-platter",
+        "id": "wings-platter-plt",
         "name": "Wings Platter",
         "priceP": 1645
       },
       {
-        "id": "mega-wings",
+        "id": "mega-wings-plt",
         "name": "Mega Wings Platter",
         "priceP": 2445
       },
@@ -965,62 +965,152 @@
         "priceP": 2895,
         "modifiers": [
           {
-            "id": "dip-mayo",
+            "id": "dip1-dip-mayo",
             "label": "Mayo",
             "priceDeltaP": 0
           },
           {
-            "id": "dip-sweet",
+            "id": "dip1-dip-sweet",
             "label": "Sweet Chilli",
             "priceDeltaP": 0
           },
           {
-            "id": "dip-hot",
+            "id": "dip1-dip-hot",
             "label": "Hot Chilli",
             "priceDeltaP": 0
           },
           {
-            "id": "dip-ketchup",
+            "id": "dip1-dip-ketchup",
             "label": "Ketchup",
             "priceDeltaP": 0
           },
           {
-            "id": "dip-chipotle",
+            "id": "dip1-dip-chipotle",
             "label": "Chipotle",
             "priceDeltaP": 0
           },
           {
-            "id": "dip-garlic",
+            "id": "dip1-dip-garlic",
             "label": "Garlic Mayo",
             "priceDeltaP": 0
           },
           {
-            "id": "btl-pepsi",
+            "id": "dip2-dip-mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip2-dip-sweet",
+            "label": "Sweet Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip2-dip-hot",
+            "label": "Hot Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip2-dip-ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip2-dip-chipotle",
+            "label": "Chipotle",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip2-dip-garlic",
+            "label": "Garlic Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip3-dip-mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip3-dip-sweet",
+            "label": "Sweet Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip3-dip-hot",
+            "label": "Hot Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip3-dip-ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip3-dip-chipotle",
+            "label": "Chipotle",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip3-dip-garlic",
+            "label": "Garlic Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip4-dip-mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip4-dip-sweet",
+            "label": "Sweet Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip4-dip-hot",
+            "label": "Hot Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip4-dip-ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip4-dip-chipotle",
+            "label": "Chipotle",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip4-dip-garlic",
+            "label": "Garlic Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bottle-btl-pepsi",
             "label": "Pepsi (bottle)",
             "priceDeltaP": 0
           },
           {
-            "id": "btl-water",
+            "id": "bottle-btl-water",
             "label": "Water",
             "priceDeltaP": 0
           },
           {
-            "id": "btl-coke",
+            "id": "bottle-btl-coke",
             "label": "Coke (bottle)",
             "priceDeltaP": 0
           },
           {
-            "id": "btl-diet",
+            "id": "bottle-btl-diet",
             "label": "Diet Coke (bottle)",
             "priceDeltaP": 0
           },
           {
-            "id": "btl-tango",
+            "id": "bottle-btl-tango",
             "label": "Tango (bottle)",
             "priceDeltaP": 0
           },
           {
-            "id": "btl-7up",
+            "id": "bottle-btl-7up",
             "label": "7Up (bottle)",
             "priceDeltaP": 0
           }
@@ -1032,117 +1122,372 @@
         "priceP": 4495,
         "modifiers": [
           {
-            "id": "mozz",
+            "id": "side1-mozz",
             "label": "Mozzarella Sticks",
             "priceDeltaP": 0
           },
           {
-            "id": "rings",
+            "id": "side1-rings",
             "label": "Onion Rings",
             "priceDeltaP": 0
           },
           {
-            "id": "jalapeno",
+            "id": "side1-jalapeno",
             "label": "Jalapeño Poppers",
             "priceDeltaP": 0
           },
           {
-            "id": "chips-reg",
+            "id": "side1-chips-reg",
             "label": "Chips (Regular)",
             "priceDeltaP": 0
           },
           {
-            "id": "chips-lrg",
+            "id": "side1-chips-lrg",
             "label": "Chips (Large)",
             "priceDeltaP": 0
           },
           {
-            "id": "curly",
+            "id": "side1-curly",
             "label": "Curly Fries",
             "priceDeltaP": 0
           },
           {
-            "id": "wedges",
+            "id": "side1-wedges",
             "label": "Potato Wedges",
             "priceDeltaP": 0
           },
           {
-            "id": "chips-cheese",
+            "id": "side1-chips-cheese",
             "label": "Chips & Cheese",
             "priceDeltaP": 0
           },
           {
-            "id": "chips-nacho",
+            "id": "side1-chips-nacho",
             "label": "Chips & Nacho Cheese",
             "priceDeltaP": 0
           },
           {
-            "id": "rice",
+            "id": "side1-rice",
             "label": "Spicy Rice",
             "priceDeltaP": 0
           },
           {
-            "id": "slaw",
+            "id": "side1-slaw",
             "label": "Coleslaw",
             "priceDeltaP": 0
           },
           {
-            "id": "dip-mayo",
+            "id": "side2-mozz",
+            "label": "Mozzarella Sticks",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side2-rings",
+            "label": "Onion Rings",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side2-jalapeno",
+            "label": "Jalapeño Poppers",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side2-chips-reg",
+            "label": "Chips (Regular)",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side2-chips-lrg",
+            "label": "Chips (Large)",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side2-curly",
+            "label": "Curly Fries",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side2-wedges",
+            "label": "Potato Wedges",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side2-chips-cheese",
+            "label": "Chips & Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side2-chips-nacho",
+            "label": "Chips & Nacho Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side2-rice",
+            "label": "Spicy Rice",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side2-slaw",
+            "label": "Coleslaw",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side3-mozz",
+            "label": "Mozzarella Sticks",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side3-rings",
+            "label": "Onion Rings",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side3-jalapeno",
+            "label": "Jalapeño Poppers",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side3-chips-reg",
+            "label": "Chips (Regular)",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side3-chips-lrg",
+            "label": "Chips (Large)",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side3-curly",
+            "label": "Curly Fries",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side3-wedges",
+            "label": "Potato Wedges",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side3-chips-cheese",
+            "label": "Chips & Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side3-chips-nacho",
+            "label": "Chips & Nacho Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side3-rice",
+            "label": "Spicy Rice",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side3-slaw",
+            "label": "Coleslaw",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side4-mozz",
+            "label": "Mozzarella Sticks",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side4-rings",
+            "label": "Onion Rings",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side4-jalapeno",
+            "label": "Jalapeño Poppers",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side4-chips-reg",
+            "label": "Chips (Regular)",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side4-chips-lrg",
+            "label": "Chips (Large)",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side4-curly",
+            "label": "Curly Fries",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side4-wedges",
+            "label": "Potato Wedges",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side4-chips-cheese",
+            "label": "Chips & Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side4-chips-nacho",
+            "label": "Chips & Nacho Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side4-rice",
+            "label": "Spicy Rice",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "side4-slaw",
+            "label": "Coleslaw",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip1-dip-mayo",
             "label": "Mayo",
             "priceDeltaP": 0
           },
           {
-            "id": "dip-sweet",
+            "id": "dip1-dip-sweet",
             "label": "Sweet Chilli",
             "priceDeltaP": 0
           },
           {
-            "id": "dip-hot",
+            "id": "dip1-dip-hot",
             "label": "Hot Chilli",
             "priceDeltaP": 0
           },
           {
-            "id": "dip-ketchup",
+            "id": "dip1-dip-ketchup",
             "label": "Ketchup",
             "priceDeltaP": 0
           },
           {
-            "id": "dip-chipotle",
+            "id": "dip1-dip-chipotle",
             "label": "Chipotle",
             "priceDeltaP": 0
           },
           {
-            "id": "dip-garlic",
+            "id": "dip1-dip-garlic",
             "label": "Garlic Mayo",
             "priceDeltaP": 0
           },
           {
-            "id": "btl-pepsi",
+            "id": "dip2-dip-mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip2-dip-sweet",
+            "label": "Sweet Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip2-dip-hot",
+            "label": "Hot Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip2-dip-ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip2-dip-chipotle",
+            "label": "Chipotle",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip2-dip-garlic",
+            "label": "Garlic Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip3-dip-mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip3-dip-sweet",
+            "label": "Sweet Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip3-dip-hot",
+            "label": "Hot Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip3-dip-ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip3-dip-chipotle",
+            "label": "Chipotle",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip3-dip-garlic",
+            "label": "Garlic Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip4-dip-mayo",
+            "label": "Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip4-dip-sweet",
+            "label": "Sweet Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip4-dip-hot",
+            "label": "Hot Chilli",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip4-dip-ketchup",
+            "label": "Ketchup",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip4-dip-chipotle",
+            "label": "Chipotle",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "dip4-dip-garlic",
+            "label": "Garlic Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bottle-btl-pepsi",
             "label": "Pepsi (bottle)",
             "priceDeltaP": 0
           },
           {
-            "id": "btl-water",
+            "id": "bottle-btl-water",
             "label": "Water",
             "priceDeltaP": 0
           },
           {
-            "id": "btl-coke",
+            "id": "bottle-btl-coke",
             "label": "Coke (bottle)",
             "priceDeltaP": 0
           },
           {
-            "id": "btl-diet",
+            "id": "bottle-btl-diet",
             "label": "Diet Coke (bottle)",
             "priceDeltaP": 0
           },
           {
-            "id": "btl-tango",
+            "id": "bottle-btl-tango",
             "label": "Tango (bottle)",
             "priceDeltaP": 0
           },
           {
-            "id": "btl-7up",
+            "id": "bottle-btl-7up",
             "label": "7Up (bottle)",
             "priceDeltaP": 0
           }
