@@ -28,6 +28,17 @@ const wantStamp = crypto.createHash('sha256')
 const sheet = fs.existsSync(path.join(DIR, 'menu.html'))
   ? fs.readFileSync(path.join(DIR, 'menu.html'), 'utf8') : '';
 const gotStamp = /<meta name="build-src" content="([a-f0-9]+)"/.exec(sheet)?.[1];
+/* And the sheet's own hash, so an edit made to menu.html AFTER a clean build
+   cannot reach the PDF. Recomputed by putting the placeholder back. */
+const gotOut = /<meta name="build-out" content="([a-f0-9]+)"/.exec(sheet)?.[1];
+const wantOut = gotOut && crypto.createHash('sha256')
+  .update(sheet.replace(`content="${gotOut}"`, 'content="__BUILD_OUT__"'))
+  .digest('hex').slice(0, 16);
+if (gotOut && gotOut !== wantOut) {
+  console.error('FAIL: menu.html has been edited since it was generated — the sheet no longer matches the shop data.');
+  console.error('  Run: node print/big-bites/build-menu.mjs');
+  process.exit(1);
+}
 if (gotStamp !== wantStamp) {
   console.error(gotStamp
     ? `FAIL: menu.html was built from different data or a different generator (${gotStamp} != ${wantStamp}).`
@@ -137,9 +148,13 @@ if (!fontsOK || overflow.length) {
    no check, because it is trusted. */
 try {
   execFileSync(process.execPath, [path.join(DIR, 'check-collisions.mjs')], { stdio: 'inherit' });
+  /* The build can only check that two strings it was told agree; this reads
+     the committed QR and compares it module by module. It was a README step,
+     which meant a changed domain beside a stale QR printed clean. */
+  execFileSync('python3', [path.join(DIR, 'verify-qr.py')], { stdio: 'inherit' });
 } catch {
   await b.close();
-  console.error('PDF NOT written — fix the collisions above first.');
+  console.error('PDF NOT written — fix the failure above first.');
   process.exit(1);
 }
 

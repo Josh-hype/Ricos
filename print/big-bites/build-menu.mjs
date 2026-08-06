@@ -24,6 +24,14 @@ const OUT = path.join(import.meta.dirname, 'menu.html');
 fs.rmSync(OUT, { force: true });
 
 const menu = JSON.parse(fs.readFileSync(path.join(SHOP, 'menu-visual.json'), 'utf8'));
+/* menu-visual.json is the DISPLAY file; menu.json (pence) is what the server
+   actually charges from. Printing from the first while the customer is charged
+   from the second is exactly the drift this tool claims to make impossible —
+   and nothing was comparing them. build-shop.js skips size-priced modifiers
+   entirely (`if (mod.priceDeltaPBySize) continue`), so a stuffed-crust
+   supplement could read +3.50 on the sheet and charge £5.00 at the till with
+   its invariant check reporting zero warnings. */
+const server = JSON.parse(fs.readFileSync(path.join(SHOP, 'menu.json'), 'utf8'));
 const cfg = JSON.parse(fs.readFileSync(path.join(SHOP, 'config.json'), 'utf8'));
 /* Fingerprint of everything the sheet is generated FROM. render.mjs refuses
    to print a menu.html whose stamp doesn't match a freshly computed one, so a
@@ -85,7 +93,11 @@ const money = (n) => {
      and the NaN backstop never saw a NaN. An admin console or a hand edit
      writes null for a cleared field, so this is the likely shape of the
      mistake, not an exotic one. Demand a real number. */
-  if (typeof n !== 'number' || !Number.isFinite(n))
+  /* > 0, not merely finite: a cleared numeric field yields 0 at least as
+     readily as null, and 0 printed "0.00" — the item free — straight past the
+     NaN/null backstop, because "0.00" is ordinary text. Nothing on this sheet
+     is legitimately free. */
+  if (typeof n !== 'number' || !(n > 0))
     throw new Error(`price is ${JSON.stringify(n)} — fix the shop data; do not print this.`);
   return n.toFixed(2);
 };
@@ -210,7 +222,7 @@ function list(id, { dense = false, cols = 1, title = null, desc = false, img = '
    prices in their own columns, with the topping line under the name — exactly
    as the designer's sheet does. Items without the option get one price and a
    dash, which is how the reference handles Tray Doner and the like. */
-function sizedList(id, optId, headings, { title = null, img = '', secondOnly = null, firstOnly = null, tight = true, tone = ['gold', 'red'], nameTone = '', slot = 0, labels = null, chipsBelow = false } = {}) {
+function sizedList(id, optId, headings, { title = null, img = '', secondOnly = null, firstOnly = null, defaultCol = 1, tight = true, tone = ['gold', 'red'], nameTone = '', slot = 0, labels = null, chipsBelow = false } = {}) {
   const c = cat(id);
   const rows = c.items.map((i) => {
     const opt = (i.options || []).find((o) => o.id === optId);
@@ -227,9 +239,16 @@ function sizedList(id, optId, headings, { title = null, img = '', secondOnly = n
        "½lb". Throw on an item that claims both, rather than silently
        picking one. */
     const text = `${i.name} ${i.desc || ''}`;
-    const only2 = !opt && secondOnly && secondOnly.test(text);
-    if (!opt && firstOnly && secondOnly && firstOnly.test(text) && secondOnly.test(text))
-      throw new Error(`${id}/${i.id}: "${text.trim()}" names both sizes, so which column its single price belongs in is ambiguous — split it into two items or give it a size option`);
+    let only2 = false;
+    if (!opt) {
+      const a = firstOnly ? firstOnly.test(text) : false;
+      const b = secondOnly ? secondOnly.test(text) : false;
+      if (a && b)
+        throw new Error(`${id}/${i.id}: "${text.trim()}" names BOTH sizes, so which column its single price belongs in is ambiguous — split it into two items or give it a size option`);
+      if (!a && !b && defaultCol == null)
+        throw new Error(`${id}/${i.id}: "${text.trim()}" has no "${optId}" option and names neither size, so placing its price in a column would assert a size the data never claims. State the size in the name or description, or give it a size option.`);
+      only2 = b;
+    }
     return `
       <li>
         <span class="n">${esc(i.name)}${i.desc ? `<em>${descText(i.desc)}</em>` : ''}</span>
@@ -457,7 +476,7 @@ const cover = `
            nowhere at all. Both are derived, so a config change reprints. -->
       <p class="fine">
         Order on our website for collection or delivery.<br />
-        Easingwold — £${perMile.toFixed(2)} per mile, up to ${maxMiles} miles.<br />
+        Easingwold — £${perMile.toFixed(2)} per mile (rounded up), up to ${maxMiles} miles.<br />
         Minimum delivery order £${(del.minimumOrderPence / 100).toFixed(2).replace(/\.00$/, '')}.${
           cfg.serviceFeePence
             ? `<br />Online orders add a £${(cfg.serviceFeePence / 100).toFixed(2)} service charge.`
@@ -492,7 +511,7 @@ const page = (cls, panels, foot = true) => `
 
 const html = `<!doctype html>
 <html lang="en-GB"><head><meta charset="utf-8" />
-<meta name="build-src" content="${BUILD_SRC}" />
+<meta name="build-src" content="${BUILD_SRC}" /><meta name="build-out" content="__BUILD_OUT__" />
 <title>Big Bites — A3 trifold menu</title>
 <style>
   /* Vendored, not fetched: the sheet must set identically on any machine, and
@@ -1177,7 +1196,7 @@ ${/* Section order and panel assignment follow the designer's artwork exactly:
       Don't reshuffle these without checking the reference sheets again. */''}
 ${page('side-a', `
   <div class="panel">
-    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], slot: 44, chipsBelow: true })}
+    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, firstOnly: /\bcan\b/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], slot: 44, chipsBelow: true })}
     ${milkshakes()}
     ${list('desserts', { desc: true, img: shot('cake', 46), slot: 52, cls: 'dessertblk norule' })}
     ${kidsBox()}
@@ -1206,7 +1225,7 @@ ${page('side-b', `
     ${list('wraps', { dense: true, desc: true, img: shot('wrap', 46), slot: 48, title: 'Wrap' })}
   </div>
   <div class="panel">
-    ${sizedList('burgers', 'size', ['1/4 lb', '1/2 lb'], { slot: 12, firstOnly: /¼\s*lb/i, secondOnly: /½\s*lb/i })}
+    ${sizedList('burgers', 'size', ['1/4 lb', '1/2 lb'], { slot: 12, firstOnly: /(¼|1\/4)\s*lb/i, secondOnly: /(½|1\/2)\s*lb/i, defaultCol: null })}
     ${list('sides', { dense: true, img: shot('sides', 57), title: 'Sides', slot: 56, dots: true })}
     ${list('salad', { dense: true, desc: true, img: shot('salad', 62), slot: 56, cls: 'saladblk' })}
   </div>
@@ -1217,6 +1236,39 @@ ${page('side-b', `
 /* Nothing on this sheet may be a missing field rendered as text. Dropping
    minimumOrderPence printed "Minimum order £NaN." on the cover and every check
    stayed green, because NaN is content like any other. */
+{
+  const drift = [];
+  const byId = new Map();
+  for (const c of server) for (const i of c.items) byId.set(`${c.id}/${i.id}`, i);
+  for (const c of menu) for (const i of c.items) {
+    const key = `${c.id}/${i.id}`;
+    const srv = byId.get(key);
+    if (!srv) { drift.push(`${key}: on the printed menu but not in menu.json — the server cannot sell it`); continue; }
+    const shown = Math.round(Number(i.price) * 100);
+    if (shown !== srv.priceP) drift.push(`${key}: sheet prints £${Number(i.price).toFixed(2)} but the server charges ${srv.priceP}p`);
+    const mods = new Map((srv.modifiers || []).map((m) => [m.id, m]));
+    for (const o of i.options || []) for (const ch of o.choices || []) {
+      const m = mods.get(ch.id);
+      if (!m) continue;                       // build-shop.js already polices this
+      if (m.priceDeltaPBySize) {
+        for (const [sz, p] of Object.entries(m.priceDeltaPBySize)) {
+          const vis = Math.round(Number((ch.priceBySize || {})[sz] ?? NaN) * 100);
+          if (Number.isFinite(vis) && vis !== p)
+            drift.push(`${key}/${ch.id}[${sz}]: sheet prints £${((vis) / 100).toFixed(2)} but the server charges ${p}p`);
+        }
+        continue;
+      }
+      const vis = Math.round(Number(ch.price || 0) * 100);
+      if (vis !== (Number(m.priceDeltaP) || 0))
+        drift.push(`${key}/${ch.id}: sheet prints £${(vis / 100).toFixed(2)} but the server charges ${Number(m.priceDeltaP) || 0}p`);
+    }
+  }
+  if (drift.length)
+    throw new Error(`the printed prices disagree with menu.json, which is what the server charges:\n  ${drift.slice(0, 12).join('\n  ')}` +
+      (drift.length > 12 ? `\n  ...and ${drift.length - 12} more` : ''));
+  console.log(`prices agree with menu.json (${byId.size} items)`);
+}
+
 const bad = html.match(/NaN|undefined|Infinity|null/);
 if (bad) throw new Error(`generated sheet contains "${bad[0]}" — a data field is missing. Fix the shop data; do not print this.`);
 
@@ -1226,7 +1278,13 @@ if (orphans.length) {
     '  Add them to a panel in build-menu.mjs, or the printed sheet will under-advertise the menu.');
 }
 
-fs.writeFileSync(OUT, html);
+/* Hash the finished sheet as well as its inputs. The input stamp proves
+   menu.html was generated from the current data; this proves nobody edited it
+   afterwards — and menu.html is a generated file, so a hand-patched price in
+   it would otherwise reprint forever. Hashed with the placeholder still in
+   place so render.mjs can reverse the substitution and recompute it. */
+const BUILD_OUT = crypto.createHash('sha256').update(html).digest('hex').slice(0, 16);
+fs.writeFileSync(OUT, html.replace('__BUILD_OUT__', BUILD_OUT));
 const n = menu.reduce((a, c) => a + c.items.length, 0);
 console.log(`menu.html written — ${n} items across ${menu.length} categories`);
 console.log('photo dpi: ' + shotDpi.sort((a, b) => a.dpi - b.dpi)

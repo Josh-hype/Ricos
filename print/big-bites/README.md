@@ -121,15 +121,24 @@ QR) and needs no artwork.
     node print/big-bites/check-collisions.mjs
     python3 print/big-bites/verify-qr.py
 
-The first reports any item name or price that runs under a food photo — run it
-after resizing one. It measures the rendered glyphs, not the boxes.
+**`render.mjs` runs both of these itself** and refuses to write the PDF if
+either fails — they are documented here because they are useful on their own,
+not because anyone has to remember them.
+
+The first reports any item name or price that runs under a food photo. It
+measures the rendered glyphs, not the boxes.
 
 The second proves `qr.svg` encodes the domain in `config.json`, module by
 module, by re-encoding with segno and comparing the committed file's own path
 data. The build can only compare two strings it was told; this reads the QR.
-**Run it if the domain ever changes** — `config.json` records that the printed
-brand guidelines already carry a domain the shop does not own, so a QR pointing
-at the wrong host is a mistake this project has the shape of already.
+`config.json` records that the printed brand guidelines already carry a domain
+the shop does not own, so a QR pointing at the wrong host is a mistake this
+project has the shape of already.
+
+`menu.html` is **generated and gitignored**. It used to be committed, which
+meant a price hand-patched into it survived in git and reprinted forever; the
+sheet now carries a hash of itself and `render.mjs` refuses to print one that
+has been edited since it was generated.
 
 `render.mjs` reports `panels fit` or lists any panel whose content overruns its
 box. Never send a PDF that reported an overflow — content will be cut at the
