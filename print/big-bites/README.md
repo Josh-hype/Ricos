@@ -110,8 +110,13 @@ lockup**, the **cover pizza**, then `hero`, `parmasan`, `calzone` and
 `doner-pit`. Nine photographs are placed — the cover pizza, the meal-deal
 lockup, the pizza, cake, shake, wrap, calzone, parmesan and doner spit.
 
-`pepsi-coke.png`, `sides-salad.png`, `burger-meal.png` and `kebab.png` are
-**off the sheet** on the owner's instruction, and stay in `img/` cut and keyed.
+`pepsi-coke.png` came off and then went back on, **exactly as supplied** — the
+owner's instruction is that the file is not to be altered, so it is placed at
+the width and gutter it had before and `trim-alpha.py` is not run on it. Its
+soft grey edge is in the artwork itself; leave it there.
+
+`sides-salad.png`, `burger-meal.png` and `kebab.png` are **off the sheet** on
+the owner's instruction, and stay in `img/` cut and keyed.
 Putting one back is a one-line change at its section's call site — but note
 that `slotOf()` returns the greater of the photo's width and the section's
 `slot`, so removing a photo means releasing its gutter too or the list keeps a

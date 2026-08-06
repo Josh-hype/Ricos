@@ -74,6 +74,11 @@ const QR_TARGET = 'https://bigbiteseasingwold.co.uk';
    on a bare one — and the name-only font check could not see it. */
 const STAR = '<svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z"/></svg>';
 const ARROW = '<svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M3 12h17M13 5l7 7-7 7"/></svg>';
+/* Drawn as its own path rather than the arrow above under a rotate(): a
+   transform on the glyph would be one more thing Chromium's print path can
+   resolve differently from screen, and this sheet has been bitten by that
+   twice already. */
+const ARROW_UP = '<svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M12 21V4M5 11l7-7 7 7"/></svg>';
 
 /* Every id this build actually places on a panel. A renamed or emptied
    category already throws; an ADDED one used to sail through — nothing
@@ -519,8 +524,8 @@ const cover = `
       <div class="hours">${hours}</div>
       <div class="strap red website">${esc(site)}</div>
       <div class="qrwrap">
-        <div class="qrtxt"><b>SCAN<br />ME</b><span class="arrow">${ARROW}</span></div>
         <div class="qr">${qr}</div>
+        <div class="qrtxt"><span class="arrow">${ARROW_UP}</span><b>SCAN ME</b></div>
       </div>
       ${cfg.allergens?.noticeAtCheckout ? `<p class="allergy"><b>Allergies?</b> ${esc(cfg.allergens.noticeAtCheckout)}</p>` : ''}
     </div>
@@ -1164,6 +1169,9 @@ const html = `<!doctype html>
      a clock beside the opening times. Both are inline SVG — drawn, so they stay
      vector in the PDF and need no asset. */
   .ico { display: inline-block; vertical-align: middle; margin-right: -2mm; width: 11mm; height: 11mm; flex: none; position: relative; z-index: 1; }
+  /* The -2mm tuck slid the disc under the T of "Tel". It is kept for the clock,
+     which sits against a plaque with its own inset, and released here. */
+  .telline .ico { margin-right: 1.5mm; }
   .ico svg { display: block; width: 100%; height: 100%; }
   /* The supplied wordmark, keyed to transparency so the panel's own black and
      its faint yellow glow read through instead of a slightly-off black box.
@@ -1218,8 +1226,10 @@ const html = `<!doctype html>
   .hours span { text-align: left; }
   .hours b { color: #fff; text-align: left; }
 
-  .qrwrap { display: flex; align-items: center; justify-content: center; gap: 3mm; padding-top: 0; }
-  .qrtxt .arrow { display: block; font-size: 6mm; color: #f9b902; line-height: 1; }
+  /* Caption UNDER the code with the arrow pointing up at it — the owner's
+     arrangement. Column, so the two stack. */
+  .qrwrap { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1mm; padding-top: 0; }
+  .qrtxt .arrow { display: block; font-size: 5mm; color: #f9b902; line-height: 1; }
   /* Reserved for the pizza / basil / tomato photograph the reference floods the
      lower half of the cover with. Empty until that asset exists. */
   /* A spacer for the missing cover photograph: it absorbs slack, it must not
@@ -1261,8 +1271,8 @@ const html = `<!doctype html>
   .coverbody { position: relative; z-index: 1; }
   .qr { width: 30mm; height: 30mm; background: #fff; padding: 1.5mm; border-radius: 1.5mm; }
   .qr svg { width: 100%; height: 100%; display: block; }
-  .qrtxt { text-align: right; }
-  .qrtxt b { display: block; font-size: 4.6mm; color: #f9b902; transform: skewX(-8deg); }
+  .qrtxt { text-align: center; }
+  .qrtxt b { display: block; font-size: 4.6mm; color: #f9b902; transform: skewX(-8deg); letter-spacing: .04em; }
   .qrtxt span { font-size: 2.9mm; font-weight: 700; }
   /* The flood now runs behind this, and small type on a lit pizza crust is
      unreadable. A dark plate under it keeps the notice legible without
@@ -1294,7 +1304,7 @@ ${/* Section order and panel assignment follow the designer's artwork exactly:
       Don't reshuffle these without checking the reference sheets again. */''}
 ${page('side-a', `
   <div class="panel">
-    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, firstOnly: /\bcan\b/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], slot: 0, chipsBelow: true })}
+    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, firstOnly: /\bcan\b/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], img: shot('pepsi-coke', 34), slot: 44, chipsBelow: true })}
     ${milkshakes()}
     ${list('desserts', { desc: true, img: shot('cake', 46), slot: 52, cls: 'dessertblk norule' })}
     ${kidsBox()}
