@@ -322,7 +322,7 @@
       },
       {
         "id": "rice-box",
-        "name": "Rice Box",
+        "name": "Chicken and Rice Box",
         "price": 8.95,
         "desc": "Blazing spicy rice, peri chicken thighs.",
         "spicy": true,
@@ -1152,14 +1152,14 @@
     "icon": "🍽",
     "items": [
       {
-        "id": "wings-platter",
+        "id": "wings-platter-plt",
         "name": "Wings Platter",
         "price": 16.45,
         "desc": "18× char-grilled peri wings.",
         "spicy": true
       },
       {
-        "id": "mega-wings",
+        "id": "mega-wings-plt",
         "name": "Mega Wings Platter",
         "price": 24.45,
         "desc": "28× char-grilled peri wings.",
@@ -1279,32 +1279,32 @@
             "required": true,
             "choices": [
               {
-                "id": "dip-mayo",
+                "id": "dip1-dip-mayo",
                 "label": "Mayo",
                 "price": 0
               },
               {
-                "id": "dip-sweet",
+                "id": "dip1-dip-sweet",
                 "label": "Sweet Chilli",
                 "price": 0
               },
               {
-                "id": "dip-hot",
+                "id": "dip1-dip-hot",
                 "label": "Hot Chilli",
                 "price": 0
               },
               {
-                "id": "dip-ketchup",
+                "id": "dip1-dip-ketchup",
                 "label": "Ketchup",
                 "price": 0
               },
               {
-                "id": "dip-chipotle",
+                "id": "dip1-dip-chipotle",
                 "label": "Chipotle",
                 "price": 0
               },
               {
-                "id": "dip-garlic",
+                "id": "dip1-dip-garlic",
                 "label": "Garlic Mayo",
                 "price": 0
               }
@@ -1317,32 +1317,32 @@
             "required": true,
             "choices": [
               {
-                "id": "dip-mayo",
+                "id": "dip2-dip-mayo",
                 "label": "Mayo",
                 "price": 0
               },
               {
-                "id": "dip-sweet",
+                "id": "dip2-dip-sweet",
                 "label": "Sweet Chilli",
                 "price": 0
               },
               {
-                "id": "dip-hot",
+                "id": "dip2-dip-hot",
                 "label": "Hot Chilli",
                 "price": 0
               },
               {
-                "id": "dip-ketchup",
+                "id": "dip2-dip-ketchup",
                 "label": "Ketchup",
                 "price": 0
               },
               {
-                "id": "dip-chipotle",
+                "id": "dip2-dip-chipotle",
                 "label": "Chipotle",
                 "price": 0
               },
               {
-                "id": "dip-garlic",
+                "id": "dip2-dip-garlic",
                 "label": "Garlic Mayo",
                 "price": 0
               }
@@ -1355,32 +1355,32 @@
             "required": true,
             "choices": [
               {
-                "id": "dip-mayo",
+                "id": "dip3-dip-mayo",
                 "label": "Mayo",
                 "price": 0
               },
               {
-                "id": "dip-sweet",
+                "id": "dip3-dip-sweet",
                 "label": "Sweet Chilli",
                 "price": 0
               },
               {
-                "id": "dip-hot",
+                "id": "dip3-dip-hot",
                 "label": "Hot Chilli",
                 "price": 0
               },
               {
-                "id": "dip-ketchup",
+                "id": "dip3-dip-ketchup",
                 "label": "Ketchup",
                 "price": 0
               },
               {
-                "id": "dip-chipotle",
+                "id": "dip3-dip-chipotle",
                 "label": "Chipotle",
                 "price": 0
               },
               {
-                "id": "dip-garlic",
+                "id": "dip3-dip-garlic",
                 "label": "Garlic Mayo",
                 "price": 0
               }
@@ -1393,32 +1393,32 @@
             "required": true,
             "choices": [
               {
-                "id": "dip-mayo",
+                "id": "dip4-dip-mayo",
                 "label": "Mayo",
                 "price": 0
               },
               {
-                "id": "dip-sweet",
+                "id": "dip4-dip-sweet",
                 "label": "Sweet Chilli",
                 "price": 0
               },
               {
-                "id": "dip-hot",
+                "id": "dip4-dip-hot",
                 "label": "Hot Chilli",
                 "price": 0
               },
               {
-                "id": "dip-ketchup",
+                "id": "dip4-dip-ketchup",
                 "label": "Ketchup",
                 "price": 0
               },
               {
-                "id": "dip-chipotle",
+                "id": "dip4-dip-chipotle",
                 "label": "Chipotle",
                 "price": 0
               },
               {
-                "id": "dip-garlic",
+                "id": "dip4-dip-garlic",
                 "label": "Garlic Mayo",
                 "price": 0
               }
@@ -1431,32 +1431,32 @@
             "required": true,
             "choices": [
               {
-                "id": "btl-pepsi",
+                "id": "bottle-btl-pepsi",
                 "label": "Pepsi (bottle)",
                 "price": 0
               },
               {
-                "id": "btl-water",
+                "id": "bottle-btl-water",
                 "label": "Water",
                 "price": 0
               },
               {
-                "id": "btl-coke",
+                "id": "bottle-btl-coke",
                 "label": "Coke (bottle)",
                 "price": 0
               },
               {
-                "id": "btl-diet",
+                "id": "bottle-btl-diet",
                 "label": "Diet Coke (bottle)",
                 "price": 0
               },
               {
-                "id": "btl-tango",
+                "id": "bottle-btl-tango",
                 "label": "Tango (bottle)",
                 "price": 0
               },
               {
-                "id": "btl-7up",
+                "id": "bottle-btl-7up",
                 "label": "7Up (bottle)",
                 "price": 0
               }
@@ -1478,57 +1478,57 @@
             "required": true,
             "choices": [
               {
-                "id": "mozz",
+                "id": "side1-mozz",
                 "label": "Mozzarella Sticks",
                 "price": 0
               },
               {
-                "id": "rings",
+                "id": "side1-rings",
                 "label": "Onion Rings",
                 "price": 0
               },
               {
-                "id": "jalapeno",
+                "id": "side1-jalapeno",
                 "label": "Jalapeño Poppers",
                 "price": 0
               },
               {
-                "id": "chips-reg",
+                "id": "side1-chips-reg",
                 "label": "Chips (Regular)",
                 "price": 0
               },
               {
-                "id": "chips-lrg",
+                "id": "side1-chips-lrg",
                 "label": "Chips (Large)",
                 "price": 0
               },
               {
-                "id": "curly",
+                "id": "side1-curly",
                 "label": "Curly Fries",
                 "price": 0
               },
               {
-                "id": "wedges",
+                "id": "side1-wedges",
                 "label": "Potato Wedges",
                 "price": 0
               },
               {
-                "id": "chips-cheese",
+                "id": "side1-chips-cheese",
                 "label": "Chips & Cheese",
                 "price": 0
               },
               {
-                "id": "chips-nacho",
+                "id": "side1-chips-nacho",
                 "label": "Chips & Nacho Cheese",
                 "price": 0
               },
               {
-                "id": "rice",
+                "id": "side1-rice",
                 "label": "Spicy Rice",
                 "price": 0
               },
               {
-                "id": "slaw",
+                "id": "side1-slaw",
                 "label": "Coleslaw",
                 "price": 0
               }
@@ -1541,57 +1541,57 @@
             "required": true,
             "choices": [
               {
-                "id": "mozz",
+                "id": "side2-mozz",
                 "label": "Mozzarella Sticks",
                 "price": 0
               },
               {
-                "id": "rings",
+                "id": "side2-rings",
                 "label": "Onion Rings",
                 "price": 0
               },
               {
-                "id": "jalapeno",
+                "id": "side2-jalapeno",
                 "label": "Jalapeño Poppers",
                 "price": 0
               },
               {
-                "id": "chips-reg",
+                "id": "side2-chips-reg",
                 "label": "Chips (Regular)",
                 "price": 0
               },
               {
-                "id": "chips-lrg",
+                "id": "side2-chips-lrg",
                 "label": "Chips (Large)",
                 "price": 0
               },
               {
-                "id": "curly",
+                "id": "side2-curly",
                 "label": "Curly Fries",
                 "price": 0
               },
               {
-                "id": "wedges",
+                "id": "side2-wedges",
                 "label": "Potato Wedges",
                 "price": 0
               },
               {
-                "id": "chips-cheese",
+                "id": "side2-chips-cheese",
                 "label": "Chips & Cheese",
                 "price": 0
               },
               {
-                "id": "chips-nacho",
+                "id": "side2-chips-nacho",
                 "label": "Chips & Nacho Cheese",
                 "price": 0
               },
               {
-                "id": "rice",
+                "id": "side2-rice",
                 "label": "Spicy Rice",
                 "price": 0
               },
               {
-                "id": "slaw",
+                "id": "side2-slaw",
                 "label": "Coleslaw",
                 "price": 0
               }
@@ -1604,57 +1604,57 @@
             "required": true,
             "choices": [
               {
-                "id": "mozz",
+                "id": "side3-mozz",
                 "label": "Mozzarella Sticks",
                 "price": 0
               },
               {
-                "id": "rings",
+                "id": "side3-rings",
                 "label": "Onion Rings",
                 "price": 0
               },
               {
-                "id": "jalapeno",
+                "id": "side3-jalapeno",
                 "label": "Jalapeño Poppers",
                 "price": 0
               },
               {
-                "id": "chips-reg",
+                "id": "side3-chips-reg",
                 "label": "Chips (Regular)",
                 "price": 0
               },
               {
-                "id": "chips-lrg",
+                "id": "side3-chips-lrg",
                 "label": "Chips (Large)",
                 "price": 0
               },
               {
-                "id": "curly",
+                "id": "side3-curly",
                 "label": "Curly Fries",
                 "price": 0
               },
               {
-                "id": "wedges",
+                "id": "side3-wedges",
                 "label": "Potato Wedges",
                 "price": 0
               },
               {
-                "id": "chips-cheese",
+                "id": "side3-chips-cheese",
                 "label": "Chips & Cheese",
                 "price": 0
               },
               {
-                "id": "chips-nacho",
+                "id": "side3-chips-nacho",
                 "label": "Chips & Nacho Cheese",
                 "price": 0
               },
               {
-                "id": "rice",
+                "id": "side3-rice",
                 "label": "Spicy Rice",
                 "price": 0
               },
               {
-                "id": "slaw",
+                "id": "side3-slaw",
                 "label": "Coleslaw",
                 "price": 0
               }
@@ -1667,57 +1667,57 @@
             "required": true,
             "choices": [
               {
-                "id": "mozz",
+                "id": "side4-mozz",
                 "label": "Mozzarella Sticks",
                 "price": 0
               },
               {
-                "id": "rings",
+                "id": "side4-rings",
                 "label": "Onion Rings",
                 "price": 0
               },
               {
-                "id": "jalapeno",
+                "id": "side4-jalapeno",
                 "label": "Jalapeño Poppers",
                 "price": 0
               },
               {
-                "id": "chips-reg",
+                "id": "side4-chips-reg",
                 "label": "Chips (Regular)",
                 "price": 0
               },
               {
-                "id": "chips-lrg",
+                "id": "side4-chips-lrg",
                 "label": "Chips (Large)",
                 "price": 0
               },
               {
-                "id": "curly",
+                "id": "side4-curly",
                 "label": "Curly Fries",
                 "price": 0
               },
               {
-                "id": "wedges",
+                "id": "side4-wedges",
                 "label": "Potato Wedges",
                 "price": 0
               },
               {
-                "id": "chips-cheese",
+                "id": "side4-chips-cheese",
                 "label": "Chips & Cheese",
                 "price": 0
               },
               {
-                "id": "chips-nacho",
+                "id": "side4-chips-nacho",
                 "label": "Chips & Nacho Cheese",
                 "price": 0
               },
               {
-                "id": "rice",
+                "id": "side4-rice",
                 "label": "Spicy Rice",
                 "price": 0
               },
               {
-                "id": "slaw",
+                "id": "side4-slaw",
                 "label": "Coleslaw",
                 "price": 0
               }
@@ -1730,32 +1730,32 @@
             "required": true,
             "choices": [
               {
-                "id": "dip-mayo",
+                "id": "dip1-dip-mayo",
                 "label": "Mayo",
                 "price": 0
               },
               {
-                "id": "dip-sweet",
+                "id": "dip1-dip-sweet",
                 "label": "Sweet Chilli",
                 "price": 0
               },
               {
-                "id": "dip-hot",
+                "id": "dip1-dip-hot",
                 "label": "Hot Chilli",
                 "price": 0
               },
               {
-                "id": "dip-ketchup",
+                "id": "dip1-dip-ketchup",
                 "label": "Ketchup",
                 "price": 0
               },
               {
-                "id": "dip-chipotle",
+                "id": "dip1-dip-chipotle",
                 "label": "Chipotle",
                 "price": 0
               },
               {
-                "id": "dip-garlic",
+                "id": "dip1-dip-garlic",
                 "label": "Garlic Mayo",
                 "price": 0
               }
@@ -1768,32 +1768,32 @@
             "required": true,
             "choices": [
               {
-                "id": "dip-mayo",
+                "id": "dip2-dip-mayo",
                 "label": "Mayo",
                 "price": 0
               },
               {
-                "id": "dip-sweet",
+                "id": "dip2-dip-sweet",
                 "label": "Sweet Chilli",
                 "price": 0
               },
               {
-                "id": "dip-hot",
+                "id": "dip2-dip-hot",
                 "label": "Hot Chilli",
                 "price": 0
               },
               {
-                "id": "dip-ketchup",
+                "id": "dip2-dip-ketchup",
                 "label": "Ketchup",
                 "price": 0
               },
               {
-                "id": "dip-chipotle",
+                "id": "dip2-dip-chipotle",
                 "label": "Chipotle",
                 "price": 0
               },
               {
-                "id": "dip-garlic",
+                "id": "dip2-dip-garlic",
                 "label": "Garlic Mayo",
                 "price": 0
               }
@@ -1806,32 +1806,32 @@
             "required": true,
             "choices": [
               {
-                "id": "dip-mayo",
+                "id": "dip3-dip-mayo",
                 "label": "Mayo",
                 "price": 0
               },
               {
-                "id": "dip-sweet",
+                "id": "dip3-dip-sweet",
                 "label": "Sweet Chilli",
                 "price": 0
               },
               {
-                "id": "dip-hot",
+                "id": "dip3-dip-hot",
                 "label": "Hot Chilli",
                 "price": 0
               },
               {
-                "id": "dip-ketchup",
+                "id": "dip3-dip-ketchup",
                 "label": "Ketchup",
                 "price": 0
               },
               {
-                "id": "dip-chipotle",
+                "id": "dip3-dip-chipotle",
                 "label": "Chipotle",
                 "price": 0
               },
               {
-                "id": "dip-garlic",
+                "id": "dip3-dip-garlic",
                 "label": "Garlic Mayo",
                 "price": 0
               }
@@ -1844,32 +1844,32 @@
             "required": true,
             "choices": [
               {
-                "id": "dip-mayo",
+                "id": "dip4-dip-mayo",
                 "label": "Mayo",
                 "price": 0
               },
               {
-                "id": "dip-sweet",
+                "id": "dip4-dip-sweet",
                 "label": "Sweet Chilli",
                 "price": 0
               },
               {
-                "id": "dip-hot",
+                "id": "dip4-dip-hot",
                 "label": "Hot Chilli",
                 "price": 0
               },
               {
-                "id": "dip-ketchup",
+                "id": "dip4-dip-ketchup",
                 "label": "Ketchup",
                 "price": 0
               },
               {
-                "id": "dip-chipotle",
+                "id": "dip4-dip-chipotle",
                 "label": "Chipotle",
                 "price": 0
               },
               {
-                "id": "dip-garlic",
+                "id": "dip4-dip-garlic",
                 "label": "Garlic Mayo",
                 "price": 0
               }
@@ -1882,32 +1882,32 @@
             "required": true,
             "choices": [
               {
-                "id": "btl-pepsi",
+                "id": "bottle-btl-pepsi",
                 "label": "Pepsi (bottle)",
                 "price": 0
               },
               {
-                "id": "btl-water",
+                "id": "bottle-btl-water",
                 "label": "Water",
                 "price": 0
               },
               {
-                "id": "btl-coke",
+                "id": "bottle-btl-coke",
                 "label": "Coke (bottle)",
                 "price": 0
               },
               {
-                "id": "btl-diet",
+                "id": "bottle-btl-diet",
                 "label": "Diet Coke (bottle)",
                 "price": 0
               },
               {
-                "id": "btl-tango",
+                "id": "bottle-btl-tango",
                 "label": "Tango (bottle)",
                 "price": 0
               },
               {
-                "id": "btl-7up",
+                "id": "bottle-btl-7up",
                 "label": "7Up (bottle)",
                 "price": 0
               }
