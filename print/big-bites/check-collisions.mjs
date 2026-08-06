@@ -36,7 +36,7 @@ const hits = await p.evaluate(() => {
       const shadowed = getComputedStyle(el).textShadow !== 'none';
       for (const r of inkRects(el)) {
         if (over(r, ir) && !shadowed) {
-          hits.push(`"${el.textContent.trim().slice(0, 30)}" sits on ${img.getAttribute('src')} with no shadow to carry it`);
+          hits.push(`"${el.textContent.trim().slice(0, 30)}" sits on ${img.getAttribute('src')} with nothing behind it to carry it`);
           break;
         }
       }
@@ -72,6 +72,9 @@ const hits = await p.evaluate(() => {
     /* The pizza shot is positioned to be cropped by the panel edge on purpose,
        so "escaping its section" is the intent, not a fault. */
     if (img.closest('.halftone')) return;
+    /* Hand-placed photographs are meant to leave their section — that is what
+       placing them means. Their text-overlap check above still runs. */
+    if (img.classList.contains('placed')) return;
     const blk = img.closest('.blk') || img.closest('.panel'); if (!blk) return;
     const ir = img.getBoundingClientRect(), br = blk.getBoundingClientRect();
     if (ir.top < br.top - 1 || ir.bottom > br.bottom + 1) hits.push(`${img.getAttribute('src')} escapes its section by ${Math.round(Math.max(br.top - ir.top, ir.bottom - br.bottom))}px`);
