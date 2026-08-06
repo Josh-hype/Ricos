@@ -1296,7 +1296,6 @@ ${page('side-a', `
   </div>
   <div class="panel">
     ${dips()}
-    ${shot('burger-meal', 108, 'below')}
     ${deals()}
   </div>
   ${cover}

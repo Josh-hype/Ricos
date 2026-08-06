@@ -105,26 +105,27 @@ runs on tighter leading (`.panel.tight`) — again, as the reference does.
 
 ## Assets still needed
 
-The drinks cans, the calzone, the kebab and the Sides/Salad column were
-**taken off the sheet** on the owner's instruction (2026-08-06). The files are
-still in `img/`; nothing else was changed to remove them beyond dropping the
-photo and releasing the gutter its list had reserved for it.
+The drinks cans, the calzone, the kebab, the Sides/Salad column and the burger
+hero between Dips and Meal Deals were **taken off the sheet** on the owner's
+instruction (2026-08-06). The files are still in `img/`; nothing else was
+changed to remove them beyond dropping the photo and releasing the space it
+held — a `slot` gutter for the lists, and for the burger hero nothing at all,
+because `.dealsblk` already carries `flex: 1` and the deal boxes grew into the
+66mm it vacated. Putting any of them back is one line.
 
-Three gaps left. The owner supplied the **Kids Menu lockup**, the
-**Sides/Salad food column**, the **drink cans** and the **cover pizza** on
-2026-08-06; all four are in place. The column carries the burger, the
-chips-and-nuggets and the salad bowl in one cutout, so it replaced the
-separate `sides.png` and `salad.png` placements.
+Five photos remain: the cover hero, the pizza, the cake, the shake, the wrap
+and the Kids lockup.
 
-Each remaining gap is a hole the reference fills and this sheet currently
-leaves empty — nothing is faked or substituted.
+The owner supplied the **Kids Menu lockup**, the **Sides/Salad food column**,
+the **drink cans** and the **cover pizza** on 2026-08-06. Each gap below is a
+hole the reference fills and this sheet currently leaves empty — nothing is
+faked or substituted.
 
 | # | Asset | Where it goes | Spec |
 |---|-------|---------------|------|
 | 1 | **Burger, on its own** | Burgers, inner right panel — the panel's empty upper right | Transparent PNG, ≥1200px wide. The supplied Sides/Salad column has a burger at its top, but the column is 2:1 tall and at panel width it only reaches as high as the Sides list; covering Burgers too would need it 143mm wide, wider than the panel |
 | 2 | **Garlic bread** | Garlic Bread, inner middle panel | Transparent PNG, ≥1000px wide |
 | 3 | **Parmesan** | Parmesan, inner middle panel | Transparent PNG, ≥1000px wide |
-| 7 | **Bigger burger hero** | Above Meal Deals — already in place, but soft | The current file is 635px, which is 149dpi at 108mm — every build prints the dpi table, and the build throws below 140. ≥1200px wide puts it over 300 |
 
 Everything else on the sheet is either live menu data or generated here (the
 plaques, the halftone, the torn deal-box edges, the phone and clock icons, the
