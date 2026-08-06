@@ -537,8 +537,8 @@ const html = `<!doctype html>
     margin: 0;
     /* The reference's plaques carry air around the word — chunky slabs, not
        tight labels — and one shared width per column, not shrink-to-fit. */
-    padding: .1em .4em .1em .45em;
-    min-width: 30mm;
+    padding: .1em .3em .1em .28em;
+    min-width: 26mm;
     border-style: solid; border-color: transparent;
     /* 18/85/20/25 source px at the height this header renders — solving
        240k = 1.05 + 0.4 + 38k gives k = 0.00718em per source pixel. Get these
@@ -567,7 +567,7 @@ const html = `<!doctype html>
   .hrule {
     margin: .8mm 0 1.8mm; height: .45mm;
     background: repeating-linear-gradient(to right,
-      rgba(255,255,255,.92) 0 .45mm, transparent .45mm 1.7mm);
+      rgba(255,255,255,.92) 0 .3mm, transparent .3mm 1.5mm);
   }
   /* The outer face runs its dotted rules BETWEEN sections instead — under the
      lists, not under the plaques. Same rule, different position. */
@@ -584,7 +584,7 @@ const html = `<!doctype html>
   .side-a .panel .blk:not(:last-of-type):not(:nth-last-of-type(2))::after {
     content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: .45mm;
     background: repeating-linear-gradient(to right,
-      rgba(255,255,255,.92) 0 .45mm, transparent .45mm 1.7mm);
+      rgba(255,255,255,.92) 0 .3mm, transparent .3mm 1.5mm);
   }
   .side-a .kidsbox { border-bottom: 0; }
 
@@ -611,24 +611,28 @@ const html = `<!doctype html>
     /* Behind the prices: the reference tucks the pizza under the stuffed-crust
        line rather than over it, and white numerals on a photo are unreadable. */
     z-index: 0;
+    /* Dots grow toward the food and thin outward — three grids, each masked
+       to its own band, which is what makes it read as a spray, not a tint. */
     background:
-      radial-gradient(circle at center, #e8901a 30%, transparent 31%) 0 0 / 2.4mm 2.4mm,
-      radial-gradient(circle at center, #e8901a 30%, transparent 31%) 1.2mm 1.2mm / 2.4mm 2.4mm;
-    /* Radiates up-and-LEFT out of the crust and grades away — the burst is
-       the graphic, the pizza just sits in it. */
-    -webkit-mask: radial-gradient(ellipse 62% 58% at 82% 72%, #000 26%, rgba(0,0,0,.55) 52%, transparent 86%);
-            mask: radial-gradient(ellipse 62% 58% at 82% 72%, #000 26%, rgba(0,0,0,.55) 52%, transparent 86%);
-    padding: 22mm 0 6mm 44mm;
+      radial-gradient(circle at center, #e8901a 42%, transparent 43%) 0 0 / 3.4mm 3.4mm,
+      radial-gradient(circle at center, #e8901a 30%, transparent 31%) 1.1mm 1.1mm / 2.2mm 2.2mm,
+      radial-gradient(circle at center, #e8901a 22%, transparent 23%) .7mm .7mm / 1.4mm 1.4mm;
+    /* Radiates up-and-LEFT out of the crust, filling the gap beside the
+       supplement bar rather than the gutter to its right. */
+    -webkit-mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 18%, rgba(0,0,0,.7) 40%, rgba(0,0,0,.3) 64%, transparent 88%);
+            mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 18%, rgba(0,0,0,.7) 40%, rgba(0,0,0,.3) 64%, transparent 88%);
+    padding: 30mm 0 10mm 62mm;
   }
   .blkrow .items { padding-right: var(--slot, 0mm); }
   /* The reference repeats its halftone behind the right-panel photos. Same
      dots as the pizza burst, graded away from the picture. */
   .blkrow.dots::after {
     content: ''; position: absolute; right: -14mm; top: 50%; translate: 0 -50%;
-    width: 76mm; height: 62mm; z-index: 0;
+    width: 96mm; height: 84mm; z-index: 0;
     background:
-      radial-gradient(circle at center, #e8901a 30%, transparent 31%) 0 0 / 2.4mm 2.4mm,
-      radial-gradient(circle at center, #e8901a 30%, transparent 31%) 1.2mm 1.2mm / 2.4mm 2.4mm;
+      radial-gradient(circle at center, #e8901a 42%, transparent 43%) 0 0 / 3.4mm 3.4mm,
+      radial-gradient(circle at center, #e8901a 30%, transparent 31%) 1.1mm 1.1mm / 2.2mm 2.2mm,
+      radial-gradient(circle at center, #e8901a 22%, transparent 23%) .7mm .7mm / 1.4mm 1.4mm;
     /* Graded so it dissolves rather than ending on a straight edge. */
     -webkit-mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 14%, rgba(0,0,0,.62) 38%, rgba(0,0,0,.22) 62%, transparent 82%);
             mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 14%, rgba(0,0,0,.62) 38%, rgba(0,0,0,.22) 62%, transparent 82%);
@@ -705,24 +709,29 @@ const html = `<!doctype html>
        over the column of prices it labels. */
     min-width: 14mm; font-size: 4.4mm;
   }
-  .sizehdr i.red { background: #dd1516; color: #fff; }
-  .sizehdr i.gold { background: #f9b902; color: #111; }
+  .sizehdr i.red { background: #dd1516; color: #fff; border-radius: .8mm; }
+  .sizehdr i.gold { background: #f9b902; color: #111; border-radius: .8mm; }
   /* 32 pizzas with a topping line each need tighter type than the simple
      lists — the same trade the designer makes. */
-  .items.withdesc li { align-items: center; padding: .1mm 0; font-size: 3.8mm; line-height: 1.03; }
+  .items.withdesc li { align-items: center; padding: .1mm 0; font-size: 3.8mm; line-height: 1.03; min-height: 6.6mm; }
+  /* Five sections share this panel, so it keeps its rows to their natural
+     height — the uniform minimum is a luxury only the roomier panels have. */
+  .panel.tight .items.withdesc li { min-height: 0; }
   .items.withdesc .n em { font-size: 3.2mm; margin-top: 0; line-height: 1.04; }
   .items.withdesc .p2 { font-size: 4.1mm; }
   .items.withdesc .dots { display: none; }
   .items.withdesc .n { flex: 1; }
   /* Reference: a red plaque hard left, the two supplements sitting in the same
      columns as the pizza prices above them. */
-  .supp { display: flex; align-items: center; gap: 2mm; margin-top: 2.5mm; }
+  .supp { display: flex; align-items: center; gap: 4mm; margin-top: 2.5mm; }
   .supp span {
     padding: 1.4mm 5mm; background: #dd1516; color: #fdf3d8; border-radius: 0;
     font-size: 3.9mm; font-weight: 600;
   }
   .supp i { flex: 1; }
-  .supp b { width: 14mm; text-align: right; color: #fff; font-size: 3.1mm; text-shadow: 0 0 1.2mm #000, 0 0 .5mm #000; }
+  /* Same width, size and gutter as .items.sized .p2, so they land on the
+     11" and 13" axes rather than floating right of them. */
+  .supp b { width: 14mm; text-align: center; color: #fff; font-size: 3.8mm; text-shadow: 0 0 1.2mm #000, 0 0 .5mm #000; }
 
   /* The reference singles Dips out with a red plaque. It is its own asset —
      tinted off the gold one by luminance, since a CSS hue-rotate took the gold

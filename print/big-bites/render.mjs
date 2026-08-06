@@ -119,7 +119,19 @@ await p.pdf({
   margin: { top: 0, right: 0, bottom: 0, left: 0 },
   preferCSSPageSize: true,
 });
-await p.screenshot({ path: path.join(DIR, 'preview.png'), fullPage: true });
+/* The preview is what anyone reviews the sheet from, and at 1x its subpixel
+   antialiasing invents letterspacing faults that do not exist in the PDF —
+   verified by rasterising the real file at 300dpi. Render it at 2x so the
+   proof matches the print. */
+await p.emulateMedia({ media: 'screen' });
+const hiCtx = await b.newContext({ viewport: { width: 1610, height: 1145 }, deviceScaleFactor: 2 });
+const hi = await hiCtx.newPage();
+await hi.goto('file://' + path.join(DIR, 'menu.html'), { waitUntil: 'networkidle' });
+await hi.evaluate(() => document.fonts.ready);
+await hi.waitForTimeout(400);
+await hi.screenshot({ path: path.join(DIR, 'preview.png'), fullPage: true });
+await hi.close();
+await hiCtx.close();
 await b.close();
 const kb = Math.round(fs.statSync(path.join(DIR, 'big-bites-menu-A3-trifold.pdf')).size / 1024);
 console.log(`PDF written (${kb}KB)`);
