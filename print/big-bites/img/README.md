@@ -39,6 +39,11 @@ replaced the separate `sides.png` and `salad.png` cutouts, which are gone.
 Both arrived on a 1024x1536 canvas with large transparent margins and were
 trimmed to their own content so their placement is predictable.
 
+**Currently not placed on the sheet** (owner's call, 2026-08-06):
+`pepsi-coke.png`, `calzone.png`, `kebab.png` and `sides-salad.png`. The files
+stay here — they are cut, keyed and ready — so putting one back is a one-line
+change at its section's call site. Nothing else references them.
+
 `pepsi-coke.png` arrived as a **JPEG with the transparency checkerboard
 flattened into it** — dropped on the panel it would have printed a grey
 chequered rectangle round the cans. The background is keyed out here by

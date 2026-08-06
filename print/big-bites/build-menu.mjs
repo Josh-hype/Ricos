@@ -171,26 +171,6 @@ function withShot(inner, img, slot = 0, dots = false) {
    dotted border and its own illustrations. So when it is present the box drops
    its own dashed outline and padding on that side, or the sheet would print a
    framed card inside a framed card. */
-/* The owner's Sides/Salad column: one cutout carrying the burger, the chips
-   and nuggets with their dips, and the salad bowl, in that vertical order —
-   the same stack the reference runs down this panel. It replaces the two
-   separate sides.png / salad.png placements, so the food reads as one
-   photograph rather than two pasted cutouts.
-   Absolutely positioned like the other side photos: in the flow it would
-   narrow the lists and drag the prices off the right margin. The lists keep
-   their `slot` so a long item name wraps rather than running under it. */
-function sidesSaladColumn() {
-  const file = path.join(import.meta.dirname, 'img', 'sides-salad.png');
-  if (!fs.existsSync(file)) return '';
-  const { w, h } = imgSize('sides-salad');
-  const WIDE = 62;
-  const dpi = w / (WIDE / 25.4);
-  if (dpi < 140) throw new Error(`sides-salad.png at ${WIDE}mm is ${dpi.toFixed(1)}dpi — too soft to print`);
-  shotDpi.push({ name: 'sides-salad', px: `${w}x${h}`, mm: WIDE, dpi: Math.round(dpi) });
-  return `<img class="sscol" src="img/sides-salad.png" alt=""
-    style="width:${WIDE}mm;--ssh:${(WIDE * h / w).toFixed(1)}mm" />`;
-}
-
 /* The cover's lower flood. The reference fills the bottom of this panel with a
    pizza photograph; this is the owner's. It runs off the panel's left, right
    and bottom edges into the bleed, so there is no hard cut on the trim. */
@@ -1016,21 +996,6 @@ const html = `<!doctype html>
      lockup brings one. */
   .kidsbox:has(.kidslock) { outline: 0; padding: 3mm; }
   .kidslock { flex: none; display: block; height: auto; align-self: center; }
-  /* Sits against the panel's right edge and runs off it, as the reference's
-     does — the panel's own overflow:hidden crops it at the bleed. Bottom-
-     anchored so the salad bowl lands level with the end of the Salad list. */
-  .sscol {
-    /* Explicit height: an <img> is a replaced element, so top+bottom alone
-       leave it at its intrinsic aspect instead of stretching. */
-    position: absolute; right: -4mm; top: 106mm; height: 194mm; z-index: 0;
-    width: 62mm; display: block;
-    /* The column is 2:1; filling from the top of Sides to the foot of the
-       panel needs a 3:1 box, so it is cropped left/right rather than shrunk —
-       the food stays at full size and fills the black instead of floating in
-       it. 62mm keeps it clear of the price column. */
-    object-fit: contain; object-position: 50% 50%;
-    filter: drop-shadow(0 1.2mm 1.8mm rgba(0,0,0,.55));
-  }
   .kidsmark {
     flex: none; width: 44mm; text-align: center; color: #fdf3d8; line-height: .95;
     position: relative; z-index: 1;
@@ -1324,7 +1289,7 @@ ${/* Section order and panel assignment follow the designer's artwork exactly:
       Don't reshuffle these without checking the reference sheets again. */''}
 ${page('side-a', `
   <div class="panel">
-    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, firstOnly: /\bcan\b/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], img: shot('pepsi-coke', 34), slot: 44, chipsBelow: true })}
+    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, firstOnly: /\bcan\b/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], slot: 0, chipsBelow: true })}
     ${milkshakes()}
     ${list('desserts', { desc: true, img: shot('cake', 46), slot: 52, cls: 'dessertblk norule' })}
     ${kidsBox()}
@@ -1347,16 +1312,15 @@ ${page('side-b', `
   </div>
   <div class="panel tight">
     ${sizedList('garlic-bread', 'size', ['11"', '13"'], { tone: ['red', 'red'], slot: 14 })}
-    ${list('calzone', { dense: true, desc: true, img: shot('calzone', 46, 'mid'), slot: 14, chip: '11"' })}
-    ${sizedList('kebab', 'size', ['MEDIUM', 'LARGE'], { title: 'Kebabs', img: shot('kebab', 42, 'mid'), slot: 4 })}
+    ${list('calzone', { dense: true, desc: true, slot: 0, chip: '11"' })}
+    ${sizedList('kebab', 'size', ['MEDIUM', 'LARGE'], { title: 'Kebabs', slot: 0 })}
     ${list('parmesan', { dense: true, desc: true, slot: 48 })}
     ${list('wraps', { dense: true, desc: true, img: shot('wrap', 46), slot: 48, title: 'Wrap' })}
   </div>
   <div class="panel">
     ${sizedList('burgers', 'size', ['1/4 lb', '1/2 lb'], { slot: 12, firstOnly: /(¼|1\/4)\s*lb/i, secondOnly: /(½|1\/2)\s*lb/i, defaultCol: null })}
-    ${list('sides', { dense: true, title: 'Sides', slot: 56 })}
-    ${list('salad', { dense: true, desc: true, slot: 56, cls: 'saladblk' })}
-    ${sidesSaladColumn()}
+    ${list('sides', { dense: true, title: 'Sides' })}
+    ${list('salad', { dense: true, desc: true, cls: 'saladblk' })}
   </div>
 `, false)}
 

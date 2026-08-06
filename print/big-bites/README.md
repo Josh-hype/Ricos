@@ -105,6 +105,11 @@ runs on tighter leading (`.panel.tight`) — again, as the reference does.
 
 ## Assets still needed
 
+The drinks cans, the calzone, the kebab and the Sides/Salad column were
+**taken off the sheet** on the owner's instruction (2026-08-06). The files are
+still in `img/`; nothing else was changed to remove them beyond dropping the
+photo and releasing the gutter its list had reserved for it.
+
 Three gaps left. The owner supplied the **Kids Menu lockup**, the
 **Sides/Salad food column**, the **drink cans** and the **cover pizza** on
 2026-08-06; all four are in place. The column carries the burger, the
