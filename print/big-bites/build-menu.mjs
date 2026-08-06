@@ -467,7 +467,7 @@ const html = `<!doctype html>
   .side-b .panel { --pt: 3mm; --pr: 6mm; --pb: 4mm; --pl: 6mm; }
   .side-b .blk:first-child h3 { margin-top: 0; }
   /* The outer face runs nearly as tight to its edges as the inner one. */
-  .side-a .panel { --pt: 5mm; --pr: 4mm; --pb: 13mm; --pl: 4mm; }
+  .side-a .panel { --pt: 5mm; --pr: 8mm; --pb: 13mm; --pl: 8mm; }
   .panel {
     position: relative;
     /* Pinned, not implicit: as a grid item the panel would otherwise STRETCH
@@ -506,15 +506,15 @@ const html = `<!doctype html>
      middle panel against three elsewhere, so that one panel carries tighter
      leading — the same trade the reference sheet makes. Scoped to the panel
      rather than applied globally, so the roomier panels stay roomy. */
-  .panel.tight .blk { margin-bottom: 1mm; }
-  .panel.tight .blk h3 { font-size: 8.4mm; margin-bottom: 0; }
-  .panel.tight .hrule { margin: .5mm 0 1.2mm; }
-  .panel.tight .items.dense li { padding: 0; font-size: 3.1mm; }
+  .panel.tight .blk { margin-bottom: .6mm; }
+  .panel.tight .blk h3 { font-size: 10mm; margin-bottom: 0; }
+  .panel.tight .hrule { margin: .4mm 0 .9mm; }
+  .panel.tight .items.dense li { padding: 0; font-size: 2.95mm; }
   /* Five sections against three elsewhere, and this shop carries a description
      on nearly every one of them where the reference carries almost none — so
      the panel keeps the reference's look at a slightly smaller size rather than
      dropping the descriptions. */
-  .panel.tight .items .n em { font-size: 2.7mm; }
+  .panel.tight .items .n em { font-size: 2.55mm; }
 
   /* ---- section blocks ---- */
   .blk { margin-bottom: 1.5mm; }
@@ -537,11 +537,8 @@ const html = `<!doctype html>
     margin: 0;
     /* The reference's plaques carry air around the word — chunky slabs, not
        tight labels — and one shared width per column, not shrink-to-fit. */
-    padding: .1em 1.2em .1em .7em;
-    min-width: 44mm;
-  }
-  .side-b .blk h3 {
-    min-width: 58mm; padding-right: .5em;
+    padding: .1em .4em .1em .45em;
+    min-width: 30mm;
     border-style: solid; border-color: transparent;
     /* 18/85/20/25 source px at the height this header renders — solving
        240k = 1.05 + 0.4 + 38k gives k = 0.00718em per source pixel. Get these
@@ -554,6 +551,11 @@ const html = `<!doctype html>
     text-transform: uppercase;
     transform: rotate(-3.2deg);
   }
+  /* Inner-face plaques run wider on the reference; long words tighten their
+     tail so they stop overshooting. Kept as its own rule — folding it into the
+     block above once swallowed the plaque, the black text and the caps for the
+     whole outer face. */
+  .side-b .blk h3 { min-width: 34mm; }
   /* Part of the headline on the reference — same size, weight and baseline. */
   .blk h3 .hdr2 { margin-left: 2mm; }
   /* Every heading on the reference has a dotted rule running the full width of
@@ -572,7 +574,7 @@ const html = `<!doctype html>
   .side-a .hrule { display: none; }
   /* The 11mm plaque is the inner face's scale — the reference's outer face
      runs a slightly smaller one over shorter lists. */
-  .side-a .blk h3 { min-width: 74mm; font-size: 10.5mm; }
+  .side-a .blk h3 { min-width: 52mm; font-size: 10.5mm; }
   .side-a .redhead h3 { min-width: 56mm; }
   /* Same bold dots as .hrule — these were left on a thin dotted border when
      the header rules were rebuilt, so they read as a hairline. */
@@ -595,7 +597,9 @@ const html = `<!doctype html>
   /* At the panel's right edge; the list's own padding keeps the text clear. */
   /* The reference runs its photos large and lets the panel edge crop them. */
   .shot.side { position: absolute; top: 50%; translate: 0 -50%; right: -7mm; }
-  .side-a .shot.side { right: 0; }
+  /* The reference holds its outer-face photos well clear of the fold; a crease
+     through artwork sitting on the rule is a real print risk. */
+  .side-a .shot.side { right: 12mm; }
   .shot.mid { position: absolute; top: 50%; translate: 0 -50%; right: 30mm; z-index: 0; }
   .blkrow .items { position: relative; z-index: 1; }
   .shot.below { margin: 3mm auto 0; }
@@ -603,7 +607,7 @@ const html = `<!doctype html>
   .halftone {
     /* Out of the flow and cropped by the panel, so the list gets the whole
        column — which is how the reference fits 32 pizzas at this size. */
-    position: absolute; right: -2mm; bottom: -8mm; display: flex; justify-content: flex-end; align-items: flex-end;
+    position: absolute; right: 16mm; bottom: -8mm; display: flex; justify-content: flex-end; align-items: flex-end;
     /* Behind the prices: the reference tucks the pizza under the stuffed-crust
        line rather than over it, and white numerals on a photo are unreadable. */
     z-index: 0;
@@ -732,19 +736,19 @@ const html = `<!doctype html>
   .chips b { color: #fff; font-weight: 600; margin-left: auto; }
   /* Reference pitch: the three columns and the price sit well inside the
      panel, not spread across its full width. */
-  .dipcols { padding-right: 12mm; }
-  .chips li { display: flex; align-items: baseline; font-size: 3.8mm; font-weight: 500; color: #fff; padding: 1mm 0; break-inside: avoid; }
-  .chips li::before { content: '•'; color: #fff; margin-right: 1.6mm; }
+  .dipcols { padding-right: 21mm; }
+  .chips li { display: flex; align-items: baseline; font-size: 3.8mm; font-weight: 600; color: #fff; padding: 1mm 0; break-inside: avoid; }
+  .chips li::before { content: '•'; color: #fff; margin-right: 1.6mm; font-size: 1.5em; line-height: .6; }
 
   /* ---- kids box ---- */
   /* Reference: red box, ribbon lockup on the left (asset gap — plain type
      holds its place), and the items on a YELLOW ticket in black, with dotted
      leaders and a £ — the one list on the sheet that keeps both. */
   .kidsbox {
-    background: #c10f0f; border-radius: 3mm; padding: 5mm 5mm;
-    display: flex; align-items: center; gap: 0;
+    background: #c10f0f; border-radius: 3mm; padding: 5mm;
+    display: flex; align-items: center; gap: 4mm;
     position: relative;
-    min-height: 47mm;
+    min-height: 52mm;
     outline: .5mm dashed rgba(249,185,2,.85); outline-offset: -2.2mm;
   }
   .kidsmark {
@@ -760,7 +764,7 @@ const html = `<!doctype html>
   /* Runs the full width behind the lockup, which sits over it. */
   .kidsticket {
     flex: 1; min-width: 0; background: #f9b902; border-radius: 2mm;
-    padding: 3.5mm 4mm 3.5mm 42mm; align-self: stretch; margin-left: -38mm;
+    padding: 3.5mm 4mm 3.5mm 5mm; align-self: stretch; margin-left: 0;
     display: flex; flex-direction: column; justify-content: center;
     position: relative; overflow: hidden;
   }
@@ -812,7 +816,7 @@ const html = `<!doctype html>
   .pzcol { position: relative; z-index: 1; }
   .dealshead .headrow { justify-content: center; }
   .center { text-align: center; }
-  .dealshead h3 { min-width: 40mm; font-size: 8.4mm; }
+  .dealshead h3 { min-width: 44mm; font-size: 8.4mm; }
   .deal b { display: block; color: #bb0e12; font-size: 5mm; line-height: 1.05; text-transform: uppercase; }
   .deal p { margin: 1.4mm 0 1.6mm; font-size: 3.5mm; line-height: 1.3; font-weight: 700; text-transform: capitalize; }
   .deal strong { font-size: 4.6mm; font-weight: 400; color: #111; }
@@ -844,14 +848,14 @@ const html = `<!doctype html>
   /* The footer ticker spans the whole page and paints over this band, so the
      address has to clear it or the postcode prints cut in half. */
   .spine { justify-content: space-between; padding: 6mm 0; }
-  .side-a .spine { padding-bottom: 16mm; }
-  .spine b { font-size: 19mm; letter-spacing: .04em; text-transform: uppercase; }
+  .side-a .spine { padding-bottom: 19mm; }
+  .spine b { font-size: 19mm; letter-spacing: .16em; letter-spacing: .04em; text-transform: uppercase; }
   .spine span { font-size: 4.6mm; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #fff; }
 
   /* The reference sets a red disc with a handset beside the phone and one with
      a clock beside the opening times. Both are inline SVG — drawn, so they stay
      vector in the PDF and need no asset. */
-  .ico { display: inline-block; vertical-align: middle; margin-right: 2.5mm; width: 9mm; height: 9mm; flex: none; }
+  .ico { display: inline-block; vertical-align: middle; margin-right: -2mm; width: 11mm; height: 11mm; flex: none; position: relative; z-index: 1; }
   .ico svg { display: block; width: 100%; height: 100%; }
   /* The supplied wordmark, keyed to transparency so the panel's own black and
      its faint yellow glow read through instead of a slightly-off black box.
@@ -886,7 +890,7 @@ const html = `<!doctype html>
     color: #111; font-size: 4.4mm;
     text-transform: uppercase;
   }
-  .fine { margin: 0; width: 100%; font-size: 4.1mm; line-height: 1.45; font-weight: 400; color: #fff; }
+  .fine { margin: 0; width: 100%; font-size: 4.1mm; line-height: 1.45; font-weight: 600; color: #fff; }
   .hours { display: grid; grid-template-columns: auto auto; column-gap: 9mm; row-gap: 1mm; justify-content: center; }
   .hours div { display: contents; }
   /* Straight from the shop's config, not written here — the same wording the
@@ -897,7 +901,7 @@ const html = `<!doctype html>
     font-size: 2.9mm; line-height: 1.45; font-weight: 600; color: #e8dcc6;
   }
   .allergy b { color: #f9b902; text-transform: uppercase; letter-spacing: .08em; }
-  .hours span, .hours b { font-size: 3.9mm; font-weight: 500; }
+  .hours span, .hours b { font-size: 3.9mm; font-weight: 600; }
   .hours span { text-align: left; }
   .hours b { color: #fff; text-align: left; }
 
@@ -919,11 +923,11 @@ const html = `<!doctype html>
   /* ---- foot ticker ---- */
   .ticker {
     /* Floods the bleed: the band must run through the cut, not end on it. */
-    position: absolute; left: 0; right: 0; bottom: 0; height: 11mm;
+    position: absolute; left: 0; right: 0; bottom: 0; height: 14.5mm;
     padding: 0 3mm 3mm;
     background: #f9b902; color: #111;
     display: flex; align-items: center; justify-content: center; gap: 2.5mm;
-    font-size: 3.4mm; letter-spacing: .08em; overflow: hidden; white-space: nowrap;
+    font-size: 4.4mm; letter-spacing: .14em; overflow: hidden; white-space: nowrap;
   }
   .ticker i { color: #d61313; font-style: normal; }
   .gl { width: 1em; height: 1em; display: inline-block; vertical-align: -.14em; }
@@ -938,7 +942,7 @@ ${page('side-a', `
   <div class="panel">
     ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], slot: 48, chipsBelow: true })}
     ${milkshakes()}
-    ${list('desserts', { desc: true, img: shot('cake', 50), slot: 50 })}
+    ${list('desserts', { desc: true, img: shot('cake', 50), slot: 63 })}
     ${kidsBox()}
   </div>
   <div class="panel">

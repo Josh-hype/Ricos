@@ -18,9 +18,15 @@ await p.goto('file://' + path.join(DIR, 'menu.html'), { waitUntil: 'networkidle'
 // Wait for the real faces before measuring anything: a fallback face lays the
 // whole sheet out differently, and a check that ran on the fallback would be a
 // false negative for the sheet that ships.
+/* fonts.ready can resolve before a face that only later layout triggers has
+   loaded, so ASK for each weight explicitly and then verify — otherwise the
+   guard reports a false failure (or worse, a false pass) depending on timing. */
 const fontsOK = await p.evaluate(async () => {
+  const want = [];
+  for (const f of ['Oswald', 'Montserrat']) for (const w of [400, 500, 600, 700]) want.push(`${w} 12px "${f}"`);
+  await Promise.all(want.map((s) => document.fonts.load(s).catch(() => null)));
   await document.fonts.ready;
-  return ['Oswald', 'Montserrat'].every((f) => document.fonts.check(`12px "${f}"`));
+  return want.every((s) => document.fonts.check(s));
 });
 await p.waitForTimeout(400);
 
@@ -61,7 +67,7 @@ const overflow = await p.evaluate(() => {
   return bad;
 });
 
-if (!fontsOK) console.error('FAIL: Anton/Oswald did not load — the sheet is set in a fallback face');
+if (!fontsOK) console.error('FAIL: Oswald/Montserrat did not load — the sheet is set in a fallback face');
 console.log(overflow.length ? 'OVERFLOW:\n  ' + overflow.join('\n  ') : 'panels fit');
 
 if (!fontsOK || overflow.length) {
