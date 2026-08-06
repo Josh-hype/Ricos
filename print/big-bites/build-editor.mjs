@@ -37,7 +37,10 @@ html = html.replace(/url\((fonts\/[\w.-]+\.ttf)\)/g, (_, p) => `url(${data(p)})`
    only thing that said which photograph it was, so every one of them came out
    labelled "photo photo" in the block list — and an export naming three
    identical blocks is an export nobody can act on without guessing. */
-html = html.replace(/src="(img\/([\w.-]+)\.png)"/g,
+/* NOT data-src: the ink wrapper carries data-src for the collision gate's
+   error messages, and a bare /src="/ matches inside it — which inlined the
+   same photograph a second time on the wrapper that never renders it. */
+html = html.replace(/(?<!data-)src="(img\/([\w.-]+)\.png)"/g,
   (_, p, name) => `data-photo="${name}" src="${data(p)}"`);
 html = html.replace(/src="(logo\.png)"/g, (_, p) => `src="${data(p)}"`);
 html = html.replace(/url\((img\/[\w.-]+\.png)\)/g, (_, p) => `url(${data(p)})`);
@@ -153,10 +156,16 @@ const editor = `
     add(blk.querySelector('.kidsmark'), 'Kids ribbon');
     add(blk.querySelector('.kidsticket'), 'Kids ticket');
   });
-  document.querySelectorAll('.shot').forEach(function (img) {
+  /* Every photograph on the sheet, not just the ones with a .shot class. The
+     Sides/Salad column, the Kids lockup and the cover flood are each placed
+     by their own rule and so were in no list at all — the owner could see
+     them and could not move them. */
+  document.querySelectorAll('.shot, .sscol, .kidslock, .coverart').forEach(function (img) {
     /* data-photo survives the data-URI inlining; img.src does not, which is
        why every photograph used to be labelled "photo photo". */
-    var n = img.getAttribute('data-photo') || 'photo';
+    var n = img.getAttribute('data-photo')
+      || (img.querySelector('[data-photo]') || {}).getAttribute?.('data-photo')
+      || (img.className.indexOf('coverart') >= 0 ? 'cover' : 'photo');
     add(img, n + ' photo');
   });
   document.querySelectorAll('.supp').forEach(function (s) { add(s, 'stuffed crust bar'); });
@@ -187,6 +196,13 @@ const editor = `
     var r = i.el.getBoundingClientRect(), cs = getComputedStyle(i.el);
     i.bw = r.width; i.bh = r.height;
     i.bf = parseFloat(cs.fontSize) || 12;
+    /* What the SHEET put in the style attribute. Resetting a control to 100%
+       used to write '' here, which does not mean "back to the default" — it
+       deletes the inline declaration, and for a photo that declaration IS its
+       size. Every picture in the editor was therefore drawn at its natural
+       pixel size: the calzone came out 249mm wide against the 40mm it prints
+       at, and the ink-wrapped drinks collapsed to nothing. */
+    i.ow = i.el.style.width; i.oh = i.el.style.height; i.of = i.el.style.fontSize;
   });
   function val(i) {
     if (!state[i.sel]) state[i.sel] = {};
@@ -209,11 +225,11 @@ const editor = `
     /* Box size is the BOX, not a transform: the text reflows inside it, which
        is what "make the text box bigger" has to mean on a print sheet. */
     if (Number(v.w) !== 100) { i.el.style.width = (i.bw * v.w / 100).toFixed(2) + 'px'; i.el.style.maxWidth = 'none'; }
-    else i.el.style.width = '';
+    else i.el.style.width = i.ow;
     if (Number(v.h) !== 100) { i.el.style.height = (i.bh * v.h / 100).toFixed(2) + 'px'; }
-    else i.el.style.height = '';
+    else i.el.style.height = i.oh;
     if (Number(v.f) !== 100) i.el.style.fontSize = (i.bf * v.f / 100).toFixed(2) + 'px';
-    else i.el.style.fontSize = '';
+    else i.el.style.fontSize = i.of;
   }
   items.forEach(apply);
 
