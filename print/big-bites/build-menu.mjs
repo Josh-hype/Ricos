@@ -697,8 +697,8 @@ const html = `<!doctype html>
      reference's size (0.94x the roomy panels) and the 1.3mm that costs is
      taken out of the gaps between blocks instead — render.mjs reported a 5px
      overrun here when it was not. */
-  .panel.tight .blk { margin-bottom: .1mm; }
-  .panel.tight .blk h3 { font-size: 11.5mm; margin-bottom: 0; }
+  .panel.tight .blk { margin-bottom: 2.4mm; }
+  .panel.tight .blk h3 { font-size: 10mm; margin-bottom: 0; }
   .panel.tight .hrule { margin: .4mm 0 .9mm; }
   .panel.tight .items.dense li { padding: 0; font-size: 2.95mm; }
   /* Five sections against three elsewhere, and this shop carries a description
@@ -723,9 +723,10 @@ const html = `<!doctype html>
      colour behind it would fill the notch back in. */
   .blk h3 {
     display: inline-block;
-    /* No bottom margin: the dotted rule sits directly under the plaque, as it
-       does on the reference, and carries the spacing itself. */
-    margin: 0;
+    /* The plaque is rotated, so its lower-left corner reaches below the slab.
+       With no margin it dug 2-2.5mm into the first row of its own list and,
+       on the tight panel, into the last row of the section above. */
+    margin: .8mm 0 1.6mm;
     /* The reference's plaques carry air around the word — chunky slabs, not
        tight labels — and one shared width per column, not shrink-to-fit. */
     padding: .1em .3em .1em .28em;
@@ -737,7 +738,7 @@ const html = `<!doctype html>
     border-width: .129em .61em .144em .179em;
     border-image: url(img/header-plaque.png) 18 85 20 25 fill stretch;
     color: #111;
-    font-size: 12.5mm; line-height: 1;
+    font-size: 11mm; line-height: 1;
     /* Width is set by tracking, not by the face — see the type note above.
        Barlow Condensed Black measures 0.648 advance/cap; the reference's
        inner face is 0.665, so the inner needs almost nothing. Tracking adds
@@ -790,14 +791,14 @@ const html = `<!doctype html>
      of the nine inner ones. 0.08em of tracking carries Barlow's 0.648 up to
      it. */
   .side-a .blk h3 {
-    min-width: 52mm; font-size: 13.1mm; letter-spacing: -.023em;
+    min-width: 52mm; font-size: 11.5mm; letter-spacing: -.023em;
     font-family: 'PlaqueOut', 'Oswald', system-ui, sans-serif;
   }
   /* The reference sets DIPS smaller than its sibling outer headings (cap 7.2
      against DRINKS/DESSERTS at 9.3) and starts the middle panel 7.7mm lower.
      Uniform sizing pushed this panel's first ink to y=3.6mm against the
      reference's 11.3. margin-top overrides the margin:0 on .blk h3. */
-  .side-a .redhead h3 { min-width: 44mm; font-size: 9.4mm; margin-top: 4.5mm; }
+  .side-a .redhead h3 { min-width: 44mm; font-size: 8.3mm; margin-top: 4.5mm; }
   /* MEAL DEALS is stepped down hard on the reference — its plaque measures
      42px tall against DRINKS' 63px on the same sheet, 0.67x. It sits over the
      widest block on the panel, so at full size it fights the deal cards
@@ -805,7 +806,7 @@ const html = `<!doctype html>
      Scoped ".side-a .dealshead h3" (0,2,1), NOT ".dealshead h3" (0,1,1):
      the plain form loses to ".side-a .blk h3" above and was silently doing
      nothing, which is why this heading measured the same size as DRINKS. */
-  .side-a .dealshead h3 { font-size: 9mm; min-width: 44mm; letter-spacing: -.023em; font-family: 'PlaqueOut', 'Oswald', system-ui, sans-serif; }
+  .side-a .dealshead h3 { font-size: 7.9mm; min-width: 44mm; letter-spacing: -.023em; font-family: 'PlaqueOut', 'Oswald', system-ui, sans-serif; }
   /* Same bold dots as .hrule — these were left on a thin dotted border when
      the header rules were rebuilt, so they read as a hairline. */
   /* Every section on the outer face closes with a dotted rule EXCEPT the one
@@ -859,64 +860,9 @@ const html = `<!doctype html>
     /* Behind the prices: the reference tucks the pizza under the stuffed-crust
        line rather than over it, and white numerals on a photo are unreadable. */
     z-index: 0;
-    /* The reference grades this by DOT SIZE at full ink — tiny specks at the
-       rim growing to a solid crescent against the food (half-max diameter
-       p10 0.60mm to p90 2.43mm, ratio 4.0, peak channel 255).
-       Two earlier attempts got it wrong in different ways: three grids at
-       three PITCHES all painting at once (a CSS mask applies to the whole
-       element, so nothing was banded) gave a bimodal chain-mail; then one
-       pitch with soft masks gave a dead-even polka dot graded only by
-       opacity — ratio 1.03, peak 204, 8.7% coverage, the kind of pale tint
-       that drops out on press.
-       So: one pitch, one phase, three stepped radii, each on its own element
-       layer with a HARD-edged mask at full alpha. Radius carries the grade;
-       ink stays solid. This layer is the outermost and finest. */
-    background:
-      radial-gradient(circle at center, #e8901a 23%, transparent 24%) 0 0 / 3.4mm 3.4mm;
-    /* Radiates up-and-LEFT out of the crust, filling the gap beside the
-       supplement bar rather than the gutter to its right. */
-    -webkit-mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 80%, transparent 80.5%);
-            mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 80%, transparent 80.5%);
     padding: 30mm 0 10mm 62mm;
   }
-  /* Mid and core layers, same pitch and phase, stepped radii. Negative
-     z-index keeps them above the element's own background and behind the
-     pizza, so neither covers the photo. Hard mask stops, not soft: a soft
-     stop fades the ink instead of stepping the dot. */
-  .halftone::before, .halftone::after {
-    content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  }
-  .halftone::before {
-    background: radial-gradient(circle at center, #e8901a 33%, transparent 34%) 0 0 / 3.4mm 3.4mm;
-    -webkit-mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 46%, transparent 47%);
-            mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 46%, transparent 47%);
-  }
-  .halftone::after {
-    background: radial-gradient(circle at center, #e8901a 50%, transparent 51%) 0 0 / 3.4mm 3.4mm;
-    -webkit-mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 24%, transparent 24.5%);
-            mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 24%, transparent 24.5%);
-  }
   .blkrow .items { padding-right: var(--slot, 0mm); }
-  /* The reference repeats its halftone behind the right-panel photos. Same
-     dots as the pizza burst, graded away from the picture. */
-  .blkrow.dots::after {
-    content: ''; position: absolute; right: -14mm; top: 50%; translate: 0 -50%;
-    width: 96mm; height: 84mm; z-index: 0;
-    /* Outer/finest ring — see .halftone for why the grade is radius, not
-       opacity. Hard mask edge, full alpha. */
-    background:
-      radial-gradient(circle at center, #e8901a 14%, transparent 15%) 0 0 / 3.4mm 3.4mm;
-    -webkit-mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 78%, transparent 78.5%);
-            mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 78%, transparent 78.5%);
-  }
-  .blkrow.dots::before {
-    content: ''; position: absolute; right: -14mm; top: 50%; translate: 0 -50%;
-    width: 96mm; height: 84mm; z-index: 0; pointer-events: none;
-    background: radial-gradient(circle at center, #e8901a 30%, transparent 31%) 0 0 / 3.4mm 3.4mm;
-    -webkit-mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 44%, transparent 44.5%);
-            mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 44%, transparent 44.5%);
-  }
-  .blkrow.dots::marker { content: none; }
   .blkrow.dots .shot { position: absolute; z-index: 1; }
 
   .items { list-style: none; margin: 0; padding: 0; }
@@ -1058,8 +1004,15 @@ const html = `<!doctype html>
      does — the panel's own overflow:hidden crops it at the bleed. Bottom-
      anchored so the salad bowl lands level with the end of the Salad list. */
   .sscol {
-    position: absolute; right: -4mm; bottom: 3mm; z-index: 0;
-    height: auto; display: block;
+    /* Explicit height: an <img> is a replaced element, so top+bottom alone
+       leave it at its intrinsic aspect instead of stretching. */
+    position: absolute; right: -4mm; top: 106mm; height: 194mm; z-index: 0;
+    width: 62mm; display: block;
+    /* The column is 2:1; filling from the top of Sides to the foot of the
+       panel needs a 3:1 box, so it is cropped left/right rather than shrunk —
+       the food stays at full size and fills the black instead of floating in
+       it. 62mm keeps it clear of the price column. */
+    object-fit: cover; object-position: 50% 50%;
     filter: drop-shadow(0 1.2mm 1.8mm rgba(0,0,0,.55));
   }
   .kidsmark {
@@ -1147,6 +1100,15 @@ const html = `<!doctype html>
      two lines. A wrapped title reads; letters sitting on a dark notch do not. */
   .deal b { padding-right: 4.5mm; font-size: 4.8mm; }
   .pzcol { position: relative; z-index: 1; }
+  /* 32 pizzas left 20.5mm of dead panel below the stuffed-crust bar. Opening
+     each row by a third of a millimetre spends half of that on the list
+     itself rather than leaving it black. Scoped to this column so no other
+     section's leading moves. */
+  .pzcol .items.withdesc li { padding: .28mm 0; }
+  /* The list now runs to the foot of the panel, which puts the last rows over
+     the pizza — as the reference does. Same shadow the supplement bar uses,
+     so the names carry on the crust instead of dissolving into it. */
+  .pzcol .items .n, .pzcol .items .p2 { text-shadow: 0 0 1.2mm #000, 0 0 .5mm #000; }
   .dealshead .headrow { justify-content: center; }
   .center { text-align: center; }
   /* Size lives on ".side-a .dealshead h3" above — a bare ".dealshead h3"
@@ -1336,7 +1298,7 @@ ${page('side-b', `
   </div>
   <div class="panel">
     ${sizedList('burgers', 'size', ['1/4 lb', '1/2 lb'], { slot: 12, firstOnly: /(¼|1\/4)\s*lb/i, secondOnly: /(½|1\/2)\s*lb/i, defaultCol: null })}
-    ${list('sides', { dense: true, title: 'Sides', slot: 56, dots: true })}
+    ${list('sides', { dense: true, title: 'Sides', slot: 56 })}
     ${list('salad', { dense: true, desc: true, slot: 56, cls: 'saladblk' })}
     ${sidesSaladColumn()}
   </div>

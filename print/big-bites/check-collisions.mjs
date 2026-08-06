@@ -42,9 +42,16 @@ const hits = await p.evaluate(() => {
       }
     });
   });
-  document.querySelectorAll('.shot.side').forEach((img) => {
+  /* .below (the pizza) was never covered here: only .side was tested, so the
+     one photo the lists are allowed to run over was the one nothing checked.
+     It is treated like .mid — overlap is the design, but only where the text
+     carries a shadow to stay legible on the photo. */
+  document.querySelectorAll('.shot.side, .shot.below').forEach((img) => {
     const ir = img.getBoundingClientRect();
-    img.closest('.blkrow').querySelectorAll('.n, .p, .p2').forEach((el) => {
+    const soft = img.classList.contains('below');
+    const scope = img.closest('.blkrow') || img.closest('.panel');
+    scope.querySelectorAll('.n, .p, .p2, .supp b').forEach((el) => {
+      if (soft && getComputedStyle(el).textShadow !== 'none') return;
       for (const r of inkRects(el)) {
         if (over(r, ir)) { hits.push(`"${el.textContent.trim().slice(0, 40)}" runs under ${img.getAttribute('src')}`); break; }
       }
