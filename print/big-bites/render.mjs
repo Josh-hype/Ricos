@@ -63,7 +63,8 @@ const fontsOK = await p.evaluate(async () => {
   for (const f of ['Oswald', 'Montserrat']) for (const w of [400, 500, 600, 700]) want.push(`${w} 12px "${f}"`);
   // The display face ships in one weight only; asking for 400 would pass on a
   // synthesised grade and hide a missing file.
-  want.push('900 12px "BarlowCond"');
+  want.push('900 12px "PlaqueIn"');
+  want.push('900 12px "PlaqueOut"');
   await Promise.all(want.map((s) => document.fonts.load(s).catch(() => null)));
   await document.fonts.ready;
   return want.every((s) => document.fonts.check(s));
@@ -131,7 +132,7 @@ const overflow = await p.evaluate(() => {
   return bad;
 });
 
-if (!fontsOK) console.error('FAIL: Oswald/Montserrat/BarlowCond did not load — the sheet is set in a fallback face');
+if (!fontsOK) console.error('FAIL: Oswald/Montserrat/Plaque faces did not load — the sheet is set in a fallback face');
 console.log(overflow.length ? 'OVERFLOW:\n  ' + overflow.join('\n  ') : 'panels fit');
 
 if (!fontsOK || overflow.length) {
@@ -263,16 +264,22 @@ try {
   const rows = execFileSync('pdffonts', [TMP], { encoding: 'utf8' })
     .split('\n').slice(2).map((l) => l.trim().split(/\s+/)).filter((c) => c.length >= 6);
   if (!rows.length) throw new Error('pdffonts reported no fonts at all');
-  const allowed = /^(Oswald|Montserrat|BarlowCondensed)/;
+  const allowed = /^(Oswald|Montserrat|ArchivoCd)/;
   const name = (r) => r[0].replace(/^[A-Z]{6}\+/, '');
   const fonts = rows.map(name);
+  /* The TYPE column matters as much as the name. -webkit-text-stroke made
+     Chromium emit a heading as a Type 3 font — procedural glyphs that RIPs
+     render badly and some printers reject — and this gate passed it, because
+     it was named acceptably and was embedded and subset. Third time this
+     project has shipped a check that read the wrong column. */
   const strays = [...new Set(rows.filter((r) => {
     const emb = r[r.length - 4], sub = r[r.length - 3];
-    return !allowed.test(name(r)) || emb !== 'yes' || sub !== 'yes';
-  }).map((r) => `${name(r)}(emb=${r[r.length - 4]},sub=${r[r.length - 3]})`))];
+    const type = r.slice(1, -3).join(' ');
+    return !allowed.test(name(r)) || emb !== 'yes' || sub !== 'yes' || /Type\s*3/i.test(type);
+  }).map((r) => `${name(r)} [${r.slice(1, -3).join(' ')}] emb=${r[r.length - 4]} sub=${r[r.length - 3]}`))];
   if (strays.length) {
     fs.unlinkSync(TMP);
-    console.error(`FAIL: a font is not embedded, not subset, or not from the repo: ${strays.join(', ')}`);
+    console.error(`FAIL: a font is Type 3, not embedded, not subset, or not from the repo: ${strays.join(', ')}`);
     process.exit(1);
   }
   console.log(`fonts embedded: ${[...new Set(fonts)].join(', ')}`);

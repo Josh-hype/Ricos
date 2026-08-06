@@ -525,7 +525,8 @@ const html = `<!doctype html>
   @font-face { font-family: 'Oswald'; font-weight: 500; src: url(fonts/Oswald-500.ttf) format('truetype'); }
   @font-face { font-family: 'Oswald'; font-weight: 600; src: url(fonts/Oswald-600.ttf) format('truetype'); }
   @font-face { font-family: 'Oswald'; font-weight: 700; src: url(fonts/Oswald-700.ttf) format('truetype'); }
-  @font-face { font-family: 'BarlowCond'; font-weight: 900; src: url(fonts/BarlowCondensed-900.ttf) format('truetype'); }
+  @font-face { font-family: 'PlaqueIn';  font-weight: 900; src: url(fonts/ArchivoCd62-900.ttf) format('truetype'); }
+  @font-face { font-family: 'PlaqueOut'; font-weight: 900; src: url(fonts/ArchivoCd75-900.ttf) format('truetype'); }
 </style>
 <style>
   /* ---- print geometry -------------------------------------------------
@@ -542,13 +543,25 @@ const html = `<!doctype html>
      The reference measures stem/cap 0.275, advance/cap 0.665 on the inner
      face and 0.767 on the outer.
 
-       face                      stem/cap   advance/cap
-       Barlow Condensed Black      0.269       0.648   <- chosen
-       Saira Condensed Black       0.262       0.665
-       Teko Bold                   0.273       0.740
-       Oswald Bold                 0.221       0.644
-       Anton                       0.193       0.510
-       Archivo Black               0.321       1.050
+       face                        stem/cap   advance/cap
+       Archivo wght900 wdth62        0.266       0.673   <- inner plaques
+       Archivo wght900 wdth75        0.285       0.800   <- outer plaques
+       Barlow Condensed Black        0.269       0.648
+       Saira Condensed Black         0.262       0.665
+       Oswald Bold                   0.221       0.644
+       Anton                         0.193       0.510
+       Archivo Black (wdth100)       0.321       1.045
+
+     The reference sets its OUTER plaques heavier than its inner ones (0.322
+     against 0.266). Barlow Condensed Black ships one weight, so round 4 got
+     the extra weight from -webkit-text-stroke — which made Chromium emit the
+     heading as a **Type 3** font, procedural glyphs that RIPs render badly
+     and some printers reject outright. A press defect traded for a type
+     match is not a trade worth making, and the font gate did not catch it
+     because it read pdffonts' name and emb columns but not its TYPE column.
+     Archivo is a two-axis variable font, so both faces come from real static
+     instances cut at build time: wdth 62 matches the inner target almost
+     exactly, wdth 75 gets the outer within 11% with no stroke anywhere.
 
      Read off the outlines with fontTools, not off a screenshot. Oswald Bold
      was the display face for three rounds and is 20% too light — and Anton,
@@ -560,7 +573,7 @@ const html = `<!doctype html>
      so the weight picks the face. */
   body { font-family: 'Oswald', system-ui, sans-serif; }
   .blk h3, .strap, .kidsmark, .tel b, .qrtxt b {
-    font-family: 'BarlowCond', 'Oswald', system-ui, sans-serif; font-weight: 900;
+    font-family: 'PlaqueIn', 'Oswald', system-ui, sans-serif; font-weight: 900;
   }
   /* Marketing copy — not the price lists — is a normal-width sans on the
      reference, where this sheet had the condensed face everywhere. The deal
@@ -680,17 +693,23 @@ const html = `<!doctype html>
     border-width: .129em .61em .144em .179em;
     border-image: url(img/header-plaque.png) 18 85 20 25 fill stretch;
     color: #111;
-    font-size: 12.2mm; line-height: 1;
+    font-size: 12.5mm; line-height: 1;
     /* Width is set by tracking, not by the face — see the type note above.
        Barlow Condensed Black measures 0.648 advance/cap; the reference's
        inner face is 0.665, so the inner needs almost nothing. Tracking adds
        a gap after every letter but only n-1 of them fall inside the word's
        ink, so the spacing needed is (target - base) * cap/em * n/(n-1). */
     letter-spacing: 0;
-    /* The word gap takes the tracking too, so multi-word plaques ("MILK
-       SHAKES") measured 15% wider per letter than single-word ones. The
-       reference shows no such split. */
-    word-spacing: -.08em;
+    /* Was -.08em, tuned for a face whose word space was wide and which was
+       set with POSITIVE tracking. Archivo's outer instance is tracked
+       negative and the two compounded, closing "MILK SHAKES" and "MEAL DEALS"
+       into single words. The word gap is left alone now. */
+    word-spacing: 0;
+    /* A plaque must never wrap: it shares its row with the size chips, and a
+       heading that breaks onto a second line adds ~10mm to its panel and
+       overflows it. "Garlic Bread" did exactly that when the word gap widened
+       by a millimetre. */
+    white-space: nowrap;
     text-transform: uppercase;
     transform: rotate(-3.2deg);
   }
@@ -727,19 +746,14 @@ const html = `<!doctype html>
      of the nine inner ones. 0.08em of tracking carries Barlow's 0.648 up to
      it. */
   .side-a .blk h3 {
-    min-width: 52mm; font-size: 12.2mm; letter-spacing: .08em;
-    /* The reference's outer plaques measure stem/cap 0.322 against 0.266 on
-       its own inner ones — all three outer readings clear all eight inner
-       ones, so it is a deliberate step, not noise. Barlow Condensed Black is
-       the heaviest weight the family ships, so the difference can only come
-       from a stroke: (0.2686*c + w)/(c + w) = 0.3218 gives w = 0.055em. */
-    -webkit-text-stroke: .055em currentColor;
+    min-width: 52mm; font-size: 13.1mm; letter-spacing: -.023em;
+    font-family: 'PlaqueOut', 'Oswald', system-ui, sans-serif;
   }
   /* The reference sets DIPS smaller than its sibling outer headings (cap 7.2
      against DRINKS/DESSERTS at 9.3) and starts the middle panel 7.7mm lower.
      Uniform sizing pushed this panel's first ink to y=3.6mm against the
      reference's 11.3. margin-top overrides the margin:0 on .blk h3. */
-  .side-a .redhead h3 { min-width: 44mm; font-size: 9.4mm; margin-top: 6mm; }
+  .side-a .redhead h3 { min-width: 44mm; font-size: 9.4mm; margin-top: 4.5mm; }
   /* MEAL DEALS is stepped down hard on the reference — its plaque measures
      42px tall against DRINKS' 63px on the same sheet, 0.67x. It sits over the
      widest block on the panel, so at full size it fights the deal cards
@@ -747,7 +761,7 @@ const html = `<!doctype html>
      Scoped ".side-a .dealshead h3" (0,2,1), NOT ".dealshead h3" (0,1,1):
      the plain form loses to ".side-a .blk h3" above and was silently doing
      nothing, which is why this heading measured the same size as DRINKS. */
-  .side-a .dealshead h3 { font-size: 8.1mm; min-width: 44mm; letter-spacing: .08em; -webkit-text-stroke: .055em currentColor; }
+  .side-a .dealshead h3 { font-size: 9mm; min-width: 44mm; letter-spacing: -.023em; font-family: 'PlaqueOut', 'Oswald', system-ui, sans-serif; }
   /* Same bold dots as .hrule — these were left on a thin dotted border when
      the header rules were rebuilt, so they read as a hairline. */
   /* Every section on the outer face closes with a dotted rule EXCEPT the one
@@ -758,7 +772,7 @@ const html = `<!doctype html>
      exactly one divider to draw, drew none, and the dips grid trailed off into
      black. Target the kids box directly instead of counting positions. */
   .side-a .panel .blk:not(:last-of-type) {
-    padding-bottom: 2.5mm; position: relative;
+    padding-bottom: 2.0mm; position: relative;
   }
   .side-a .panel .blk:not(:last-of-type)::after {
     content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: .45mm;

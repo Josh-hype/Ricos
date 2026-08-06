@@ -21,35 +21,41 @@ reprint.** The printed menu cannot drift from what you actually charge.
 
 ## Typefaces
 
-**Barlow Condensed Black** for the section plaques, spine, kids ribbon, phone
-number and ticker. **Oswald** Regular/Medium for the price lists.
-**Montserrat** for marketing copy: the dips list, deal cards (title, body *and*
-price), and the cover's delivery and opening-hours block. All vendored in
-`fonts/`; nothing is fetched.
+**Archivo** (two static instances cut from the variable font) for the section
+plaques, spine wordmark, kids ribbon, phone number and ticker straps.
+**Oswald** Medium for the price lists. **Montserrat** for marketing copy: the
+dips list, deal cards, the spine wordmark and the cover's delivery and
+opening-hours block. All vendored in `fonts/`; nothing is fetched.
 
 The display face is chosen by two measurements taken off the reference at
 matched cap height — **stem/cap** (how heavy) and **advance/cap** (how wide):
 
 | face | stem/cap | advance/cap |
 |------|---------:|------------:|
-| *reference artwork* | **0.275** | **0.665** inner / **0.767** outer |
+| *reference, inner face* | **0.266** | **0.665** |
+| *reference, outer face* | **0.322** | **0.767** |
+| Archivo wght900 wdth62 | 0.266 | 0.673 | 
+| Archivo wght900 wdth75 | 0.285 | 0.800 |
 | Barlow Condensed Black | 0.269 | 0.648 |
-| Saira Condensed Black | 0.262 | 0.665 |
 | Oswald Bold | 0.221 | 0.644 |
 | Anton | 0.193 | 0.510 |
-| Archivo Black | 0.321 | 1.050 |
 
-Read off the outlines with fontTools, not off a screenshot. Only the *width* is
-adjustable afterwards (letter-spacing), so the **weight picks the face** —
-which rules out Oswald Bold at 20% light and Archivo Black at 58% too wide.
-Anton is the trap: it looks like the obvious heavy poster answer and is
-*lighter than Oswald* relative to its cap, because it is a tall-cap face.
+Read off the outlines with fontTools, not off a screenshot. The reference sets
+its **outer** plaques heavier than its inner ones, and Archivo is a two-axis
+variable font, so both come from real static instances: `wdth 62` matches the
+inner target to within 1% on cap height, weight and width; `wdth 75` matches
+the outer on width exactly and is 11% light on weight.
 
-The outer face is then tracked to 0.08em and the inner left at 0, which lands
-them at 0.772 and 0.690 against the reference's 0.767 and 0.665. MEAL DEALS is
-stepped to 0.68x the other outer headings — the reference does the same
-(42px plaque against DRINKS' 63px), so it introduces the deal cards instead of
-competing with them.
+**That 11% is deliberate.** An earlier attempt closed it with
+`-webkit-text-stroke`, which matched the reference exactly — and made Chromium
+emit the heading as a **Type 3** font. Type 3 glyphs are procedural, RIPs
+render them badly and some printers reject them outright. A press defect is
+not worth a type match. `render.mjs` now fails on any Type 3 in the PDF.
+
+Anton is the trap worth naming: it looks like the obvious heavy poster answer
+and is *lighter than Oswald* relative to its cap, because it is a tall-cap
+face.
+
 
 `render.mjs` refuses to write the PDF unless every family loaded — **and then
 reads the finished PDF's own font list**, deleting the file if anything outside
