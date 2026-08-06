@@ -50,13 +50,12 @@ Side photos are **absolutely positioned in the gutter between the item names
 and the price column**, as the designer's sheets do — they are not in the flow.
 That is deliberate: a photo in the flow narrows the list, which drags the
 prices in from the right edge and leaves each section's prices at a different
-margin. `--gutter` reserves the space on the leaders (or on the name, for lists
-that hide their leaders) so a long item name wraps rather than running under
+margin. `--slot` reserves the photo's column on the list so a long item name wraps rather than running under
 the picture, and `--rowmin` keeps the section at least as tall as its photo.
 
-`scratchpad/collide.mjs` measures the **ink**, not the boxes — `.n` is `flex:1`
-with the gutter as padding, so its box reaches under the photo by design while
-the glyphs don't. Re-run it after resizing any photo.
+`check-collisions.mjs` measures the **ink**, not the boxes — the name's box
+reaches under the photo by design while the glyphs don't. `render.mjs` runs the
+same test before writing the PDF, so it cannot be forgotten.
 
 ## Resolution
 

@@ -112,8 +112,10 @@ if (collisions.length) {
   process.exit(1);
 }
 
+const FINAL = path.join(DIR, 'big-bites-menu-A3-trifold.pdf');
+const TMP = FINAL + '.tmp';
 await p.pdf({
-  path: path.join(DIR, 'big-bites-menu-A3-trifold.pdf'),
+  path: TMP,
   width: '426mm', height: '303mm',
   printBackground: true,
   margin: { top: 0, right: 0, bottom: 0, left: 0 },
@@ -133,8 +135,7 @@ await hi.screenshot({ path: path.join(DIR, 'preview.png'), fullPage: true });
 await hi.close();
 await hiCtx.close();
 await b.close();
-const kb = Math.round(fs.statSync(path.join(DIR, 'big-bites-menu-A3-trifold.pdf')).size / 1024);
-console.log(`PDF written (${kb}KB)`);
+const kb = Math.round(fs.statSync(TMP).size / 1024);
 
 /* Chromium writes no TrimBox, so the 3mm bleed is indistinguishable from the
    page. Stamp one on both pages — 420x297mm centred in the 426x303 sheet.
@@ -145,7 +146,7 @@ console.log(`PDF written (${kb}KB)`);
    font gate below reported success on a damaged one. So the whole table is
    regenerated from the object positions afterwards, and asserted. */
 {
-  const f = path.join(DIR, 'big-bites-menu-A3-trifold.pdf');
+  const f = TMP;
   const pt = (mm) => (mm * 72 / 25.4).toFixed(2);
   const trim = `/TrimBox [${pt(3)} ${pt(3)} ${pt(423)} ${pt(300)}] `;
   let src = fs.readFileSync(f).toString('latin1');
@@ -198,11 +199,22 @@ try {
   const allowed = /^(Oswald|Montserrat)/;
   const strays = [...new Set(fonts)].filter((f) => !allowed.test(f));
   if (strays.length) {
+    fs.unlinkSync(TMP);
     console.error(`FAIL: the PDF embeds fonts from this machine, not the repo: ${strays.join(', ')}`);
     process.exit(1);
   }
   console.log(`fonts embedded: ${[...new Set(fonts)].join(', ')}`);
 } catch (e) {
   if (e.status) throw e;
-  console.warn('pdffonts unavailable — could not verify embedded fonts');
+  /* Without pdffonts there is no ground truth on what got embedded, and this
+     file goes to a printer — refuse rather than shipping unverified. */
+  fs.unlinkSync(TMP);
+  console.error('FAIL: pdffonts is unavailable, so the embedded fonts cannot be verified. Install poppler-utils.');
+  process.exit(1);
 }
+
+/* Only now does it become the real file: every assertion above ran against the
+   temp copy, so a failure can never leave a corrupt PDF on disk under a
+   "PDF written" message. */
+fs.renameSync(TMP, FINAL);
+console.log(`PDF written (${kb}KB)`);

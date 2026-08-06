@@ -29,9 +29,15 @@ const qr = fs.readFileSync(path.join(import.meta.dirname, 'qr.svg'), 'utf8')
 const STAR = '<svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z"/></svg>';
 const ARROW = '<svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M3 12h17M13 5l7 7-7 7"/></svg>';
 
+/* Every id this build actually places on a panel. A renamed or emptied
+   category already throws; an ADDED one used to sail through — nothing
+   referenced it, the sheet simply under-advertised, and every gate stayed
+   green because less content never overflows. */
+const usedCats = new Set();
 const cat = (id) => {
   const c = menu.find((x) => x.id === id);
   if (!c || !c.items.length) throw new Error(`menu category "${id}" is missing or empty`);
+  usedCats.add(id);
   return c;
 };
 /* The reference prints bare numbers — no currency mark anywhere on the sheet.
@@ -63,7 +69,7 @@ function shot(name, width, place = 'side') {
   const tall = (width * h / w).toFixed(1);
   /* Record what each placement actually resolves to, so the documented figures
      cannot drift from the sheet the way they did when the photos were
-     enlarged. Below 120dpi is too soft to send anywhere. */
+     enlarged. Below 140dpi is too soft to send anywhere. */
   const dpi = Math.round(w / (width / 25.4));
   shotDpi.push({ name, px: `${w}x${h}`, mm: width, dpi });
   if (dpi < 140) throw new Error(`${name}.png at ${width}mm is ${dpi}dpi — too soft to print`);
@@ -985,6 +991,18 @@ ${page('side-b', `
 `, false)}
 
 </body></html>`;
+
+/* Nothing on this sheet may be a missing field rendered as text. Dropping
+   minimumOrderPence printed "Minimum order £NaN." on the cover and every check
+   stayed green, because NaN is content like any other. */
+const bad = html.match(/NaN|undefined|Infinity/);
+if (bad) throw new Error(`generated sheet contains "${bad[0]}" — a data field is missing. Fix the shop data; do not print this.`);
+
+const orphans = menu.map((c) => c.id).filter((id) => !usedCats.has(id));
+if (orphans.length) {
+  throw new Error(`menu categories not placed on any panel: ${orphans.join(', ')}\n` +
+    '  Add them to a panel in build-menu.mjs, or the printed sheet will under-advertise the menu.');
+}
 
 fs.writeFileSync(path.join(import.meta.dirname, 'menu.html'), html);
 const n = menu.reduce((a, c) => a + c.items.length, 0);

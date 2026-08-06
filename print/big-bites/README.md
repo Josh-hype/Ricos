@@ -21,20 +21,28 @@ reprint.** The printed menu cannot drift from what you actually charge.
 
 ## Typefaces
 
-**Archivo Black** for the plaques, spine, kids ribbon, deal titles, phone
-number and ticker; **Oswald** for the price lists; **Montserrat** for marketing
-copy (dips list, deal bodies, the cover's delivery and hours block).
-Three families, because the reference uses three. Measured at matched cap
-height its headings are 36% WIDER than a condensed poster face, and its
-marketing copy is 34% wider than its price lists — setting the whole sheet in
-one condensed face was wrong twice over. All are vendored in `fonts/`.
+**Oswald** — Bold for the plaques, spine, kids ribbon, deal titles, phone
+number and ticker; Regular/Medium for the price lists. **Montserrat** for
+marketing copy: the dips list, deal-card bodies, and the cover's delivery and
+opening-hours block. Both vendored in `fonts/`; nothing is fetched.
 
-`render.mjs` refuses to write the PDF unless all three loaded — **and then
-reads the finished PDF's own font list**, failing if anything outside the repo
-got embedded. A name-only check cannot catch this: `document.fonts.check()`
+Two families, because the reference uses two. Its headings measure ~0.65
+advance-per-letter against cap height — Anton is 0.54 (too narrow) and Archivo
+Black 1.12 (much too wide), so the display face is the *same* condensed family
+as the lists, just heavy and about 2.8x their cap height. Its marketing copy is
+a normal-width sans, measured 34% wider than its price lists.
+
+`render.mjs` refuses to write the PDF unless both families loaded — **and then
+reads the finished PDF's own font list**, deleting the file if anything outside
+the repo got embedded. A name-only check cannot catch that: `document.fonts.check()`
 returns true for a family even when the glyph asked for is missing from it,
 which is how ★ and → were quietly pulling DejaVu off the build machine. Both
-are drawn as inline SVG now.
+are inline SVG now.
+
+Note for the printer: the vendored Montserrat files carry the family string
+"Montserrat Thin" in their name table, so preflight will report
+`MontserratThin-*`. The outlines are genuine Regular/SemiBold/Bold — verified
+by stem width — so this is cosmetic.
 
 ## Presentation vs. data
 
@@ -75,7 +83,7 @@ leaves empty — nothing is faked or substituted.
 | 4 | **Drink cans** | Drinks, outer left panel | Real Pepsi + Coca-Cola. The generated pair spell "pepc" and a garbled Coca-Cola script — a printed menu carrying a botched trademark is not something to send to press. The brands' own press images are the safe source |
 | 5 | **Kids Menu ribbon lockup** | Inside the red Kids box, replacing the plain type there now | "KIDS MENU / BIG BITES" ribbon with the cutlery and food illustrations, transparent PNG ≥1200px wide |
 | 6 | **Cover background** | Lower half of the cover panel | The pizza / basil / tomato flood. No transparency needed, but it must be big: ~1500 × 1800px |
-| 7 | **Bigger burger hero** | Above Meal Deals — already in place, but soft | The current file is 635px, which is 168dpi at 96mm. ≥1200px wide puts it back over 300 |
+| 7 | **Bigger burger hero** | Above Meal Deals — already in place, but soft | The current file is 635px, which is 149dpi at 108mm — every build prints the dpi table, and the build throws below 140. ≥1200px wide puts it over 300 |
 
 Everything else on the sheet is either live menu data or generated here (the
 plaques, the halftone, the torn deal-box edges, the phone and clock icons, the
@@ -105,10 +113,6 @@ and the spine run off the sheet instead of being clipped exactly on the trim
 line. Giving the page the padding instead — which is what this did originally —
 put a hard cut on the trim and left a dark hairline wherever the guillotine
 drifted outward.
-
-Some printers' preflight flags **Type 3** fonts; Archivo Black emits a few
-(vector CharProcs, embedded, with ToUnicode). They print correctly — mention it
-so nobody bounces the file.
 
 ## Errors this replaced
 
