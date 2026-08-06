@@ -8,7 +8,9 @@ import path from 'node:path';
 const b = await pw.chromium.launch({ args: ['--no-proxy-server'] });
 const p = await b.newPage({ viewport: { width: 1610, height: 1145 } });
 await p.goto('file://' + path.join(import.meta.dirname, 'menu.html'), { waitUntil: 'networkidle' });
-await p.waitForTimeout(900);
+// Measure in the shipping faces, not a fallback — same reason as render.mjs.
+await p.evaluate(() => document.fonts.ready);
+await p.waitForTimeout(400);
 console.log(await p.evaluate(() => {
   const hits = [];
   const over = (a, c) => !(a.right <= c.left + 1 || a.left >= c.right - 1 || a.bottom <= c.top + 1 || a.top >= c.bottom - 1);
@@ -24,7 +26,7 @@ console.log(await p.evaluate(() => {
     }
     return out;
   };
-  document.querySelectorAll('.shot.side').forEach((img) => {
+  document.querySelectorAll('.shot.side, .shot.mid').forEach((img) => {
     const ir = img.getBoundingClientRect();
     img.closest('.blkrow').querySelectorAll('.n, .p, .p2').forEach((el) => {
       for (const r of inkRects(el)) {
@@ -33,7 +35,7 @@ console.log(await p.evaluate(() => {
     });
   });
   document.querySelectorAll('.shot').forEach((img) => {
-    const blk = img.closest('.blk'); if (!blk) return;
+    const blk = img.closest('.blk') || img.closest('.panel'); if (!blk) return;
     const ir = img.getBoundingClientRect(), br = blk.getBoundingClientRect();
     if (ir.top < br.top - 1 || ir.bottom > br.bottom + 1) hits.push(`${img.getAttribute('src')} escapes its section by ${Math.round(Math.max(br.top - ir.top, ir.bottom - br.bottom))}px`);
   });

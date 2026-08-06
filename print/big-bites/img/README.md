@@ -64,18 +64,18 @@ Print wants 300dpi. These are what the source allows at the sizes actually used:
 
 | file | pixels | printed at | dpi |
 |------|--------|-----------|-----|
-| kebab | 300×212 | 27mm | 282 |
-| wrap | 356×230 | 33mm | 274 |
-| pizza | 516×282 | 50mm | 262 |
-| calzone | 349×217 | 34mm | 261 |
+| wrap | 356×230 | 30mm | 301 |
+| kebab | 300×212 | 26mm | 293 |
+| calzone | 349×217 | 31mm | 286 |
 | salad | 373×246 | 40mm | 237 |
-| sides | 318×312 | 36mm | 224 |
-| cake | 285×204 | 36mm | 201 |
-| shake | 201×301 | 26mm | 196 |
-| **burger-meal** | 635×366 | **96mm** | **168** |
+| pizza | 516×282 | 58mm | 226 |
+| sides | 318×312 | 40mm | 202 |
+| cake | 285×204 | 42mm | 172 |
+| shake | 201×301 | 34mm | 150 |
+| burger-meal | 635×366 | 108mm | 149 |
 
 200–280dpi is fine for a takeaway menu on uncoated stock. **The burger hero is
-not** — at 96mm it is running at 168dpi to fill the panel above Meal Deals, and
+not** — at 108mm it is running at ~149dpi to fill the panel above Meal Deals, and
 it is the one image on the sheet that will look visibly soft in print. It is
 the largest source file there is, so the only fix is a bigger original: 1200px
 wide would put it back over 300dpi at the same size.
