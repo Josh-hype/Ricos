@@ -20,7 +20,7 @@ await p.goto('file://' + path.join(DIR, 'menu.html'), { waitUntil: 'networkidle'
 // false negative for the sheet that ships.
 const fontsOK = await p.evaluate(async () => {
   await document.fonts.ready;
-  return ['Archivo Black', 'Oswald', 'Montserrat'].every((f) => document.fonts.check(`12px "${f}"`));
+  return ['Oswald', 'Montserrat'].every((f) => document.fonts.check(`12px "${f}"`));
 });
 await p.waitForTimeout(400);
 
@@ -119,17 +119,53 @@ const kb = Math.round(fs.statSync(path.join(DIR, 'big-bites-menu-A3-trifold.pdf'
 console.log(`PDF written (${kb}KB)`);
 
 /* Chromium writes no TrimBox, so the 3mm bleed is indistinguishable from the
-   page unless the printer is told in words. Stamp one on both pages: 420x297mm
-   centred in the 426x303 sheet, in points. */
+   page. Stamp one on both pages — 420x297mm centred in the 426x303 sheet.
+
+   Splicing bytes into a PDF shifts every offset after the splice, which
+   silently invalidates the cross-reference table: readers that rebuild the
+   xref by scanning still open the file, which is exactly why pdfinfo and the
+   font gate below reported success on a damaged one. So the whole table is
+   regenerated from the object positions afterwards, and asserted. */
 {
   const f = path.join(DIR, 'big-bites-menu-A3-trifold.pdf');
-  const buf = fs.readFileSync(f);
   const pt = (mm) => (mm * 72 / 25.4).toFixed(2);
   const trim = `/TrimBox [${pt(3)} ${pt(3)} ${pt(423)} ${pt(300)}] `;
-  let n = 0;
-  const out = buf.toString('latin1').replace(/\/Type\s*\/Page[^s]/g, (m) => { n++; return trim + m; });
-  if (n === 2) { fs.writeFileSync(f, Buffer.from(out, 'latin1')); console.log('TrimBox stamped on 2 pages'); }
-  else console.warn(`TrimBox NOT stamped (matched ${n} pages) — tell the printer the trim is 420x297mm`);
+  let src = fs.readFileSync(f).toString('latin1');
+
+  let stamped = 0;
+  src = src.replace(/\/Type\s*\/Page(?![s])/g, (m) => { stamped++; return trim + m; });
+  if (stamped !== 2) throw new Error(`TrimBox: expected 2 page objects, patched ${stamped}`);
+
+  // Rebuild the cross-reference table from where the objects actually are now.
+  const objs = new Map();
+  for (const m of src.matchAll(/(?:^|[\r\n>\s])(\d+) 0 obj\b/g)) {
+    objs.set(Number(m[1]), m.index + m[0].length - `${m[1]} 0 obj`.length);
+  }
+  const max = Math.max(...objs.keys());
+  const trailer = /trailer\s*<<([\s\S]*?)>>\s*startxref/.exec(src);
+  if (!trailer) throw new Error('TrimBox: no trailer to carry over');
+
+  src = src.slice(0, src.lastIndexOf('xref\n0 ') > 0 ? src.lastIndexOf('xref\n0 ') : src.length);
+  const start = src.length;
+  let table = `xref\n0 ${max + 1}\n0000000000 65535 f \n`;
+  for (let i = 1; i <= max; i++) {
+    table += objs.has(i)
+      ? `${String(objs.get(i)).padStart(10, '0')} 00000 n \n`
+      : '0000000000 65535 f \n';
+  }
+  const dict = trailer[1].replace(/\/Size\s+\d+/, `/Size ${max + 1}`);
+  src += `${table}trailer\n<<${dict}>>\nstartxref\n${start}\n%%EOF\n`;
+  fs.writeFileSync(f, Buffer.from(src, 'latin1'));
+
+  // Assert it rather than trusting it: startxref must land on the keyword, and
+  // every entry must land on its own object header.
+  const out = fs.readFileSync(f).toString('latin1');
+  const sx = Number(/startxref\s+(\d+)\s+%%EOF\s*$/.exec(out)[1]);
+  if (out.slice(sx, sx + 4) !== 'xref') throw new Error('TrimBox: startxref does not point at the table');
+  let bad = 0;
+  for (const [n, off] of objs) if (!out.startsWith(`${n} 0 obj`, off)) bad++;
+  if (bad) throw new Error(`TrimBox: ${bad} xref entries point at the wrong byte`);
+  console.log(`TrimBox stamped on 2 pages; xref rebuilt (${objs.size} objects, all verified)`);
 }
 
 /* A name-only font check cannot see this: document.fonts.check() reports true
@@ -141,7 +177,7 @@ try {
   const fonts = execFileSync('pdffonts', [path.join(DIR, 'big-bites-menu-A3-trifold.pdf')], { encoding: 'utf8' })
     .split('\n').slice(2).map((l) => l.trim().split(/\s+/)[0]).filter(Boolean)
     .map((n) => n.replace(/^[A-Z]{6}\+/, ''));
-  const allowed = /^(ArchivoBlack|Oswald|Montserrat)/;
+  const allowed = /^(Oswald|Montserrat)/;
   const strays = [...new Set(fonts)].filter((f) => !allowed.test(f));
   if (strays.length) {
     console.error(`FAIL: the PDF embeds fonts from this machine, not the repo: ${strays.join(', ')}`);

@@ -6,7 +6,6 @@
      a blocked network was silently swapping in fallback faces. Static per-
      weight files — the css2 endpoint serves one variable file for every
      weight, which Chromium faux-bolds into broken letterspacing. */
-  @font-face { font-family: 'Archivo Black'; font-weight: 400; src: url(fonts/ArchivoBlack-400.ttf) format('truetype'); }
   @font-face { font-family: 'Montserrat'; font-weight: 400; src: url(fonts/Montserrat-400.ttf) format('truetype'); }
   @font-face { font-family: 'Montserrat'; font-weight: 600; src: url(fonts/Montserrat-600.ttf) format('truetype'); }
   @font-face { font-family: 'Montserrat'; font-weight: 700; src: url(fonts/Montserrat-700.ttf) format('truetype'); }
@@ -32,8 +31,12 @@
      plaques (Anton is 36% too narrow at matched cap height), condensed Oswald
      for the item lists, and a normal-width sans for marketing copy. */
   body { font-family: 'Oswald', system-ui, sans-serif; }
+  /* Measured off the reference: its headings run ~0.65 advance-per-letter
+     against cap height. Anton is 0.54 (too narrow), Archivo Black 1.12 (much
+     too wide) — Oswald Bold is 0.68. The display face is the SAME condensed
+     family as the lists, just heavy and much larger. */
   .blk h3, .strap, .spine b, .kidsmark, .deal b, .deal strong, .ticker, .tel b, .qrtxt b {
-    font-family: 'Archivo Black', Impact, sans-serif; font-weight: 400;
+    font-family: 'Oswald', system-ui, sans-serif; font-weight: 700;
   }
   /* Marketing copy — not the price lists — is a normal-width sans on the
      reference, where this sheet had the condensed face everywhere. */
@@ -58,8 +61,8 @@
 
   /* The inner face bleeds its header plaques off the top trim and carries no
      ticker, so its panels run tighter to every edge. */
-  .side-b .panel { --pt: 3mm; --pr: 3mm; --pb: 4mm; --pl: 3mm; }
-  .side-b .blk:first-child h3 { margin-top: -3.5mm; }
+  .side-b .panel { --pt: 3mm; --pr: 6mm; --pb: 4mm; --pl: 6mm; }
+  .side-b .blk:first-child h3 { margin-top: 0; }
   /* The outer face runs nearly as tight to its edges as the inner one. */
   .side-a .panel { --pt: 5mm; --pr: 4mm; --pb: 13mm; --pl: 4mm; }
   .panel {
@@ -75,7 +78,7 @@
     display: flex; flex-direction: column; justify-content: flex-start;
     --pt: 8mm; --pr: 7mm; --pb: 13mm; --pl: 7mm;
     padding: calc(var(--pt) + 3mm) var(--pr) calc(var(--pb) + 3mm) var(--pl);
-    border-right: 0.5mm solid #f9b902;   /* fold guide, and the reference's gold rule */
+    border-right: 0.55mm solid #f9b902;   /* fold guide, and the reference's gold rule */
     background:
       radial-gradient(circle at 30% 12%, rgba(255,196,0,.06), transparent 45%),
       radial-gradient(circle at 50% 50%, rgba(255,255,255,.035) .12mm, transparent .13mm) 0 0 / .9mm .9mm,
@@ -100,18 +103,18 @@
      middle panel against three elsewhere, so that one panel carries tighter
      leading — the same trade the reference sheet makes. Scoped to the panel
      rather than applied globally, so the roomier panels stay roomy. */
-  .panel.tight .blk { margin-bottom: 1.5mm; }
-  .panel.tight .blk h3 { font-size: 6.8mm; margin-bottom: 0; }
-  .panel.tight .hrule { margin: .7mm 0 1.6mm; }
-  .panel.tight .items.dense li { padding: 0; font-size: 2.9mm; }
+  .panel.tight .blk { margin-bottom: 1mm; }
+  .panel.tight .blk h3 { font-size: 8.4mm; margin-bottom: 0; }
+  .panel.tight .hrule { margin: .5mm 0 1.2mm; }
+  .panel.tight .items.dense li { padding: 0; font-size: 3.1mm; }
   /* Five sections against three elsewhere, and this shop carries a description
      on nearly every one of them where the reference carries almost none — so
      the panel keeps the reference's look at a slightly smaller size rather than
      dropping the descriptions. */
-  .panel.tight .items .n em { font-size: 2.65mm; }
+  .panel.tight .items .n em { font-size: 2.7mm; }
 
   /* ---- section blocks ---- */
-  .blk { margin-bottom: 2mm; }
+  .blk { margin-bottom: 1.5mm; }
   /* ---- header plaque ----
      The owner's bitten-corner plaque, levelled (the source art was tilted
      4.45°) and used as a border-image so the bite and the ragged ends keep
@@ -131,8 +134,11 @@
     margin: 0;
     /* The reference's plaques carry air around the word — chunky slabs, not
        tight labels — and one shared width per column, not shrink-to-fit. */
-    padding: .16em 1.2em .16em .7em;
+    padding: .1em 1.2em .1em .7em;
     min-width: 44mm;
+  }
+  .side-b .blk h3 {
+    min-width: 58mm; padding-right: .5em;
     border-style: solid; border-color: transparent;
     /* 18/85/20/25 source px at the height this header renders — solving
        240k = 1.05 + 0.4 + 38k gives k = 0.00718em per source pixel. Get these
@@ -140,10 +146,10 @@
     border-width: .129em .61em .144em .179em;
     border-image: url(img/header-plaque.png) 18 85 20 25 fill stretch;
     color: #111;
-    font-size: 8.6mm; line-height: 1;
+    font-size: 11.5mm; line-height: 1;
     letter-spacing: .005em;
     text-transform: uppercase;
-    transform: rotate(-1.6deg);
+    transform: rotate(-3.2deg);
   }
   /* Part of the headline on the reference — same size, weight and baseline. */
   .blk h3 .hdr2 { margin-left: 2mm; }
@@ -154,26 +160,26 @@
      rule, not a faint hairline. A repeating gradient gives control over the
      pitch that a plain dotted border does not. */
   .hrule {
-    margin: 1mm 0 2.6mm; height: .8mm;
+    margin: .8mm 0 1.8mm; height: .45mm;
     background: repeating-linear-gradient(to right,
-      rgba(255,255,255,.92) 0 .8mm, transparent .8mm 2.1mm);
+      rgba(255,255,255,.92) 0 .45mm, transparent .45mm 1.7mm);
   }
   /* The outer face runs its dotted rules BETWEEN sections instead — under the
      lists, not under the plaques. Same rule, different position. */
   .side-a .hrule { display: none; }
   /* The 11mm plaque is the inner face's scale — the reference's outer face
      runs a slightly smaller one over shorter lists. */
-  .side-a .blk h3 { min-width: 58mm; font-size: 7.4mm; }
+  .side-a .blk h3 { min-width: 74mm; font-size: 10.5mm; }
   .side-a .redhead h3 { min-width: 56mm; }
   /* Same bold dots as .hrule — these were left on a thin dotted border when
      the header rules were rebuilt, so they read as a hairline. */
   .side-a .panel .blk:not(:last-of-type):not(:nth-last-of-type(2)) {
-    padding-bottom: 4mm; position: relative;
+    padding-bottom: 2.5mm; position: relative;
   }
   .side-a .panel .blk:not(:last-of-type):not(:nth-last-of-type(2))::after {
-    content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: .8mm;
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: .45mm;
     background: repeating-linear-gradient(to right,
-      rgba(255,255,255,.92) 0 .8mm, transparent .8mm 2.1mm);
+      rgba(255,255,255,.92) 0 .45mm, transparent .45mm 1.7mm);
   }
   .side-a .kidsbox { border-bottom: 0; }
 
@@ -229,8 +235,10 @@
     font-size: 4.7mm; line-height: 1.14;
   }
   .items li { padding: .45mm 0; }
-  .items.dense li { font-size: 3.55mm; padding: 0; }
-  .items .n { font-weight: 500; text-transform: uppercase; letter-spacing: .005em; }
+  .items.dense li { font-size: 3.4mm; padding: 0; }
+  /* Reference stem/cap is ~0.15 — a Regular. This was set a full weight
+     heavier, which is why the lists read as shouty next to it. */
+  .items .n { font-weight: 400; text-transform: uppercase; letter-spacing: .005em; }
   /* Reference palette: item names white, the line under them red. The pizza
      column inverts it — gold names, white toppings — which is what makes that
      panel read as the headline list. */
@@ -254,7 +262,7 @@
      brackets — an ~7.4mm two-line pitch, which is what makes the reference's
      pizza column fill the panel top to bottom. */
   /* Two distinct golds on the reference: names lighter than the plaques. */
-  .items.gold .n { color: #fbcc02; font-weight: 600; }
+  .items.gold .n { color: #fbcc02; font-weight: 500; }
   .items.gold .n em { color: #fff; display: block; margin: .2mm 0 0; }
   .items.gold li { padding: .45mm 0; font-size: 4.1mm; }
   .items.gold .n em { font-size: 3.35mm; line-height: 1.06; }
@@ -264,10 +272,10 @@
      gutter reservation). */
   .items .dots { flex: 1; }
   /* Prices are white on the reference, not gold, and set at the item size. */
-  .items .p { font-weight: 500; color: #fff; white-space: nowrap; }
+  .items .p { font-weight: 400; color: #fff; white-space: nowrap; }
   .items.sized li { gap: 4mm; }
   .items.sized .p2 {
-    width: 14mm; text-align: center; font-weight: 500; color: #fff; white-space: nowrap;
+    width: 14mm; text-align: center; font-weight: 400; color: #fff; white-space: nowrap;
     text-shadow: 0 0 1.2mm #000, 0 0 .5mm #000;
   }
 
@@ -316,8 +324,11 @@
 
   /* Reference: plain white bullet list, white prices, roomy rows. */
   .chips { list-style: none; margin: 0 0 3mm; padding: 0; column-count: 2; column-gap: 5mm; }
-  .chips.three { column-count: 3; column-gap: 4mm; }
+  .chips.three { column-count: 3; column-gap: 2mm; }
   .chips b { color: #fff; font-weight: 600; margin-left: auto; }
+  /* Reference pitch: the three columns and the price sit well inside the
+     panel, not spread across its full width. */
+  .dipcols { padding-right: 12mm; }
   .chips li { display: flex; align-items: baseline; font-size: 3.8mm; font-weight: 500; color: #fff; padding: 1mm 0; break-inside: avoid; }
   .chips li::before { content: '•'; color: #fff; margin-right: 1.6mm; }
 
@@ -326,13 +337,15 @@
      holds its place), and the items on a YELLOW ticket in black, with dotted
      leaders and a £ — the one list on the sheet that keeps both. */
   .kidsbox {
-    background: #c10f0f; border-radius: 3mm; padding: 7mm 5mm;
-    display: flex; align-items: center; gap: 4mm;
-    min-height: 58mm;
+    background: #c10f0f; border-radius: 3mm; padding: 5mm 5mm;
+    display: flex; align-items: center; gap: 0;
+    position: relative;
+    min-height: 47mm;
     outline: .5mm dashed rgba(249,185,2,.85); outline-offset: -2.2mm;
   }
   .kidsmark {
     flex: none; width: 44mm; text-align: center; color: #fdf3d8; line-height: .95;
+    position: relative; z-index: 1;
     text-transform: uppercase;
   }
   .kidsmark b { display: block; font-size: 6.4mm; }
@@ -340,9 +353,10 @@
     display: block; margin-top: 1.6mm; padding: .8mm 0;
     background: #111; color: #f9b902; font-size: 3.6mm; border-radius: 1mm;
   }
+  /* Runs the full width behind the lockup, which sits over it. */
   .kidsticket {
     flex: 1; min-width: 0; background: #f9b902; border-radius: 2mm;
-    padding: 3.5mm 4mm; align-self: stretch;
+    padding: 3.5mm 4mm 3.5mm 42mm; align-self: stretch; margin-left: -38mm;
     display: flex; flex-direction: column; justify-content: center;
     position: relative; overflow: hidden;
   }
@@ -394,7 +408,7 @@
   .pzcol { position: relative; z-index: 1; }
   .dealshead .headrow { justify-content: center; }
   .center { text-align: center; }
-  .dealshead h3 { min-width: 46mm; font-size: 7.2mm; }
+  .dealshead h3 { min-width: 40mm; font-size: 8.4mm; }
   .deal b { display: block; color: #bb0e12; font-size: 5mm; line-height: 1.05; text-transform: uppercase; }
   .deal p { margin: 1.4mm 0 1.6mm; font-size: 3.5mm; line-height: 1.3; font-weight: 700; text-transform: capitalize; }
   .deal strong { font-size: 4.6mm; font-weight: 400; color: #111; }
@@ -423,7 +437,10 @@
     display: flex; align-items: center; justify-content: center; gap: 6mm;
     writing-mode: vertical-rl;
   }
+  /* The footer ticker spans the whole page and paints over this band, so the
+     address has to clear it or the postcode prints cut in half. */
   .spine { justify-content: space-between; padding: 6mm 0; }
+  .side-a .spine { padding-bottom: 16mm; }
   .spine b { font-size: 19mm; letter-spacing: .04em; text-transform: uppercase; }
   .spine span { font-size: 4.6mm; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #fff; }
 
@@ -439,20 +456,20 @@
   .coverrule { width: 100%; margin-top: 2.5mm; border-top: .5mm dotted rgba(255,255,255,.55); }
 
   .tel { margin-top: 4mm; }
-  .telline { display: flex; align-items: center; justify-content: center; font-size: 7.5mm; font-weight: 600; letter-spacing: .02em; }
+  .telline { display: flex; align-items: center; justify-content: center; font-size: 9.5mm; font-weight: 600; letter-spacing: .02em; }
   /* Anton draws well above its em box, so the number's glyphs ran over
      the line above even though the two boxes never touched. The margin is
      clearance for the overshoot, not decoration — don't trim it. */
-  .tel b { display: block; margin-top: 2mm; font-size: 17mm; line-height: 1; letter-spacing: .06em; color: #fbefd2; }
+  .tel b { display: block; margin-top: 2mm; font-size: 23mm; line-height: 1; letter-spacing: .04em; color: #f8e3bf; }
 
   /* The cover's straps are the same device as a section header, so they take
      the same plaque — a flat yellow bar next to a bitten one would read as an
      oversight. Text is centred here, so the left/right insets match. */
   .strapline { display: flex; align-items: center; gap: .8mm; margin: 6mm 0 3mm; align-self: flex-start; }
-  .strapline .strap { margin: 0; min-width: 52mm; font-size: 5.2mm; }
+  .strapline .strap { margin: 0; min-width: 56mm; font-size: 5.2mm; }
   .strap.plain {
     border: 0; background: none; padding: 0; margin: 5mm 0 2mm;
-    color: #f9b902; font-size: 5.8mm;
+    color: #ffe000; font-size: 5.8mm;
   }
   .strap.red { border-image-source: url(img/header-plaque-red.png); color: #fdf3d8; }
   .strap.website { font-size: 5.4mm; letter-spacing: .02em; padding: .25em .8em; }
@@ -651,7 +668,7 @@
     
     <section class="blk">
       <div class="redhead"><div class="headrow"><h3>Dips <span class="hdr2">(£1.00)</span></h3></div><div class="hrule"></div></div>
-      <div>
+      <div class="dipcols">
       <ul class="chips three"><li>Mayo</li><li>Garlic Mayo</li><li>Garlic Yoghurt</li><li>Ketchup</li><li>BBQ Sauce</li><li>Sweet Chilli</li><li>Chilli</li><li>Burger Sauce</li><li>Relish</li><li>Chilli Mayo</li><li>Pot Curry <b>1.90</b></li><li>Pot Gravy <b>1.90</b></li></ul>
       </div>
     </section>
@@ -1363,7 +1380,7 @@
     
     <section class="blk">
       <div class="headrow"><h3>Salad</h3></div><div class="hrule" style="margin-right:66.0mm"></div>
-      <div class="blkrow dots" style="--slot:66.0mm;
+      <div class="blkrow" style="--slot:66.0mm;
     --rowmin:43.9mm"><ul class="items dense">
       <li>
         <span class="n">Side Salad<em>Fresh mixed salad</em></span>
