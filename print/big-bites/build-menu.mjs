@@ -19,7 +19,14 @@ const cfg = JSON.parse(fs.readFileSync(path.join(SHOP, 'config.json'), 'utf8'));
 const qr = fs.readFileSync(path.join(import.meta.dirname, 'qr.svg'), 'utf8')
   .replace(/<\?xml[^>]*\?>\s*/, '');
 
-const cat = (id) => menu.find((c) => c.id === id) || { name: id, items: [] };
+/* A renamed or missing category must kill the build — the fallback used to
+   print a bare slug over zero items, and every check passed because less
+   content never overflows. */
+const cat = (id) => {
+  const c = menu.find((x) => x.id === id);
+  if (!c || !c.items.length) throw new Error(`menu category "${id}" is missing or empty`);
+  return c;
+};
 /* The reference prints bare numbers — no currency mark anywhere on the sheet.
    Kept as one function so a change of mind is one line. */
 const money = (n) => Number(n).toFixed(2);
@@ -128,6 +135,8 @@ function sizedList(id, optId, headings, { title = null, img = '', secondOnly = n
   const c = cat(id);
   const rows = c.items.map((i) => {
     const opt = (i.options || []).find((o) => o.id === optId);
+    if (opt && (opt.choices.length !== 2 || Number(opt.choices[0].price || 0) !== 0))
+      throw new Error(`${id}/${i.id}: size option no longer two choices with a free base — the column maths would misprint`);
     const up = opt && opt.choices[1];
     const p2 = up ? Number(i.price) + Number(up.price || 0) : null;
     /* A few items only exist in the second size — a 500ml water is a bottle,
@@ -166,7 +175,11 @@ function milkshakes() {
       ${header('Milk Shakes')}
       ${withShot(`<ul class="items">
         ${shakes.map((i) => row(flavour(i.name), i.price)).join('')}
-        ${coolers.length ? row('Cooler', coolers[0].price, coolers.map((i) => `${flavour(i.name)} Cooler`).join(', '), 'plain') : ''}
+        ${coolers.length ? (() => {
+          if (new Set(coolers.map((i) => Number(i.price))).size > 1)
+            throw new Error('coolers no longer share one price — they cannot fold into a single row');
+          return row('Cooler', coolers[0].price, coolers.map((i) => `${flavour(i.name)} Cooler`).join(', '), 'plain');
+        })() : ''}
       </ul>`, shot('shake', 34), 52)}
     </section>`;
 }
@@ -254,13 +267,32 @@ function dips({ img = '' } = {}) {
 /* The stuffed-crust supplement is a per-size modifier on every pizza; read it
    off the first one rather than hard-coding it. */
 function stuffedCrust() {
-  const pz = cat('pizza').items[0] || {};
-  const crust = (pz.options || []).find((o) => o.id === 'crust');
-  const st = crust && crust.choices.find((x) => x.id === 'stuffed');
-  if (!st) return '';
+  /* One printed line covers every pizza, so it must be true of every pizza —
+     scan them all and refuse to print if the supplement isn't uniform. */
+  const sts = cat('pizza').items.map((pz) => {
+    const crust = (pz.options || []).find((o) => o.id === 'crust');
+    return crust && crust.choices.find((x) => x.id === 'stuffed');
+  }).filter(Boolean);
+  if (!sts.length) return '';
+  const key = (s) => `${s.price}/${s.priceBySize?.sz11 ?? ''}/${s.priceBySize?.sz13 ?? ''}`;
+  if (new Set(sts.map(key)).size > 1)
+    throw new Error('stuffed-crust supplement differs between pizzas — one printed line cannot cover them');
+  const st = sts[0];
   const by = st.priceBySize || {};
-  const p13 = by.sz13 != null ? by.sz13 : st.price;
-  return `<div class="supp"><span>Stuffed Crust Supplement</span><i></i><b>+${money(st.price)}</b><b>+${money(p13)}</b></div>`;
+  const p11 = by.sz11 ?? st.price;
+  const p13 = by.sz13 ?? st.price;
+  return `<div class="supp"><span>Stuffed Crust Supplement</span><i></i><b>+${money(p11)}</b><b>+${money(p13)}</b></div>`;
+}
+
+/* The printed label hardcodes the Sun-Thu / Fri-Sat grouping, so refuse to
+   build if the config stops matching it — otherwise the sheet lies. */
+{
+  const w = (d) => JSON.stringify(cfg.hours[d]?.windows ?? null);
+  for (const d of ['monday', 'tuesday', 'wednesday', 'thursday'])
+    if (w(d) !== w('sunday')) throw new Error(`hours: ${d} differs from sunday — reword the printed grouping`);
+  if (w('saturday') !== w('friday')) throw new Error('hours: saturday differs from friday — reword the printed grouping');
+  if (cfg.hours.sunday.windows.length !== 1 || cfg.hours.friday.windows.length !== 1)
+    throw new Error('hours: split windows — the printed one-line-per-group format cannot show them');
 }
 
 const hours = [
@@ -272,8 +304,16 @@ const hours = [
 }).join('');
 
 const del = cfg.fulfillment.delivery;
-const maxMiles = del.radius?.maxMiles ?? 5;
-const perMile = (del.radius?.bands?.[0]?.feePence ?? 100) / 100;
+/* "£X per mile, up to N miles" is only a true statement while the bands are
+   linear — refuse to print it the moment they aren't. */
+if (del.mode !== 'radius') throw new Error('cover copy assumes radius delivery — rewrite it for the new mode');
+const bands = del.radius.bands;
+bands.forEach((bd, i) => {
+  if (bd.feePence !== (i + 1) * bands[0].feePence)
+    throw new Error('delivery bands are no longer per-mile linear — rewrite the cover copy');
+});
+const maxMiles = del.radius.maxMiles;
+const perMile = bands[0].feePence / 100;
 
 const icon = (kind) => {
   const disc = '<circle cx="12" cy="12" r="12" fill="#d61313"/>';
