@@ -191,6 +191,20 @@ function sidesSaladColumn() {
     style="width:${WIDE}mm;--ssh:${(WIDE * h / w).toFixed(1)}mm" />`;
 }
 
+/* The cover's lower flood. The reference fills the bottom of this panel with a
+   pizza photograph; this is the owner's. It runs off the panel's left, right
+   and bottom edges into the bleed, so there is no hard cut on the trim. */
+function coverArt() {
+  const file = path.join(import.meta.dirname, 'img', 'pizza-hero.png');
+  if (!fs.existsSync(file)) return '<div class="coverart" aria-hidden="true"></div>';
+  const { w, h } = imgSize('pizza-hero');
+  const WIDE = 152;                       // 143mm panel + 9mm of bleed either side
+  const dpi = w / (WIDE / 25.4);
+  if (dpi < 140) throw new Error(`pizza-hero.png at ${WIDE}mm is ${dpi.toFixed(1)}dpi — too soft to print`);
+  shotDpi.push({ name: 'pizza-hero', px: `${w}x${h}`, mm: WIDE, dpi: Math.round(dpi) });
+  return `<div class="coverart" aria-hidden="true"><img src="img/pizza-hero.png" alt="" /></div>`;
+}
+
 function kidsLockup() {
   const file = path.join(import.meta.dirname, 'img', 'kids-lockup.png');
   if (!fs.existsSync(file)) {
@@ -534,10 +548,8 @@ const cover = `
         <div class="qr">${qr}</div>
       </div>
       ${cfg.allergens?.noticeAtCheckout ? `<p class="allergy"><b>Allergies?</b> ${esc(cfg.allergens.noticeAtCheckout)}</p>` : ''}
-      <!-- ASSET GAP: the reference floods the lower half of this panel with a
-           pizza / basil / tomato photograph. Left empty until one exists. -->
-      <div class="coverart" aria-hidden="true"></div>
     </div>
+    ${coverArt()}
     <div class="spine">
       <b>Big Bites</b>
       <span>${esc(cfg.business.address.line1)}, ${esc(cfg.business.address.city)}, ${esc(cfg.business.address.postcode)}</span>
@@ -1235,13 +1247,31 @@ const html = `<!doctype html>
   /* A spacer for the missing cover photograph: it absorbs slack, it must not
      demand any — a min-height here pushed the cover 10mm past its box and
      under the footer ticker. */
-  .coverart { flex: 1; min-height: 0; }
+  /* A LAYER on the panel, not a flex item: as a flex child it got whatever
+     height the stack above it left over, which was almost none, and the photo
+     was pushed off the bottom. It floods the foot of the cover, bleeds off the
+     left, right and bottom edges, and sits behind the type. */
+  .coverart {
+    position: absolute; left: -9mm; right: -9mm; bottom: -4mm; height: 104mm;
+    z-index: 0; pointer-events: none; overflow: hidden;
+  }
+  .coverart img {
+    width: 100%; height: 100%; object-fit: cover; object-position: 50% 100%;
+    /* Fades in from the top so the photograph rises out of the panel black
+       instead of starting on a horizontal line across the cover. */
+    -webkit-mask: linear-gradient(to bottom, transparent 0, rgba(0,0,0,.55) 22%, #000 46%);
+            mask: linear-gradient(to bottom, transparent 0, rgba(0,0,0,.55) 22%, #000 46%);
+  }
+  .coverbody { position: relative; z-index: 1; }
   .qr { width: 30mm; height: 30mm; background: #fff; padding: 1.5mm; border-radius: 1.5mm; }
   .qr svg { width: 100%; height: 100%; display: block; }
   .qrtxt { text-align: right; }
   .qrtxt b { display: block; font-size: 4.6mm; color: #f9b902; transform: skewX(-8deg); }
   .qrtxt span { font-size: 2.9mm; font-weight: 700; }
-  .allergy { margin-top: 6mm; }
+  /* The flood now runs behind this, and small type on a lit pizza crust is
+     unreadable. A dark plate under it keeps the notice legible without
+     covering the photograph. */
+  .allergy { margin-top: 6mm; background: rgba(3,3,3,.86); border-radius: 1.5mm; }
 
   /* ---- foot ticker ---- */
   .ticker {
@@ -1268,7 +1298,7 @@ ${/* Section order and panel assignment follow the designer's artwork exactly:
       Don't reshuffle these without checking the reference sheets again. */''}
 ${page('side-a', `
   <div class="panel">
-    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, firstOnly: /\bcan\b/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], slot: 44, chipsBelow: true })}
+    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, firstOnly: /\bcan\b/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], img: shot('pepsi-coke', 34), slot: 44, chipsBelow: true })}
     ${milkshakes()}
     ${list('desserts', { desc: true, img: shot('cake', 46), slot: 52, cls: 'dessertblk norule' })}
     ${kidsBox()}

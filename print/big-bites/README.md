@@ -105,10 +105,11 @@ runs on tighter leading (`.panel.tight`) — again, as the reference does.
 
 ## Assets still needed
 
-Five gaps left. The owner supplied the **Kids Menu lockup** and the
-**Sides/Salad food column** on 2026-08-06; both are in place. The column
-carries the burger, the chips-and-nuggets and the salad bowl in one cutout,
-so it replaced the separate `sides.png` and `salad.png` placements.
+Three gaps left. The owner supplied the **Kids Menu lockup**, the
+**Sides/Salad food column**, the **drink cans** and the **cover pizza** on
+2026-08-06; all four are in place. The column carries the burger, the
+chips-and-nuggets and the salad bowl in one cutout, so it replaced the
+separate `sides.png` and `salad.png` placements.
 
 Each remaining gap is a hole the reference fills and this sheet currently
 leaves empty — nothing is faked or substituted.
@@ -118,8 +119,6 @@ leaves empty — nothing is faked or substituted.
 | 1 | **Burger, on its own** | Burgers, inner right panel — the panel's empty upper right | Transparent PNG, ≥1200px wide. The supplied Sides/Salad column has a burger at its top, but the column is 2:1 tall and at panel width it only reaches as high as the Sides list; covering Burgers too would need it 143mm wide, wider than the panel |
 | 2 | **Garlic bread** | Garlic Bread, inner middle panel | Transparent PNG, ≥1000px wide |
 | 3 | **Parmesan** | Parmesan, inner middle panel | Transparent PNG, ≥1000px wide |
-| 4 | **Drink cans** | Drinks, outer left panel | Real Pepsi + Coca-Cola. The generated pair spell "pepc" and a garbled Coca-Cola script — a printed menu carrying a botched trademark is not something to send to press. The brands' own press images are the safe source |
-| 6 | **Cover background** | Lower half of the cover panel | The pizza / basil / tomato flood. No transparency needed, but it must be big: ~1500 × 1800px |
 | 7 | **Bigger burger hero** | Above Meal Deals — already in place, but soft | The current file is 635px, which is 149dpi at 108mm — every build prints the dpi table, and the build throws below 140. ≥1200px wide puts it over 300 |
 
 Everything else on the sheet is either live menu data or generated here (the
