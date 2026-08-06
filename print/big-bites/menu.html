@@ -74,17 +74,17 @@
      leading — the same trade the reference sheet makes. Scoped to the panel
      rather than applied globally, so the roomier panels stay roomy. */
   .panel.tight .blk { margin-bottom: 1.5mm; }
-  .panel.tight .blk h3 { font-size: 7mm; margin-bottom: 0; }
-  .panel.tight .hrule { margin: .8mm 0 2.4mm; }
-  .panel.tight .items.dense li { padding: 0; font-size: 3mm; }
+  .panel.tight .blk h3 { font-size: 8.6mm; margin-bottom: 0; }
+  .panel.tight .hrule { margin: .7mm 0 1.6mm; }
+  .panel.tight .items.dense li { padding: 0; font-size: 2.9mm; }
   /* Five sections against three elsewhere, and this shop carries a description
      on nearly every one of them where the reference carries almost none — so
      the panel keeps the reference's look at a slightly smaller size rather than
      dropping the descriptions. */
-  .panel.tight .items .n em { font-size: 2.8mm; }
+  .panel.tight .items .n em { font-size: 2.65mm; }
 
   /* ---- section blocks ---- */
-  .blk { margin-bottom: 3mm; }
+  .blk { margin-bottom: 2mm; }
   /* ---- header plaque ----
      The owner's bitten-corner plaque, levelled (the source art was tilted
      4.45°) and used as a border-image so the bite and the ragged ends keep
@@ -104,8 +104,8 @@
     margin: 0;
     /* The reference's plaques carry air around the word — chunky slabs, not
        tight labels — and one shared width per column, not shrink-to-fit. */
-    padding: .21em .55em .21em .8em;
-    min-width: 34mm;
+    padding: .16em 1.5em .16em .7em;
+    min-width: 40mm;
     border-style: solid; border-color: transparent;
     /* 18/85/20/25 source px at the height this header renders — solving
        240k = 1.05 + 0.4 + 38k gives k = 0.00718em per source pixel. Get these
@@ -114,7 +114,7 @@
     border-image: url(img/header-plaque.png) 18 85 20 25 fill stretch;
     color: #111;
     font-family: 'Anton', Impact, sans-serif;
-    font-size: 9mm; line-height: 1;
+    font-size: 11mm; line-height: 1;
     letter-spacing: .005em;
     text-transform: uppercase;
     transform: rotate(-1.6deg);
@@ -128,14 +128,16 @@
      rule, not a faint hairline. A repeating gradient gives control over the
      pitch that a plain dotted border does not. */
   .hrule {
-    margin: 1.2mm 0 4mm; height: .8mm;
+    margin: 1mm 0 2.6mm; height: .8mm;
     background: repeating-linear-gradient(to right,
       rgba(255,255,255,.92) 0 .8mm, transparent .8mm 2.1mm);
   }
   /* The outer face runs its dotted rules BETWEEN sections instead — under the
      lists, not under the plaques. Same rule, different position. */
   .side-a .hrule { display: none; }
-  .side-a .blk h3 { min-width: 64mm; }
+  /* The 11mm plaque is the inner face's scale — the reference's outer face
+     runs a slightly smaller one over shorter lists. */
+  .side-a .blk h3 { min-width: 70mm; font-size: 9.4mm; }
   .side-a .redhead h3 { min-width: 56mm; }
   .side-a .panel .blk:not(:last-of-type) {
     border-bottom: .5mm dotted rgba(255,255,255,.55); padding-bottom: 4mm;
@@ -157,20 +159,32 @@
   .halftone {
     /* Out of the flow and cropped by the panel, so the list gets the whole
        column — which is how the reference fits 32 pizzas at this size. */
-    position: absolute; right: -12mm; bottom: -14mm; display: flex; justify-content: flex-end;
+    position: absolute; right: -2mm; bottom: -8mm; display: flex; justify-content: flex-end; align-items: flex-end;
     /* Behind the prices: the reference tucks the pizza under the stuffed-crust
        line rather than over it, and white numerals on a photo are unreadable. */
     z-index: 0;
     background:
-      radial-gradient(circle at center, rgba(255,196,0,.85) 22%, transparent 23%) 0 0 / 3.2mm 3.2mm,
-      radial-gradient(circle at center, rgba(255,196,0,.85) 22%, transparent 23%) 1.6mm 1.6mm / 3.2mm 3.2mm;
-    /* The reference's dots fan out to the LEFT of the pizza and fade — a
-       diagonal spray, not a symmetric field. */
-    -webkit-mask: radial-gradient(ellipse 70% 60% at 78% 62%, #000 30%, transparent 82%);
-            mask: radial-gradient(ellipse 70% 60% at 78% 62%, #000 30%, transparent 82%);
-    padding: 4mm 0 4mm 26mm;
+      radial-gradient(circle at center, #e8901a 30%, transparent 31%) 0 0 / 2.4mm 2.4mm,
+      radial-gradient(circle at center, #e8901a 30%, transparent 31%) 1.2mm 1.2mm / 2.4mm 2.4mm;
+    /* Radiates up-and-LEFT out of the crust and grades away — the burst is
+       the graphic, the pizza just sits in it. */
+    -webkit-mask: radial-gradient(ellipse 62% 58% at 82% 72%, #000 26%, rgba(0,0,0,.55) 52%, transparent 86%);
+            mask: radial-gradient(ellipse 62% 58% at 82% 72%, #000 26%, rgba(0,0,0,.55) 52%, transparent 86%);
+    padding: 22mm 0 6mm 44mm;
   }
   .blkrow .items { padding-right: var(--slot, 0mm); }
+  /* The reference repeats its halftone behind the right-panel photos. Same
+     dots as the pizza burst, graded away from the picture. */
+  .blkrow.dots::after {
+    content: ''; position: absolute; right: -14mm; top: 50%; translate: 0 -50%;
+    width: 76mm; height: 62mm; z-index: 0;
+    background:
+      radial-gradient(circle at center, #e8901a 30%, transparent 31%) 0 0 / 2.4mm 2.4mm,
+      radial-gradient(circle at center, #e8901a 30%, transparent 31%) 1.2mm 1.2mm / 2.4mm 2.4mm;
+    -webkit-mask: radial-gradient(ellipse 58% 56% at 62% 50%, #000 22%, rgba(0,0,0,.5) 50%, transparent 84%);
+            mask: radial-gradient(ellipse 58% 56% at 62% 50%, #000 22%, rgba(0,0,0,.5) 50%, transparent 84%);
+  }
+  .blkrow.dots .shot { position: absolute; z-index: 1; }
 
   .items { list-style: none; margin: 0; padding: 0; }
   .items.two { column-count: 2; column-gap: 6mm; }
@@ -180,7 +194,7 @@
     font-size: 4.7mm; line-height: 1.14;
   }
   .items li { padding: .45mm 0; }
-  .items.dense li { font-size: 3.7mm; padding: .05mm 0; }
+  .items.dense li { font-size: 3.55mm; padding: 0; }
   .items .n { font-weight: 500; text-transform: uppercase; letter-spacing: .005em; }
   /* Reference palette: item names white, the line under them red. The pizza
      column inverts it — gold names, white toppings — which is what makes that
@@ -215,31 +229,31 @@
   .items .dots { flex: 1; }
   /* Prices are white on the reference, not gold, and set at the item size. */
   .items .p { font-weight: 500; color: #fff; white-space: nowrap; }
-  .items.sized li { gap: 2mm; }
+  .items.sized li { gap: 4mm; }
   .items.sized .p2 {
-    width: 11mm; text-align: center; font-weight: 500; color: #fff; white-space: nowrap;
+    width: 14mm; text-align: center; font-weight: 500; color: #fff; white-space: nowrap;
     text-shadow: 0 0 1.2mm #000, 0 0 .5mm #000;
   }
 
   /* The reference floats the size chips clear of the plaque, right-aligned so
      they sit over the price columns they label. */
   .headrow { display: flex; align-items: center; justify-content: space-between; gap: 4mm; }
-  .sizehdr { display: inline-flex; gap: 2mm; flex: none; }
+  .sizehdr { display: inline-flex; gap: 4mm; flex: none; }
   /* Drinks sets its column tabs on their own row under the plaque, each one
      centred on the price column it labels — the same 11mm grid as .p2. */
   .chiprow { display: flex; justify-content: flex-end; margin: 0 0 1.5mm; }
   .sizehdr i {
-    font-style: normal; font-size: 3.9mm; font-weight: 600;
-    padding: .3mm 1.6mm; border-radius: .8mm; text-align: center;
+    font-style: normal; font-size: 4.4mm; font-weight: 600;
+    padding: .55mm 1.8mm; border-radius: 0; text-align: center;
     /* Same width and gutter as .items.sized .p2, so each chip sits squarely
        over the column of prices it labels. */
-    min-width: 11mm;
+    min-width: 14mm; font-size: 4.4mm;
   }
   .sizehdr i.red { background: #dd1516; color: #fff; }
   .sizehdr i.gold { background: #f9b902; color: #111; }
   /* 32 pizzas with a topping line each need tighter type than the simple
      lists — the same trade the designer makes. */
-  .items.withdesc li { align-items: center; padding: .2mm 0; font-size: 3.9mm; line-height: 1.04; }
+  .items.withdesc li { align-items: center; padding: .1mm 0; font-size: 3.8mm; line-height: 1.03; }
   .items.withdesc .n em { font-size: 3.2mm; margin-top: 0; line-height: 1.04; }
   .items.withdesc .p2 { font-size: 4.1mm; }
   .items.withdesc .dots { display: none; }
@@ -248,11 +262,11 @@
      columns as the pizza prices above them. */
   .supp { display: flex; align-items: center; gap: 2mm; margin-top: 2.5mm; }
   .supp span {
-    padding: 1.1mm 3.2mm; background: #dd1516; color: #fdf3d8;
-    font-size: 3.3mm; font-weight: 600;
+    padding: 1.4mm 5mm; background: #dd1516; color: #fdf3d8; border-radius: 0;
+    font-size: 3.9mm; font-weight: 600;
   }
   .supp i { flex: 1; }
-  .supp b { width: 11mm; text-align: right; color: #fff; font-size: 3.1mm; text-shadow: 0 0 1.2mm #000, 0 0 .5mm #000; }
+  .supp b { width: 14mm; text-align: right; color: #fff; font-size: 3.1mm; text-shadow: 0 0 1.2mm #000, 0 0 .5mm #000; }
 
   /* The reference singles Dips out with a red plaque. It is its own asset —
      tinted off the gold one by luminance, since a CSS hue-rotate took the gold
@@ -274,7 +288,7 @@
   .kidsbox {
     background: #c10f0f; border-radius: 3mm; padding: 4mm;
     display: flex; align-items: center; gap: 4mm;
-    min-height: 40mm;
+    min-height: 32mm;
     outline: .5mm dashed rgba(249,185,2,.85); outline-offset: -2.2mm;
   }
   .kidsmark {
@@ -538,7 +552,7 @@
     </section>
     
     <section class="blk">
-      <div class="headrow"><h3>Desserts</h3></div><div class="hrule"></div>
+      <div class="headrow"><h3>Desserts</h3></div><div class="hrule" style="margin-right:54.0mm"></div>
       <div class="blkrow" style="--slot:54.0mm;
     --rowmin:38.8mm"><ul class="items dense">
       <li>
@@ -678,7 +692,7 @@
     <div class="pzcol">
       
     <section class="blk">
-      <div class="headrow"><h3>Pizza</h3><span class="sizehdr" style="margin-right:5.0mm"><i class="red">11"</i><i class="red">13"</i></span></div><div class="hrule"></div>
+      <div class="headrow"><h3>Pizza</h3><span class="sizehdr" style="margin-right:5.0mm"><i class="red">11"</i><i class="red">13"</i></span></div><div class="hrule" style="margin-right:5.0mm"></div>
       <div class="blkrow" style="--slot:5.0mm;
     --rowmin:3.0mm"><ul class="items sized withdesc gold">
       <li>
@@ -923,9 +937,9 @@
     </section>
     
     <section class="blk">
-      <div class="headrow"><h3>Calzone</h3><span class="sizehdr"><i class="red">11"</i></span></div><div class="hrule"></div>
-      <div class="blkrow" style="--slot:0.0mm;
-    --rowmin:26.6mm"><ul class="items dense">
+      <div class="headrow"><h3>Calzone</h3><span class="sizehdr" style="margin-right:50.0mm"><i class="red">11"</i></span></div><div class="hrule" style="margin-right:50.0mm"></div>
+      <div class="blkrow" style="--slot:50.0mm;
+    --rowmin:31.6mm"><ul class="items dense">
       <li>
         <span class="n">Doner Calzone<em>Doner, onion, mushroom</em></span>
         <span class="dots"></span>
@@ -950,14 +964,14 @@
         <span class="n">Hot Calzone<em>Pepperoni, onion, jalapeno</em></span>
         <span class="dots"></span>
         <span class="p">12.50</span>
-      </li></ul><img class="shot mid" src="img/calzone.png" alt=""
-    style="width:38mm;--shoth:23.6mm" /></div>
+      </li></ul><img class="shot side" src="img/calzone.png" alt=""
+    style="width:46mm;--shoth:28.6mm" /></div>
     </section>
     
     <section class="blk">
-      <div class="headrow"><h3>Kebabs</h3><span class="sizehdr"><i class="gold">MEDIUM</i><i class="red">LARGE</i></span></div><div class="hrule"></div>
-      <div class="blkrow" style="--slot:0.0mm;
-    --rowmin:27.0mm"><ul class="items sized withdesc">
+      <div class="headrow"><h3>Kebabs</h3><span class="sizehdr" style="margin-right:46.0mm"><i class="gold">MEDIUM</i><i class="red">LARGE</i></span></div><div class="hrule" style="margin-right:46.0mm"></div>
+      <div class="blkrow" style="--slot:46.0mm;
+    --rowmin:32.7mm"><ul class="items sized withdesc">
       <li>
         <span class="n">Lamb Doner</span>
         <span class="dots"></span>
@@ -1017,13 +1031,14 @@
         <span class="dots"></span>
         <span class="p2">22.00</span>
         <span class="p2">-</span>
-      </li></ul><img class="shot mid" src="img/kebab.png" alt=""
-    style="width:34mm;--shoth:24.0mm" /></div>
+      </li></ul><img class="shot side" src="img/kebab.png" alt=""
+    style="width:42mm;--shoth:29.7mm" /></div>
     </section>
     
     <section class="blk">
-      <div class="headrow"><h3>Parmesan</h3></div><div class="hrule"></div>
-      <ul class="items dense">
+      <div class="headrow"><h3>Parmesan</h3></div><div class="hrule" style="margin-right:48.0mm"></div>
+      <div class="blkrow" style="--slot:48.0mm;
+    --rowmin:3.0mm"><ul class="items dense">
       <li>
         <span class="n">Plain Parmesan<em>Pounded chicken, golden crumb, bechamel &amp; cheese</em></span>
         <span class="dots"></span>
@@ -1048,13 +1063,13 @@
         <span class="n">Doner Parmesan<em>Doner &amp; cheese</em></span>
         <span class="dots"></span>
         <span class="p">12.00</span>
-      </li></ul>
+      </li></ul></div>
     </section>
     
     <section class="blk">
-      <div class="headrow"><h3>Wrap</h3></div><div class="hrule"></div>
-      <div class="blkrow" style="--slot:0.0mm;
-    --rowmin:27.6mm"><ul class="items dense">
+      <div class="headrow"><h3>Wrap</h3></div><div class="hrule" style="margin-right:50.0mm"></div>
+      <div class="blkrow" style="--slot:50.0mm;
+    --rowmin:32.7mm"><ul class="items dense">
       <li>
         <span class="n">Chips &amp; Cheese Wrap<em>Cheese and chips, rolled</em></span>
         <span class="dots"></span>
@@ -1099,14 +1114,14 @@
         <span class="n">Chicken Shawarma &amp; Chips Wrap</span>
         <span class="dots"></span>
         <span class="p">9.00</span>
-      </li></ul><img class="shot mid" src="img/wrap.png" alt=""
-    style="width:38mm;--shoth:24.6mm" /></div>
+      </li></ul><img class="shot side" src="img/wrap.png" alt=""
+    style="width:46mm;--shoth:29.7mm" /></div>
     </section>
   </div>
   <div class="panel">
     
     <section class="blk">
-      <div class="headrow"><h3>Burgers</h3><span class="sizehdr" style="margin-right:8.0mm"><i class="gold">1/4 lb</i><i class="red">1/2 lb</i></span></div><div class="hrule"></div>
+      <div class="headrow"><h3>Burgers</h3><span class="sizehdr" style="margin-right:8.0mm"><i class="gold">1/4 lb</i><i class="red">1/2 lb</i></span></div><div class="hrule" style="margin-right:8.0mm"></div>
       <div class="blkrow" style="--slot:8.0mm;
     --rowmin:3.0mm"><ul class="items sized withdesc">
       <li>
@@ -1172,9 +1187,9 @@
     </section>
     
     <section class="blk">
-      <div class="headrow"><h3>Sides</h3></div><div class="hrule"></div>
-      <div class="blkrow" style="--slot:58.0mm;
-    --rowmin:56.0mm"><ul class="items dense">
+      <div class="headrow"><h3>Sides</h3></div><div class="hrule" style="margin-right:72.0mm"></div>
+      <div class="blkrow dots" style="--slot:72.0mm;
+    --rowmin:69.7mm"><ul class="items dense">
       <li>
         <span class="n">Chips</span>
         <span class="dots"></span>
@@ -1295,13 +1310,13 @@
         <span class="dots"></span>
         <span class="p">9.00</span>
       </li></ul><img class="shot side" src="img/sides.png" alt=""
-    style="width:54mm;--shoth:53.0mm" /></div>
+    style="width:68mm;--shoth:66.7mm" /></div>
     </section>
     
     <section class="blk">
-      <div class="headrow"><h3>Salad</h3></div><div class="hrule"></div>
-      <div class="blkrow" style="--slot:56.0mm;
-    --rowmin:36.0mm"><ul class="items dense">
+      <div class="headrow"><h3>Salad</h3></div><div class="hrule" style="margin-right:66.0mm"></div>
+      <div class="blkrow dots" style="--slot:66.0mm;
+    --rowmin:43.9mm"><ul class="items dense">
       <li>
         <span class="n">Side Salad<em>Fresh mixed salad</em></span>
         <span class="dots"></span>
@@ -1317,7 +1332,7 @@
         <span class="dots"></span>
         <span class="p">7.50</span>
       </li></ul><img class="shot side" src="img/salad.png" alt=""
-    style="width:50mm;--shoth:33.0mm" /></div>
+    style="width:62mm;--shoth:40.9mm" /></div>
     </section>
   </div>
 
