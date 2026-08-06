@@ -31,6 +31,14 @@ component pass on the alpha channel, trimmed to its own pixels and stripped of
 stray specks — `sides.png` in particular carried a 2×25px sliver that printed
 as a hairline next to the chips.
 
+**`kids-lockup.png` and `sides-salad.png` are the owner's own artwork**
+(supplied 2026-08-06), not cuts from that sheet. The Sides/Salad column
+carries the burger, the chips and nuggets with their dips, and the salad bowl
+in one piece — the same stack the reference runs down that panel — so it
+replaced the separate `sides.png` and `salad.png` cutouts, which are gone.
+Both arrived on a 1024x1536 canvas with large transparent margins and were
+trimmed to their own content so their placement is predictable.
+
 Two of the items on that sheet are **deliberately not here**:
 
 - **The Pepsi and Coca-Cola cans.** The generator mis-spelled both brand names

@@ -171,6 +171,26 @@ function withShot(inner, img, slot = 0, dots = false) {
    dotted border and its own illustrations. So when it is present the box drops
    its own dashed outline and padding on that side, or the sheet would print a
    framed card inside a framed card. */
+/* The owner's Sides/Salad column: one cutout carrying the burger, the chips
+   and nuggets with their dips, and the salad bowl, in that vertical order —
+   the same stack the reference runs down this panel. It replaces the two
+   separate sides.png / salad.png placements, so the food reads as one
+   photograph rather than two pasted cutouts.
+   Absolutely positioned like the other side photos: in the flow it would
+   narrow the lists and drag the prices off the right margin. The lists keep
+   their `slot` so a long item name wraps rather than running under it. */
+function sidesSaladColumn() {
+  const file = path.join(import.meta.dirname, 'img', 'sides-salad.png');
+  if (!fs.existsSync(file)) return '';
+  const { w, h } = imgSize('sides-salad');
+  const WIDE = 62;
+  const dpi = w / (WIDE / 25.4);
+  if (dpi < 140) throw new Error(`sides-salad.png at ${WIDE}mm is ${dpi.toFixed(1)}dpi — too soft to print`);
+  shotDpi.push({ name: 'sides-salad', px: `${w}x${h}`, mm: WIDE, dpi: Math.round(dpi) });
+  return `<img class="sscol" src="img/sides-salad.png" alt=""
+    style="width:${WIDE}mm;--ssh:${(WIDE * h / w).toFixed(1)}mm" />`;
+}
+
 function kidsLockup() {
   const file = path.join(import.meta.dirname, 'img', 'kids-lockup.png');
   if (!fs.existsSync(file)) {
@@ -1034,6 +1054,14 @@ const html = `<!doctype html>
      lockup brings one. */
   .kidsbox:has(.kidslock) { outline: 0; padding: 3mm; }
   .kidslock { flex: none; display: block; height: auto; align-self: center; }
+  /* Sits against the panel's right edge and runs off it, as the reference's
+     does — the panel's own overflow:hidden crops it at the bleed. Bottom-
+     anchored so the salad bowl lands level with the end of the Salad list. */
+  .sscol {
+    position: absolute; right: -4mm; bottom: 3mm; z-index: 0;
+    height: auto; display: block;
+    filter: drop-shadow(0 1.2mm 1.8mm rgba(0,0,0,.55));
+  }
   .kidsmark {
     flex: none; width: 44mm; text-align: center; color: #fdf3d8; line-height: .95;
     position: relative; z-index: 1;
@@ -1308,8 +1336,9 @@ ${page('side-b', `
   </div>
   <div class="panel">
     ${sizedList('burgers', 'size', ['1/4 lb', '1/2 lb'], { slot: 12, firstOnly: /(¼|1\/4)\s*lb/i, secondOnly: /(½|1\/2)\s*lb/i, defaultCol: null })}
-    ${list('sides', { dense: true, img: shot('sides', 57), title: 'Sides', slot: 56, dots: true })}
-    ${list('salad', { dense: true, desc: true, img: shot('salad', 62), slot: 56, cls: 'saladblk' })}
+    ${list('sides', { dense: true, title: 'Sides', slot: 56, dots: true })}
+    ${list('salad', { dense: true, desc: true, slot: 56, cls: 'saladblk' })}
+    ${sidesSaladColumn()}
   </div>
 `, false)}
 
