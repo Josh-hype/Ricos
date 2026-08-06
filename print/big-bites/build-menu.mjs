@@ -191,6 +191,20 @@ function sidesSaladColumn() {
     style="width:${WIDE}mm;--ssh:${(WIDE * h / w).toFixed(1)}mm" />`;
 }
 
+/* The cover's lower flood. The reference fills the bottom of this panel with a
+   pizza photograph; this is the owner's. It runs off the panel's left, right
+   and bottom edges into the bleed, so there is no hard cut on the trim. */
+function coverArt() {
+  const file = path.join(import.meta.dirname, 'img', 'gpt-hero.png');
+  if (!fs.existsSync(file)) return '<div class="coverart" aria-hidden="true"></div>';
+  const { w, h } = imgSize('gpt-hero');
+  const WIDE = 152;                       // 143mm panel + 9mm of bleed either side
+  const dpi = w / (WIDE / 25.4);
+  if (dpi < 140) throw new Error(`gpt-hero.png at ${WIDE}mm is ${dpi.toFixed(1)}dpi — too soft to print`);
+  shotDpi.push({ name: 'gpt-hero', px: `${w}x${h}`, mm: WIDE, dpi: Math.round(dpi) });
+  return `<div class="coverart" aria-hidden="true"><img src="img/gpt-hero.png" alt="" /></div>`;
+}
+
 function kidsLockup() {
   const file = path.join(import.meta.dirname, 'img', 'kids-lockup.png');
   if (!fs.existsSync(file)) {
@@ -513,18 +527,13 @@ const cover = `
       </div>
       <div class="strap plain">Delivery Service or Collection</div>
       <!-- The minimum is DELIVERY-only (functions/_lib/totals.js applies it
-           under fulfillment === 'delivery'), and the service charge is added
-           to every WEB order including collection — the till suppresses it.
-           Printing a bare "Minimum order £12" under a line that offers both
-           read as though collection carried it too, and the charge appeared
-           nowhere at all. Both are derived, so a config change reprints. -->
+           under fulfillment === 'delivery'), so it says so rather than reading
+           as though collection carried it too. The £1 online service charge is
+           deliberately NOT printed here — the owner's call, 2026-08-06. -->
       <p class="fine">
         Order on our website for collection or delivery.<br />
         Easingwold — £${perMile.toFixed(2)} per mile (rounded up), up to ${maxMiles} miles.<br />
-        Minimum delivery order £${(del.minimumOrderPence / 100).toFixed(2).replace(/\.00$/, '')}.${
-          cfg.serviceFeePence
-            ? `<br />Online orders add a £${(cfg.serviceFeePence / 100).toFixed(2)} service charge.`
-            : ''}
+        Minimum delivery order £${(del.minimumOrderPence / 100).toFixed(2).replace(/\.00$/, '')}.
       </p>
       <div class="strapline">${icon('clock')}<div class="strap">Opening Time</div></div>
       <div class="hours">${hours}</div>
@@ -534,10 +543,8 @@ const cover = `
         <div class="qr">${qr}</div>
       </div>
       ${cfg.allergens?.noticeAtCheckout ? `<p class="allergy"><b>Allergies?</b> ${esc(cfg.allergens.noticeAtCheckout)}</p>` : ''}
-      <!-- ASSET GAP: the reference floods the lower half of this panel with a
-           pizza / basil / tomato photograph. Left empty until one exists. -->
-      <div class="coverart" aria-hidden="true"></div>
     </div>
+    ${coverArt()}
     <div class="spine">
       <b>Big Bites</b>
       <span>${esc(cfg.business.address.line1)}, ${esc(cfg.business.address.city)}, ${esc(cfg.business.address.postcode)}</span>
@@ -697,8 +704,8 @@ const html = `<!doctype html>
      reference's size (0.94x the roomy panels) and the 1.3mm that costs is
      taken out of the gaps between blocks instead — render.mjs reported a 5px
      overrun here when it was not. */
-  .panel.tight .blk { margin-bottom: .1mm; }
-  .panel.tight .blk h3 { font-size: 11.5mm; margin-bottom: 0; }
+  .panel.tight .blk { margin-bottom: 2.4mm; }
+  .panel.tight .blk h3 { font-size: 10mm; margin-bottom: 0; }
   .panel.tight .hrule { margin: .4mm 0 .9mm; }
   .panel.tight .items.dense li { padding: 0; font-size: 2.95mm; }
   /* Five sections against three elsewhere, and this shop carries a description
@@ -723,9 +730,10 @@ const html = `<!doctype html>
      colour behind it would fill the notch back in. */
   .blk h3 {
     display: inline-block;
-    /* No bottom margin: the dotted rule sits directly under the plaque, as it
-       does on the reference, and carries the spacing itself. */
-    margin: 0;
+    /* The plaque is rotated, so its lower-left corner reaches below the slab.
+       With no margin it dug 2-2.5mm into the first row of its own list and,
+       on the tight panel, into the last row of the section above. */
+    margin: .8mm 0 1.6mm;
     /* The reference's plaques carry air around the word — chunky slabs, not
        tight labels — and one shared width per column, not shrink-to-fit. */
     padding: .1em .3em .1em .28em;
@@ -737,7 +745,7 @@ const html = `<!doctype html>
     border-width: .129em .61em .144em .179em;
     border-image: url(img/header-plaque.png) 18 85 20 25 fill stretch;
     color: #111;
-    font-size: 12.5mm; line-height: 1;
+    font-size: 11mm; line-height: 1;
     /* Width is set by tracking, not by the face — see the type note above.
        Barlow Condensed Black measures 0.648 advance/cap; the reference's
        inner face is 0.665, so the inner needs almost nothing. Tracking adds
@@ -790,14 +798,14 @@ const html = `<!doctype html>
      of the nine inner ones. 0.08em of tracking carries Barlow's 0.648 up to
      it. */
   .side-a .blk h3 {
-    min-width: 52mm; font-size: 13.1mm; letter-spacing: -.023em;
+    min-width: 52mm; font-size: 11.5mm; letter-spacing: -.023em;
     font-family: 'PlaqueOut', 'Oswald', system-ui, sans-serif;
   }
   /* The reference sets DIPS smaller than its sibling outer headings (cap 7.2
      against DRINKS/DESSERTS at 9.3) and starts the middle panel 7.7mm lower.
      Uniform sizing pushed this panel's first ink to y=3.6mm against the
      reference's 11.3. margin-top overrides the margin:0 on .blk h3. */
-  .side-a .redhead h3 { min-width: 44mm; font-size: 9.4mm; margin-top: 4.5mm; }
+  .side-a .redhead h3 { min-width: 44mm; font-size: 8.3mm; margin-top: 4.5mm; }
   /* MEAL DEALS is stepped down hard on the reference — its plaque measures
      42px tall against DRINKS' 63px on the same sheet, 0.67x. It sits over the
      widest block on the panel, so at full size it fights the deal cards
@@ -805,7 +813,7 @@ const html = `<!doctype html>
      Scoped ".side-a .dealshead h3" (0,2,1), NOT ".dealshead h3" (0,1,1):
      the plain form loses to ".side-a .blk h3" above and was silently doing
      nothing, which is why this heading measured the same size as DRINKS. */
-  .side-a .dealshead h3 { font-size: 9mm; min-width: 44mm; letter-spacing: -.023em; font-family: 'PlaqueOut', 'Oswald', system-ui, sans-serif; }
+  .side-a .dealshead h3 { font-size: 7.9mm; min-width: 44mm; letter-spacing: -.023em; font-family: 'PlaqueOut', 'Oswald', system-ui, sans-serif; }
   /* Same bold dots as .hrule — these were left on a thin dotted border when
      the header rules were rebuilt, so they read as a hairline. */
   /* Every section on the outer face closes with a dotted rule EXCEPT the one
@@ -848,75 +856,25 @@ const html = `<!doctype html>
      Inset 12mm like the others, the photo ate the column and the prices sat
      11mm further left than every other section on the panel. */
   .side-a .dessertblk .shot.side { right: 2mm; }
-  .shot.mid { position: absolute; top: 50%; translate: 0 -50%; right: 30mm; z-index: 0; }
+  /* right:30mm put this 6mm into the price column, which only read because a
+     blurred shadow was propping the numerals up. Clear of them now. */
+  .shot.mid { position: absolute; top: 50%; translate: 0 -50%; right: 38mm; z-index: 0; }
   .blkrow .items { position: relative; z-index: 1; }
   .shot.below { margin: 3mm auto 0; }
   /* The reference sets the pizza on a gold halftone. Generated, not drawn. */
   .halftone {
     /* Out of the flow and cropped by the panel, so the list gets the whole
        column — which is how the reference fits 32 pizzas at this size. */
-    position: absolute; right: 16mm; bottom: -8mm; display: flex; justify-content: flex-end; align-items: flex-end;
+    /* Below the list's last price row rather than through it. The list runs to
+       the foot of the panel now, so the photograph takes the corner and bleeds
+       off two edges instead of sitting under the numerals. */
+    position: absolute; right: 1mm; bottom: 1mm; display: flex; justify-content: flex-end; align-items: flex-end;
     /* Behind the prices: the reference tucks the pizza under the stuffed-crust
        line rather than over it, and white numerals on a photo are unreadable. */
     z-index: 0;
-    /* The reference grades this by DOT SIZE at full ink — tiny specks at the
-       rim growing to a solid crescent against the food (half-max diameter
-       p10 0.60mm to p90 2.43mm, ratio 4.0, peak channel 255).
-       Two earlier attempts got it wrong in different ways: three grids at
-       three PITCHES all painting at once (a CSS mask applies to the whole
-       element, so nothing was banded) gave a bimodal chain-mail; then one
-       pitch with soft masks gave a dead-even polka dot graded only by
-       opacity — ratio 1.03, peak 204, 8.7% coverage, the kind of pale tint
-       that drops out on press.
-       So: one pitch, one phase, three stepped radii, each on its own element
-       layer with a HARD-edged mask at full alpha. Radius carries the grade;
-       ink stays solid. This layer is the outermost and finest. */
-    background:
-      radial-gradient(circle at center, #e8901a 23%, transparent 24%) 0 0 / 3.4mm 3.4mm;
-    /* Radiates up-and-LEFT out of the crust, filling the gap beside the
-       supplement bar rather than the gutter to its right. */
-    -webkit-mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 80%, transparent 80.5%);
-            mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 80%, transparent 80.5%);
-    padding: 30mm 0 10mm 62mm;
-  }
-  /* Mid and core layers, same pitch and phase, stepped radii. Negative
-     z-index keeps them above the element's own background and behind the
-     pizza, so neither covers the photo. Hard mask stops, not soft: a soft
-     stop fades the ink instead of stepping the dot. */
-  .halftone::before, .halftone::after {
-    content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  }
-  .halftone::before {
-    background: radial-gradient(circle at center, #e8901a 33%, transparent 34%) 0 0 / 3.4mm 3.4mm;
-    -webkit-mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 46%, transparent 47%);
-            mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 46%, transparent 47%);
-  }
-  .halftone::after {
-    background: radial-gradient(circle at center, #e8901a 50%, transparent 51%) 0 0 / 3.4mm 3.4mm;
-    -webkit-mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 24%, transparent 24.5%);
-            mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 24%, transparent 24.5%);
+    padding: 0;
   }
   .blkrow .items { padding-right: var(--slot, 0mm); }
-  /* The reference repeats its halftone behind the right-panel photos. Same
-     dots as the pizza burst, graded away from the picture. */
-  .blkrow.dots::after {
-    content: ''; position: absolute; right: -14mm; top: 50%; translate: 0 -50%;
-    width: 96mm; height: 84mm; z-index: 0;
-    /* Outer/finest ring — see .halftone for why the grade is radius, not
-       opacity. Hard mask edge, full alpha. */
-    background:
-      radial-gradient(circle at center, #e8901a 14%, transparent 15%) 0 0 / 3.4mm 3.4mm;
-    -webkit-mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 78%, transparent 78.5%);
-            mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 78%, transparent 78.5%);
-  }
-  .blkrow.dots::before {
-    content: ''; position: absolute; right: -14mm; top: 50%; translate: 0 -50%;
-    width: 96mm; height: 84mm; z-index: 0; pointer-events: none;
-    background: radial-gradient(circle at center, #e8901a 30%, transparent 31%) 0 0 / 3.4mm 3.4mm;
-    -webkit-mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 44%, transparent 44.5%);
-            mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 44%, transparent 44.5%);
-  }
-  .blkrow.dots::marker { content: none; }
   .blkrow.dots .shot { position: absolute; z-index: 1; }
 
   .items { list-style: none; margin: 0; padding: 0; }
@@ -978,7 +936,6 @@ const html = `<!doctype html>
   .items.sized li { gap: 4mm; }
   .items.sized .p2 {
     width: 14mm; text-align: center; font-weight: 500; color: #fff; white-space: nowrap;
-    text-shadow: 0 0 1.2mm #000, 0 0 .5mm #000;
   }
 
   /* The reference floats the size chips clear of the plaque, right-aligned so
@@ -1021,7 +978,12 @@ const html = `<!doctype html>
   .supp i { flex: 1; }
   /* Same width, size and gutter as .items.sized .p2, so they land on the
      11" and 13" axes rather than floating right of them. */
-  .supp b { width: 14mm; text-align: center; color: #fff; font-size: 3.8mm; text-shadow: 0 0 1.2mm #000, 0 0 .5mm #000; }
+  /* On the bar, not naked on the photograph beneath it — the same reason the
+     bar itself is red. Was white-on-photo held together by a blurred shadow. */
+  .supp b {
+    width: 14mm; text-align: center; color: #fdf3d8; font-size: 3.8mm;
+    background: #dd1516; padding: 1.4mm 0;
+  }
 
   /* The reference singles Dips out with a red plaque. It is its own asset —
      tinted off the gold one by luminance, since a CSS hue-rotate took the gold
@@ -1058,8 +1020,15 @@ const html = `<!doctype html>
      does — the panel's own overflow:hidden crops it at the bleed. Bottom-
      anchored so the salad bowl lands level with the end of the Salad list. */
   .sscol {
-    position: absolute; right: -4mm; bottom: 3mm; z-index: 0;
-    height: auto; display: block;
+    /* Explicit height: an <img> is a replaced element, so top+bottom alone
+       leave it at its intrinsic aspect instead of stretching. */
+    position: absolute; right: -4mm; top: 106mm; height: 194mm; z-index: 0;
+    width: 62mm; display: block;
+    /* The column is 2:1; filling from the top of Sides to the foot of the
+       panel needs a 3:1 box, so it is cropped left/right rather than shrunk —
+       the food stays at full size and fills the black instead of floating in
+       it. 62mm keeps it clear of the price column. */
+    object-fit: contain; object-position: 50% 50%;
     filter: drop-shadow(0 1.2mm 1.8mm rgba(0,0,0,.55));
   }
   .kidsmark {
@@ -1147,6 +1116,16 @@ const html = `<!doctype html>
      two lines. A wrapped title reads; letters sitting on a dark notch do not. */
   .deal b { padding-right: 4.5mm; font-size: 4.8mm; }
   .pzcol { position: relative; z-index: 1; }
+  /* 32 pizzas left 20.5mm of dead panel below the stuffed-crust bar. Opening
+     each row by a third of a millimetre spends half of that on the list
+     itself rather than leaving it black. Scoped to this column so no other
+     section's leading moves. */
+  .pzcol .items.withdesc li { padding: .28mm 0; }
+  /* NO text-shadow anywhere on this sheet. A blurred shadow exports as a
+     transparency group, and viewers render it inconsistently — in Preview it
+     came out as hard black boxes that swallowed the bottom of every pizza name
+     and of the kebab prices. What a viewer does that with, a RIP may too.
+     Legibility over a photo is solved by moving the photo instead. */
   .dealshead .headrow { justify-content: center; }
   .center { text-align: center; }
   /* Size lives on ".side-a .dealshead h3" above — a bare ".dealshead h3"
@@ -1169,7 +1148,7 @@ const html = `<!doctype html>
   .side-a .panel.cover { padding: 0; flex-direction: row; overflow: hidden; }
   .coverbody {
     flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center;
-    text-align: center; padding: 8mm 5mm 15mm 8mm;
+    text-align: center; padding: 6mm 5mm 16mm 7mm;
   }
   .spine {
     /* Floods the bleed on its three outer edges and carries a faint weave.
@@ -1179,7 +1158,7 @@ const html = `<!doctype html>
        where the spine starts and runs the spine unbroken to the sheet edge —
        this is the edge you actually see on the folded piece. */
     position: relative; z-index: 2;
-    flex: none; width: 32mm;
+    flex: none; width: 24mm;
     background:
       repeating-linear-gradient(45deg, rgba(0,0,0,.05) 0 .5mm, transparent .5mm 1.6mm),
       repeating-linear-gradient(-45deg, rgba(0,0,0,.05) 0 .5mm, transparent .5mm 1.6mm),
@@ -1207,7 +1186,7 @@ const html = `<!doctype html>
      ~143mm, matching. */
   .spine b {
     font-family: 'Montserrat', system-ui, sans-serif; font-weight: 700;
-    font-size: 23.7mm; letter-spacing: .10em; text-transform: uppercase;
+    font-size: 17.6mm; letter-spacing: .10em; text-transform: uppercase;
   }
   .spine span { font-size: 4.6mm; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #fff; }
 
@@ -1219,32 +1198,32 @@ const html = `<!doctype html>
   /* The supplied wordmark, keyed to transparency so the panel's own black and
      its faint yellow glow read through instead of a slightly-off black box.
      105mm wide keeps the source above 300dpi at print size. */
-  .brandmark { width: 88mm; height: auto; display: block; }
-  .coverrule { width: 100%; margin-top: 2.5mm; border-top: .5mm dotted rgba(255,255,255,.55); }
+  .brandmark { width: 80mm; height: auto; display: block; }
+  .coverrule { width: 100%; margin-top: 1.5mm; border-top: .5mm dotted rgba(255,255,255,.55); }
 
-  .tel { margin-top: 4mm; }
+  .tel { margin-top: 2mm; }
   /* Cream, not white: the reference ties this line to the big numerals
      directly beneath it, and white broke the pair apart. */
-  .telline { display: flex; align-items: center; justify-content: center; font-size: 13mm; font-weight: 600; letter-spacing: .02em; color: #f8e3bf; }
+  .telline { display: flex; align-items: center; justify-content: center; font-size: 9.5mm; font-weight: 600; letter-spacing: .02em; color: #f8e3bf; }
   /* The display face draws well above its em box, so the number's glyphs ran over
      the line above even though the two boxes never touched. The margin is
      clearance for the overshoot, not decoration — don't trim it. */
-  .tel b { display: block; margin-top: 2mm; font-size: 29.5mm; line-height: 1; letter-spacing: .04em; color: #f8e3bf; }
+  .tel b { display: block; margin-top: 1.5mm; font-size: 21mm; line-height: 1; letter-spacing: .04em; color: #f8e3bf; }
 
   /* The cover's straps are the same device as a section header, so they take
      the same plaque — a flat yellow bar next to a bitten one would read as an
      oversight. Text is centred here, so the left/right insets match. */
-  .strapline { display: flex; align-items: center; gap: .8mm; margin: 6mm 0 3mm; align-self: flex-start; }
+  .strapline { display: flex; align-items: center; gap: .8mm; margin: 2mm 0 1.5mm; align-self: flex-start; }
   .strapline .strap { margin: 0; min-width: 56mm; font-size: 5.2mm; }
   .strap.plain {
-    border: 0; background: none; padding: 0; margin: 5mm 0 2mm;
+    border: 0; background: none; padding: 0; margin: 2.5mm 0 1mm;
     color: #ffe000; font-size: 5.8mm;
   }
   .strap.red { border-image-source: url(img/header-plaque-red.png); color: #fdf3d8; }
   .strap.website { font-size: 5.4mm; letter-spacing: .02em; padding: .25em .8em; }
   .strap {
     display: flex; align-items: center; justify-content: center;
-    margin: 6mm 0 3mm; padding: .2em .35em .16em .35em;
+    margin: 3mm 0 1.5mm; padding: .2em .35em .16em .35em;
     border-style: solid; border-color: transparent;
     border-width: .11em .5em .12em .15em;
     border-image: url(img/header-plaque.png) 18 85 20 25 fill stretch;
@@ -1256,30 +1235,69 @@ const html = `<!doctype html>
   .hours div { display: contents; }
   /* Straight from the shop's config, not written here — the same wording the
      website shows at checkout. */
+  /* One line, pushed to the foot of the column so it sits hard against the
+     ticker and the photograph above it gets the height instead. */
   .allergy {
-    margin: 9mm 0 0; padding: 2.4mm 4mm;
+    margin: 0; padding: 1.3mm 3mm; width: 100%;
     border: .35mm solid rgba(255,196,0,.55); border-radius: 1.5mm;
-    font-size: 2.9mm; line-height: 1.45; font-weight: 600; color: #e8dcc6;
+    font-size: 2.55mm; line-height: 1.3; font-weight: 600; color: #e8dcc6;
+    white-space: nowrap; background: rgba(3,3,3,.86);
   }
   .allergy b { color: #f9b902; text-transform: uppercase; letter-spacing: .08em; }
   .hours span, .hours b { font-size: 3.9mm; font-weight: 600; }
   .hours span { text-align: left; }
   .hours b { color: #fff; text-align: left; }
 
-  .qrwrap { display: flex; align-items: center; justify-content: center; gap: 3mm; padding-top: 3mm; }
+  .qrwrap { display: flex; align-items: center; justify-content: center; gap: 3mm; padding-top: 0; }
   .qrtxt .arrow { display: block; font-size: 6mm; color: #f9b902; line-height: 1; }
   /* Reserved for the pizza / basil / tomato photograph the reference floods the
      lower half of the cover with. Empty until that asset exists. */
   /* A spacer for the missing cover photograph: it absorbs slack, it must not
      demand any — a min-height here pushed the cover 10mm past its box and
      under the footer ticker. */
-  .coverart { flex: 1; min-height: 0; }
+  /* A LAYER on the panel, not a flex item: as a flex child it got whatever
+     height the stack above it left over, which was almost none, and the photo
+     was pushed off the bottom. It floods the foot of the cover, bleeds off the
+     left, right and bottom edges, and sits behind the type. */
+  /* A LAYER on the panel, not a flex item: as a flex child it got whatever
+     height the stack above it left over, which was almost none.
+     bottom is 0, NOT a negative — an absolutely positioned element pushed
+     below the page box is DROPPED ENTIRELY by Chromium's print path, while
+     rendering perfectly on screen. At -4mm this photograph was in preview.png
+     and absent from the PDF. Zero here is already in the bleed: the panel's
+     padding box ends 16mm above the sheet edge and the ticker covers the rest.
+     Explicit mm on the image too — percentage heights on a replaced element
+     are another thing print resolves differently from screen. */
+  /* The panel has padding:0, so these inset from its own edges: right 24mm is
+     exactly the spine's left edge, and bottom 22.4mm is exactly the top of the
+     allergy line. The photograph therefore meets both with no black seam, and
+     nothing is laid over it.
+     bottom is NOT negative — an absolutely positioned element pushed below the
+     page box is dropped entirely by Chromium's print path while rendering
+     perfectly on screen, which is how this photo came to be in preview.png and
+     absent from the PDF. */
+  .coverart {
+    position: absolute; left: 0; right: 24mm; bottom: 22.4mm; height: 178.8mm;
+    z-index: 0; pointer-events: none; overflow: hidden;
+  }
+  .coverart img {
+    /* The WHOLE photograph, uncropped. The box is cut to the image's own
+       aspect (1023x1537), so 119mm wide is 178.8mm tall and nothing is
+       trimmed off any edge. Explicit millimetres, not percentages — a
+       percentage height on a replaced element resolves differently in
+       Chromium's print path and drops the image from the PDF. */
+    width: 119mm; height: 178.8mm; object-fit: fill;
+  }
+  .coverbody { position: relative; z-index: 1; }
   .qr { width: 30mm; height: 30mm; background: #fff; padding: 1.5mm; border-radius: 1.5mm; }
   .qr svg { width: 100%; height: 100%; display: block; }
   .qrtxt { text-align: right; }
   .qrtxt b { display: block; font-size: 4.6mm; color: #f9b902; transform: skewX(-8deg); }
   .qrtxt span { font-size: 2.9mm; font-weight: 700; }
-  .allergy { margin-top: 6mm; }
+  /* The flood now runs behind this, and small type on a lit pizza crust is
+     unreadable. A dark plate under it keeps the notice legible without
+     covering the photograph. */
+  .allergy { margin-top: auto; }
 
   /* ---- foot ticker ---- */
   .ticker {
@@ -1306,7 +1324,7 @@ ${/* Section order and panel assignment follow the designer's artwork exactly:
       Don't reshuffle these without checking the reference sheets again. */''}
 ${page('side-a', `
   <div class="panel">
-    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, firstOnly: /\bcan\b/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], slot: 44, chipsBelow: true })}
+    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, firstOnly: /\bcan\b/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], img: shot('pepsi-coke', 34), slot: 44, chipsBelow: true })}
     ${milkshakes()}
     ${list('desserts', { desc: true, img: shot('cake', 46), slot: 52, cls: 'dessertblk norule' })}
     ${kidsBox()}
@@ -1325,7 +1343,7 @@ ${page('side-b', `
       ${sizedList('pizza', 'size', ['11"', '13"'], { tone: ['red', 'red'], nameTone: 'gold', slot: 5 })}
       ${stuffedCrust()}
     </div>
-    <div class="halftone">${shot('pizza', 82, 'below')}</div>
+    <div class="halftone">${shot('pizza', 50, 'below')}</div>
   </div>
   <div class="panel tight">
     ${sizedList('garlic-bread', 'size', ['11"', '13"'], { tone: ['red', 'red'], slot: 14 })}
@@ -1336,7 +1354,7 @@ ${page('side-b', `
   </div>
   <div class="panel">
     ${sizedList('burgers', 'size', ['1/4 lb', '1/2 lb'], { slot: 12, firstOnly: /(¼|1\/4)\s*lb/i, secondOnly: /(½|1\/2)\s*lb/i, defaultCol: null })}
-    ${list('sides', { dense: true, title: 'Sides', slot: 56, dots: true })}
+    ${list('sides', { dense: true, title: 'Sides', slot: 56 })}
     ${list('salad', { dense: true, desc: true, slot: 56, cls: 'saladblk' })}
     ${sidesSaladColumn()}
   </div>

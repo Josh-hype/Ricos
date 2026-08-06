@@ -42,9 +42,27 @@ const hits = await p.evaluate(() => {
       }
     });
   });
-  document.querySelectorAll('.shot.side').forEach((img) => {
+  /* .below (the pizza) was never covered here: only .side was tested, so the
+     one photo the lists are allowed to run over was the one nothing checked.
+     It is treated like .mid — overlap is the design, but only where the text
+     carries a shadow to stay legible on the photo. */
+  document.querySelectorAll('.shot.side, .shot.below').forEach((img) => {
     const ir = img.getBoundingClientRect();
-    img.closest('.blkrow').querySelectorAll('.n, .p, .p2').forEach((el) => {
+    const soft = img.classList.contains('below');
+    const scope = img.closest('.blkrow') || img.closest('.panel');
+    scope.querySelectorAll('.n, .p, .p2, .supp b').forEach((el) => {
+      /* Text may sit over the pizza only where it carries its own OPAQUE
+         background — a chip or a plate. The rule used to accept a blurred
+         text-shadow instead; blurred shadows export as transparency groups and
+         viewers render them inconsistently (Preview drew them as hard black
+         boxes across the bottom of every pizza name), so there are none left on
+         this sheet and the exemption is a solid background or nothing. */
+      if (soft) {
+        const bg = getComputedStyle(el).backgroundColor;
+        const m = /rgba?\(([^)]+)\)/.exec(bg);
+        const a = m ? Number(m[1].split(',')[3] ?? 1) : 0;
+        if (a > 0.85) return;
+      }
       for (const r of inkRects(el)) {
         if (over(r, ir)) { hits.push(`"${el.textContent.trim().slice(0, 40)}" runs under ${img.getAttribute('src')}`); break; }
       }

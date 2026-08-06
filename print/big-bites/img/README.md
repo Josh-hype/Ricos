@@ -39,6 +39,21 @@ replaced the separate `sides.png` and `salad.png` cutouts, which are gone.
 Both arrived on a 1024x1536 canvas with large transparent margins and were
 trimmed to their own content so their placement is predictable.
 
+`pepsi-coke.png` arrived as a **JPEG with the transparency checkerboard
+flattened into it** — dropped on the panel it would have printed a grey
+chequered rectangle round the cans. The background is keyed out here by
+flood-filling from the borders (a global key would punch holes through the
+Coca-Cola script and the Pepsi highlights, which are also near-white), grown
+into the drop shadow, then closed: the Coke can's white highlight reaches the
+top edge, so the flood ran down it and carved a gash out of the can until a
+morphological closing sealed it.
+
+`pizza-hero.png` carried a watermark-shaped squiggle on one pepperoni. A
+high-pass over the whole frame shows no tiled overlay, so it is a generation
+artifact rather than a stock watermark — these models learnt from watermarked
+training data and reproduce the shape. It is retouched out with a local
+median; at print size that slice is 6mm across.
+
 Two of the items on that sheet are **deliberately not here**:
 
 - **The Pepsi and Coca-Cola cans.** The generator mis-spelled both brand names

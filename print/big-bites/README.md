@@ -105,10 +105,11 @@ runs on tighter leading (`.panel.tight`) — again, as the reference does.
 
 ## Assets still needed
 
-Five gaps left. The owner supplied the **Kids Menu lockup** and the
-**Sides/Salad food column** on 2026-08-06; both are in place. The column
-carries the burger, the chips-and-nuggets and the salad bowl in one cutout,
-so it replaced the separate `sides.png` and `salad.png` placements.
+Three gaps left. The owner supplied the **Kids Menu lockup**, the
+**Sides/Salad food column**, the **drink cans** and the **cover pizza** on
+2026-08-06; all four are in place. The column carries the burger, the
+chips-and-nuggets and the salad bowl in one cutout, so it replaced the
+separate `sides.png` and `salad.png` placements.
 
 Each remaining gap is a hole the reference fills and this sheet currently
 leaves empty — nothing is faked or substituted.
@@ -118,8 +119,6 @@ leaves empty — nothing is faked or substituted.
 | 1 | **Burger, on its own** | Burgers, inner right panel — the panel's empty upper right | Transparent PNG, ≥1200px wide. The supplied Sides/Salad column has a burger at its top, but the column is 2:1 tall and at panel width it only reaches as high as the Sides list; covering Burgers too would need it 143mm wide, wider than the panel |
 | 2 | **Garlic bread** | Garlic Bread, inner middle panel | Transparent PNG, ≥1000px wide |
 | 3 | **Parmesan** | Parmesan, inner middle panel | Transparent PNG, ≥1000px wide |
-| 4 | **Drink cans** | Drinks, outer left panel | Real Pepsi + Coca-Cola. The generated pair spell "pepc" and a garbled Coca-Cola script — a printed menu carrying a botched trademark is not something to send to press. The brands' own press images are the safe source |
-| 6 | **Cover background** | Lower half of the cover panel | The pizza / basil / tomato flood. No transparency needed, but it must be big: ~1500 × 1800px |
 | 7 | **Bigger burger hero** | Above Meal Deals — already in place, but soft | The current file is 635px, which is 149dpi at 108mm — every build prints the dpi table, and the build throws below 140. ≥1200px wide puts it over 300 |
 
 Everything else on the sheet is either live menu data or generated here (the
@@ -130,9 +129,10 @@ QR) and needs no artwork.
 
     node print/big-bites/check-collisions.mjs
     python3 print/big-bites/verify-qr.py
+    python3 print/big-bites/verify-preview.py
 
-**`render.mjs` runs both of these itself** and refuses to write the PDF if
-either fails — they are documented here because they are useful on their own,
+**`render.mjs` runs all three itself** and refuses to write the PDF if any
+fails — they are documented here because they are useful on their own,
 not because anyone has to remember them.
 
 The first reports any item name or price that runs under a food photo. It
@@ -144,6 +144,16 @@ data. The build can only compare two strings it was told; this reads the QR.
 `config.json` records that the printed brand guidelines already carry a domain
 the shop does not own, so a QR pointing at the wrong host is a mistake this
 project has the shape of already.
+
+The third compares `preview.png` against a raster of the PDF, block by block.
+The preview is the only thing anyone reviews, and it comes from a *different*
+code path — screen media, its own browser context. They diverged silently once:
+an element positioned below the page box (`bottom: -4mm`) renders on screen and
+is **dropped entirely** by Chromium's print path, so the cover's pizza was in
+the preview and absent from the PDF while every other gate passed — because
+every other gate reads the PDF or the DOM, and neither disagreed with itself.
+A global mean does not move enough to notice one missing photograph; a grid of
+blocks does. Good build: worst block 12/255. With that bug: 88.
 
 `menu.html` is **generated and gitignored**. It used to be committed, which
 meant a price hand-patched into it survived in git and reprinted forever; the
