@@ -527,18 +527,13 @@ const cover = `
       </div>
       <div class="strap plain">Delivery Service or Collection</div>
       <!-- The minimum is DELIVERY-only (functions/_lib/totals.js applies it
-           under fulfillment === 'delivery'), and the service charge is added
-           to every WEB order including collection — the till suppresses it.
-           Printing a bare "Minimum order £12" under a line that offers both
-           read as though collection carried it too, and the charge appeared
-           nowhere at all. Both are derived, so a config change reprints. -->
+           under fulfillment === 'delivery'), so it says so rather than reading
+           as though collection carried it too. The £1 online service charge is
+           deliberately NOT printed here — the owner's call, 2026-08-06. -->
       <p class="fine">
         Order on our website for collection or delivery.<br />
         Easingwold — £${perMile.toFixed(2)} per mile (rounded up), up to ${maxMiles} miles.<br />
-        Minimum delivery order £${(del.minimumOrderPence / 100).toFixed(2).replace(/\.00$/, '')}.${
-          cfg.serviceFeePence
-            ? `<br />Online orders add a £${(cfg.serviceFeePence / 100).toFixed(2)} service charge.`
-            : ''}
+        Minimum delivery order £${(del.minimumOrderPence / 100).toFixed(2).replace(/\.00$/, '')}.
       </p>
       <div class="strapline">${icon('clock')}<div class="strap">Opening Time</div></div>
       <div class="hours">${hours}</div>
@@ -1143,7 +1138,7 @@ const html = `<!doctype html>
   .side-a .panel.cover { padding: 0; flex-direction: row; overflow: hidden; }
   .coverbody {
     flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center;
-    text-align: center; padding: 8mm 5mm 15mm 8mm;
+    text-align: center; padding: 6mm 5mm 16mm 7mm;
   }
   .spine {
     /* Floods the bleed on its three outer edges and carries a faint weave.
@@ -1153,7 +1148,7 @@ const html = `<!doctype html>
        where the spine starts and runs the spine unbroken to the sheet edge —
        this is the edge you actually see on the folded piece. */
     position: relative; z-index: 2;
-    flex: none; width: 32mm;
+    flex: none; width: 24mm;
     background:
       repeating-linear-gradient(45deg, rgba(0,0,0,.05) 0 .5mm, transparent .5mm 1.6mm),
       repeating-linear-gradient(-45deg, rgba(0,0,0,.05) 0 .5mm, transparent .5mm 1.6mm),
@@ -1181,7 +1176,7 @@ const html = `<!doctype html>
      ~143mm, matching. */
   .spine b {
     font-family: 'Montserrat', system-ui, sans-serif; font-weight: 700;
-    font-size: 23.7mm; letter-spacing: .10em; text-transform: uppercase;
+    font-size: 17.6mm; letter-spacing: .10em; text-transform: uppercase;
   }
   .spine span { font-size: 4.6mm; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #fff; }
 
@@ -1193,32 +1188,32 @@ const html = `<!doctype html>
   /* The supplied wordmark, keyed to transparency so the panel's own black and
      its faint yellow glow read through instead of a slightly-off black box.
      105mm wide keeps the source above 300dpi at print size. */
-  .brandmark { width: 88mm; height: auto; display: block; }
-  .coverrule { width: 100%; margin-top: 2.5mm; border-top: .5mm dotted rgba(255,255,255,.55); }
+  .brandmark { width: 80mm; height: auto; display: block; }
+  .coverrule { width: 100%; margin-top: 1.5mm; border-top: .5mm dotted rgba(255,255,255,.55); }
 
-  .tel { margin-top: 4mm; }
+  .tel { margin-top: 2mm; }
   /* Cream, not white: the reference ties this line to the big numerals
      directly beneath it, and white broke the pair apart. */
-  .telline { display: flex; align-items: center; justify-content: center; font-size: 13mm; font-weight: 600; letter-spacing: .02em; color: #f8e3bf; }
+  .telline { display: flex; align-items: center; justify-content: center; font-size: 9.5mm; font-weight: 600; letter-spacing: .02em; color: #f8e3bf; }
   /* The display face draws well above its em box, so the number's glyphs ran over
      the line above even though the two boxes never touched. The margin is
      clearance for the overshoot, not decoration — don't trim it. */
-  .tel b { display: block; margin-top: 2mm; font-size: 29.5mm; line-height: 1; letter-spacing: .04em; color: #f8e3bf; }
+  .tel b { display: block; margin-top: 1.5mm; font-size: 21mm; line-height: 1; letter-spacing: .04em; color: #f8e3bf; }
 
   /* The cover's straps are the same device as a section header, so they take
      the same plaque — a flat yellow bar next to a bitten one would read as an
      oversight. Text is centred here, so the left/right insets match. */
-  .strapline { display: flex; align-items: center; gap: .8mm; margin: 6mm 0 3mm; align-self: flex-start; }
+  .strapline { display: flex; align-items: center; gap: .8mm; margin: 2mm 0 1.5mm; align-self: flex-start; }
   .strapline .strap { margin: 0; min-width: 56mm; font-size: 5.2mm; }
   .strap.plain {
-    border: 0; background: none; padding: 0; margin: 5mm 0 2mm;
+    border: 0; background: none; padding: 0; margin: 2.5mm 0 1mm;
     color: #ffe000; font-size: 5.8mm;
   }
   .strap.red { border-image-source: url(img/header-plaque-red.png); color: #fdf3d8; }
   .strap.website { font-size: 5.4mm; letter-spacing: .02em; padding: .25em .8em; }
   .strap {
     display: flex; align-items: center; justify-content: center;
-    margin: 6mm 0 3mm; padding: .2em .35em .16em .35em;
+    margin: 3mm 0 1.5mm; padding: .2em .35em .16em .35em;
     border-style: solid; border-color: transparent;
     border-width: .11em .5em .12em .15em;
     border-image: url(img/header-plaque.png) 18 85 20 25 fill stretch;
@@ -1230,17 +1225,20 @@ const html = `<!doctype html>
   .hours div { display: contents; }
   /* Straight from the shop's config, not written here — the same wording the
      website shows at checkout. */
+  /* One line, pushed to the foot of the column so it sits hard against the
+     ticker and the photograph above it gets the height instead. */
   .allergy {
-    margin: 9mm 0 0; padding: 2.4mm 4mm;
+    margin: 0; padding: 1.3mm 3mm; width: 100%;
     border: .35mm solid rgba(255,196,0,.55); border-radius: 1.5mm;
-    font-size: 2.9mm; line-height: 1.45; font-weight: 600; color: #e8dcc6;
+    font-size: 2.55mm; line-height: 1.3; font-weight: 600; color: #e8dcc6;
+    white-space: nowrap; background: rgba(3,3,3,.86);
   }
   .allergy b { color: #f9b902; text-transform: uppercase; letter-spacing: .08em; }
   .hours span, .hours b { font-size: 3.9mm; font-weight: 600; }
   .hours span { text-align: left; }
   .hours b { color: #fff; text-align: left; }
 
-  .qrwrap { display: flex; align-items: center; justify-content: center; gap: 3mm; padding-top: 3mm; }
+  .qrwrap { display: flex; align-items: center; justify-content: center; gap: 3mm; padding-top: 0; }
   .qrtxt .arrow { display: block; font-size: 6mm; color: #f9b902; line-height: 1; }
   /* Reserved for the pizza / basil / tomato photograph the reference floods the
      lower half of the cover with. Empty until that asset exists. */
@@ -1260,16 +1258,20 @@ const html = `<!doctype html>
      padding box ends 16mm above the sheet edge and the ticker covers the rest.
      Explicit mm on the image too — percentage heights on a replaced element
      are another thing print resolves differently from screen. */
+  /* The panel has padding:0, so these inset from its own edges: right 24mm is
+     exactly the spine's left edge, and bottom 22.4mm is exactly the top of the
+     allergy line. The photograph therefore meets both with no black seam, and
+     nothing is laid over it.
+     bottom is NOT negative — an absolutely positioned element pushed below the
+     page box is dropped entirely by Chromium's print path while rendering
+     perfectly on screen, which is how this photo came to be in preview.png and
+     absent from the PDF. */
   .coverart {
-    position: absolute; left: -9mm; right: -9mm; bottom: 0; height: 96mm;
+    position: absolute; left: 0; right: 24mm; bottom: 22.4mm; height: 62mm;
     z-index: 0; pointer-events: none; overflow: hidden;
   }
   .coverart img {
-    width: 161mm; height: 96mm; object-fit: cover; object-position: 50% 100%;
-    /* Fades in from the top so the photograph rises out of the panel black
-       instead of starting on a horizontal line across the cover. */
-    -webkit-mask: linear-gradient(to bottom, transparent 0, rgba(0,0,0,.5) 26%, #000 52%);
-            mask: linear-gradient(to bottom, transparent 0, rgba(0,0,0,.5) 26%, #000 52%);
+    width: 119mm; height: 62mm; object-fit: cover; object-position: 50% 62%;
   }
   .coverbody { position: relative; z-index: 1; }
   .qr { width: 30mm; height: 30mm; background: #fff; padding: 1.5mm; border-radius: 1.5mm; }
@@ -1280,7 +1282,7 @@ const html = `<!doctype html>
   /* The flood now runs behind this, and small type on a lit pizza crust is
      unreadable. A dark plate under it keeps the notice legible without
      covering the photograph. */
-  .allergy { margin-top: 6mm; background: rgba(3,3,3,.86); border-radius: 1.5mm; }
+  .allergy { margin-top: auto; }
 
   /* ---- foot ticker ---- */
   .ticker {
