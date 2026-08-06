@@ -559,7 +559,7 @@ const html = `<!doctype html>
      adjustable after the fact (letter-spacing, below); the weight is not,
      so the weight picks the face. */
   body { font-family: 'Oswald', system-ui, sans-serif; }
-  .blk h3, .strap, .spine b, .kidsmark, .tel b, .qrtxt b {
+  .blk h3, .strap, .kidsmark, .tel b, .qrtxt b {
     font-family: 'BarlowCond', 'Oswald', system-ui, sans-serif; font-weight: 900;
   }
   /* Marketing copy — not the price lists — is a normal-width sans on the
@@ -735,7 +735,11 @@ const html = `<!doctype html>
        from a stroke: (0.2686*c + w)/(c + w) = 0.3218 gives w = 0.055em. */
     -webkit-text-stroke: .055em currentColor;
   }
-  .side-a .redhead h3 { min-width: 56mm; }
+  /* The reference sets DIPS smaller than its sibling outer headings (cap 7.2
+     against DRINKS/DESSERTS at 9.3) and starts the middle panel 7.7mm lower.
+     Uniform sizing pushed this panel's first ink to y=3.6mm against the
+     reference's 11.3. margin-top overrides the margin:0 on .blk h3. */
+  .side-a .redhead h3 { min-width: 44mm; font-size: 9.4mm; margin-top: 6mm; }
   /* MEAL DEALS is stepped down hard on the reference — its plaque measures
      42px tall against DRINKS' 63px on the same sheet, 0.67x. It sits over the
      widest block on the panel, so at full size it fights the deal cards
@@ -797,30 +801,42 @@ const html = `<!doctype html>
     /* Behind the prices: the reference tucks the pizza under the stuffed-crust
        line rather than over it, and white numerals on a photo are unreadable. */
     z-index: 0;
-    /* Dots grow toward the food and thin outward. THREE grids at three
-       different pitches was the original idea and it did not work: a CSS mask
-       applies to the whole element, so all three painted everywhere at once
-       and the field came out bimodal — 0.29mm satellites sitting between
-       2.3mm primaries, reading as basket-weave rather than a spray. (Those
-       satellites were also too fine to hold on press.)
-       Same pitch and same phase on both layers instead, differing only in
-       radius: exactly one dot per cell, big near the food (::before, masked
-       to the core) and small away from it. */
+    /* The reference grades this by DOT SIZE at full ink — tiny specks at the
+       rim growing to a solid crescent against the food (half-max diameter
+       p10 0.60mm to p90 2.43mm, ratio 4.0, peak channel 255).
+       Two earlier attempts got it wrong in different ways: three grids at
+       three PITCHES all painting at once (a CSS mask applies to the whole
+       element, so nothing was banded) gave a bimodal chain-mail; then one
+       pitch with soft masks gave a dead-even polka dot graded only by
+       opacity — ratio 1.03, peak 204, 8.7% coverage, the kind of pale tint
+       that drops out on press.
+       So: one pitch, one phase, three stepped radii, each on its own element
+       layer with a HARD-edged mask at full alpha. Radius carries the grade;
+       ink stays solid. This layer is the outermost and finest. */
     background:
-      radial-gradient(circle at center, #e8901a 22%, transparent 23%) 0 0 / 3.4mm 3.4mm;
+      radial-gradient(circle at center, #e8901a 23%, transparent 24%) 0 0 / 3.4mm 3.4mm;
     /* Radiates up-and-LEFT out of the crust, filling the gap beside the
        supplement bar rather than the gutter to its right. */
-    -webkit-mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 18%, rgba(0,0,0,.7) 40%, rgba(0,0,0,.3) 64%, transparent 88%);
-            mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 18%, rgba(0,0,0,.7) 40%, rgba(0,0,0,.3) 64%, transparent 88%);
+    -webkit-mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 80%, transparent 80.5%);
+            mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 80%, transparent 80.5%);
     padding: 30mm 0 10mm 62mm;
   }
-  /* The big-dot layer. ::before paints after the element background and before
-     the pizza, so it never covers the photo. */
+  /* Mid and core layers, same pitch and phase, stepped radii. Negative
+     z-index keeps them above the element's own background and behind the
+     pizza, so neither covers the photo. Hard mask stops, not soft: a soft
+     stop fades the ink instead of stepping the dot. */
+  .halftone::before, .halftone::after {
+    content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  }
   .halftone::before {
-    content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
-    background: radial-gradient(circle at center, #e8901a 38%, transparent 39%) 0 0 / 3.4mm 3.4mm;
-    -webkit-mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 10%, rgba(0,0,0,.55) 30%, transparent 58%);
-            mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 10%, rgba(0,0,0,.55) 30%, transparent 58%);
+    background: radial-gradient(circle at center, #e8901a 33%, transparent 34%) 0 0 / 3.4mm 3.4mm;
+    -webkit-mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 46%, transparent 47%);
+            mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 46%, transparent 47%);
+  }
+  .halftone::after {
+    background: radial-gradient(circle at center, #e8901a 50%, transparent 51%) 0 0 / 3.4mm 3.4mm;
+    -webkit-mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 24%, transparent 24.5%);
+            mask: radial-gradient(ellipse 66% 62% at 74% 64%, #000 24%, transparent 24.5%);
   }
   .blkrow .items { padding-right: var(--slot, 0mm); }
   /* The reference repeats its halftone behind the right-panel photos. Same
@@ -828,19 +844,21 @@ const html = `<!doctype html>
   .blkrow.dots::after {
     content: ''; position: absolute; right: -14mm; top: 50%; translate: 0 -50%;
     width: 96mm; height: 84mm; z-index: 0;
+    /* Outer/finest ring — see .halftone for why the grade is radius, not
+       opacity. Hard mask edge, full alpha. */
     background:
-      radial-gradient(circle at center, #e8901a 22%, transparent 23%) 0 0 / 3.4mm 3.4mm;
-    /* Graded so it dissolves rather than ending on a straight edge. */
-    -webkit-mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 14%, rgba(0,0,0,.62) 38%, rgba(0,0,0,.22) 62%, transparent 82%);
-            mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 14%, rgba(0,0,0,.62) 38%, rgba(0,0,0,.22) 62%, transparent 82%);
+      radial-gradient(circle at center, #e8901a 14%, transparent 15%) 0 0 / 3.4mm 3.4mm;
+    -webkit-mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 78%, transparent 78.5%);
+            mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 78%, transparent 78.5%);
   }
   .blkrow.dots::before {
     content: ''; position: absolute; right: -14mm; top: 50%; translate: 0 -50%;
     width: 96mm; height: 84mm; z-index: 0; pointer-events: none;
-    background: radial-gradient(circle at center, #e8901a 38%, transparent 39%) 0 0 / 3.4mm 3.4mm;
-    -webkit-mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 8%, rgba(0,0,0,.55) 26%, transparent 52%);
-            mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 8%, rgba(0,0,0,.55) 26%, transparent 52%);
+    background: radial-gradient(circle at center, #e8901a 30%, transparent 31%) 0 0 / 3.4mm 3.4mm;
+    -webkit-mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 44%, transparent 44.5%);
+            mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 44%, transparent 44.5%);
   }
+  .blkrow.dots::marker { content: none; }
   .blkrow.dots .shot { position: absolute; z-index: 1; }
 
   .items { list-style: none; margin: 0; padding: 0; }
@@ -1012,7 +1030,7 @@ const html = `<!doctype html>
   /* ---- meal deal boxes ---- */
   /* The deals are the upsell and the reference gives them a third of the
      panel, so they're sized to fill rather than left as small boxes. */
-  .deals { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; margin-bottom: 12mm; }
+  .deals { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; margin-bottom: 11mm; }
   /* The reference runs its cards from under the hero photo down to the footer;
      letting the grid grow fills that column instead of leaving a void above. */
   .deals.grow { flex: 1; grid-auto-rows: 1fr; }
@@ -1084,7 +1102,13 @@ const html = `<!doctype html>
     text-align: center; padding: 8mm 5mm 15mm 8mm;
   }
   .spine {
-    /* Floods the bleed on its three outer edges and carries a faint weave. */
+    /* Floods the bleed on its three outer edges and carries a faint weave.
+       Paints ABOVE the ticker: the ticker spans the full page width, and
+       underneath it this band stopped 11.7mm short of the trim with
+       "FRESH & LOAD" printed across the red. The reference stops its ticker
+       where the spine starts and runs the spine unbroken to the sheet edge —
+       this is the edge you actually see on the folded piece. */
+    position: relative; z-index: 2;
     flex: none; width: 32mm;
     background:
       repeating-linear-gradient(45deg, rgba(0,0,0,.05) 0 .5mm, transparent .5mm 1.6mm),
@@ -1094,11 +1118,27 @@ const html = `<!doctype html>
     display: flex; align-items: center; justify-content: center; gap: 6mm;
     writing-mode: vertical-rl;
   }
-  /* The footer ticker spans the whole page and paints over this band, so the
-     address has to clear it or the postcode prints cut in half. */
-  .spine { justify-content: space-between; padding: 6mm 0; }
-  .side-a .spine { padding-bottom: 19mm; }
-  .spine b { font-size: 19mm; letter-spacing: .04em; text-transform: uppercase; }
+  /* The spine now paints over the ticker rather than under it, so the address
+     no longer has to dodge the band — it runs to the same depth as the
+     reference's. */
+  /* padding-right is the 3mm bleed: the wordmark centres on the TRIMMED
+     strip, not on the strip-plus-bleed, which is what the reference does
+     (5.8mm each side of its cap). Centred on the full 32mm it sat 1.4mm
+     over the trim line. */
+  .spine { justify-content: space-between; padding: 6mm 3mm 6mm 0; }
+  .side-a .spine { padding-bottom: 6mm; }
+  /* NOT the condensed display face. Measured off the shipped outlines,
+     BarlowCondensed-900 gives ink/cap 0.62 over B,G,T,E,S where the
+     reference's spine averages 0.94, and its letter advance/cap is 1.14
+     against the plaques' 0.65 — it sets this wordmark in a normal-width face.
+     Montserrat-700 measures 0.87, within 7%. Tracking cannot widen a glyph,
+     only the gaps, so this needs the face change. 23.7mm gives cap 16.6mm
+     against the reference's 16.9, and .10em over nine gaps brings the run to
+     ~143mm, matching. */
+  .spine b {
+    font-family: 'Montserrat', system-ui, sans-serif; font-weight: 700;
+    font-size: 23.7mm; letter-spacing: .10em; text-transform: uppercase;
+  }
   .spine span { font-size: 4.6mm; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #fff; }
 
   /* The reference sets a red disc with a handset beside the phone and one with
