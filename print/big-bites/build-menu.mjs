@@ -12,6 +12,7 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import path from 'node:path';
+import zlib from 'node:zlib';
 
 const ROOT = path.resolve(import.meta.dirname, '../..');
 const SHOP = path.join(ROOT, 'data/shops/food-station');
@@ -125,26 +126,104 @@ function imgSize(name) {
   return { w: b.readUInt32BE(16), h: b.readUInt32BE(20) };
 }
 
+/* Where the PICTURE is inside the canvas, which is not the same question as
+   how big the canvas is. A cutout often arrives centred in a much larger
+   transparent frame — the owner's second drink-cans file is 1024x1536 carrying
+   a 741x726 photograph — and a sheet that sizes by the canvas prints the food
+   at a third of the space it reserved for it. trim-alpha.py normally settles
+   that by cutting the empty border off, but a file the owner has asked to be
+   left alone byte for byte cannot be trimmed, so the layout has to be told
+   instead.
+
+   Pure Node: PNG scanlines are zlib, and zlib is a built-in. Only the alpha
+   channel is reconstructed — enough to find the bounding box, and it skips
+   anything that is not 8-bit with alpha rather than guessing. Cross-checked
+   against Pillow on every cutout in img/. */
+const inkCache = new Map();
+function imgInk(name) {
+  if (inkCache.has(name)) return inkCache.get(name);
+  const b = fs.readFileSync(path.join(import.meta.dirname, 'img', `${name}.png`));
+  const w = b.readUInt32BE(16), h = b.readUInt32BE(20);
+  const depth = b[24], colour = b[25], interlace = b[28];
+  const chan = colour === 6 ? 4 : colour === 4 ? 2 : 0;
+  if (depth !== 8 || !chan || interlace !== 0) return null;   // no alpha to read
+
+  const idat = [];
+  for (let p = 8; p + 8 <= b.length;) {
+    const len = b.readUInt32BE(p), type = b.toString('ascii', p + 4, p + 8);
+    if (type === 'IDAT') idat.push(b.subarray(p + 8, p + 8 + len));
+    p += 12 + len;
+    if (type === 'IEND') break;
+  }
+  const raw = zlib.inflateSync(Buffer.concat(idat));
+  const stride = w * chan;
+  const cur = Buffer.alloc(stride), prev = Buffer.alloc(stride);
+  let x0 = w, x1 = -1, y0 = h, y1 = -1, off = 0;
+  for (let y = 0; y < h; y++) {
+    const filter = raw[off++];
+    raw.copy(cur, 0, off, off + stride);
+    off += stride;
+    for (let i = 0; i < stride; i++) {
+      const a = i >= chan ? cur[i - chan] : 0, bb = prev[i], c = i >= chan ? prev[i - chan] : 0;
+      let v = cur[i];
+      if (filter === 1) v += a;
+      else if (filter === 2) v += bb;
+      else if (filter === 3) v += (a + bb) >> 1;
+      else if (filter === 4) {
+        const pp = a + bb - c, pa = Math.abs(pp - a), pb = Math.abs(pp - bb), pc = Math.abs(pp - c);
+        v += (pa <= pb && pa <= pc) ? a : pb <= pc ? bb : c;
+      }
+      cur[i] = v & 0xff;
+    }
+    for (let x = 0; x < w; x++) {
+      if (cur[x * chan + chan - 1] > 16) {
+        if (x < x0) x0 = x;
+        if (x > x1) x1 = x;
+        if (y < y0) y0 = y;
+        y1 = y;
+      }
+    }
+    cur.copy(prev);
+  }
+  const ink = x1 < 0 ? null : { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1, cw: w, chh: h };
+  inkCache.set(name, ink);
+  return ink;
+}
+
 /* Food photography, cut out of the sheet the owner supplied — see img/README.
    On the reference the photo sits at the panel's RIGHT EDGE and the price
    columns hug the item names to its left — prices are not flush right.
    `place: 'side'` does that; 'below' centres it underneath. Widths are capped
    by the source resolution; img/README records the dpi each lands at. */
 const shotDpi = [];
-function shot(name, width, place = 'side') {
+function shot(name, width, place = 'side', { ink = false } = {}) {
   if (!name) return '';
   const { w, h } = imgSize(name);
-  const tall = (width * h / w).toFixed(1);
+  /* `width` is the width of the PICTURE, and with ink:true that is measured
+     rather than assumed to be the canvas. The wrapper is the size of the
+     picture and the image hangs out of it on transparent margins, so the
+     layout, the gutter, the row height and the collision gate all see the food
+     and not the empty frame around it. Used where a file may not be trimmed. */
+  const box = ink ? imgInk(name) : null;
+  if (ink && !box) throw new Error(`${name}.png carries no alpha — ink:true cannot measure it`);
+  const src = box ? box.w : w;
+  const scale = width / src;                       // mm per source pixel
+  const tall = ((box ? box.h : h) * scale).toFixed(1);
   /* Record what each placement actually resolves to, so the documented figures
      cannot drift from the sheet the way they did when the photos were
      enlarged. Below 140dpi is too soft to send anywhere. */
-  const exact = w / (width / 25.4);
+  const exact = src / (width / 25.4);
   const dpi = Math.round(exact);
-  shotDpi.push({ name, px: `${w}x${h}`, mm: width, dpi });
+  shotDpi.push({ name, px: `${src}x${box ? box.h : h}`, mm: width, dpi });
   // Test the exact value: rounding let 139.5dpi through a "140dpi floor".
   if (exact < 140) throw new Error(`${name}.png at ${width}mm is ${exact.toFixed(1)}dpi — too soft to print`);
-  return `<img class="shot ${place}" src="img/${name}.png" alt=""
+  if (!box) {
+    return `<img class="shot ${place}" src="img/${name}.png" alt=""
     style="width:${width}mm;--shoth:${tall}mm" />`;
+  }
+  return `<span class="shot ${place} inkbox" data-src="img/${name}.png"
+    style="width:${width}mm;height:${tall}mm;--shoth:${tall}mm"><img src="img/${name}.png" alt=""
+    style="width:${(w * scale).toFixed(1)}mm;left:${(-box.x * scale).toFixed(1)}mm;top:${(-box.y * scale).toFixed(1)}mm" /></span>`;
 }
 
 /* The list reserves the photo's column with padding, so the price column lands
@@ -864,6 +943,11 @@ const html = `<!doctype html>
   /* right:30mm put this 6mm into the price column, which only read because a
      blurred shadow was propping the numerals up. Clear of them now. */
   .shot.mid { position: absolute; top: 50%; translate: 0 -50%; right: 38mm; z-index: 0; }
+  /* Same corridor, anchored to the top of the list instead of centred. The
+     corridor between the name column and the price columns is 24mm wide and
+     clear on every row but the last, where the Mixed Kebab's description
+     runs long — and a centred photo sits straight across it. */
+  .shot.midtop { position: absolute; top: 0; right: 38mm; z-index: 0; }
   /* A photo that is far taller than it is wide — the doner spit — cannot use
      the .side placement: at the width its height allows it is only ~22mm
      7mm that placement hangs past the block would clip a third of it and drop
@@ -871,6 +955,12 @@ const html = `<!doctype html>
   .shot.tall { position: absolute; top: 50%; translate: 0 -50%; right: 0; }
   .blkrow .items { position: relative; z-index: 1; }
   .shot.below { margin: 3mm auto 0; }
+  /* A wrapper the size of the picture, with the image hanging out of it on
+     its transparent margins. Nothing is cropped — overflow stays visible —
+     but every measurement taken of this photo, including the collision
+     gate's, is of the food rather than of the canvas around it. */
+  .inkbox { overflow: visible; }
+  .inkbox > img { position: absolute; display: block; max-width: none; }
   /* The reference sets the pizza on a gold halftone. Generated, not drawn. */
   .halftone {
     /* Out of the flow and cropped by the panel, so the list gets the whole
@@ -1345,7 +1435,7 @@ ${/* Section order and panel assignment follow the designer's artwork exactly:
       Don't reshuffle these without checking the reference sheets again. */''}
 ${page('side-a', `
   <div class="panel">
-    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, firstOnly: /\bcan\b/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], img: shot('pepsi-coke', 34), slot: 44, chipsBelow: true })}
+    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, firstOnly: /\bcan\b/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], img: shot('new-pepsi-coke', 34, 'side', { ink: true }), slot: 44, chipsBelow: true })}
     ${milkshakes()}
     ${list('desserts', { desc: true, img: shot('cake', 46), slot: 52, cls: 'dessertblk norule' })}
     ${kidsBox()}
@@ -1369,7 +1459,7 @@ ${page('side-b', `
   <div class="panel tight">
     ${sizedList('garlic-bread', 'size', ['11"', '13"'], { tone: ['red', 'red'], slot: 14 })}
     ${list('calzone', { dense: true, desc: true, img: shot('calzone', 40, 'mid'), slot: 0, chip: '11"' })}
-    ${sizedList('kebab', 'size', ['MEDIUM', 'LARGE'], { title: 'Kebabs', img: shot('doner-pit', 18, 'tall'), slot: 22 })}
+    ${sizedList('kebab', 'size', ['MEDIUM', 'LARGE'], { title: 'Kebabs', img: shot('doner-pit', 15, 'midtop'), slot: 0 })}
     ${list('parmesan', { dense: true, desc: true, img: shot('parmasan', 44), slot: 48 })}
     ${list('wraps', { dense: true, desc: true, img: shot('wrap', 46), slot: 48, title: 'Wrap' })}
   </div>

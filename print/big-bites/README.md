@@ -111,7 +111,17 @@ lockup**, the **cover pizza**, then `hero`, `parmasan`, `calzone` and
 lockup, the pizza, cake, shake, wrap, calzone, parmesan, doner spit, the drink
 cans and the Sides/Salad column.
 
-### The drink cans, and why `pepsi-coke.png` is generated
+The drink cans on the sheet are **`new-pepsi-coke.png`**, placed byte for byte
+as the owner supplied it — no key, no trim, no edit of any kind. It arrives as
+a 1024×1536 canvas carrying a 741×726 photograph, so it is placed with
+`shot(..., { ink: true })`: the build reads the PNG's alpha channel (pure Node,
+`zlib` is a built-in) and lays the photo out by where the *picture* is rather
+than by the size of the canvas. Without that the cans print a third of the size
+of the space reserved for them, and the empty frame overruns the panel.
+
+### The earlier cans, and why `pepsi-coke.png` is generated
+
+Kept for the record; `pepsi-coke.jpg`/`.png` are no longer on the sheet.
 
 The owner supplied `pepsi-coke.jpg` — a stock cutout served as JPEG, so the
 transparency checkerboard is baked into the pixels. It cannot be placed as

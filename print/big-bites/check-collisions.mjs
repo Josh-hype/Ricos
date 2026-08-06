@@ -30,13 +30,17 @@ const hits = await p.evaluate(() => {
      same — so overlap there is intent, not a fault. What matters is that those
      numerals still read, which is what the shadow on .p2 is for; anything
      overlapping a mid photo without one is reported. */
-  document.querySelectorAll('.shot.mid').forEach((img) => {
+  /* .midtop is the same placement anchored to the top of the list rather than
+     centred on it. It must be named here: '.shot.mid' does not match it, so
+     adding the class without adding it here would have taken that photo out
+     of this check entirely while the run still reported clean. */
+  document.querySelectorAll('.shot.mid, .shot.midtop').forEach((img) => {
     const ir = img.getBoundingClientRect();
     img.closest('.blkrow').querySelectorAll('.n, .p, .p2').forEach((el) => {
       const shadowed = getComputedStyle(el).textShadow !== 'none';
       for (const r of inkRects(el)) {
         if (over(r, ir) && !shadowed) {
-          hits.push(`"${el.textContent.trim().slice(0, 30)}" sits on ${img.getAttribute('src')} with nothing behind it to carry it`);
+          hits.push(`"${el.textContent.trim().slice(0, 30)}" sits on ${(img.getAttribute('src') || img.dataset.src)} with nothing behind it to carry it`);
           break;
         }
       }
@@ -64,7 +68,7 @@ const hits = await p.evaluate(() => {
         if (a > 0.85) return;
       }
       for (const r of inkRects(el)) {
-        if (over(r, ir)) { hits.push(`"${el.textContent.trim().slice(0, 40)}" runs under ${img.getAttribute('src')}`); break; }
+        if (over(r, ir)) { hits.push(`"${el.textContent.trim().slice(0, 40)}" runs under ${(img.getAttribute('src') || img.dataset.src)}`); break; }
       }
     });
   });
@@ -77,7 +81,7 @@ const hits = await p.evaluate(() => {
     if (img.classList.contains('placed')) return;
     const blk = img.closest('.blk') || img.closest('.panel'); if (!blk) return;
     const ir = img.getBoundingClientRect(), br = blk.getBoundingClientRect();
-    if (ir.top < br.top - 1 || ir.bottom > br.bottom + 1) hits.push(`${img.getAttribute('src')} escapes its section by ${Math.round(Math.max(br.top - ir.top, ir.bottom - br.bottom))}px`);
+    if (ir.top < br.top - 1 || ir.bottom > br.bottom + 1) hits.push(`${(img.getAttribute('src') || img.dataset.src)} escapes its section by ${Math.round(Math.max(br.top - ir.top, ir.bottom - br.bottom))}px`);
   });
   return hits;
 });
