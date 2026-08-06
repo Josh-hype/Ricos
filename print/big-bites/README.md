@@ -110,10 +110,34 @@ lockup**, the **cover pizza**, then `hero`, `parmasan`, `calzone` and
 `doner-pit`. Nine photographs are placed — the cover pizza, the meal-deal
 lockup, the pizza, cake, shake, wrap, calzone, parmesan and doner spit.
 
-`pepsi-coke.png` came off and then went back on, **exactly as supplied** — the
-owner's instruction is that the file is not to be altered, so it is placed at
-the width and gutter it had before and `trim-alpha.py` is not run on it. Its
-soft grey edge is in the artwork itself; leave it there.
+### The drink cans, and why `pepsi-coke.png` is generated
+
+The owner supplied `pepsi-coke.jpg` — a stock cutout served as JPEG, so the
+transparency checkerboard is baked into the pixels. It cannot be placed as
+supplied: on the black panel it prints a grey chequered rectangle. **The PNG
+next to it is generated from it** by `key-checkerboard.py`, and both files are
+committed so the key can be re-run:
+
+    python3 print/big-bites/key-checkerboard.py img/pepsi-coke.jpg img/pepsi-coke.png
+    python3 print/big-bites/trim-alpha.py img/pepsi-coke.png
+
+Two earlier keys shipped damaged and the owner caught the second one. Both
+failed the same way — by asking "is this pixel light and neutral?", which is
+equally true of the checkerboard, of an aluminium can top, of the white
+Coca-Cola script, of the silver rim at a can's foot and of the white band down
+the Coke can's edge. The first cut both can tops flat. The second left a dashed
+black gash down the side of the Coke can: the white band keyed out inside the
+white squares and stayed inside the grey ones.
+
+The script tests **alternation**, not colour — real backdrop swings light/dark
+every cell, a white can edge is flat however exactly its colour matches the
+square beneath it — and measures that by correlation, which is blind to both
+gain and offset and so reads the cans' cast shadow as the dimmed backdrop it
+is. It ends by compositing its own output back onto a synthetic checkerboard
+and comparing against the source: **0.03%** of the frame differs. Reproducing
+the two shipped defects scores **0.77%** (the gash) and **6.02%** (the flat
+tops), which is what the 0.3% threshold is set against — 1%, the obvious round
+number, would have passed the gash.
 
 `sides-salad.png`, `burger-meal.png` and `kebab.png` are **off the sheet** on
 the owner's instruction, and stay in `img/` cut and keyed.
