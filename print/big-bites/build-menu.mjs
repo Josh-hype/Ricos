@@ -868,7 +868,7 @@ const html = `<!doctype html>
     /* Below the list's last price row rather than through it. The list runs to
        the foot of the panel now, so the photograph takes the corner and bleeds
        off two edges instead of sitting under the numerals. */
-    position: absolute; right: -8mm; bottom: -16mm; display: flex; justify-content: flex-end; align-items: flex-end;
+    position: absolute; right: 1mm; bottom: 1mm; display: flex; justify-content: flex-end; align-items: flex-end;
     /* Behind the prices: the reference tucks the pizza under the stuffed-crust
        line rather than over it, and white numerals on a photo are unreadable. */
     z-index: 0;
@@ -1028,7 +1028,7 @@ const html = `<!doctype html>
        panel needs a 3:1 box, so it is cropped left/right rather than shrunk —
        the food stays at full size and fills the black instead of floating in
        it. 62mm keeps it clear of the price column. */
-    object-fit: cover; object-position: 50% 50%;
+    object-fit: contain; object-position: 50% 50%;
     filter: drop-shadow(0 1.2mm 1.8mm rgba(0,0,0,.55));
   }
   .kidsmark {
@@ -1281,7 +1281,11 @@ const html = `<!doctype html>
     z-index: 0; pointer-events: none; overflow: hidden;
   }
   .coverart img {
-    width: 119mm; height: 62mm; object-fit: cover; object-position: 50% 62%;
+    /* contain, not cover: the owner wants the whole photograph, and cover was
+       showing about a third of its height. It is portrait and this slot is
+       landscape, so containing it leaves black either side — the editor is
+       there to retune the slot. */
+    width: 119mm; height: 62mm; object-fit: contain; object-position: 50% 100%;
   }
   .coverbody { position: relative; z-index: 1; }
   .qr { width: 30mm; height: 30mm; background: #fff; padding: 1.5mm; border-radius: 1.5mm; }
@@ -1338,7 +1342,7 @@ ${page('side-b', `
       ${sizedList('pizza', 'size', ['11"', '13"'], { tone: ['red', 'red'], nameTone: 'gold', slot: 5 })}
       ${stuffedCrust()}
     </div>
-    <div class="halftone">${shot('pizza', 76, 'below')}</div>
+    <div class="halftone">${shot('pizza', 50, 'below')}</div>
   </div>
   <div class="panel tight">
     ${sizedList('garlic-bread', 'size', ['11"', '13"'], { tone: ['red', 'red'], slot: 14 })}

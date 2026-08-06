@@ -98,7 +98,7 @@ const editor = `
   var bar = document.createElement('div');
   bar.className = 'pe-bar';
   bar.innerHTML = '<button data-z>Fit</button><button data-z>50%</button><button data-z>100%</button>' +
-    '<span>Big Bites print sheet — tap a block, then drag</span>';
+    '<span>Big Bites print sheet \u2014 tap a block, then drag. Text size and box size are separate.</span>';
   document.body.appendChild(bar);
   var zb = bar.querySelectorAll('[data-z]');
   zb[0].addEventListener('click', function () { setZoom((innerWidth - 20) / wrap.offsetWidth, zb[0]); });
@@ -162,11 +162,23 @@ const editor = `
   var state = {};
   try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) {}
   function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+  /* Base box and type size are captured ONCE, before anything is applied, so
+     repeated edits stay absolute instead of compounding. */
+  items.forEach(function (i) {
+    var r = i.el.getBoundingClientRect(), cs = getComputedStyle(i.el);
+    i.bw = r.width; i.bh = r.height;
+    i.bf = parseFloat(cs.fontSize) || 12;
+  });
   function val(i) {
-    if (!state[i.sel]) state[i.sel] = { x: 0, y: 0, s: 100, fx: false, fy: false, r: 0 };
+    if (!state[i.sel]) state[i.sel] = {};
     var v = state[i.sel];
+    if (v.x == null) v.x = 0;
+    if (v.y == null) v.y = 0;
     if (v.s == null) v.s = 100;
     if (v.r == null) v.r = 0;
+    if (v.w == null) v.w = 100;      // box width  %
+    if (v.h == null) v.h = 100;      // box height %
+    if (v.f == null) v.f = 100;      // font size  %
     return v;
   }
   function apply(i) {
@@ -175,6 +187,14 @@ const editor = `
     var s = (Number(v.s) || 100) / 100;
     i.el.style.scale = (v.fx ? -s : s) + ' ' + (v.fy ? -s : s);
     i.el.style.rotate = (Number(v.r) || 0) + 'deg';
+    /* Box size is the BOX, not a transform: the text reflows inside it, which
+       is what "make the text box bigger" has to mean on a print sheet. */
+    if (Number(v.w) !== 100) { i.el.style.width = (i.bw * v.w / 100).toFixed(2) + 'px'; i.el.style.maxWidth = 'none'; }
+    else i.el.style.width = '';
+    if (Number(v.h) !== 100) { i.el.style.height = (i.bh * v.h / 100).toFixed(2) + 'px'; }
+    else i.el.style.height = '';
+    if (Number(v.f) !== 100) i.el.style.fontSize = (i.bf * v.f / 100).toFixed(2) + 'px';
+    else i.el.style.fontSize = '';
   }
   items.forEach(apply);
 
@@ -188,8 +208,14 @@ const editor = `
     items.map(function (i, n) { return '<option value="' + n + '">' + i.label + '</option>'; }).join('') + '</select>' +
     '<div class="row"><input data-x type="number" step="1" placeholder="left/right px"><input data-y type="number" step="1" placeholder="up/down px"></div>' +
     '<div class="row"><button data-nudge="-10,0">\\u2190</button><button data-nudge="0,-10">\\u2191</button><button data-nudge="0,10">\\u2193</button><button data-nudge="10,0">\\u2192</button></div>' +
-    '<label class="lab">Size %<input data-size type="number" step="5" min="20" max="300"></label>' +
+    '<label class="lab">Whole thing (scale) %<input data-size type="number" step="5" min="20" max="300"></label>' +
     '<div class="row"><button data-size-step="-5">\\u2212 smaller</button><button data-size-step="5">+ bigger</button></div>' +
+    '<label class="lab">Text size %<input data-font type="number" step="5" min="20" max="400"></label>' +
+    '<div class="row"><button data-font-step="-5">A- text</button><button data-font-step="5">A+ text</button></div>' +
+    '<label class="lab">Box width %<input data-w type="number" step="5" min="20" max="400"></label>' +
+    '<div class="row"><button data-w-step="-5">narrower</button><button data-w-step="5">wider</button></div>' +
+    '<label class="lab">Box height %<input data-h type="number" step="5" min="20" max="400"></label>' +
+    '<div class="row"><button data-h-step="-5">shorter</button><button data-h-step="5">taller</button></div>' +
     '<div class="row"><button data-flip="fx">Flip \\u2194</button><button data-flip="fy">Flip \\u2195</button></div>' +
     '<label class="lab">Turn \\u00b0<input data-rot type="number" step="5"></label>' +
     '<div class="row"><button data-rot-step="-90">\\u21ba 90</button><button data-rot-step="-5">\\u21ba 5</button><button data-rot-step="5">5 \\u21bb</button><button data-rot-step="90">90 \\u21bb</button></div>' +
@@ -208,6 +234,9 @@ const editor = `
   var yI = panel.querySelector('[data-y]');
   var sizeI = panel.querySelector('[data-size]');
   var rotI = panel.querySelector('[data-rot]');
+  var fontI = panel.querySelector('[data-font]');
+  var wI = panel.querySelector('[data-w]');
+  var hI = panel.querySelector('[data-h]');
   var tag = document.createElement('div');
   tag.className = 'bbe-tag';
   tag.style.display = 'none';
@@ -224,6 +253,7 @@ const editor = `
     if (!c) { tag.style.display = 'none'; return; }
     var v = val(c);
     xI.value = v.x; yI.value = v.y; sizeI.value = v.s; rotI.value = v.r || 0;
+    fontI.value = v.f; wI.value = v.w; hI.value = v.h;
     panel.querySelectorAll('[data-flip]').forEach(function (b) {
       b.classList.toggle('on', !!v[b.dataset.flip]);
     });
@@ -270,6 +300,22 @@ const editor = `
       apply(c); save(); sync();
     });
   });
+  [['f', fontI, 'data-font-step', 20, 400], ['w', wI, 'data-w-step', 20, 400], ['h', hI, 'data-h-step', 20, 400]]
+    .forEach(function (spec) {
+      var key = spec[0], inp = spec[1], stepAttr = spec[2], lo = spec[3], hi = spec[4];
+      inp.addEventListener('input', function () {
+        var c = cur(); if (!c) return; var v = val(c);
+        v[key] = Math.min(hi, Math.max(lo, Number(inp.value) || 100));
+        apply(c); save();
+      });
+      panel.querySelectorAll('[' + stepAttr + ']').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var c = cur(); if (!c) return; var v = val(c);
+          v[key] = Math.min(hi, Math.max(lo, (Number(v[key]) || 100) + Number(b.getAttribute(stepAttr))));
+          apply(c); save(); sync();
+        });
+      });
+    });
   panel.querySelectorAll('[data-flip]').forEach(function (b) {
     b.addEventListener('click', function () {
       var c = cur(); if (!c) return; var v = val(c);
@@ -279,19 +325,22 @@ const editor = `
     });
   });
   panel.querySelector('[data-reset]').addEventListener('click', function () {
-    var c = cur(); if (!c) return; state[c.sel] = { x: 0, y: 0, s: 100, fx: false, fy: false, r: 0 }; apply(c); save(); sync();
+    var c = cur(); if (!c) return; state[c.sel] = { x: 0, y: 0, s: 100, fx: false, fy: false, r: 0, w: 100, h: 100, f: 100 }; apply(c); save(); sync();
   });
   panel.querySelector('[data-resetall]').addEventListener('click', function () {
     state = {}; items.forEach(apply); save(); sync();
   });
   panel.querySelector('[data-copy]').addEventListener('click', function () {
-    var moved = items.filter(function (i) { var v = val(i); return v.x || v.y || (v.s && v.s !== 100) || v.fx || v.fy || v.r; });
+    var moved = items.filter(function (i) { var v = val(i); return v.x || v.y || (v.s !== 100) || v.fx || v.fy || v.r || (v.w !== 100) || (v.h !== 100) || (v.f !== 100); });
     var out = moved.length
       ? 'Big Bites print menu changes (mm on the 426x303mm sheet):\\n' +
         moved.map(function (i) {
           var v = val(i);
           return '- ' + i.label + '  x:' + mm(v.x) + 'mm  y:' + mm(v.y) + 'mm'
-            + '  size:' + (v.s || 100) + '%'
+            + (v.s !== 100 ? '  scale:' + v.s + '%' : '')
+            + (v.f !== 100 ? '  TEXT:' + v.f + '% (' + (i.bf * v.f / 100 / (1610 / 426)).toFixed(2) + 'mm)' : '')
+            + (v.w !== 100 ? '  box-width:' + v.w + '% (' + mm(i.bw * (v.w - 100) / 100) + 'mm)' : '')
+            + (v.h !== 100 ? '  box-height:' + v.h + '% (' + mm(i.bh * (v.h - 100) / 100) + 'mm)' : '')
             + (v.r ? '  turn:' + v.r + 'deg' : '')
             + (v.fx ? '  FLIPPED-H' : '') + (v.fy ? '  FLIPPED-V' : '');
         }).join('\\n') +
