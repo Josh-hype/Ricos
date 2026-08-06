@@ -32,12 +32,31 @@ const overflow = await p.evaluate(() => {
     // The cover's spine bleeds past the trim BY DESIGN — measure the body,
     // not the bleed.
     if (el.classList.contains('cover')) el = el.querySelector('.coverbody') || el;
-    if (el.scrollHeight > el.clientHeight + 1) {
-      bad.push(`panel ${i + 1}: content ${el.scrollHeight}px vs box ${el.clientHeight}px (over by ${el.scrollHeight - el.clientHeight})`);
+    /* scrollHeight is not the test: photos and the spine are positioned to be
+       cropped by the panel edge on purpose, and they inflate it. What must not
+       overflow is the IN-FLOW content — so measure that against the padding
+       box, and let the text check below catch anything clipped sideways. */
+    const cs = getComputedStyle(el);
+    const box = el.getBoundingClientRect();
+    const top = box.top + parseFloat(cs.paddingTop);
+    const bottom = box.bottom - parseFloat(cs.paddingBottom);
+    let low = top;
+    [...el.children].forEach((ch) => {
+      if (getComputedStyle(ch).position === 'absolute') return;   // deliberate bleed
+      low = Math.max(low, ch.getBoundingClientRect().bottom);
+    });
+    if (low > bottom + 1) {
+      bad.push(`panel ${i + 1}: in-flow content overruns its box by ${Math.round(low - bottom)}px`);
     }
-    if (el.scrollWidth > el.clientWidth + 1) {
-      bad.push(`panel ${i + 1}: content ${el.scrollWidth}px WIDE vs box ${el.clientWidth}px`);
-    }
+    /* Photos are cropped by the panel edge on purpose, so scrollWidth is not
+       the test — clipped TEXT is. Measure the ink of every text run against
+       the panel box instead. */
+    el.querySelectorAll('.n, .p, .p2, h3, .deal, .fine, .hours, .strap, .qrtxt').forEach((tx) => {
+      const r = tx.getBoundingClientRect();
+      if (r.width && (r.right > box.right + 1 || r.left < box.left - 1)) {
+        bad.push(`panel ${i + 1}: "${tx.textContent.trim().slice(0, 28)}" is clipped by the panel edge`);
+      }
+    });
   });
   return bad;
 });

@@ -180,7 +180,7 @@ function milkshakes() {
             throw new Error('coolers no longer share one price — they cannot fold into a single row');
           return row('Cooler', coolers[0].price, coolers.map((i) => `${flavour(i.name)} Cooler`).join(', '), 'plain');
         })() : ''}
-      </ul>`, shot('shake', 34), 52)}
+      </ul>`, shot('shake', 42), 52)}
     </section>`;
 }
 
@@ -414,8 +414,10 @@ const html = `<!doctype html>
 
   /* The inner face bleeds its header plaques off the top trim and carries no
      ticker, so its panels run tighter to every edge. */
-  .side-b .panel { padding: 4mm 5mm 8mm; }
-  .side-b .blk:first-child h3 { margin-top: -7mm; }
+  .side-b .panel { padding: 3mm 3mm 4mm; }
+  .side-b .blk:first-child h3 { margin-top: -3.5mm; }
+  /* The outer face runs nearly as tight to its edges as the inner one. */
+  .side-a .panel { padding: 5mm 4mm 13mm; }
   .panel {
     position: relative;
     /* Pinned, not implicit: as a grid item the panel would otherwise STRETCH
@@ -512,17 +514,26 @@ const html = `<!doctype html>
   .blkrow { position: relative; min-height: var(--rowmin, 0); }
   .shot { height: auto; display: block; filter: drop-shadow(0 1.2mm 1.8mm rgba(0,0,0,.65)); }
   /* At the panel's right edge; the list's own padding keeps the text clear. */
-  .shot.side { position: absolute; top: 50%; translate: 0 -50%; right: 0; }
+  /* The reference runs its photos large and lets the panel edge crop them. */
+  .shot.side { position: absolute; top: 50%; translate: 0 -50%; right: -7mm; }
   .shot.mid { position: absolute; top: 50%; translate: 0 -50%; right: 36mm; }
   .shot.below { margin: 3mm auto 0; }
   /* The reference sets the pizza on a gold halftone. Generated, not drawn. */
   .halftone {
-    position: relative; display: flex; justify-content: center;
+    /* Out of the flow and cropped by the panel, so the list gets the whole
+       column — which is how the reference fits 32 pizzas at this size. */
+    position: absolute; right: -12mm; bottom: -14mm; display: flex; justify-content: flex-end;
+    /* Behind the prices: the reference tucks the pizza under the stuffed-crust
+       line rather than over it, and white numerals on a photo are unreadable. */
+    z-index: 0;
     background:
       radial-gradient(circle at center, rgba(255,196,0,.85) 22%, transparent 23%) 0 0 / 3.2mm 3.2mm,
       radial-gradient(circle at center, rgba(255,196,0,.85) 22%, transparent 23%) 1.6mm 1.6mm / 3.2mm 3.2mm;
-    -webkit-mask: radial-gradient(circle at 50% 62%, #000 26%, transparent 68%);
-            mask: radial-gradient(circle at 50% 62%, #000 26%, transparent 68%);
+    /* The reference's dots fan out to the LEFT of the pizza and fade — a
+       diagonal spray, not a symmetric field. */
+    -webkit-mask: radial-gradient(ellipse 70% 60% at 78% 62%, #000 30%, transparent 82%);
+            mask: radial-gradient(ellipse 70% 60% at 78% 62%, #000 30%, transparent 82%);
+    padding: 4mm 0 4mm 26mm;
   }
   .blkrow .items { padding-right: var(--slot, 0mm); }
 
@@ -531,10 +542,10 @@ const html = `<!doctype html>
   .items li {
     display: flex; align-items: baseline; gap: 1.5mm;
     break-inside: avoid;
-    font-size: 4.2mm; line-height: 1.16;
+    font-size: 4.7mm; line-height: 1.14;
   }
-  .items li { padding: .35mm 0; }
-  .items.dense li { font-size: 3.5mm; padding: .15mm 0; }
+  .items li { padding: .45mm 0; }
+  .items.dense li { font-size: 3.85mm; padding: .1mm 0; }
   .items .n { font-weight: 500; text-transform: uppercase; letter-spacing: .005em; }
   /* Reference palette: item names white, the line under them red. The pizza
      column inverts it — gold names, white toppings — which is what makes that
@@ -544,7 +555,7 @@ const html = `<!doctype html>
      as the shop wrote it. */
   .items .n em {
     display: block; font-style: normal; font-weight: 400;
-    text-transform: capitalize; font-size: 3.4mm; line-height: 1.1;
+    text-transform: capitalize; font-size: 3.7mm; line-height: 1.1;
     color: #e93326; margin-top: .1mm;
   }
   .items .n em::before { content: '('; }
@@ -560,8 +571,8 @@ const html = `<!doctype html>
      pizza column fill the panel top to bottom. */
   .items.gold .n { color: #f9b902; font-weight: 600; }
   .items.gold .n em { color: #fff; display: block; margin: .2mm 0 0; }
-  .items.gold li { padding: .55mm 0; font-size: 3.6mm; }
-  .items.gold .n em { font-size: 3mm; line-height: 1.1; }
+  .items.gold li { padding: .45mm 0; font-size: 4.1mm; }
+  .items.gold .n em { font-size: 3.35mm; line-height: 1.06; }
   /* No leaders on the reference: the rows read on alignment alone, and the only
      dotted rule on the sheet is the one under each heading. The element stays
      as the flexible spacer that pushes the price right (and carries the photo
@@ -570,7 +581,10 @@ const html = `<!doctype html>
   /* Prices are white on the reference, not gold, and set at the item size. */
   .items .p { font-weight: 500; color: #fff; white-space: nowrap; }
   .items.sized li { gap: 2mm; }
-  .items.sized .p2 { width: 11mm; text-align: center; font-weight: 500; color: #fff; white-space: nowrap; }
+  .items.sized .p2 {
+    width: 11mm; text-align: center; font-weight: 500; color: #fff; white-space: nowrap;
+    text-shadow: 0 0 1.2mm #000, 0 0 .5mm #000;
+  }
 
   /* The reference floats the size chips clear of the plaque, right-aligned so
      they sit over the price columns they label. */
@@ -587,9 +601,9 @@ const html = `<!doctype html>
   .sizehdr i.gold { background: #f9b902; color: #111; }
   /* 32 pizzas with a topping line each need tighter type than the simple
      lists — the same trade the designer makes. */
-  .items.withdesc li { align-items: center; padding: 0; font-size: 3.3mm; line-height: 1.02; }
-  .items.withdesc .n em { font-size: 2.85mm; margin-top: 0; line-height: 1.02; }
-  .items.withdesc .p2 { font-size: 3.5mm; }
+  .items.withdesc li { align-items: center; padding: .2mm 0; font-size: 3.9mm; line-height: 1.04; }
+  .items.withdesc .n em { font-size: 3.2mm; margin-top: 0; line-height: 1.04; }
+  .items.withdesc .p2 { font-size: 4.1mm; }
   .items.withdesc .dots { display: none; }
   .items.withdesc .n { flex: 1; }
   /* Reference: a red plaque hard left, the two supplements sitting in the same
@@ -600,7 +614,7 @@ const html = `<!doctype html>
     font-size: 3.3mm; font-weight: 600;
   }
   .supp i { flex: 1; }
-  .supp b { width: 11mm; text-align: right; color: #fff; font-size: 3.1mm; }
+  .supp b { width: 11mm; text-align: right; color: #fff; font-size: 3.1mm; text-shadow: 0 0 1.2mm #000, 0 0 .5mm #000; }
 
   /* The reference singles Dips out with a red plaque. It is its own asset —
      tinted off the gold one by luminance, since a CSS hue-rotate took the gold
@@ -622,7 +636,7 @@ const html = `<!doctype html>
   .kidsbox {
     background: #c10f0f; border-radius: 3mm; padding: 4mm;
     display: flex; align-items: center; gap: 4mm;
-    min-height: 56mm;
+    min-height: 44mm;
     outline: .5mm dashed rgba(249,185,2,.85); outline-offset: -2.2mm;
   }
   .kidsmark {
@@ -670,6 +684,7 @@ const html = `<!doctype html>
     width: 6.8mm; height: 6.8mm; border-radius: 50%;
     background: #030303; border: .5mm solid #1a1a1a;
   }
+  .pzcol { position: relative; z-index: 1; }
   .center { text-align: center; }
   .dealshead h3 { min-width: 62mm; font-size: 7.2mm; }
   .deal b { display: block; font-family: 'Anton', Impact, sans-serif; color: #dd1516; font-size: 5.2mm; line-height: 1.05; text-transform: uppercase; }
@@ -683,7 +698,7 @@ const html = `<!doctype html>
   .cover { flex-direction: row; padding: 0; overflow: visible; }
   .coverbody {
     flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center;
-    text-align: center; padding: 6mm 6mm 13mm;
+    text-align: center; padding: 5mm 5mm 12mm;
   }
   .spine {
     /* Floods the bleed on its three outer edges and carries a faint weave. */
@@ -707,7 +722,7 @@ const html = `<!doctype html>
   /* The supplied wordmark, keyed to transparency so the panel's own black and
      its faint yellow glow read through instead of a slightly-off black box.
      105mm wide keeps the source above 300dpi at print size. */
-  .brandmark { width: 104mm; height: auto; display: block; }
+  .brandmark { width: 100mm; height: auto; display: block; }
   .coverrule { width: 100%; margin-top: 2.5mm; border-top: .5mm dotted rgba(255,255,255,.55); }
 
   .tel { margin-top: 4mm; }
@@ -715,7 +730,7 @@ const html = `<!doctype html>
   /* Anton draws well above its em box, so the number's glyphs ran over
      the line above even though the two boxes never touched. The margin is
      clearance for the overshoot, not decoration — don't trim it. */
-  .tel b { display: block; margin-top: 3mm; font-family: 'Anton', Impact, sans-serif; font-size: 24mm; line-height: 1; letter-spacing: .06em; color: #fbefd2; }
+  .tel b { display: block; margin-top: 2mm; font-family: 'Anton', Impact, sans-serif; font-size: 22mm; line-height: 1; letter-spacing: .06em; color: #fbefd2; }
 
   /* The cover's straps are the same device as a section header, so they take
      the same plaque — a flat yellow bar next to a bitten one would read as an
@@ -757,7 +772,10 @@ const html = `<!doctype html>
   .qrtxt .arrow { display: block; font-size: 6mm; color: #f9b902; line-height: 1; }
   /* Reserved for the pizza / basil / tomato photograph the reference floods the
      lower half of the cover with. Empty until that asset exists. */
-  .coverart { flex: 1; min-height: 20mm; }
+  /* A spacer for the missing cover photograph: it absorbs slack, it must not
+     demand any — a min-height here pushed the cover 10mm past its box and
+     under the footer ticker. */
+  .coverart { flex: 1; min-height: 0; }
   .qr { width: 30mm; height: 30mm; background: #fff; padding: 1.5mm; border-radius: 1.5mm; }
   .qr svg { width: 100%; height: 100%; display: block; }
   .qrtxt { text-align: right; }
@@ -787,7 +805,7 @@ ${page('side-a', `
   <div class="panel">
     ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], slot: 48 })}
     ${milkshakes()}
-    ${list('desserts', { dense: true, desc: true, img: shot('cake', 42), slot: 50 })}
+    ${list('desserts', { dense: true, desc: true, img: shot('cake', 50), slot: 50 })}
     ${kidsBox()}
   </div>
   <div class="panel">
@@ -800,23 +818,23 @@ ${page('side-a', `
 
 ${page('side-b', `
   <div class="panel">
-    <div>
+    <div class="pzcol">
       ${sizedList('pizza', 'size', ['11"', '13"'], { tone: ['red', 'red'], nameTone: 'gold', slot: 5 })}
       ${stuffedCrust()}
     </div>
-    <div class="halftone">${shot('pizza', 58, 'below')}</div>
+    <div class="halftone">${shot('pizza', 82, 'below')}</div>
   </div>
   <div class="panel tight">
     ${sizedList('garlic-bread', 'size', ['11"', '13"'], { tone: ['red', 'red'] })}
-    ${list('calzone', { dense: true, desc: true, img: shot('calzone', 31, 'mid'), chip: '11"' })}
-    ${sizedList('kebab', 'size', ['MEDIUM', 'LARGE'], { title: 'Kebabs', img: shot('kebab', 26, 'mid') })}
+    ${list('calzone', { dense: true, desc: true, img: shot('calzone', 38, 'mid'), chip: '11"' })}
+    ${sizedList('kebab', 'size', ['MEDIUM', 'LARGE'], { title: 'Kebabs', img: shot('kebab', 34, 'mid') })}
     ${list('parmesan', { dense: true, desc: true })}
-    ${list('wraps', { dense: true, desc: true, img: shot('wrap', 30, 'mid'), title: 'Wrap' })}
+    ${list('wraps', { dense: true, desc: true, img: shot('wrap', 38, 'mid'), title: 'Wrap' })}
   </div>
   <div class="panel">
     ${sizedList('burgers', 'size', ['1/4 lb', '1/2 lb'], { slot: 8 })}
-    ${list('sides', { dense: true, img: shot('sides', 40), title: 'Sides', slot: 56 })}
-    ${list('salad', { dense: true, desc: true, img: shot('salad', 40), slot: 56 })}
+    ${list('sides', { dense: true, img: shot('sides', 54), title: 'Sides', slot: 56 })}
+    ${list('salad', { dense: true, desc: true, img: shot('salad', 50), slot: 56 })}
   </div>
 `, false)}
 

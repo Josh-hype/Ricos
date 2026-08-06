@@ -35,6 +35,9 @@ console.log(await p.evaluate(() => {
     });
   });
   document.querySelectorAll('.shot').forEach((img) => {
+    /* The pizza shot is positioned to be cropped by the panel edge on purpose,
+       so "escaping its section" is the intent, not a fault. */
+    if (img.closest('.halftone')) return;
     const blk = img.closest('.blk') || img.closest('.panel'); if (!blk) return;
     const ir = img.getBoundingClientRect(), br = blk.getBoundingClientRect();
     if (ir.top < br.top - 1 || ir.bottom > br.bottom + 1) hits.push(`${img.getAttribute('src')} escapes its section by ${Math.round(Math.max(br.top - ir.top, ir.bottom - br.bottom))}px`);
