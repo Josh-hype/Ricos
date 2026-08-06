@@ -82,8 +82,11 @@ function withShot(inner, img, slot = 0, dots = false) {
   const num = (k) => +(new RegExp(`${k}:([\\d.]+)mm`).exec(img)?.[1] || 0);
   /* 'mid' photos float in the gap with the prices staying flush right, so
      they reserve no column — the collision check polices the overlap. */
+  /* A 'mid' photo floats in the gap and reserves no column OF ITS OWN, but an
+     explicit slot still applies — that is how the reference stops the calzone
+     and kebab prices short of the trim while the photo sits behind them. */
   const mid = img && img.includes('mid');
-  const w = mid ? 0 : Math.max(img ? (num('width') || 30) + 4 : 0, slot);
+  const w = mid ? slot : Math.max(img ? (num('width') || 30) + 4 : 0, slot);
   return `<div class="blkrow${dots ? ' dots' : ''}" style="--slot:${w.toFixed(1)}mm;
     --rowmin:${(num('--shoth') + 3).toFixed(1)}mm">${inner}${img}</div>`;
 }
@@ -91,7 +94,7 @@ function withShot(inner, img, slot = 0, dots = false) {
 /* How far a section's size chips shift left so they sit over the price columns
    when a photo column is reserved to their right. */
 function slotOf(img, slot) {
-  if (img && img.includes('mid')) return slot;
+  if (img && img.includes('mid')) return slot;   // chips follow the prices
   return Math.max(img ? +(/width:([\d.]+)mm/.exec(img)?.[1] || 30) + 4 : 0, slot);
 }
 
@@ -472,7 +475,7 @@ const html = `<!doctype html>
     /* Spread the sections down the panel instead of stacking them at the top
        and leaving a hole above the fold ticker — the reference sheet does the
        same. On a panel that exactly fills, this is a no-op. */
-    display: flex; flex-direction: column; justify-content: space-between;
+    display: flex; flex-direction: column; justify-content: flex-start;
     --pt: 8mm; --pr: 7mm; --pb: 13mm; --pl: 7mm;
     padding: calc(var(--pt) + 3mm) var(--pr) calc(var(--pb) + 3mm) var(--pl);
     border-right: 0.5mm solid #f9b902;   /* fold guide, and the reference's gold rule */
@@ -483,8 +486,12 @@ const html = `<!doctype html>
     color: #fff;
     overflow: hidden;
   }
-  /* Sections keep their natural height; only the gaps between them stretch. */
+  /* Sections keep their natural height. The slack goes to the LAST block on
+     the panel rather than being spread through every gap, which is what left
+     the reference's tight sections floating far apart. */
   .panel > * { flex: none; }
+  .panel > *:last-child { margin-top: auto; }
+  .side-b .panel > *:last-child { margin-top: 0; }
   .panel:nth-child(3) { border-right: 0; }
   /* The bleed strip sits on the outer edge of the outer panels. */
   .page > .panel:nth-child(1) { padding-left: calc(var(--pl) + 3mm); }
@@ -525,8 +532,8 @@ const html = `<!doctype html>
     margin: 0;
     /* The reference's plaques carry air around the word — chunky slabs, not
        tight labels — and one shared width per column, not shrink-to-fit. */
-    padding: .16em 1.5em .16em .7em;
-    min-width: 40mm;
+    padding: .16em 1.2em .16em .7em;
+    min-width: 44mm;
     border-style: solid; border-color: transparent;
     /* 18/85/20/25 source px at the height this header renders — solving
        240k = 1.05 + 0.4 + 38k gives k = 0.00718em per source pixel. Get these
@@ -557,7 +564,7 @@ const html = `<!doctype html>
   .side-a .hrule { display: none; }
   /* The 11mm plaque is the inner face's scale — the reference's outer face
      runs a slightly smaller one over shorter lists. */
-  .side-a .blk h3 { min-width: 70mm; font-size: 7.4mm; }
+  .side-a .blk h3 { min-width: 58mm; font-size: 7.4mm; }
   .side-a .redhead h3 { min-width: 56mm; }
   .side-a .panel .blk:not(:last-of-type) {
     border-bottom: .5mm dotted rgba(255,255,255,.55); padding-bottom: 4mm;
@@ -573,7 +580,9 @@ const html = `<!doctype html>
   /* At the panel's right edge; the list's own padding keeps the text clear. */
   /* The reference runs its photos large and lets the panel edge crop them. */
   .shot.side { position: absolute; top: 50%; translate: 0 -50%; right: -7mm; }
-  .shot.mid { position: absolute; top: 50%; translate: 0 -50%; right: 36mm; }
+  .side-a .shot.side { right: 0; }
+  .shot.mid { position: absolute; top: 50%; translate: 0 -50%; right: 30mm; z-index: 0; }
+  .blkrow .items { position: relative; z-index: 1; }
   .shot.below { margin: 3mm auto 0; }
   /* The reference sets the pizza on a gold halftone. Generated, not drawn. */
   .halftone {
@@ -770,7 +779,7 @@ const html = `<!doctype html>
   .pzcol { position: relative; z-index: 1; }
   .dealshead .headrow { justify-content: center; }
   .center { text-align: center; }
-  .dealshead h3 { min-width: 62mm; font-size: 7.2mm; }
+  .dealshead h3 { min-width: 46mm; font-size: 7.2mm; }
   .deal b { display: block; color: #bb0e12; font-size: 5mm; line-height: 1.05; text-transform: uppercase; }
   .deal p { margin: 1.4mm 0 1.6mm; font-size: 3.5mm; line-height: 1.3; font-weight: 700; text-transform: capitalize; }
   .deal strong { font-size: 4.6mm; font-weight: 400; color: #111; }
@@ -913,14 +922,14 @@ ${page('side-b', `
     <div class="halftone">${shot('pizza', 82, 'below')}</div>
   </div>
   <div class="panel tight">
-    ${sizedList('garlic-bread', 'size', ['11"', '13"'], { tone: ['red', 'red'] })}
-    ${list('calzone', { dense: true, desc: true, img: shot('calzone', 46), slot: 22, chip: '11"' })}
-    ${sizedList('kebab', 'size', ['MEDIUM', 'LARGE'], { title: 'Kebabs', img: shot('kebab', 42), slot: 22 })}
+    ${sizedList('garlic-bread', 'size', ['11"', '13"'], { tone: ['red', 'red'], slot: 14 })}
+    ${list('calzone', { dense: true, desc: true, img: shot('calzone', 46, 'mid'), slot: 14, chip: '11"' })}
+    ${sizedList('kebab', 'size', ['MEDIUM', 'LARGE'], { title: 'Kebabs', img: shot('kebab', 42, 'mid'), slot: 4 })}
     ${list('parmesan', { dense: true, desc: true, slot: 48 })}
     ${list('wraps', { dense: true, desc: true, img: shot('wrap', 46), slot: 48, title: 'Wrap' })}
   </div>
   <div class="panel">
-    ${sizedList('burgers', 'size', ['1/4 lb', '1/2 lb'], { slot: 8 })}
+    ${sizedList('burgers', 'size', ['1/4 lb', '1/2 lb'], { slot: 18 })}
     ${list('sides', { dense: true, img: shot('sides', 57), title: 'Sides', slot: 56, dots: true })}
     ${list('salad', { dense: true, desc: true, img: shot('salad', 62), slot: 56, dots: true })}
   </div>
