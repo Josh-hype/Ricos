@@ -19,6 +19,24 @@ const cfg = JSON.parse(fs.readFileSync(path.join(SHOP, 'config.json'), 'utf8'));
 const qr = fs.readFileSync(path.join(import.meta.dirname, 'qr.svg'), 'utf8')
   .replace(/<\?xml[^>]*\?>\s*/, '');
 
+/* qr.svg is a committed, pre-encoded file — nothing in a pure-Node build can
+   read what is inside it, so the host it points at is recorded here and tied
+   to config below. Everything else on the cover (phone, address, hours,
+   delivery bands, minimum) is derived from config and reprints when config
+   changes; the domain was the one fact hardcoded in two places, with no
+   check that they agreed with each other or with the shop.
+
+   That is not hypothetical: config's own _comment_domain records that the
+   printed brand guidelines carry bigbiteseasingwold.uk, a domain the shop
+   does NOT own. Printing an unverified host on 5,000 menus is that same
+   mistake with a longer tail.
+
+   To change the domain: regenerate qr.svg, then update this constant.
+     python3 -c "import segno; segno.make('https://<host>', error='H').save('print/big-bites/qr.svg', scale=10)"
+   Verify with print/big-bites/verify-qr.py, which re-encodes and compares
+   the matrix rather than trusting this line. */
+const QR_TARGET = 'https://bigbiteseasingwold.co.uk';
+
 /* A renamed or missing category must kill the build — the fallback used to
    print a bare slug over zero items, and every check passed because less
    content never overflows. */
@@ -47,7 +65,12 @@ const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt
 /* Descriptions are bracketed on the sheet, and the shop writes them as
    sentences — "(Brushed With Garlic Butter.)" reads wrong, so the full stop
    comes off here rather than being edited out of the menu data. */
-const descText = (s) => esc(String(s).trim().replace(/\.+$/, ''));
+/* Descriptions print Title Case via CSS `capitalize`, which uppercases the
+   first LETTER of each word — so "¼lb" came out "¼Lb", the fraction not being
+   a letter. Weight units are wrapped so they render exactly as the shop
+   wrote them; the casing stays in CSS for everything else. */
+const descText = (s) => esc(String(s).trim().replace(/\.+$/, ''))
+  .replace(/([¼½¾]\s*lb)/gi, '<span class="unit">$1</span>');
 
 /* PNG dimensions straight out of the IHDR chunk — needed so a side photo can
    reserve its own height, which CSS can't work out for an absolutely
@@ -157,7 +180,7 @@ function list(id, { dense = false, cols = 1, title = null, desc = false, img = '
    prices in their own columns, with the topping line under the name — exactly
    as the designer's sheet does. Items without the option get one price and a
    dash, which is how the reference handles Tray Doner and the like. */
-function sizedList(id, optId, headings, { title = null, img = '', secondOnly = null, tight = true, tone = ['gold', 'red'], nameTone = '', slot = 0, labels = null, chipsBelow = false } = {}) {
+function sizedList(id, optId, headings, { title = null, img = '', secondOnly = null, firstOnly = null, tight = true, tone = ['gold', 'red'], nameTone = '', slot = 0, labels = null, chipsBelow = false } = {}) {
   const c = cat(id);
   const rows = c.items.map((i) => {
     const opt = (i.options || []).find((o) => o.id === optId);
@@ -165,9 +188,18 @@ function sizedList(id, optId, headings, { title = null, img = '', secondOnly = n
       throw new Error(`${id}/${i.id}: size option no longer two choices with a free base — the column maths would misprint`);
     const up = opt && opt.choices[1];
     const p2 = up ? Number(i.price) + Number(up.price || 0) : null;
-    /* A few items only exist in the second size — a 500ml water is a bottle,
-       not a can — so their single price belongs in the right-hand column. */
-    const only2 = !opt && secondOnly && secondOnly.test(i.name);
+    /* A few items exist in ONE size only — a 500ml water is a bottle, not a
+       can; the Piggy Burger is a ½lb, not a ¼lb — so their single price has
+       to be told which column it belongs in. Search the description as well
+       as the name: this shop states the size in the description on every
+       burger that has no size option, and matching the name alone printed
+       the Piggy Burger's £10 under "1/4 lb" while its own description read
+       "½lb". Throw on an item that claims both, rather than silently
+       picking one. */
+    const text = `${i.name} ${i.desc || ''}`;
+    const only2 = !opt && secondOnly && secondOnly.test(text);
+    if (!opt && firstOnly && secondOnly && firstOnly.test(text) && secondOnly.test(text))
+      throw new Error(`${id}/${i.id}: "${text.trim()}" names both sizes, so which column its single price belongs in is ambiguous — split it into two items or give it a size option`);
     return `
       <li>
         <span class="n">${esc(i.name)}${i.desc ? `<em>${descText(i.desc)}</em>` : ''}</span>
@@ -339,6 +371,12 @@ const hours = [
   return `<div><span>${label}</span><b>${t(w.open)} - ${t(w.close)}</b></div>`;
 }).join('');
 
+const site = cfg.business.domain;
+if (QR_TARGET !== `https://${site}`) {
+  throw new Error(
+    `the QR encodes ${QR_TARGET} but config.business.domain is "${site}".\n` +
+    '  Regenerate qr.svg for the new host and update QR_TARGET — do not print a QR that goes somewhere else.');
+}
 const del = cfg.fulfillment.delivery;
 /* "£X per mile, up to N miles" is only a true statement while the bands are
    linear — refuse to print it the moment they aren't. */
@@ -375,14 +413,23 @@ const cover = `
         <b>${phoneRest.join(' ')}</b>
       </div>
       <div class="strap plain">Delivery Service or Collection</div>
+      <!-- The minimum is DELIVERY-only (functions/_lib/totals.js applies it
+           under fulfillment === 'delivery'), and the service charge is added
+           to every WEB order including collection — the till suppresses it.
+           Printing a bare "Minimum order £12" under a line that offers both
+           read as though collection carried it too, and the charge appeared
+           nowhere at all. Both are derived, so a config change reprints. -->
       <p class="fine">
         Order on our website for collection or delivery.<br />
         Easingwold — £${perMile.toFixed(2)} per mile, up to ${maxMiles} miles.<br />
-        Minimum order £${(del.minimumOrderPence / 100).toFixed(2).replace(/\.00$/, '')}.
+        Minimum delivery order £${(del.minimumOrderPence / 100).toFixed(2).replace(/\.00$/, '')}.${
+          cfg.serviceFeePence
+            ? `<br />Online orders add a £${(cfg.serviceFeePence / 100).toFixed(2)} service charge.`
+            : ''}
       </p>
       <div class="strapline">${icon('clock')}<div class="strap">Opening Time</div></div>
       <div class="hours">${hours}</div>
-      <div class="strap red website">bigbiteseasingwold.co.uk</div>
+      <div class="strap red website">${esc(site)}</div>
       <div class="qrwrap">
         <div class="qrtxt"><b>SCAN<br />ME</b><span class="arrow">${ARROW}</span></div>
         <div class="qr">${qr}</div>
@@ -715,6 +762,7 @@ const html = `<!doctype html>
   .items .n em {
     display: block; font-style: normal; font-weight: 400;
     text-transform: capitalize; font-size: 3.7mm; line-height: 1.1;
+    /* see descText: capitalize would render "¼lb" as "¼Lb" */
     color: #e93326; margin-top: .1mm;
   }
   .items .n em::before { content: '('; }
@@ -722,6 +770,7 @@ const html = `<!doctype html>
   .items.gold .n em::before, .items.gold .n em::after { content: none; }
   /* A sub-line that is part of the name, not a description — the cooler
      flavours. White, unbracketed. */
+  .items .n em .unit { text-transform: none; }
   .items .n em.plain { color: #fff; }
   .items .n em.plain::before, .items .n em.plain::after { content: none; }
   .items .n u { text-decoration: none; color: #e0483a; }
@@ -1039,7 +1088,7 @@ ${page('side-b', `
     ${list('wraps', { dense: true, desc: true, img: shot('wrap', 46), slot: 48, title: 'Wrap' })}
   </div>
   <div class="panel">
-    ${sizedList('burgers', 'size', ['1/4 lb', '1/2 lb'], { slot: 18 })}
+    ${sizedList('burgers', 'size', ['1/4 lb', '1/2 lb'], { slot: 18, firstOnly: /¼\s*lb/i, secondOnly: /½\s*lb/i })}
     ${list('sides', { dense: true, img: shot('sides', 57), title: 'Sides', slot: 56, dots: true })}
     ${list('salad', { dense: true, desc: true, img: shot('salad', 62), slot: 56, cls: 'saladblk' })}
   </div>

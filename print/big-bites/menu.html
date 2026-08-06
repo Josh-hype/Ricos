@@ -306,6 +306,7 @@
   .items .n em {
     display: block; font-style: normal; font-weight: 400;
     text-transform: capitalize; font-size: 3.7mm; line-height: 1.1;
+    /* see descText: capitalize would render "¼lb" as "¼Lb" */
     color: #e93326; margin-top: .1mm;
   }
   .items .n em::before { content: '('; }
@@ -313,6 +314,7 @@
   .items.gold .n em::before, .items.gold .n em::after { content: none; }
   /* A sub-line that is part of the name, not a description — the cooler
      flavours. White, unbracketed. */
+  .items .n em .unit { text-transform: none; }
   .items .n em.plain { color: #fff; }
   .items .n em.plain::before, .items .n em.plain::after { content: none; }
   .items .n u { text-decoration: none; color: #e0483a; }
@@ -791,10 +793,16 @@
         <b>820820</b>
       </div>
       <div class="strap plain">Delivery Service or Collection</div>
+      <!-- The minimum is DELIVERY-only (functions/_lib/totals.js applies it
+           under fulfillment === 'delivery'), and the service charge is added
+           to every WEB order including collection — the till suppresses it.
+           Printing a bare "Minimum order £12" under a line that offers both
+           read as though collection carried it too, and the charge appeared
+           nowhere at all. Both are derived, so a config change reprints. -->
       <p class="fine">
         Order on our website for collection or delivery.<br />
         Easingwold — £1.00 per mile, up to 5 miles.<br />
-        Minimum order £12.
+        Minimum delivery order £12.<br />Online orders add a £1.00 service charge.
       </p>
       <div class="strapline"><i class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#d61313"/><circle cx="12" cy="12" r="7.4" fill="none" stroke="#fff" stroke-width="1.6"/><path fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" d="M12 7.6V12l3 1.9"/></svg></i><div class="strap">Opening Time</div></div>
       <div class="hours"><div><span>Sunday - Thursday</span><b>4 pm - 10 pm</b></div><div><span>Friday - Saturday</span><b>4 pm - 11 pm</b></div></div>
@@ -1283,13 +1291,13 @@
         <span class="p2">9.50</span>
       </li>
       <li>
-        <span class="n">Monster Burger<em>Cheese burger, bacon, doner, spicy sauce · ¼lb · Served with chips</em></span>
+        <span class="n">Monster Burger<em>Cheese burger, bacon, doner, spicy sauce · <span class="unit">¼lb</span> · Served with chips</em></span>
         <span class="dots"></span>
         <span class="p2">9.50</span>
         <span class="p2">-</span>
       </li>
       <li>
-        <span class="n">Big Bites Burger<em>Cheese burger, chicken burger, doner · ¼lb · Served with chips</em></span>
+        <span class="n">Big Bites Burger<em>Cheese burger, chicken burger, doner · <span class="unit">¼lb</span> · Served with chips</em></span>
         <span class="dots"></span>
         <span class="p2">9.50</span>
         <span class="p2">-</span>
@@ -1301,10 +1309,10 @@
         <span class="p2">9.00</span>
       </li>
       <li>
-        <span class="n">Piggy Burger<em>Cheese burger, pepperoni, bacon, chorizo · ½lb · Served with chips</em></span>
+        <span class="n">Piggy Burger<em>Cheese burger, pepperoni, bacon, chorizo · <span class="unit">½lb</span> · Served with chips</em></span>
         <span class="dots"></span>
-        <span class="p2">10.00</span>
         <span class="p2">-</span>
+        <span class="p2">10.00</span>
       </li>
       <li>
         <span class="n">Halloumi Burger<em>Beef burger with halloumi cheese · Served with chips</em></span>
