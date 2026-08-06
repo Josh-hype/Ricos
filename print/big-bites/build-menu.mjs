@@ -131,7 +131,7 @@ function list(id, { dense = false, cols = 1, title = null, desc = false, img = '
    prices in their own columns, with the topping line under the name — exactly
    as the designer's sheet does. Items without the option get one price and a
    dash, which is how the reference handles Tray Doner and the like. */
-function sizedList(id, optId, headings, { title = null, img = '', secondOnly = null, tight = true, tone = ['gold', 'red'], nameTone = '', slot = 0, labels = null } = {}) {
+function sizedList(id, optId, headings, { title = null, img = '', secondOnly = null, tight = true, tone = ['gold', 'red'], nameTone = '', slot = 0, labels = null, chipsBelow = false } = {}) {
   const c = cat(id);
   const rows = c.items.map((i) => {
     const opt = (i.options || []).find((o) => o.id === optId);
@@ -152,7 +152,10 @@ function sizedList(id, optId, headings, { title = null, img = '', secondOnly = n
   }).join('');
   return `
     <section class="blk">
-      ${header(esc(title || c.name), chips(labels || headings, tone, slotOf(img, slot)))}
+      ${chipsBelow
+        ? `${header(esc(title || c.name))}
+           <div class="chiprow" style="padding-right:${slotOf(img, slot).toFixed(1)}mm">${chips(labels || headings, tone)}</div>`
+        : header(esc(title || c.name), chips(labels || headings, tone, slotOf(img, slot)))}
       ${withShot(`<ul class="items sized${tight ? ' withdesc' : ''}${nameTone ? ' ' + nameTone : ''}">${rows}</ul>`, img, slot)}
     </section>`;
 }
@@ -448,7 +451,7 @@ const html = `<!doctype html>
      rather than applied globally, so the roomier panels stay roomy. */
   .panel.tight .blk { margin-bottom: 1.5mm; }
   .panel.tight .blk h3 { font-size: 7mm; margin-bottom: 0; }
-  .panel.tight .hrule { margin: .6mm 0 1.5mm; }
+  .panel.tight .hrule { margin: .8mm 0 2.4mm; }
   .panel.tight .items.dense li { padding: 0; font-size: 3mm; }
   /* Five sections against three elsewhere, and this shop carries a description
      on nearly every one of them where the reference carries almost none — so
@@ -457,7 +460,7 @@ const html = `<!doctype html>
   .panel.tight .items .n em { font-size: 2.8mm; }
 
   /* ---- section blocks ---- */
-  .blk { margin-bottom: 5mm; }
+  .blk { margin-bottom: 3mm; }
   /* ---- header plaque ----
      The owner's bitten-corner plaque, levelled (the source art was tilted
      4.45°) and used as a border-image so the bite and the ragged ends keep
@@ -492,11 +495,19 @@ const html = `<!doctype html>
     text-transform: uppercase;
     transform: rotate(-1.6deg);
   }
-  .blk h3 .hdr2 { font-family: 'Oswald'; font-size: 3.6mm; font-weight: 600; margin-left: 2mm; }
+  /* Part of the headline on the reference — same size, weight and baseline. */
+  .blk h3 .hdr2 { margin-left: 2mm; }
   /* Every heading on the reference has a dotted rule running the full width of
      the panel underneath it. The header itself is inline-block and rotated, so
      the rule is its own element rather than a border. */
-  .hrule { margin: 1mm 0 2.5mm; border-top: .5mm dotted rgba(255,255,255,.55); }
+  /* Bright, widely-spaced dots — on the reference these read as a deliberate
+     rule, not a faint hairline. A repeating gradient gives control over the
+     pitch that a plain dotted border does not. */
+  .hrule {
+    margin: 1.2mm 0 4mm; height: .8mm;
+    background: repeating-linear-gradient(to right,
+      rgba(255,255,255,.92) 0 .8mm, transparent .8mm 2.1mm);
+  }
   /* The outer face runs its dotted rules BETWEEN sections instead — under the
      lists, not under the plaques. Same rule, different position. */
   .side-a .hrule { display: none; }
@@ -545,7 +556,7 @@ const html = `<!doctype html>
     font-size: 4.7mm; line-height: 1.14;
   }
   .items li { padding: .45mm 0; }
-  .items.dense li { font-size: 3.85mm; padding: .1mm 0; }
+  .items.dense li { font-size: 3.7mm; padding: .05mm 0; }
   .items .n { font-weight: 500; text-transform: uppercase; letter-spacing: .005em; }
   /* Reference palette: item names white, the line under them red. The pizza
      column inverts it — gold names, white toppings — which is what makes that
@@ -590,6 +601,9 @@ const html = `<!doctype html>
      they sit over the price columns they label. */
   .headrow { display: flex; align-items: center; justify-content: space-between; gap: 4mm; }
   .sizehdr { display: inline-flex; gap: 2mm; flex: none; }
+  /* Drinks sets its column tabs on their own row under the plaque, each one
+     centred on the price column it labels — the same 11mm grid as .p2. */
+  .chiprow { display: flex; justify-content: flex-end; margin: 0 0 1.5mm; }
   .sizehdr i {
     font-style: normal; font-size: 3.9mm; font-weight: 600;
     padding: .3mm 1.6mm; border-radius: .8mm; text-align: center;
@@ -636,11 +650,11 @@ const html = `<!doctype html>
   .kidsbox {
     background: #c10f0f; border-radius: 3mm; padding: 4mm;
     display: flex; align-items: center; gap: 4mm;
-    min-height: 44mm;
+    min-height: 40mm;
     outline: .5mm dashed rgba(249,185,2,.85); outline-offset: -2.2mm;
   }
   .kidsmark {
-    flex: none; width: 27mm; text-align: center; color: #fdf3d8;
+    flex: none; width: 44mm; text-align: center; color: #fdf3d8;
     font-family: 'Anton', Impact, sans-serif; line-height: .95;
   }
   .kidsmark b { display: block; font-size: 8mm; }
@@ -662,19 +676,30 @@ const html = `<!doctype html>
   .kidslist li { font-size: 4mm; line-height: 1.45; padding: 1mm 0; }
   .kidsticket .items .n { text-transform: none; }
   .kidsticket .items .n, .kidsticket .items .p { color: #111; font-weight: 600; }
-  .kidsticket .items .dots { border-bottom: .45mm dotted #111; margin: 0 1mm 1mm; align-self: flex-end; }
+  /* The reference runs a two-line entry with the leader and price on the LAST
+     line, so the row aligns to its bottom, not its first baseline. */
+  .kidsticket .items li { align-items: flex-end; }
+  .kidsticket .items .n { flex: none; max-width: 66%; }
+  .kidsticket .items .dots {
+    flex: 1; min-width: 6mm; align-self: flex-end; margin: 0 1.5mm 1.1mm;
+    background: repeating-linear-gradient(to right, #111 0 .5mm, transparent .5mm 1.7mm);
+    height: .5mm;
+  }
 
   /* ---- meal deal boxes ---- */
   /* The deals are the upsell and the reference gives them a third of the
      panel, so they're sized to fill rather than left as small boxes. */
   .deals { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  /* Title top, price bottom, body between — so paired cards in a row share
+     their baselines however long the description runs. */
   .deal {
     background: #f8e3bf; color: #111;
     border: .5mm solid #1a1a1a; border-radius: 2.5mm;
     padding: 2.6mm 3mm; text-align: center;
     box-shadow: 1mm 1mm 0 rgba(0,0,0,.5);
-    display: flex; flex-direction: column; justify-content: center;
+    display: grid; grid-template-rows: auto 1fr auto; align-content: stretch;
   }
+  .deal p { align-self: center; }
   /* Reference cards: rounded, thin dark outline, and a circular bite punched
      out of the top-right corner — not torn edges. The bite is a disc of the
      page colour laid over the corner. */
@@ -685,6 +710,7 @@ const html = `<!doctype html>
     background: #030303; border: .5mm solid #1a1a1a;
   }
   .pzcol { position: relative; z-index: 1; }
+  .dealshead .headrow { justify-content: center; }
   .center { text-align: center; }
   .dealshead h3 { min-width: 62mm; font-size: 7.2mm; }
   .deal b { display: block; font-family: 'Anton', Impact, sans-serif; color: #dd1516; font-size: 5.2mm; line-height: 1.05; text-transform: uppercase; }
@@ -711,18 +737,19 @@ const html = `<!doctype html>
     display: flex; align-items: center; justify-content: center; gap: 6mm;
     writing-mode: vertical-rl;
   }
-  .spine b { font-family: 'Anton', Impact, sans-serif; font-size: 18mm; letter-spacing: .04em; text-transform: uppercase; }
+  .spine { justify-content: space-between; padding: 6mm 0; }
+  .spine b { font-family: 'Anton', Impact, sans-serif; font-size: 21mm; letter-spacing: .04em; text-transform: uppercase; }
   .spine span { font-size: 3.4mm; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #fff; }
 
   /* The reference sets a red disc with a handset beside the phone and one with
      a clock beside the opening times. Both are inline SVG — drawn, so they stay
      vector in the PDF and need no asset. */
-  .ico { display: inline-block; vertical-align: middle; margin-right: 2mm; width: 6mm; height: 6mm; }
+  .ico { display: inline-block; vertical-align: middle; margin-right: 2.5mm; width: 9mm; height: 9mm; flex: none; }
   .ico svg { display: block; width: 100%; height: 100%; }
   /* The supplied wordmark, keyed to transparency so the panel's own black and
      its faint yellow glow read through instead of a slightly-off black box.
      105mm wide keeps the source above 300dpi at print size. */
-  .brandmark { width: 100mm; height: auto; display: block; }
+  .brandmark { width: 88mm; height: auto; display: block; }
   .coverrule { width: 100%; margin-top: 2.5mm; border-top: .5mm dotted rgba(255,255,255,.55); }
 
   .tel { margin-top: 4mm; }
@@ -735,11 +762,11 @@ const html = `<!doctype html>
   /* The cover's straps are the same device as a section header, so they take
      the same plaque — a flat yellow bar next to a bitten one would read as an
      oversight. Text is centred here, so the left/right insets match. */
-  .strapline { display: flex; align-items: center; gap: 2.5mm; margin: 6mm 0 3mm; }
-  .strapline .strap { margin: 0; }
+  .strapline { display: flex; align-items: center; gap: 3mm; margin: 6mm 0 3mm; align-self: flex-start; }
+  .strapline .strap { margin: 0; min-width: 52mm; font-size: 5.2mm; }
   .strap.plain {
     border: 0; background: none; padding: 0; margin: 5mm 0 2mm;
-    color: #f9b902; font-size: 5mm;
+    color: #f9b902; font-size: 5.8mm;
   }
   .strap.red { border-image-source: url(img/header-plaque-red.png); color: #fdf3d8; }
   .strap.website { font-size: 5.4mm; letter-spacing: .02em; padding: .25em .8em; }
@@ -753,7 +780,7 @@ const html = `<!doctype html>
     font-family: 'Anton', Impact, sans-serif; font-size: 4.4mm;
     text-transform: uppercase;
   }
-  .fine { margin: 0; font-size: 3.5mm; line-height: 1.5; font-weight: 400; color: #fff; }
+  .fine { margin: 0; width: 100%; font-size: 4.1mm; line-height: 1.45; font-weight: 400; color: #fff; }
   .hours { display: grid; grid-template-columns: auto auto; column-gap: 9mm; row-gap: 1mm; justify-content: center; }
   .hours div { display: contents; }
   /* Straight from the shop's config, not written here — the same wording the
@@ -803,7 +830,7 @@ ${/* Section order and panel assignment follow the designer's artwork exactly:
       Don't reshuffle these without checking the reference sheets again. */''}
 ${page('side-a', `
   <div class="panel">
-    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], slot: 48 })}
+    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], slot: 48, chipsBelow: true })}
     ${milkshakes()}
     ${list('desserts', { dense: true, desc: true, img: shot('cake', 50), slot: 50 })}
     ${kidsBox()}
