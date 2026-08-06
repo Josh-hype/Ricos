@@ -625,8 +625,9 @@ const html = `<!doctype html>
     background:
       radial-gradient(circle at center, #e8901a 30%, transparent 31%) 0 0 / 2.4mm 2.4mm,
       radial-gradient(circle at center, #e8901a 30%, transparent 31%) 1.2mm 1.2mm / 2.4mm 2.4mm;
-    -webkit-mask: radial-gradient(ellipse 58% 56% at 62% 50%, #000 22%, rgba(0,0,0,.5) 50%, transparent 84%);
-            mask: radial-gradient(ellipse 58% 56% at 62% 50%, #000 22%, rgba(0,0,0,.5) 50%, transparent 84%);
+    /* Graded so it dissolves rather than ending on a straight edge. */
+    -webkit-mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 14%, rgba(0,0,0,.62) 38%, rgba(0,0,0,.22) 62%, transparent 82%);
+            mask: radial-gradient(ellipse 54% 52% at 64% 50%, #000 14%, rgba(0,0,0,.62) 38%, rgba(0,0,0,.22) 62%, transparent 82%);
   }
   .blkrow.dots .shot { position: absolute; z-index: 1; }
 
