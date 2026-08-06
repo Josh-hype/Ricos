@@ -1277,16 +1277,16 @@ const html = `<!doctype html>
      perfectly on screen, which is how this photo came to be in preview.png and
      absent from the PDF. */
   .coverart {
-    position: absolute; left: 0; right: 24mm; bottom: 22.4mm; height: 98mm;
+    position: absolute; left: 0; right: 24mm; bottom: 22.4mm; height: 178.8mm;
     z-index: 0; pointer-events: none; overflow: hidden;
   }
   .coverart img {
-    /* Anchored to the BOTTOM and filling the width. This photograph is built
-       with headroom — its top 60% is empty black — so the part that falls
-       outside the frame is background, not content. That is the difference
-       from the old one, where cover was throwing away a third of the actual
-       picture. */
-    width: 119mm; height: 98mm; object-fit: cover; object-position: 50% 100%;
+    /* The WHOLE photograph, uncropped. The box is cut to the image's own
+       aspect (1023x1537), so 119mm wide is 178.8mm tall and nothing is
+       trimmed off any edge. Explicit millimetres, not percentages — a
+       percentage height on a replaced element resolves differently in
+       Chromium's print path and drops the image from the PDF. */
+    width: 119mm; height: 178.8mm; object-fit: fill;
   }
   .coverbody { position: relative; z-index: 1; }
   .qr { width: 30mm; height: 30mm; background: #fff; padding: 1.5mm; border-radius: 1.5mm; }
