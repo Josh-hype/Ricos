@@ -164,6 +164,31 @@ function withShot(inner, img, slot = 0, dots = false) {
 
 /* How far a section's size chips shift left so they sit over the price columns
    when a photo column is reserved to their right. */
+/* The KIDS MENU / BIG BITES lockup. The owner supplies it as artwork; until
+   the file is in img/ the plain type stands in, so the sheet still builds and
+   still reads correctly — it just isn't the branded lockup yet.
+   The supplied artwork is a complete panel: its own red ground, its own gold
+   dotted border and its own illustrations. So when it is present the box drops
+   its own dashed outline and padding on that side, or the sheet would print a
+   framed card inside a framed card. */
+function kidsLockup() {
+  const file = path.join(import.meta.dirname, 'img', 'kids-lockup.png');
+  if (!fs.existsSync(file)) {
+    return '<div class="kidsmark"><b>Kids</b><b>Menu</b><span>Big Bites</span></div>';
+  }
+  const { w, h } = imgSize('kids-lockup');
+  /* 46mm, not the ~52mm the reference gives it: the artwork is square, and
+     panel 1 (Drinks / Milk Shakes / Desserts / Kids) has no spare height —
+     48mm overflows it by 5px. The reference can afford a taller kids box
+     because its Desserts list carries no descriptions; this shop's does. */
+  const WIDE = 46;
+  const dpi = w / (WIDE / 25.4);
+  if (dpi < 140) throw new Error(`kids-lockup.png at ${WIDE}mm is ${dpi.toFixed(1)}dpi — too soft to print`);
+  shotDpi.push({ name: 'kids-lockup', px: `${w}x${h}`, mm: WIDE, dpi: Math.round(dpi) });
+  return `<img class="kidslock" src="img/kids-lockup.png" alt="Kids Menu — Big Bites"
+    style="width:${WIDE}mm" />`;
+}
+
 function slotOf(img, slot) {
   if (img && img.includes('mid')) return slot;   // chips follow the prices
   return Math.max(img ? +(/width:([\d.]+)mm/.exec(img)?.[1] || 30) + 4 : 0, slot);
@@ -314,8 +339,7 @@ function kidsBox() {
   const c = cat('kids');
   return `
     <section class="blk kidsbox">
-        <!-- ASSET GAP: the KIDS MENU / BIG BITES ribbon lockup goes here. -->
-        <div class="kidsmark"><b>Kids</b><b>Menu</b><span>Big Bites</span></div>
+        ${kidsLockup()}
         <div class="kidsticket">
         <ul class="items kidslist">
           ${c.items.map((i) => {
@@ -1006,6 +1030,10 @@ const html = `<!doctype html>
     min-height: 52mm;
     outline: .5mm dashed rgba(249,185,2,.85); outline-offset: -2.2mm;
   }
+  /* With the artwork in place the box carries no frame of its own — the
+     lockup brings one. */
+  .kidsbox:has(.kidslock) { outline: 0; padding: 3mm; }
+  .kidslock { flex: none; display: block; height: auto; align-self: center; }
   .kidsmark {
     flex: none; width: 44mm; text-align: center; color: #fdf3d8; line-height: .95;
     position: relative; z-index: 1;

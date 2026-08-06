@@ -114,7 +114,7 @@ leaves empty — nothing is faked or substituted.
 | 2 | **Garlic bread** | Garlic Bread, inner middle panel | Transparent PNG, ≥1000px wide |
 | 3 | **Parmesan** | Parmesan, inner middle panel | Transparent PNG, ≥1000px wide |
 | 4 | **Drink cans** | Drinks, outer left panel | Real Pepsi + Coca-Cola. The generated pair spell "pepc" and a garbled Coca-Cola script — a printed menu carrying a botched trademark is not something to send to press. The brands' own press images are the safe source |
-| 5 | **Kids Menu ribbon lockup** | Inside the red Kids box, replacing the plain type there now | "KIDS MENU / BIG BITES" ribbon with the cutlery and food illustrations, transparent PNG ≥1200px wide |
+| 5 | **Kids Menu ribbon lockup** | Inside the red Kids box — **the slot is wired**: drop the file at `print/big-bites/img/kids-lockup.png` and it appears, with the box dropping its own dashed frame so the artwork's isn't doubled. Until then the plain type stands in | Square-ish PNG, **≥260px wide** (46mm at the 140dpi floor); ≥700px to clear 300dpi. The owner's supplied artwork carries its own red ground and gold dotted border, so no transparency is needed |
 | 6 | **Cover background** | Lower half of the cover panel | The pizza / basil / tomato flood. No transparency needed, but it must be big: ~1500 × 1800px |
 | 7 | **Bigger burger hero** | Above Meal Deals — already in place, but soft | The current file is 635px, which is 149dpi at 108mm — every build prints the dpi table, and the build throws below 140. ≥1200px wide puts it over 300 |
 
