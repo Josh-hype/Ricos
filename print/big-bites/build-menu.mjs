@@ -263,9 +263,9 @@ function deals() {
           ${pizzaDeals.map((i) => `<p class="pd">${lines(i.desc)}<strong>£${money(i.price)}</strong></p>`).join('')}
         </div>` : '';
   return `
-    <section class="blk">
+    <section class="blk dealsblk">
       <div class="center dealshead">${header('Meal Deals')}</div>
-      <div class="deals">
+      <div class="deals grow">
         ${rest.map(box).join('')}
         ${pizzaBox}
       </div>
@@ -491,7 +491,9 @@ const html = `<!doctype html>
      the reference's tight sections floating far apart. */
   .panel > * { flex: none; }
   .panel > *:last-child { margin-top: auto; }
-  .side-b .panel > *:last-child { margin-top: 0; }
+  /* Never the cover: its children are the body and the spine, and pushing the
+     spine down left the top 38% of the sheet edge bare. */
+  .side-b .panel > *:last-child, .panel.cover > *:last-child { margin-top: 0; }
   .panel:nth-child(3) { border-right: 0; }
   /* The bleed strip sits on the outer edge of the outer panels. */
   .page > .panel:nth-child(1) { padding-left: calc(var(--pl) + 3mm); }
@@ -566,8 +568,15 @@ const html = `<!doctype html>
      runs a slightly smaller one over shorter lists. */
   .side-a .blk h3 { min-width: 58mm; font-size: 7.4mm; }
   .side-a .redhead h3 { min-width: 56mm; }
-  .side-a .panel .blk:not(:last-of-type) {
-    border-bottom: .5mm dotted rgba(255,255,255,.55); padding-bottom: 4mm;
+  /* Same bold dots as .hrule — these were left on a thin dotted border when
+     the header rules were rebuilt, so they read as a hairline. */
+  .side-a .panel .blk:not(:last-of-type):not(:nth-last-of-type(2)) {
+    padding-bottom: 4mm; position: relative;
+  }
+  .side-a .panel .blk:not(:last-of-type):not(:nth-last-of-type(2))::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: .8mm;
+    background: repeating-linear-gradient(to right,
+      rgba(255,255,255,.92) 0 .8mm, transparent .8mm 2.1mm);
   }
   .side-a .kidsbox { border-bottom: 0; }
 
@@ -672,6 +681,10 @@ const html = `<!doctype html>
   /* Drinks sets its column tabs on their own row under the plaque, each one
      centred on the price column it labels — the same 11mm grid as .p2. */
   .chiprow { display: flex; justify-content: flex-end; margin: 0 0 1.5mm; }
+  /* "Bottle" is wider than the 14mm min-width once padding is counted, so the
+     chip grew and stopped sitting over its column. Pin the width instead and
+     size the type to fit it. */
+  .chiprow .sizehdr i { width: 14mm; min-width: 0; font-size: 3.5mm; padding-left: 0; padding-right: 0; }
   .sizehdr i {
     font-style: normal; font-size: 4.4mm; font-weight: 600;
     padding: .55mm 1.8mm; border-radius: 0; text-align: center;
@@ -716,13 +729,14 @@ const html = `<!doctype html>
      holds its place), and the items on a YELLOW ticket in black, with dotted
      leaders and a £ — the one list on the sheet that keeps both. */
   .kidsbox {
-    background: #c10f0f; border-radius: 3mm; padding: 4mm;
+    background: #c10f0f; border-radius: 3mm; padding: 7mm 5mm;
     display: flex; align-items: center; gap: 4mm;
-    min-height: 32mm;
+    min-height: 58mm;
     outline: .5mm dashed rgba(249,185,2,.85); outline-offset: -2.2mm;
   }
   .kidsmark {
     flex: none; width: 44mm; text-align: center; color: #fdf3d8; line-height: .95;
+    text-transform: uppercase;
   }
   .kidsmark b { display: block; font-size: 6.4mm; }
   .kidsmark span {
@@ -757,6 +771,10 @@ const html = `<!doctype html>
   /* The deals are the upsell and the reference gives them a third of the
      panel, so they're sized to fill rather than left as small boxes. */
   .deals { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  /* The reference runs its cards from under the hero photo down to the footer;
+     letting the grid grow fills that column instead of leaving a void above. */
+  .deals.grow { flex: 1; grid-auto-rows: 1fr; }
+  .dealsblk { display: flex; flex-direction: column; flex: 1; }
   /* Title top, price bottom, body between — so paired cards in a row share
      their baselines however long the description runs. */
   .deal {
@@ -809,8 +827,8 @@ const html = `<!doctype html>
     writing-mode: vertical-rl;
   }
   .spine { justify-content: space-between; padding: 6mm 0; }
-  .spine b { font-size: 16mm; letter-spacing: .04em; text-transform: uppercase; }
-  .spine span { font-size: 3.4mm; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #fff; }
+  .spine b { font-size: 19mm; letter-spacing: .04em; text-transform: uppercase; }
+  .spine span { font-size: 4.6mm; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #fff; }
 
   /* The reference sets a red disc with a handset beside the phone and one with
      a clock beside the opening times. Both are inline SVG — drawn, so they stay
@@ -833,7 +851,7 @@ const html = `<!doctype html>
   /* The cover's straps are the same device as a section header, so they take
      the same plaque — a flat yellow bar next to a bitten one would read as an
      oversight. Text is centred here, so the left/right insets match. */
-  .strapline { display: flex; align-items: center; gap: 3mm; margin: 6mm 0 3mm; align-self: flex-start; }
+  .strapline { display: flex; align-items: center; gap: .8mm; margin: 6mm 0 3mm; align-self: flex-start; }
   .strapline .strap { margin: 0; min-width: 52mm; font-size: 5.2mm; }
   .strap.plain {
     border: 0; background: none; padding: 0; margin: 5mm 0 2mm;
@@ -862,7 +880,7 @@ const html = `<!doctype html>
   }
   .allergy b { color: #f9b902; text-transform: uppercase; letter-spacing: .08em; }
   .hours span, .hours b { font-size: 3.9mm; font-weight: 500; }
-  .hours span { text-align: right; }
+  .hours span { text-align: left; }
   .hours b { color: #fff; text-align: left; }
 
   .qrwrap { display: flex; align-items: center; justify-content: center; gap: 3mm; padding-top: 3mm; }
@@ -902,7 +920,7 @@ ${page('side-a', `
   <div class="panel">
     ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], slot: 48, chipsBelow: true })}
     ${milkshakes()}
-    ${list('desserts', { dense: true, desc: true, img: shot('cake', 50), slot: 50 })}
+    ${list('desserts', { desc: true, img: shot('cake', 50), slot: 50 })}
     ${kidsBox()}
   </div>
   <div class="panel">
