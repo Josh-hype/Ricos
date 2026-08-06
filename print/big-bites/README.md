@@ -129,9 +129,10 @@ QR) and needs no artwork.
 
     node print/big-bites/check-collisions.mjs
     python3 print/big-bites/verify-qr.py
+    python3 print/big-bites/verify-preview.py
 
-**`render.mjs` runs both of these itself** and refuses to write the PDF if
-either fails — they are documented here because they are useful on their own,
+**`render.mjs` runs all three itself** and refuses to write the PDF if any
+fails — they are documented here because they are useful on their own,
 not because anyone has to remember them.
 
 The first reports any item name or price that runs under a food photo. It
@@ -143,6 +144,16 @@ data. The build can only compare two strings it was told; this reads the QR.
 `config.json` records that the printed brand guidelines already carry a domain
 the shop does not own, so a QR pointing at the wrong host is a mistake this
 project has the shape of already.
+
+The third compares `preview.png` against a raster of the PDF, block by block.
+The preview is the only thing anyone reviews, and it comes from a *different*
+code path — screen media, its own browser context. They diverged silently once:
+an element positioned below the page box (`bottom: -4mm`) renders on screen and
+is **dropped entirely** by Chromium's print path, so the cover's pizza was in
+the preview and absent from the PDF while every other gate passed — because
+every other gate reads the PDF or the DOM, and neither disagreed with itself.
+A global mean does not move enough to notice one missing photograph; a grid of
+blocks does. Good build: worst block 12/255. With that bug: 88.
 
 `menu.html` is **generated and gitignored**. It used to be committed, which
 meant a price hand-patched into it survived in git and reprinted forever; the

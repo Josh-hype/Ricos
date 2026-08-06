@@ -292,6 +292,20 @@ try {
   process.exit(1);
 }
 
+/* The preview is the only thing anyone reviews, and it is produced by a
+   DIFFERENT code path from the PDF — screen media, its own context. They
+   diverged silently once: an element positioned below the page box renders on
+   screen and is dropped by the print path, so the cover photograph was in the
+   preview and absent from the PDF while every other gate passed. Compare them
+   block by block; a global mean does not move enough to notice. */
+try {
+  execFileSync('python3', [path.join(DIR, 'verify-preview.py'), TMP], { stdio: 'inherit' });
+} catch {
+  fs.unlinkSync(TMP);
+  console.error('PDF NOT written — the preview and the PDF disagree.');
+  process.exit(1);
+}
+
 /* Only now does it become the real file: every assertion above ran against the
    temp copy, so a failure can never leave a corrupt PDF on disk under a
    "PDF written" message. */

@@ -1251,16 +1251,25 @@ const html = `<!doctype html>
      height the stack above it left over, which was almost none, and the photo
      was pushed off the bottom. It floods the foot of the cover, bleeds off the
      left, right and bottom edges, and sits behind the type. */
+  /* A LAYER on the panel, not a flex item: as a flex child it got whatever
+     height the stack above it left over, which was almost none.
+     bottom is 0, NOT a negative — an absolutely positioned element pushed
+     below the page box is DROPPED ENTIRELY by Chromium's print path, while
+     rendering perfectly on screen. At -4mm this photograph was in preview.png
+     and absent from the PDF. Zero here is already in the bleed: the panel's
+     padding box ends 16mm above the sheet edge and the ticker covers the rest.
+     Explicit mm on the image too — percentage heights on a replaced element
+     are another thing print resolves differently from screen. */
   .coverart {
-    position: absolute; left: -9mm; right: -9mm; bottom: -4mm; height: 104mm;
+    position: absolute; left: -9mm; right: -9mm; bottom: 0; height: 96mm;
     z-index: 0; pointer-events: none; overflow: hidden;
   }
   .coverart img {
-    width: 100%; height: 100%; object-fit: cover; object-position: 50% 100%;
+    width: 161mm; height: 96mm; object-fit: cover; object-position: 50% 100%;
     /* Fades in from the top so the photograph rises out of the panel black
        instead of starting on a horizontal line across the cover. */
-    -webkit-mask: linear-gradient(to bottom, transparent 0, rgba(0,0,0,.55) 22%, #000 46%);
-            mask: linear-gradient(to bottom, transparent 0, rgba(0,0,0,.55) 22%, #000 46%);
+    -webkit-mask: linear-gradient(to bottom, transparent 0, rgba(0,0,0,.5) 26%, #000 52%);
+            mask: linear-gradient(to bottom, transparent 0, rgba(0,0,0,.5) 26%, #000 52%);
   }
   .coverbody { position: relative; z-index: 1; }
   .qr { width: 30mm; height: 30mm; background: #fff; padding: 1.5mm; border-radius: 1.5mm; }
