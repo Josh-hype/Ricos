@@ -202,6 +202,7 @@
        makes that possible: unlike `hidden`, it can be set on one axis while the
        other stays visible. */
     .hero{padding:30px 0 0;overflow-x:clip;overflow-y:visible;}
+    .hero .wrap{padding-bottom:0;}
 
     /* The design keeps its two columns on a phone: the strapline and headline run
        full width, then the one-liner and the three badges sit in a left column
@@ -744,8 +745,14 @@
     .hdr-loc{font-size:.6rem;letter-spacing:.08em;}
     .hdr-loc::before{font-size:.86rem;}
     .hdr-actions .btn{min-height:44px;padding:9px 13px;font-size:.7rem;}
-    .hero{padding:24px 0 18px;}
-    .hero .wrap{grid-template-columns:46% 54%;min-height:500px;translate:0 -15px;}
+    /* No bottom padding: the yellow band now butts straight up under the
+       order buttons, which is the point. */
+    .hero{padding:24px 0 0;}
+    .hero .wrap{grid-template-columns:46% 54%;min-height:445px;translate:0 -15px;}
+    /* The min-height is there to hold space for the absolutely positioned
+       photograph, but the order buttons already run 80px past the bottom of
+       it — so the last 55px was dead black between the buttons and whatever
+       came next. */
     .hero-copy{display:block;padding-top:2px;}
     .hero .tab{font-size:.62rem;letter-spacing:.08em;padding:7px 10px 5px;translate:0 -22px;}
     .hero h1{font-size:clamp(2.1rem,10.4vw,3.15rem);line-height:.94;margin-top:13px;translate:0 -21px;}
@@ -1000,6 +1007,9 @@
     </div>
   </section>
 
+  <!-- Straight under the hero buttons: on a phone this is the first thing below "Order delivery", which is where the eye goes next. -->
+  <div class="ticker" aria-hidden="true"><div class="roll"><span class="seq">SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;</span><span class="seq">SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;</span></div></div>
+
   <!-- Red band: the decision point. Torn top edge, then the two order routes. -->
   <section class="cta-band">
     <div class="tear" aria-hidden="true"></div>
@@ -1068,8 +1078,6 @@
       </div>
     </div>
   </section>
-
-  <div class="ticker" aria-hidden="true"><div class="roll"><span class="seq">SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;</span><span class="seq">SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;SLICE IT&nbsp;<span class="st">★</span>&nbsp;BIG BITES&nbsp;<span class="st">★</span>&nbsp;FRESH &amp; LOADED&nbsp;<span class="st">★</span>&nbsp;</span></div></div>
 
   <section class="feat" id="offers">
     <div class="wrap">
