@@ -21,18 +21,37 @@ reprint.** The printed menu cannot drift from what you actually charge.
 
 ## Typefaces
 
-**Oswald** — Bold for the plaques, spine, kids ribbon, deal titles, phone
-number and ticker; Regular/Medium for the price lists. **Montserrat** for
-marketing copy: the dips list, deal-card bodies, and the cover's delivery and
-opening-hours block. Both vendored in `fonts/`; nothing is fetched.
+**Barlow Condensed Black** for the section plaques, spine, kids ribbon, phone
+number and ticker. **Oswald** Regular/Medium for the price lists.
+**Montserrat** for marketing copy: the dips list, deal cards (title, body *and*
+price), and the cover's delivery and opening-hours block. All vendored in
+`fonts/`; nothing is fetched.
 
-Two families, because the reference uses two. Its headings measure ~0.65
-advance-per-letter against cap height — Anton is 0.54 (too narrow) and Archivo
-Black 1.12 (much too wide), so the display face is the *same* condensed family
-as the lists, just heavy and about 2.8x their cap height. Its marketing copy is
-a normal-width sans, measured 34% wider than its price lists.
+The display face is chosen by two measurements taken off the reference at
+matched cap height — **stem/cap** (how heavy) and **advance/cap** (how wide):
 
-`render.mjs` refuses to write the PDF unless both families loaded — **and then
+| face | stem/cap | advance/cap |
+|------|---------:|------------:|
+| *reference artwork* | **0.275** | **0.665** inner / **0.767** outer |
+| Barlow Condensed Black | 0.269 | 0.648 |
+| Saira Condensed Black | 0.262 | 0.665 |
+| Oswald Bold | 0.221 | 0.644 |
+| Anton | 0.193 | 0.510 |
+| Archivo Black | 0.321 | 1.050 |
+
+Read off the outlines with fontTools, not off a screenshot. Only the *width* is
+adjustable afterwards (letter-spacing), so the **weight picks the face** —
+which rules out Oswald Bold at 20% light and Archivo Black at 58% too wide.
+Anton is the trap: it looks like the obvious heavy poster answer and is
+*lighter than Oswald* relative to its cap, because it is a tall-cap face.
+
+The outer face is then tracked to 0.08em and the inner left at 0, which lands
+them at 0.772 and 0.690 against the reference's 0.767 and 0.665. MEAL DEALS is
+stepped to 0.68x the other outer headings — the reference does the same
+(42px plaque against DRINKS' 63px), so it introduces the deal cards instead of
+competing with them.
+
+`render.mjs` refuses to write the PDF unless every family loaded — **and then
 reads the finished PDF's own font list**, deleting the file if anything outside
 the repo got embedded. A name-only check cannot catch that: `document.fonts.check()`
 returns true for a family even when the glyph asked for is missing from it,

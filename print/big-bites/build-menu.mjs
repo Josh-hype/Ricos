@@ -134,7 +134,7 @@ function choiceLine(i) {
 }
 
 /* A price list. `dense` drops the description to fit more in. */
-function list(id, { dense = false, cols = 1, title = null, desc = false, img = '', choices = false, tone = '', slot = 0, chip = '', dots = false } = {}) {
+function list(id, { dense = false, cols = 1, title = null, desc = false, img = '', choices = false, tone = '', slot = 0, chip = '', dots = false, cls = '' } = {}) {
   const c = cat(id);
   const rows = c.items.map((i) => {
     const d = i.desc || (choices ? choiceLine(i) : '');
@@ -146,7 +146,7 @@ function list(id, { dense = false, cols = 1, title = null, desc = false, img = '
       </li>`;
   }).join('');
   return `
-    <section class="blk">
+    <section class="blk${cls ? ' ' + cls : ''}">
       ${header(esc(title || c.name), chip ? chips([chip], ['red'], slotOf(img, slot)) : '', slotOf(img, slot))}
       ${withShot(`<ul class="items${cols > 1 ? ' two' : ''}${dense ? ' dense' : ''}${tone ? ' ' + tone : ''}">${rows}</ul>`, img, slot, dots)}
     </section>`;
@@ -422,6 +422,7 @@ const html = `<!doctype html>
   @font-face { font-family: 'Oswald'; font-weight: 500; src: url(fonts/Oswald-500.ttf) format('truetype'); }
   @font-face { font-family: 'Oswald'; font-weight: 600; src: url(fonts/Oswald-600.ttf) format('truetype'); }
   @font-face { font-family: 'Oswald'; font-weight: 700; src: url(fonts/Oswald-700.ttf) format('truetype'); }
+  @font-face { font-family: 'BarlowCond'; font-weight: 900; src: url(fonts/BarlowCondensed-900.ttf) format('truetype'); }
 </style>
 <style>
   /* ---- print geometry -------------------------------------------------
@@ -432,24 +433,39 @@ const html = `<!doctype html>
   @page { size: 426mm 303mm; margin: 0; }
   * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   html, body { margin: 0; padding: 0; background: #000; }
-  /* The reference is set in a condensed grotesque throughout — Anton for the
-     plaques and Oswald for everything else. It is the single biggest thing that
-     makes it read as that sheet rather than a generic menu: the condensed
-     widths are what let the type run this large in a 140mm panel. */
-  /* Three families, as the reference uses: a WIDE heavy poster face for the
-     plaques (Anton is 36% too narrow at matched cap height), condensed Oswald
-     for the item lists, and a normal-width sans for marketing copy. */
+  /* Three families, each earning its place by measurement against the
+     reference artwork. Two numbers decide the display face, both taken at
+     matched cap height: STEM/CAP (how heavy) and ADVANCE/CAP (how wide).
+     The reference measures stem/cap 0.275, advance/cap 0.665 on the inner
+     face and 0.767 on the outer.
+
+       face                      stem/cap   advance/cap
+       Barlow Condensed Black      0.269       0.648   <- chosen
+       Saira Condensed Black       0.262       0.665
+       Teko Bold                   0.273       0.740
+       Oswald Bold                 0.221       0.644
+       Anton                       0.193       0.510
+       Archivo Black               0.321       1.050
+
+     Read off the outlines with fontTools, not off a screenshot. Oswald Bold
+     was the display face for three rounds and is 20% too light — and Anton,
+     the obvious "heavy poster" answer, is *lighter still* relative to its
+     cap: it is a tall-cap face, so its stems are thin against the caps even
+     though the type looks black on the page. Archivo Black has the weight
+     but is 58% too wide and cannot be tracked back in. Only the width is
+     adjustable after the fact (letter-spacing, below); the weight is not,
+     so the weight picks the face. */
   body { font-family: 'Oswald', system-ui, sans-serif; }
-  /* Measured off the reference: its headings run ~0.65 advance-per-letter
-     against cap height. Anton is 0.54 (too narrow), Archivo Black 1.12 (much
-     too wide) — Oswald Bold is 0.68. The display face is the SAME condensed
-     family as the lists, just heavy and much larger. */
-  .blk h3, .strap, .spine b, .kidsmark, .deal b, .deal strong, .ticker, .tel b, .qrtxt b {
-    font-family: 'Oswald', system-ui, sans-serif; font-weight: 700;
+  .blk h3, .strap, .spine b, .kidsmark, .ticker, .tel b, .qrtxt b {
+    font-family: 'BarlowCond', 'Oswald', system-ui, sans-serif; font-weight: 900;
   }
   /* Marketing copy — not the price lists — is a normal-width sans on the
-     reference, where this sheet had the condensed face everywhere. */
-  .deal p, .chips li, .fine, .hours, .allergy, .sizehdr i, .qrtxt span, .telline {
+     reference, where this sheet had the condensed face everywhere. The deal
+     cards are marketing copy: on the reference the price is set in the SAME
+     face and weight as the card body, which is what makes it the card's
+     anchor. Setting it in the condensed face left it 30% light. */
+  .deal p, .chips li, .fine, .hours, .allergy, .sizehdr i, .qrtxt span, .telline,
+  .deal b, .deal strong {
     font-family: 'Montserrat', system-ui, sans-serif;
   }
 
@@ -488,10 +504,15 @@ const html = `<!doctype html>
     --pt: 8mm; --pr: 7mm; --pb: 13mm; --pl: 7mm;
     padding: calc(var(--pt) + 3mm) var(--pr) calc(var(--pb) + 3mm) var(--pl);
     border-right: 0.55mm solid #f9b902;   /* fold guide, and the reference's gold rule */
+    /* Flat near-neutral black, as the reference is: it samples (1,2,3) at the
+       top to (9,13,14) at the foot, with no cast. A gold radial here put
+       (24,21,10) across the upper 40% of the sheet — a visible warm ramp
+       against the reference's flat ground, and on press a large flat area is
+       exactly where a gradient bands. The fine speckle stays: it is the
+       paper texture, not a cast. */
     background:
-      radial-gradient(circle at 30% 12%, rgba(255,196,0,.06), transparent 45%),
       radial-gradient(circle at 50% 50%, rgba(255,255,255,.035) .12mm, transparent .13mm) 0 0 / .9mm .9mm,
-      #0b0b0b;
+      #050607;
     color: #fff;
     overflow: hidden;
   }
@@ -553,7 +574,16 @@ const html = `<!doctype html>
     border-image: url(img/header-plaque.png) 18 85 20 25 fill stretch;
     color: #111;
     font-size: 11.5mm; line-height: 1;
-    letter-spacing: .005em;
+    /* Width is set by tracking, not by the face — see the type note above.
+       Barlow Condensed Black measures 0.648 advance/cap; the reference's
+       inner face is 0.665, so the inner needs almost nothing. Tracking adds
+       a gap after every letter but only n-1 of them fall inside the word's
+       ink, so the spacing needed is (target - base) * cap/em * n/(n-1). */
+    letter-spacing: 0;
+    /* The word gap takes the tracking too, so multi-word plaques ("MILK
+       SHAKES") measured 15% wider per letter than single-word ones. The
+       reference shows no such split. */
+    word-spacing: -.08em;
     text-transform: uppercase;
     transform: rotate(-3.2deg);
   }
@@ -579,9 +609,22 @@ const html = `<!doctype html>
      lists, not under the plaques. Same rule, different position. */
   .side-a .hrule { display: none; }
   /* The 11mm plaque is the inner face's scale — the reference's outer face
-     runs a slightly smaller one over shorter lists. */
-  .side-a .blk h3 { min-width: 52mm; font-size: 10.5mm; }
+     runs a slightly smaller one over shorter lists.
+     The outer face is also set noticeably WIDER than the inner: 0.767
+     advance/cap against 0.665. That is a real difference on the artwork, not
+     an accident of measurement — all four outer headings sit above every one
+     of the nine inner ones. 0.10em of tracking carries Barlow's 0.648 up to
+     it. */
+  .side-a .blk h3 { min-width: 52mm; font-size: 10.5mm; letter-spacing: .08em; }
   .side-a .redhead h3 { min-width: 56mm; }
+  /* MEAL DEALS is stepped down hard on the reference — its plaque measures
+     42px tall against DRINKS' 63px on the same sheet, 0.67x. It sits over the
+     widest block on the panel, so at full size it fights the deal cards
+     instead of introducing them. Every other outer heading stays at 10.5mm.
+     Scoped ".side-a .dealshead h3" (0,2,1), NOT ".dealshead h3" (0,1,1):
+     the plain form loses to ".side-a .blk h3" above and was silently doing
+     nothing, which is why this heading measured the same size as DRINKS. */
+  .side-a .dealshead h3 { font-size: 7mm; min-width: 44mm; letter-spacing: .08em; }
   /* Same bold dots as .hrule — these were left on a thin dotted border when
      the header rules were rebuilt, so they read as a hairline. */
   .side-a .panel .blk:not(:last-of-type):not(:nth-last-of-type(2)) {
@@ -654,6 +697,12 @@ const html = `<!doctype html>
   }
   .items li { padding: .45mm 0; }
   .items.dense li { font-size: 3.4mm; padding: 0; }
+  /* Salad is three items at the foot of a panel whose Sides list runs to
+     twenty-four. The reference sets it 1.4x the Sides line rather than
+     leaving a short list stranded in white space — measured off the artwork,
+     Sides 10px band against Salad 14px. Scoped to this section only. */
+  .saladblk .items.dense li { font-size: 4.75mm; padding: .5mm 0; }
+  .saladblk .items .n em { font-size: 3.3mm; }
   /* Reference stem/cap is ~0.15 — a Regular. This was set a full weight
      heavier, which is why the lists read as shouty next to it. */
   .items .n { font-weight: 400; text-transform: uppercase; letter-spacing: .005em; }
@@ -831,10 +880,14 @@ const html = `<!doctype html>
   .pzcol { position: relative; z-index: 1; }
   .dealshead .headrow { justify-content: center; }
   .center { text-align: center; }
-  .dealshead h3 { min-width: 44mm; font-size: 8.4mm; }
-  .deal b { display: block; color: #bb0e12; font-size: 5mm; line-height: 1.05; text-transform: uppercase; }
+  /* Size lives on ".side-a .dealshead h3" above — a bare ".dealshead h3"
+     cannot outrank ".side-a .blk h3" and would be dead weight here. */
+  .deal b { display: block; color: #bb0e12; font-size: 5mm; line-height: 1.05; text-transform: uppercase; font-weight: 700; }
   .deal p { margin: 1.4mm 0 1.6mm; font-size: 3.5mm; line-height: 1.3; font-weight: 700; text-transform: capitalize; }
-  .deal strong { font-size: 4.6mm; font-weight: 400; color: #111; }
+  /* The card's anchor: same face and weight as the body copy above it, which
+     is how the reference sets it. It was the condensed face at Regular —
+     measured 30% lighter and 13% narrower than the reference's price. */
+  .deal strong { font-size: 4.6mm; font-weight: 700; color: #111; }
   .deal .pd strong { display: block; margin-top: .6mm; font-size: 4mm; }
 
   /* ---- cover panel ---- */
@@ -879,7 +932,9 @@ const html = `<!doctype html>
   .coverrule { width: 100%; margin-top: 2.5mm; border-top: .5mm dotted rgba(255,255,255,.55); }
 
   .tel { margin-top: 4mm; }
-  .telline { display: flex; align-items: center; justify-content: center; font-size: 9.5mm; font-weight: 600; letter-spacing: .02em; }
+  /* Cream, not white: the reference ties this line to the big numerals
+     directly beneath it, and white broke the pair apart. */
+  .telline { display: flex; align-items: center; justify-content: center; font-size: 9.5mm; font-weight: 600; letter-spacing: .02em; color: #f8e3bf; }
   /* Anton draws well above its em box, so the number's glyphs ran over
      the line above even though the two boxes never touched. The margin is
      clearance for the overshoot, not decoration — don't trim it. */
@@ -986,7 +1041,7 @@ ${page('side-b', `
   <div class="panel">
     ${sizedList('burgers', 'size', ['1/4 lb', '1/2 lb'], { slot: 18 })}
     ${list('sides', { dense: true, img: shot('sides', 57), title: 'Sides', slot: 56, dots: true })}
-    ${list('salad', { dense: true, desc: true, img: shot('salad', 62), slot: 56 })}
+    ${list('salad', { dense: true, desc: true, img: shot('salad', 62), slot: 56, cls: 'saladblk' })}
   </div>
 `, false)}
 

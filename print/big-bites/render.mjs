@@ -24,6 +24,9 @@ await p.goto('file://' + path.join(DIR, 'menu.html'), { waitUntil: 'networkidle'
 const fontsOK = await p.evaluate(async () => {
   const want = [];
   for (const f of ['Oswald', 'Montserrat']) for (const w of [400, 500, 600, 700]) want.push(`${w} 12px "${f}"`);
+  // The display face ships in one weight only; asking for 400 would pass on a
+  // synthesised grade and hide a missing file.
+  want.push('900 12px "BarlowCond"');
   await Promise.all(want.map((s) => document.fonts.load(s).catch(() => null)));
   await document.fonts.ready;
   return want.every((s) => document.fonts.check(s));
@@ -67,7 +70,7 @@ const overflow = await p.evaluate(() => {
   return bad;
 });
 
-if (!fontsOK) console.error('FAIL: Oswald/Montserrat did not load — the sheet is set in a fallback face');
+if (!fontsOK) console.error('FAIL: Oswald/Montserrat/BarlowCond did not load — the sheet is set in a fallback face');
 console.log(overflow.length ? 'OVERFLOW:\n  ' + overflow.join('\n  ') : 'panels fit');
 
 if (!fontsOK || overflow.length) {
@@ -193,10 +196,13 @@ const kb = Math.round(fs.statSync(TMP).size / 1024);
    carried. Read the PDF's own font list instead — that is the ground truth. */
 const { execFileSync } = await import('node:child_process');
 try {
-  const fonts = execFileSync('pdffonts', [path.join(DIR, 'big-bites-menu-A3-trifold.pdf')], { encoding: 'utf8' })
+  /* TMP, not FINAL: the rename happens below, so pointing this at the final
+     path made it inspect the PREVIOUS run's PDF — the gate reported the old
+     file's fonts and would have passed a new one that embedded a stray. */
+  const fonts = execFileSync('pdffonts', [TMP], { encoding: 'utf8' })
     .split('\n').slice(2).map((l) => l.trim().split(/\s+/)[0]).filter(Boolean)
     .map((n) => n.replace(/^[A-Z]{6}\+/, ''));
-  const allowed = /^(Oswald|Montserrat)/;
+  const allowed = /^(Oswald|Montserrat|BarlowCondensed)/;
   const strays = [...new Set(fonts)].filter((f) => !allowed.test(f));
   if (strays.length) {
     fs.unlinkSync(TMP);
