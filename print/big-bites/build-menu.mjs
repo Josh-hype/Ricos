@@ -856,18 +856,23 @@ const html = `<!doctype html>
      Inset 12mm like the others, the photo ate the column and the prices sat
      11mm further left than every other section on the panel. */
   .side-a .dessertblk .shot.side { right: 2mm; }
-  .shot.mid { position: absolute; top: 50%; translate: 0 -50%; right: 30mm; z-index: 0; }
+  /* right:30mm put this 6mm into the price column, which only read because a
+     blurred shadow was propping the numerals up. Clear of them now. */
+  .shot.mid { position: absolute; top: 50%; translate: 0 -50%; right: 38mm; z-index: 0; }
   .blkrow .items { position: relative; z-index: 1; }
   .shot.below { margin: 3mm auto 0; }
   /* The reference sets the pizza on a gold halftone. Generated, not drawn. */
   .halftone {
     /* Out of the flow and cropped by the panel, so the list gets the whole
        column — which is how the reference fits 32 pizzas at this size. */
-    position: absolute; right: 16mm; bottom: -8mm; display: flex; justify-content: flex-end; align-items: flex-end;
+    /* Below the list's last price row rather than through it. The list runs to
+       the foot of the panel now, so the photograph takes the corner and bleeds
+       off two edges instead of sitting under the numerals. */
+    position: absolute; right: -8mm; bottom: -16mm; display: flex; justify-content: flex-end; align-items: flex-end;
     /* Behind the prices: the reference tucks the pizza under the stuffed-crust
        line rather than over it, and white numerals on a photo are unreadable. */
     z-index: 0;
-    padding: 30mm 0 10mm 62mm;
+    padding: 0;
   }
   .blkrow .items { padding-right: var(--slot, 0mm); }
   .blkrow.dots .shot { position: absolute; z-index: 1; }
@@ -931,7 +936,6 @@ const html = `<!doctype html>
   .items.sized li { gap: 4mm; }
   .items.sized .p2 {
     width: 14mm; text-align: center; font-weight: 500; color: #fff; white-space: nowrap;
-    text-shadow: 0 0 1.2mm #000, 0 0 .5mm #000;
   }
 
   /* The reference floats the size chips clear of the plaque, right-aligned so
@@ -974,7 +978,12 @@ const html = `<!doctype html>
   .supp i { flex: 1; }
   /* Same width, size and gutter as .items.sized .p2, so they land on the
      11" and 13" axes rather than floating right of them. */
-  .supp b { width: 14mm; text-align: center; color: #fff; font-size: 3.8mm; text-shadow: 0 0 1.2mm #000, 0 0 .5mm #000; }
+  /* On the bar, not naked on the photograph beneath it — the same reason the
+     bar itself is red. Was white-on-photo held together by a blurred shadow. */
+  .supp b {
+    width: 14mm; text-align: center; color: #fdf3d8; font-size: 3.8mm;
+    background: #dd1516; padding: 1.4mm 0;
+  }
 
   /* The reference singles Dips out with a red plaque. It is its own asset —
      tinted off the gold one by luminance, since a CSS hue-rotate took the gold
@@ -1112,10 +1121,11 @@ const html = `<!doctype html>
      itself rather than leaving it black. Scoped to this column so no other
      section's leading moves. */
   .pzcol .items.withdesc li { padding: .28mm 0; }
-  /* The list now runs to the foot of the panel, which puts the last rows over
-     the pizza — as the reference does. Same shadow the supplement bar uses,
-     so the names carry on the crust instead of dissolving into it. */
-  .pzcol .items .n, .pzcol .items .p2 { text-shadow: 0 0 1.2mm #000, 0 0 .5mm #000; }
+  /* NO text-shadow anywhere on this sheet. A blurred shadow exports as a
+     transparency group, and viewers render it inconsistently — in Preview it
+     came out as hard black boxes that swallowed the bottom of every pizza name
+     and of the kebab prices. What a viewer does that with, a RIP may too.
+     Legibility over a photo is solved by moving the photo instead. */
   .dealshead .headrow { justify-content: center; }
   .center { text-align: center; }
   /* Size lives on ".side-a .dealshead h3" above — a bare ".dealshead h3"
@@ -1328,7 +1338,7 @@ ${page('side-b', `
       ${sizedList('pizza', 'size', ['11"', '13"'], { tone: ['red', 'red'], nameTone: 'gold', slot: 5 })}
       ${stuffedCrust()}
     </div>
-    <div class="halftone">${shot('pizza', 82, 'below')}</div>
+    <div class="halftone">${shot('pizza', 76, 'below')}</div>
   </div>
   <div class="panel tight">
     ${sizedList('garlic-bread', 'size', ['11"', '13"'], { tone: ['red', 'red'], slot: 14 })}
