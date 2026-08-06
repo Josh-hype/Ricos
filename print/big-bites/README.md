@@ -105,27 +105,52 @@ runs on tighter leading (`.panel.tight`) — again, as the reference does.
 
 ## Assets still needed
 
-The drinks cans, the calzone, the kebab, the Sides/Salad column and the burger
-hero between Dips and Meal Deals were **taken off the sheet** on the owner's
-instruction (2026-08-06). The files are still in `img/`; nothing else was
-changed to remove them beyond dropping the photo and releasing the space it
-held — a `slot` gutter for the lists, and for the burger hero nothing at all,
-because `.dealsblk` already carries `flex: 1` and the deal boxes grew into the
-66mm it vacated. Putting any of them back is one line.
+The owner replaced most of the missing artwork on 2026-08-06: the **Kids Menu
+lockup**, the **cover pizza**, then `hero`, `parmasan`, `calzone` and
+`doner-pit`. Nine photographs are placed — the cover pizza, the meal-deal
+lockup, the pizza, cake, shake, wrap, calzone, parmesan and doner spit.
 
-Five photos remain: the cover hero, the pizza, the cake, the shake, the wrap
-and the Kids lockup.
+`pepsi-coke.png`, `sides-salad.png`, `burger-meal.png` and `kebab.png` are
+**off the sheet** on the owner's instruction, and stay in `img/` cut and keyed.
+Putting one back is a one-line change at its section's call site — but note
+that `slotOf()` returns the greater of the photo's width and the section's
+`slot`, so removing a photo means releasing its gutter too or the list keeps a
+hole where the picture was.
 
-The owner supplied the **Kids Menu lockup**, the **Sides/Salad food column**,
-the **drink cans** and the **cover pizza** on 2026-08-06. Each gap below is a
-hole the reference fills and this sheet currently leaves empty — nothing is
-faked or substituted.
+**Trim a new cutout before placing it:** `python3 print/big-bites/trim-alpha.py
+img/<name>.png`. Two of the owner's four uploads were 1024×1536 canvases
+carrying a picture only 576px tall sitting at the bottom, and the generator
+sizes a photo by its canvas because it cannot decode a PNG past the header. The
+script drops border only — every pixel it removes is alpha ≤ 16, it refuses to
+run otherwise, and it checks the opaque pixel count is unchanged afterwards.
+
+Two gaps left. Each is a hole the reference fills and this sheet leaves empty —
+nothing is faked or substituted. The Garlic Bread list still holds a 14mm
+gutter open for its missing photo.
 
 | # | Asset | Where it goes | Spec |
 |---|-------|---------------|------|
-| 1 | **Burger, on its own** | Burgers, inner right panel — the panel's empty upper right | Transparent PNG, ≥1200px wide. The supplied Sides/Salad column has a burger at its top, but the column is 2:1 tall and at panel width it only reaches as high as the Sides list; covering Burgers too would need it 143mm wide, wider than the panel |
+| 1 | **Burger, on its own** | Burgers, inner right panel — the panel's empty upper right | Transparent PNG, ≥1200px wide. `hero.png` has a burger in it, but it is a four-item lockup with a can and a fries carton, so it reads as a meal deal rather than as the Burgers section |
 | 2 | **Garlic bread** | Garlic Bread, inner middle panel | Transparent PNG, ≥1000px wide |
-| 3 | **Parmesan** | Parmesan, inner middle panel | Transparent PNG, ≥1000px wide |
+
+### Fitting a photo to the inner middle panel
+
+That panel carries five sections and is **full** — before these photos went on
+it had 3mm of slack in 290mm. Two things cost height there, and neither is
+obvious from the call site:
+
+- **`--rowmin`** holds the row open to the photo's height + 3mm. A photo taller
+  than its own list pushes the panel down by the difference: the calzone at
+  46mm wide is 29mm tall against a 28mm list, so it cost 4mm. At 40mm it costs
+  nothing and is barely smaller on the page.
+- **The gutter wraps a description.** Any `slot` at all on Kebabs costs ~2.6mm
+  (one row wraps); at 26mm a second and third wrap and it costs **14.8mm**. The
+  doner spit is 18mm wide for that reason — 22mm is the last width that stays
+  on the cheap side of the cliff.
+
+The remaining 3mm came out of `.panel.tight`'s inter-section gap (2.4mm →
+1.8mm), which is the same trade that panel already makes elsewhere. Nothing was
+shrunk on the price lists — the type on this panel still matches the reference.
 
 Everything else on the sheet is either live menu data or generated here (the
 plaques, the halftone, the torn deal-box edges, the phone and clock icons, the

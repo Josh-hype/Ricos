@@ -684,7 +684,7 @@ const html = `<!doctype html>
      reference's size (0.94x the roomy panels) and the 1.3mm that costs is
      taken out of the gaps between blocks instead — render.mjs reported a 5px
      overrun here when it was not. */
-  .panel.tight .blk { margin-bottom: 2.4mm; }
+  .panel.tight .blk { margin-bottom: 1.8mm; }
   .panel.tight .blk h3 { font-size: 10mm; margin-bottom: 0; }
   .panel.tight .hrule { margin: .4mm 0 .9mm; }
   .panel.tight .items.dense li { padding: 0; font-size: 2.95mm; }
@@ -839,6 +839,11 @@ const html = `<!doctype html>
   /* right:30mm put this 6mm into the price column, which only read because a
      blurred shadow was propping the numerals up. Clear of them now. */
   .shot.mid { position: absolute; top: 50%; translate: 0 -50%; right: 38mm; z-index: 0; }
+  /* A photo that is far taller than it is wide — the doner spit — cannot use
+     the .side placement: at the width its height allows it is only ~22mm
+     7mm that placement hangs past the block would clip a third of it and drop
+     the rest on the fold rule. This one sits fully inside the block instead. */
+  .shot.tall { position: absolute; top: 50%; translate: 0 -50%; right: 0; }
   .blkrow .items { position: relative; z-index: 1; }
   .shot.below { margin: 3mm auto 0; }
   /* The reference sets the pizza on a gold halftone. Generated, not drawn. */
@@ -1296,6 +1301,7 @@ ${page('side-a', `
   </div>
   <div class="panel">
     ${dips()}
+    ${shot('hero', 108, 'below')}
     ${deals()}
   </div>
   ${cover}
@@ -1311,9 +1317,9 @@ ${page('side-b', `
   </div>
   <div class="panel tight">
     ${sizedList('garlic-bread', 'size', ['11"', '13"'], { tone: ['red', 'red'], slot: 14 })}
-    ${list('calzone', { dense: true, desc: true, slot: 0, chip: '11"' })}
-    ${sizedList('kebab', 'size', ['MEDIUM', 'LARGE'], { title: 'Kebabs', slot: 0 })}
-    ${list('parmesan', { dense: true, desc: true, slot: 48 })}
+    ${list('calzone', { dense: true, desc: true, img: shot('calzone', 40, 'mid'), slot: 0, chip: '11"' })}
+    ${sizedList('kebab', 'size', ['MEDIUM', 'LARGE'], { title: 'Kebabs', img: shot('doner-pit', 18, 'tall'), slot: 22 })}
+    ${list('parmesan', { dense: true, desc: true, img: shot('parmasan', 44), slot: 48 })}
     ${list('wraps', { dense: true, desc: true, img: shot('wrap', 46), slot: 48, title: 'Wrap' })}
   </div>
   <div class="panel">
