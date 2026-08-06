@@ -33,7 +33,12 @@ const data = (rel) => {
 
 // Inline every local reference so the file works opened from anywhere.
 html = html.replace(/url\((fonts\/[\w.-]+\.ttf)\)/g, (_, p) => `url(${data(p)})`);
-html = html.replace(/src="(img\/[\w.-]+\.png)"/g, (_, p) => `src="${data(p)}"`);
+/* Keep the filename on the tag. Inlining the image as a data URI wiped the
+   only thing that said which photograph it was, so every one of them came out
+   labelled "photo photo" in the block list — and an export naming three
+   identical blocks is an export nobody can act on without guessing. */
+html = html.replace(/src="(img\/([\w.-]+)\.png)"/g,
+  (_, p, name) => `data-photo="${name}" src="${data(p)}"`);
 html = html.replace(/src="(logo\.png)"/g, (_, p) => `src="${data(p)}"`);
 html = html.replace(/url\((img\/[\w.-]+\.png)\)/g, (_, p) => `url(${data(p)})`);
 
@@ -124,7 +129,17 @@ const editor = `
   function add(el, label) {
     if (!el || el.__pe) return;
     el.__pe = true;
-    items.push({ label: panelOf(el) + ' · ' + label, sel: 'pe' + items.length, el: el });
+    /* Key the saved state by a slug of the LABEL, never by position. It used
+       to be 'pe' + index, with one storage key shared by every build of this
+       file — so state saved in an older editor came back in a newer one
+       attached to whatever block now sat at that index. That is how an export
+       came back carrying photo scales the owner had never set in the editor he
+       was looking at. */
+    var lab = panelOf(el) + ' · ' + label;
+    var sel = lab.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    var n = 1, base = sel;
+    while (items.some(function (i) { return i.sel === sel; })) sel = base + '-' + (++n);
+    items.push({ label: lab, sel: sel, el: el });
   }
   document.querySelectorAll('.blk').forEach(function (blk) {
     var h = blk.querySelector('h3');
@@ -139,7 +154,9 @@ const editor = `
     add(blk.querySelector('.kidsticket'), 'Kids ticket');
   });
   document.querySelectorAll('.shot').forEach(function (img) {
-    var n = (img.src.match(/([\\w-]+)\\.png/) || [, 'photo'])[1];
+    /* data-photo survives the data-URI inlining; img.src does not, which is
+       why every photograph used to be labelled "photo photo". */
+    var n = img.getAttribute('data-photo') || 'photo';
     add(img, n + ' photo');
   });
   document.querySelectorAll('.supp').forEach(function (s) { add(s, 'stuffed crust bar'); });
@@ -158,7 +175,9 @@ const editor = `
   items.forEach(function (i) { i.el.style.pointerEvents = 'auto'; });
 
   // ---- state (storage may be blocked where this file is hosted) ----------
-  var KEY = 'print-scratchpad:big-bites';
+  /* Versioned: a stored blob from the positional-key era must not be read
+     back, because its keys mean nothing here. */
+  var KEY = 'print-scratchpad:big-bites:v2';
   var state = {};
   try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) {}
   function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }

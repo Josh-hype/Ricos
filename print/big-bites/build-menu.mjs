@@ -126,16 +126,6 @@ function imgSize(name) {
    `place: 'side'` does that; 'below' centres it underneath. Widths are capped
    by the source resolution; img/README records the dpi each lands at. */
 const shotDpi = [];
-/* Photographs the owner positioned by hand in the editor. They are pinned by
-   left/top rather than the shared right/centre rule, and they are allowed to
-   sit outside the section that owns them — that is the point of placing them.
-   The text-overlap check still applies to every one of them. */
-/* kebab is NOT here: every rightward position for it puts the MEDIUM/LARGE
-   prices on top of the bowl, and there is no x on a 140mm panel where a 42mm
-   photo clears a price column running 97.5-129.5mm. It keeps its original
-   placement; see the note back to the owner. */
-const PLACED = new Set(['shake', 'cake', 'calzone', 'wrap', 'pepsi-coke']);
-
 function shot(name, width, place = 'side') {
   if (!name) return '';
   const { w, h } = imgSize(name);
@@ -148,7 +138,7 @@ function shot(name, width, place = 'side') {
   shotDpi.push({ name, px: `${w}x${h}`, mm: width, dpi });
   // Test the exact value: rounding let 139.5dpi through a "140dpi floor".
   if (exact < 140) throw new Error(`${name}.png at ${width}mm is ${exact.toFixed(1)}dpi — too soft to print`);
-  return `<img class="shot ${place}${PLACED.has(name) ? ' placed' : ''}" src="img/${name}.png" alt=""
+  return `<img class="shot ${place}" src="img/${name}.png" alt=""
     style="width:${width}mm;--shoth:${tall}mm" />`;
 }
 
@@ -359,7 +349,7 @@ function milkshakes() {
             throw new Error('coolers no longer share one price — they cannot fold into a single row');
           return row('Cooler', coolers[0].price, coolers.map((i) => `${flavour(i.name)} Cooler`).join(', '), 'plain');
         })() : ''}
-      </ul>`, shot('shake', 19.5), 52)}
+      </ul>`, shot('shake', 30), 52)}
     </section>`;
 }
 
@@ -858,15 +848,6 @@ const html = `<!doctype html>
   /* At the panel's right edge; the list's own padding keeps the text clear. */
   /* The reference runs its photos large and lets the panel edge crop them. */
   .shot.side { position: absolute; top: 50%; translate: 0 -50%; right: -7mm; }
-  /* ---- hand-placed photographs (owner, via the editor) ----------------
-     Each is pinned by left/top inside its own row instead of the shared
-     right/centre rule. The section-escape check treats these as deliberate;
-     the text-overlap check still applies. */
-  .shot[src="img/shake.png"] { left: 106.33mm; top: -38.05mm; right: auto; translate: none; }
-  .shot[src="img/cake.png"] { left: 99.93mm; top: -15.1mm; right: auto; translate: none; }
-  .shot[src="img/calzone.png"] { left: 84.08mm; top: -18.05mm; right: auto; translate: none; }
-  .shot[src="img/wrap.png"] { left: 116.53mm; top: -15.39mm; right: auto; translate: none; }
-  .shot[src="img/pepsi-coke.png"] { left: 123.5mm; top: -20mm; right: auto; translate: none; }
   /* The reference holds its outer-face photos well clear of the fold; a crease
      through artwork sitting on the rule is a real print risk. */
   .side-a .shot.side { right: 12mm; }
@@ -1092,9 +1073,7 @@ const html = `<!doctype html>
   /* The reference runs its cards from under the hero photo down to the footer;
      letting the grid grow fills that column instead of leaving a void above. */
   .deals.grow { flex: 1; grid-auto-rows: 1fr; }
-  /* Owner's placement: the whole Meal Deals block rises 25mm, which the
-     smaller hero above it pays for. */
-  .dealsblk { display: flex; flex-direction: column; flex: 1; margin-top: -25mm; }
+  .dealsblk { display: flex; flex-direction: column; flex: 1; }
   /* Title top, price bottom, body between — so paired cards in a row share
      their baselines however long the description runs. */
   .deal {
@@ -1141,10 +1120,7 @@ const html = `<!doctype html>
      each row by a third of a millimetre spends half of that on the list
      itself rather than leaving it black. Scoped to this column so no other
      section's leading moves. */
-  .pzcol .items.withdesc li { padding: .20mm 0; }
-  /* Owner's 105% on the pizza list. */
-  .pzcol .items.withdesc li { font-size: 3.99mm; }
-  .pzcol .items .n em { font-size: 3.36mm; }
+  .pzcol .items.withdesc li { padding: .28mm 0; }
   /* NO text-shadow anywhere on this sheet. A blurred shadow exports as a
      transparency group, and viewers render it inconsistently — in Preview it
      came out as hard black boxes that swallowed the bottom of every pizza name
@@ -1225,20 +1201,19 @@ const html = `<!doctype html>
   .brandmark { width: 80mm; height: auto; display: block; }
   .coverrule { width: 100%; margin-top: 1.5mm; border-top: .5mm dotted rgba(255,255,255,.55); }
 
-  /* Owner: text 115%, box 180% of its natural width. */
-  .tel { margin-top: 2mm; width: 100%; }
+  .tel { margin-top: 2mm; }
   /* Cream, not white: the reference ties this line to the big numerals
      directly beneath it, and white broke the pair apart. */
-  .telline { display: flex; align-items: center; justify-content: center; font-size: 10.9mm; font-weight: 600; letter-spacing: .02em; color: #f8e3bf; }
+  .telline { display: flex; align-items: center; justify-content: center; font-size: 9.5mm; font-weight: 600; letter-spacing: .02em; color: #f8e3bf; }
   /* The display face draws well above its em box, so the number's glyphs ran over
      the line above even though the two boxes never touched. The margin is
      clearance for the overshoot, not decoration — don't trim it. */
-  .tel b { display: block; margin-top: 1.5mm; font-size: 24.2mm; line-height: 1; letter-spacing: .04em; color: #f8e3bf; }
+  .tel b { display: block; margin-top: 1.5mm; font-size: 21mm; line-height: 1; letter-spacing: .04em; color: #f8e3bf; }
 
   /* The cover's straps are the same device as a section header, so they take
      the same plaque — a flat yellow bar next to a bitten one would read as an
      oversight. Text is centred here, so the left/right insets match. */
-  .strapline { display: flex; align-items: center; gap: .8mm; margin: 2mm 0 1.5mm; align-self: flex-start; margin-left: 14.3mm; }
+  .strapline { display: flex; align-items: center; gap: .8mm; margin: 2mm 0 1.5mm; align-self: flex-start; }
   .strapline .strap { margin: 0; min-width: 56mm; font-size: 5.2mm; }
   .strap.plain {
     border: 0; background: none; padding: 0; margin: 2.5mm 0 1mm;
@@ -1273,7 +1248,7 @@ const html = `<!doctype html>
   .hours span { text-align: left; }
   .hours b { color: #fff; text-align: left; }
 
-  .qrwrap { display: flex; align-items: center; justify-content: center; gap: 3mm; padding-top: 2.6mm; translate: -4.8mm 0; }
+  .qrwrap { display: flex; align-items: center; justify-content: center; gap: 3mm; padding-top: 0; }
   .qrtxt .arrow { display: block; font-size: 6mm; color: #f9b902; line-height: 1; }
   /* Reserved for the pizza / basil / tomato photograph the reference floods the
      lower half of the cover with. Empty until that asset exists. */
@@ -1349,14 +1324,14 @@ ${/* Section order and panel assignment follow the designer's artwork exactly:
       Don't reshuffle these without checking the reference sheets again. */''}
 ${page('side-a', `
   <div class="panel">
-    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, firstOnly: /\bcan\b/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], img: shot('pepsi-coke', 8.5), slot: 44, chipsBelow: true })}
+    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, firstOnly: /\bcan\b/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], img: shot('pepsi-coke', 34), slot: 44, chipsBelow: true })}
     ${milkshakes()}
-    ${list('desserts', { desc: true, img: shot('cake', 29.9), slot: 52, cls: 'dessertblk norule' })}
+    ${list('desserts', { desc: true, img: shot('cake', 46), slot: 52, cls: 'dessertblk norule' })}
     ${kidsBox()}
   </div>
   <div class="panel">
     ${dips()}
-    ${shot('burger-meal', 81, 'below')}
+    ${shot('burger-meal', 108, 'below')}
     ${deals()}
   </div>
   ${cover}
@@ -1368,14 +1343,14 @@ ${page('side-b', `
       ${sizedList('pizza', 'size', ['11"', '13"'], { tone: ['red', 'red'], nameTone: 'gold', slot: 5 })}
       ${stuffedCrust()}
     </div>
-    <div class="halftone">${shot('pizza', 22.5, 'below')}</div>
+    <div class="halftone">${shot('pizza', 50, 'below')}</div>
   </div>
   <div class="panel tight">
     ${sizedList('garlic-bread', 'size', ['11"', '13"'], { tone: ['red', 'red'], slot: 14 })}
-    ${list('calzone', { dense: true, desc: true, img: shot('calzone', 23, 'mid'), slot: 14, chip: '11"' })}
+    ${list('calzone', { dense: true, desc: true, img: shot('calzone', 46, 'mid'), slot: 14, chip: '11"' })}
     ${sizedList('kebab', 'size', ['MEDIUM', 'LARGE'], { title: 'Kebabs', img: shot('kebab', 42, 'mid'), slot: 4 })}
     ${list('parmesan', { dense: true, desc: true, slot: 48 })}
-    ${list('wraps', { dense: true, desc: true, img: shot('wrap', 25.3), slot: 48, title: 'Wrap' })}
+    ${list('wraps', { dense: true, desc: true, img: shot('wrap', 46), slot: 48, title: 'Wrap' })}
   </div>
   <div class="panel">
     ${sizedList('burgers', 'size', ['1/4 lb', '1/2 lb'], { slot: 12, firstOnly: /(¼|1\/4)\s*lb/i, secondOnly: /(½|1\/2)\s*lb/i, defaultCol: null })}
