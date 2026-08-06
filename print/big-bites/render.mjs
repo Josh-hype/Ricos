@@ -86,9 +86,14 @@ const collisions = await p.evaluate(() => {
     }
     return out;
   };
-  document.querySelectorAll('.shot.side').forEach((img) => {
+  document.querySelectorAll('.shot.side, .shot.mid').forEach((img) => {
     const ir = img.getBoundingClientRect();
+    // A 'mid' photo sits behind the prices by design, as the reference does —
+    // there the test is whether the numerals still carry, not whether they
+    // overlap. Anything on a mid photo without a shadow is a real fault.
+    const mid = img.classList.contains('mid');
     img.closest('.blkrow').querySelectorAll('.n, .p, .p2').forEach((el) => {
+      if (mid && getComputedStyle(el).textShadow !== 'none') return;
       for (const r of ink(el)) if (over(r, ir)) { hits.push(`"${el.textContent.trim().slice(0, 30)}" under ${img.getAttribute('src')}`); break; }
     });
   });

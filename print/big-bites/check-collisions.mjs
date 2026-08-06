@@ -26,7 +26,23 @@ const hits = await p.evaluate(() => {
     }
     return out;
   };
-  document.querySelectorAll('.shot.side, .shot.mid').forEach((img) => {
+  /* A 'mid' photo sits BEHIND the prices by design — the reference does the
+     same — so overlap there is intent, not a fault. What matters is that those
+     numerals still read, which is what the shadow on .p2 is for; anything
+     overlapping a mid photo without one is reported. */
+  document.querySelectorAll('.shot.mid').forEach((img) => {
+    const ir = img.getBoundingClientRect();
+    img.closest('.blkrow').querySelectorAll('.n, .p, .p2').forEach((el) => {
+      const shadowed = getComputedStyle(el).textShadow !== 'none';
+      for (const r of inkRects(el)) {
+        if (over(r, ir) && !shadowed) {
+          hits.push(`"${el.textContent.trim().slice(0, 30)}" sits on ${img.getAttribute('src')} with no shadow to carry it`);
+          break;
+        }
+      }
+    });
+  });
+  document.querySelectorAll('.shot.side').forEach((img) => {
     const ir = img.getBoundingClientRect();
     img.closest('.blkrow').querySelectorAll('.n, .p, .p2').forEach((el) => {
       for (const r of inkRects(el)) {
