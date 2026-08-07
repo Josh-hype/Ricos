@@ -186,7 +186,22 @@ const editor = `
   // ---- state (storage may be blocked where this file is hosted) ----------
   /* Versioned: a stored blob from the positional-key era must not be read
      back, because its keys mean nothing here. */
-  var KEY = 'print-scratchpad:big-bites:v2';
+  /* Keyed to the SHEET, not to a version number I have to remember to bump.
+     The offsets the owner drags are relative to the sheet in front of them.
+     Once those offsets are built into the sheet itself, the same saved blob
+     applies them a SECOND time: the hero at 150% came back at 150% of 150%,
+     207mm wide against the 138mm it prints, and the website strap ran off the
+     top of the cover. Every rebuild carries a new build-out hash, so a rebuilt
+     sheet always starts from what it actually shows, and a session's drags
+     still survive a reload of the same sheet. */
+  var build = (document.querySelector('meta[name="build-out"]') || {}).content || 'nobuild';
+  var KEY = 'print-scratchpad:big-bites:' + build;
+  try {
+    for (var si = localStorage.length - 1; si >= 0; si--) {
+      var k = localStorage.key(si);
+      if (k && k.indexOf('print-scratchpad:big-bites:') === 0 && k !== KEY) localStorage.removeItem(k);
+    }
+  } catch (e) {}
   var state = {};
   try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) {}
   function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
