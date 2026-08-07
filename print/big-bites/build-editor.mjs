@@ -203,6 +203,9 @@ const editor = `
        pixel size: the calzone came out 249mm wide against the 40mm it prints
        at, and the ink-wrapped drinks collapsed to nothing. */
     i.ow = i.el.style.width; i.oh = i.el.style.height; i.of = i.el.style.fontSize;
+    /* And the scale the SHEET gives it, so a drag of N pixels still moves N
+       pixels on a photo the sheet already draws at 150%. */
+    i.bs = parseFloat(cs.scale) || 1;
   });
   function val(i) {
     if (!state[i.sel]) state[i.sel] = {};
@@ -218,10 +221,23 @@ const editor = `
   }
   function apply(i) {
     var v = val(i);
-    i.el.style.translate = v.x + 'px ' + v.y + 'px';
     var s = (Number(v.s) || 100) / 100;
-    i.el.style.scale = (v.fx ? -s : s) + ' ' + (v.fy ? -s : s);
-    i.el.style.rotate = (Number(v.r) || 0) + 'deg';
+    var r = Number(v.r) || 0;
+    /* Compose with the sheet, do not replace it. The individual translate /
+       rotate / scale properties are where the SHEET puts its own: .shot.side
+       centres itself with a translate of 0 -50% and several photographs carry
+       a scale of var(--sc). Writing those properties here overwrote both — the
+       centring vanished and every scaled photo snapped back to 100%, which is
+       why the drinks, milkshake, dessert, calzone, wrap and parmesan pictures
+       sat up to 27mm away from where the sheet actually prints them.
+       The transform property is a separate channel: it is applied AFTER
+       those, so the sheet keeps its own and this adds the owner's on top.
+       Drag distance is divided by the sheet's scale so a 10px drag is still
+       10px on screen for a photo the sheet draws at 150%. */
+    var k = i.bs || 1;
+    var t = 'translate(' + (v.x / k) + 'px,' + (v.y / k) + 'px) rotate(' + r + 'deg) scale('
+          + (v.fx ? -s : s) + ',' + (v.fy ? -s : s) + ')';
+    i.el.style.transform = (v.x || v.y || r || s !== 1 || v.fx || v.fy) ? t : '';
     /* Box size is the BOX, not a transform: the text reflows inside it, which
        is what "make the text box bigger" has to mean on a print sheet. */
     if (Number(v.w) !== 100) { i.el.style.width = (i.bw * v.w / 100).toFixed(2) + 'px'; i.el.style.maxWidth = 'none'; }
