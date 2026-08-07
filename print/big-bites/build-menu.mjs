@@ -973,7 +973,7 @@ const html = `<!doctype html>
     /* Below the list's last price row rather than through it. The list runs to
        the foot of the panel now, so the photograph takes the corner and bleeds
        off two edges instead of sitting under the numerals. */
-    position: absolute; right: 42.8mm; bottom: 29.3mm; display: flex; justify-content: flex-end; align-items: flex-end;
+    position: absolute; right: 41.5mm; bottom: 21.6mm; display: flex; justify-content: flex-end; align-items: flex-end;
     /* Behind the prices: the reference tucks the pizza under the stuffed-crust
        line rather than over it, and white numerals on a photo are unreadable. */
     z-index: 0;
@@ -1279,8 +1279,14 @@ const html = `<!doctype html>
      strip, not on the strip-plus-bleed, which is what the reference does
      (5.8mm each side of its cap). Centred on the full 32mm it sat 1.4mm
      over the trim line. */
-  .spine { justify-content: space-between; padding: 6mm 3mm 6mm 0; }
-  .side-a .spine { padding-bottom: 6mm; }
+  /* The owner's 15%: both runs inset 45.5mm — 15% of the 303mm strip — from
+     the top and bottom edges, so neither runs to the cut. 6mm before.
+     At the sizes they were set in, the two runs together came to 210mm
+     against the 212mm that inset leaves, so they would have all but
+     touched in the middle; the address gives up the difference rather than
+     the wordmark, which is the brand mark and stays at full size. */
+  .spine { justify-content: space-between; padding: 45.5mm 3mm 45.5mm 0; }
+  .side-a .spine { padding-bottom: 45.5mm; }
   /* The brand's own display face, as every plaque, the ticker straps and the
      phone number are set in. This used to be Montserrat, chosen because the
      ChatGPT reference's spine measured as a normal-width face — but the
@@ -1299,7 +1305,7 @@ const html = `<!doctype html>
   }
   .spine span {
     font-family: 'PlaqueOut', 'Oswald', system-ui, sans-serif; font-weight: 900;
-    font-size: 5mm; letter-spacing: .14em; text-transform: uppercase; color: #fff;
+    font-size: 4.2mm; letter-spacing: .12em; text-transform: uppercase; color: #fff;
   }
 
   /* The reference sets a red disc with a handset beside the phone and one with
@@ -1459,6 +1465,8 @@ const html = `<!doctype html>
 
   .sidesblk h3       { position: relative; left: 0.5mm;  top: 1.6mm; }
   .drinksblk .items  { position: relative; left: 0mm;    top: -1.3mm; }
+  .pizzablk .items   { position: relative; left: 3.4mm;  top: 2.6mm;  scale: 1.05; }
+  .supp              { position: relative; top: 8.7mm; }
   .sidesblk .items   { position: relative; left: 12.9mm; top: 9mm;   scale: 1.2; }
   .saladblk h3       { position: relative; left: -1.3mm; top: 10.6mm; }
   .saladblk .items   { position: relative; left: -0.3mm; top: 10.8mm; }
@@ -1513,7 +1521,7 @@ ${page('side-a', `
 ${page('side-b', `
   <div class="panel">
     <div class="pzcol">
-      ${sizedList('pizza', 'size', ['11"', '13"'], { tone: ['red', 'red'], nameTone: 'gold', slot: 5 })}
+      ${sizedList('pizza', 'size', ['11"', '13"'], { tone: ['red', 'red'], nameTone: 'gold', slot: 5, cls: 'pizzablk' })}
       ${stuffedCrust()}
     </div>
     <div class="halftone">${shot('pizza', 50, 'below')}</div>
