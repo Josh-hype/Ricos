@@ -22,7 +22,11 @@ reprint.** The printed menu cannot drift from what you actually charge.
 ## Typefaces
 
 **Archivo** (two static instances cut from the variable font) for the section
-plaques, spine wordmark, kids ribbon, phone number and ticker straps.
+plaques, the spine wordmark and address, kids ribbon, phone number and ticker
+straps. The spine was Montserrat until the owner called it off-brand: it had
+been matched to the ChatGPT reference, whose spine sets in a normal-width face
+— but the reference is not the brand, and a normal-width wordmark on the one
+edge you see folded read as a different shop next to the sheet's own plaques.
 **Oswald** Medium for the price lists. **Montserrat** for marketing copy: the
 dips list, deal cards, the spine wordmark and the cover's delivery and
 opening-hours block. All vendored in `fonts/`; nothing is fetched.
@@ -207,6 +211,27 @@ shrunk on the price lists — the type on this panel still matches the reference
 Everything else on the sheet is either live menu data or generated here (the
 plaques, the halftone, the torn deal-box edges, the phone and clock icons, the
 QR) and needs no artwork.
+
+## Checking the facts
+
+    node print/big-bites/audit-facts.mjs
+
+Reads the finished sheet and checks it against the shop's own data from the
+other direction to the build: every item in `menu-visual.json` must be on the
+paper and nothing may be on the paper that is not in the data, and the phone,
+address, postcode, domain, delivery terms, minimum order, radius and **all
+seven days of opening hours** must match `config.json`.
+
+It reports four things by design, all documented under *Presentation vs. data*:
+the Kids box prints each meal's required-option text rather than its item name
+(twice), and the two Pizza Deals fold into one box with a price per line
+(twice). 147 items in the data, 146 rows on the sheet.
+
+Its own hours check was wrong first time and passed seven days without testing
+anything — `config.json` stores `windows: [{open, close}]` on each day, not
+`open`/`close` directly, so reading `v.open` gave `undefined` and the check
+skipped. Worth remembering when adding to it: a check that reads the wrong
+field reports clean.
 
 ## Before sending to print
 

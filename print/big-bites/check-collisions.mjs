@@ -50,7 +50,11 @@ const hits = await p.evaluate(() => {
      one photo the lists are allowed to run over was the one nothing checked.
      It is treated like .mid — overlap is the design, but only where the text
      carries a shadow to stay legible on the photo. */
-  document.querySelectorAll('.shot.side, .shot.below').forEach((img) => {
+  /* .topright is a gutter photo like .side, and had to be named here: it
+     matches neither this selector nor the mid one, so the halloumi went on
+     with no text-overlap check at all while the run reported clean. Second
+     time a new placement class has slipped past this list. */
+  document.querySelectorAll('.shot.side, .shot.below, .shot.topright').forEach((img) => {
     const ir = img.getBoundingClientRect();
     const soft = img.classList.contains('below');
     const scope = img.closest('.blkrow') || img.closest('.panel');

@@ -1127,7 +1127,7 @@ const html = `<!doctype html>
   .sscol {
     /* Explicit height: an <img> is a replaced element, so top+bottom alone
        leave it at its intrinsic aspect instead of stretching. */
-    position: absolute; right: 1.6mm; top: 142.2mm; height: 194mm; z-index: 0;
+    position: absolute; right: 1.6mm; top: 136.4mm; height: 194mm; z-index: 0;
     width: 62mm; display: block;
     /* The column is 2:1; filling from the top of Sides to the foot of the
        panel needs a 3:1 box, so it is cropped left/right rather than shrunk —
@@ -1281,19 +1281,26 @@ const html = `<!doctype html>
      over the trim line. */
   .spine { justify-content: space-between; padding: 6mm 3mm 6mm 0; }
   .side-a .spine { padding-bottom: 6mm; }
-  /* NOT the condensed display face. Measured off the shipped outlines,
-     BarlowCondensed-900 gives ink/cap 0.62 over B,G,T,E,S where the
-     reference's spine averages 0.94, and its letter advance/cap is 1.14
-     against the plaques' 0.65 — it sets this wordmark in a normal-width face.
-     Montserrat-700 measures 0.87, within 7%. Tracking cannot widen a glyph,
-     only the gaps, so this needs the face change. 23.7mm gives cap 16.6mm
-     against the reference's 16.9, and .10em over nine gaps brings the run to
-     ~143mm, matching. */
+  /* The brand's own display face, as every plaque, the ticker straps and the
+     phone number are set in. This used to be Montserrat, chosen because the
+     ChatGPT reference's spine measured as a normal-width face — but the
+     reference is not the brand, and against the sheet's own plaques a
+     normal-width wordmark on the one edge you see folded read as a different
+     shop. PlaqueOut is the same instance the outer-face plaques use.
+     Condensed, so it needs more size and more tracking than Montserrat did to
+     hold the same run down the spine; both are set from the measurement
+     below, not by eye. */
   .spine b {
-    font-family: 'Montserrat', system-ui, sans-serif; font-weight: 700;
-    font-size: 17.6mm; letter-spacing: .10em; text-transform: uppercase;
+    font-family: 'PlaqueOut', 'Oswald', system-ui, sans-serif; font-weight: 900;
+    /* line-height 1, because in vertical writing mode the LINE BOX is what
+       runs across the strip — not the cap. Left at normal it was 23mm across a
+       21mm trimmed strip and the wordmark crossed the trim. */
+    font-size: 18mm; line-height: 1; letter-spacing: .12em; text-transform: uppercase;
   }
-  .spine span { font-size: 4.6mm; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #fff; }
+  .spine span {
+    font-family: 'PlaqueOut', 'Oswald', system-ui, sans-serif; font-weight: 900;
+    font-size: 5mm; letter-spacing: .14em; text-transform: uppercase; color: #fff;
+  }
 
   /* The reference sets a red disc with a handset beside the phone and one with
      a clock beside the opening times. Both are inline SVG — drawn, so they stay
@@ -1451,7 +1458,8 @@ const html = `<!doctype html>
   .parmblk .items    { position: relative; left: -1.9mm; top: 0mm; }
 
   .sidesblk h3       { position: relative; left: 0.5mm;  top: 1.6mm; }
-  .sidesblk .items   { position: relative; left: 13.2mm; top: 8.7mm; scale: 1.2; }
+  .drinksblk .items  { position: relative; left: 0mm;    top: -1.3mm; }
+  .sidesblk .items   { position: relative; left: 12.9mm; top: 9mm;   scale: 1.2; }
   .saladblk h3       { position: relative; left: -1.3mm; top: 10.6mm; }
   .saladblk .items   { position: relative; left: -0.3mm; top: 10.8mm; }
 
@@ -1489,7 +1497,7 @@ ${/* Section order and panel assignment follow the designer's artwork exactly:
       Don't reshuffle these without checking the reference sheets again. */''}
 ${page('side-a', `
   <div class="panel">
-    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, firstOnly: /\bcan\b/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], img: shot('new-pepsi-coke', 34, 'side', { ink: true, dx: 9.8, dy: -6.1 }), slot: 44, chipsBelow: true })}
+    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, firstOnly: /\bcan\b/i, tight: false, tone: ['gold', 'gold'], cls: 'drinksblk', labels: ['Can', 'Bottle'], img: shot('new-pepsi-coke', 34, 'side', { ink: true, dx: 9.8, dy: -6.1 }), slot: 44, chipsBelow: true })}
     ${milkshakes()}
     ${list('desserts', { desc: true, img: shot('cake', 46, 'side', { dx: 3.2, dy: -6.6 }), slot: 52, cls: 'dessertblk norule' })}
     ${kidsBox()}
@@ -1519,7 +1527,7 @@ ${page('side-b', `
   </div>
   <div class="panel">
     ${sizedList('burgers', 'size', ['1/4 lb', '1/2 lb'], { slot: 12, firstOnly: /(¼|1\/4)\s*lb/i, secondOnly: /(½|1\/2)\s*lb/i, defaultCol: null })}
-    ${list('sides', { dense: true, title: 'Sides', slot: 56, cls: 'sidesblk', img: shot('hallumi', 36, 'topright', { dy: -1 }) })}
+    ${list('sides', { dense: true, title: 'Sides', slot: 56, cls: 'sidesblk', img: shot('hallumi', 36, 'topright', { dx: 2.9, dy: -16.3, sc: 1.3 }) })}
     ${list('salad', { dense: true, desc: true, slot: 56, cls: 'saladblk' })}
     ${sidesSaladColumn()}
   </div>
