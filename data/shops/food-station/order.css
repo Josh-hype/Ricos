@@ -1,14 +1,26 @@
 /* Big Bites — order page skin.
 
-   Brings the ordering flow in line with the printed menu and the landing page:
-   charcoal throughout, cream panels sitting on top of it, torn yellow banners
-   for the section headings, red for anything that shouts.
+   This file is APPENDED to the shared order page by scripts/build-shop.js, so
+   it is per-shop by construction: nothing here can reach Rico's, the Grub Hub,
+   Mega Chippy or One Sip. The shared template is not forked.
 
-   This file is APPENDED to the shared order page (scripts/build-shop.js), so it
-   is per-shop by construction — nothing here touches Rico's, Mega Chippy, the
-   Grub Hub or One Sip. It overrides selectors rather than redefining --cream on
-   purpose: in the shared sheet --cream is both the page background AND a card
-   fill, so retinting the variable would drag surfaces along with it.
+   The previous skin painted the whole page charcoal with a yellow halftone dot
+   texture, which is the printed menu's device — right on paper, wrong here. A
+   near-black ordering screen is a poor place to be hungry: food photography
+   fights the ground instead of sitting on it, and every panel had to be argued
+   back to legibility with a stack of colour guards.
+
+   So this turns the page over. The shop's own theme tokens already carry a warm
+   cream page (#FBF3DE) and an off-white surface (#FFFDF7) — the shared sheet
+   was always going to render light and friendly, and the old skin was
+   overriding it. Most of what follows now takes the charcoal back OFF and
+   spends the brand where it earns attention:
+
+     cream      the ground, everywhere
+     white      the things you tap — cards, rows, the basket
+     red        one job: prices, and the band that tells you where we deliver
+     yellow     the other: anything asking to be tapped, and the headings
+     charcoal   the header and the ink
 
    Brand palette: yellow #F7C61A, red #E32619, charcoal #0C0C0C, cream #FBF3DE. */
 
@@ -17,54 +29,104 @@
   --bb-cream: #FBF3DE;
   --bb-yellow: #F7C61A;
   --bb-red: #E32619;
+  --bb-tan: #E8DCC0;          /* the cream, one step down — borders and rules */
+  /* The shared sheet's muted grey is #8a807c, which is 3.8:1 on white — under
+     AA for body text, and it carries the empty-basket prompt among other
+     things. Warmed and darkened to 5.5:1. It is only ever used as an ink. */
+  --grey: #6f6559;
+  --bb-shadow: rgba(74, 55, 18, 0.16);
 }
 
-/* ── The page itself ─────────────────────────────────────────────────────── */
-/* Charcoal, with the brand's halftone dot texture so a long menu doesn't read
-   as a flat black slab. */
-/* NB: deliberately no `color` on body. The cream panels below inherit their text
-   colour from it, so a page-wide light colour turns the category names and item
-   rows cream-on-cream. Page-level text is coloured explicitly instead. */
+/* ── The page ────────────────────────────────────────────────────────────── */
+/* Cream, and no texture at all. The warmth comes from one soft wash at the top
+   so the ground is not a flat field, and it fades out within a screen. */
 body {
-  background-color: var(--bb-char);
-  background-image: radial-gradient(rgba(247, 198, 26, 0.13) 1.5px, transparent 1.5px);
-  background-size: 22px 22px;
+  background-color: var(--bb-cream);
+  background-image:
+    radial-gradient(120% 340px at 50% 0, rgba(227, 38, 25, 0.10), rgba(227, 38, 25, 0) 70%);
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  color: var(--ink);
 }
 
+/* ── Header ──────────────────────────────────────────────────────────────── */
+/* Charcoal, as on the landing page — it ties the two together and gives the
+   basket count somewhere dark to sit. The yellow rule is the brand's own. */
 header.site {
   background: var(--bb-char);
   border-bottom: 4px solid var(--bb-yellow);
-  color: var(--bb-cream);
+  color: #fff;
 }
 header.site a,
-header.site button { color: var(--bb-cream); }
+header.site button { color: #fff; }
+/* Except the round account button, which brings its own white ground — white
+   ink on it left an empty white disc with the person icon invisible inside. */
+/* Written as `header.site button.header-btn`, not `.header-btn`: the rule above
+   is `header.site button`, which outranks a bare class, so the plain version of
+   this did nothing and the disc stayed empty. */
+header.site button.header-btn { color: var(--bb-char); border-color: transparent; }
+header.site button.header-btn:hover { color: var(--bb-red); }
+header.site button.header-btn.cart { color: var(--bb-yellow); }
 
-/* Text that sits directly on the page background rather than on a card —
-   without this it keeps the shared sheet's near-black ink and vanishes. */
+/* ── The delivery band ───────────────────────────────────────────────────── */
+/* Kept red — it is the one thing on the page that has to be read before
+   anything is added — but seated on the cream rather than cutting across it,
+   and rounded so it reads as a welcome rather than a warning. */
+.service-bar {
+  /* Every stop is the brand red or darker. The lighter #EE3324 highlight this
+     started with put white body copy at 4.09:1 near the top of the band, under
+     the 4.5:1 it has to clear; from the brand red down, the worst point is
+     4.93:1. */
+  background: linear-gradient(180deg, var(--bb-red) 0%, #D62213 60%, #C11F13 100%);
+  border-bottom: 0;
+  border-radius: 0 0 26px 26px;
+  box-shadow: 0 10px 26px -14px rgba(168, 20, 9, 0.75);
+  padding: 20px 0 22px;
+}
+.service-bar .row h1,
+.service-bar .row h2 { color: #fff; }
+.service-info { color: #fff; }
+/* Matching the shared sheet's own `.service-info p`, which is what actually
+   colours this line — it ships at 85% cream, and over this red that measures
+   3.39:1, under the 4.5:1 body text has to clear. Solid white is 4.93:1. */
+.service-info p { color: #fff; }
+
+/* The collection / delivery switch, and the postcode field. Yellow marks the
+   chosen one; charcoal is the ground it sits on so the pill reads at a glance. */
+.mode-toggle { background: rgba(12, 12, 12, 0.5); }
+.mode-toggle button.active { background: var(--bb-yellow); color: var(--bb-char); }
+.pc-form input {
+  border: 2px solid transparent;
+  background: #fff;
+  color: var(--ink);
+}
+.pc-form input:focus { border-color: var(--bb-yellow); outline: none; }
+.pc-form button { background: var(--bb-char); color: var(--bb-yellow); }
+.pc-form button:hover { background: #000; }
+
+/* ── Text that sits on the cream ─────────────────────────────────────────── */
+/* The old skin turned all of this cream so it would show on charcoal. On a
+   cream page that is invisible, so it goes back to ink — and the quieter
+   lines to the muted grey the shared sheet already defines. */
 .cat-section,
 .cat-section > p,
-.menu-loading,
+.menu-loading { color: var(--ink); }
 .min-order-hint,
-.schedule-note,
-.service-info { color: var(--bb-cream); }
+.schedule-note { color: #6f6559; }
 
-/* And the reverse guard: every cream panel states its own dark ink, so nothing
-   inherited from an ancestor can turn card text cream-on-cream. */
-.cat-card,
-.cat-card *,
-.item-list,
-.item-row,
-.item-row-name { color: var(--ink); }
-.item-row-desc { color: var(--grey); }
-.item-row-price { color: var(--bb-red); }
-.item-row-view,
-.item-row-tag { color: #fff; }
-.cat-card-chev { color: var(--bb-yellow); }
+/* ── The tap hint ────────────────────────────────────────────────────────── */
+.tap {
+  background: var(--bb-yellow);
+  color: var(--bb-char);
+  border: 0;
+  border-radius: 16px;
+  box-shadow: 0 6px 0 -1px #D9A90A, 0 12px 22px -12px var(--bb-shadow);
+}
 
-/* ── Category headings become the printed menu's torn banner ─────────────── */
-/* .cat-title is a flex row (emoji + h2); the h2 is the thing that carries the
-   heading treatment in the shared sheet, so the banner goes on the h2 and the
-   emoji stays beside it on the charcoal. */
+/* ── Category headings: the printed menu's torn banner ───────────────────── */
+/* The one thing carried straight over from the paper. It is the brand at its
+   most recognisable and it still reads on cream, because the banner brings its
+   own yellow ground and charcoal ink. */
 .cat-title .icon { font-size: 1.6rem; }
 .cat-title h2 {
   background: var(--bb-yellow);
@@ -78,51 +140,156 @@ header.site button { color: var(--bb-cream); }
   clip-path: polygon(0.0% 1.5%, 4.5% 5%, 9.1% 0%, 13.6% 1.5%, 18.2% 3.5%, 22.7% 0%, 27.3% 5%, 31.8% 3.5%, 36.4% 5%, 40.9% 0%, 45.5% 0%, 50.0% 0%, 54.5% 0%, 59.1% 1.5%, 63.6% 3.5%, 68.2% 1.5%, 72.7% 0%, 77.3% 1.5%, 81.8% 0%, 86.4% 3.5%, 90.9% 5%, 95.5% 5%, 100.0% 1.5%, 100.0% 98%, 95.5% 94.5%, 90.9% 98%, 86.4% 94.5%, 81.8% 100%, 77.3% 100%, 72.7% 96%, 68.2% 96%, 63.6% 100%, 59.1% 94.5%, 54.5% 96%, 50.0% 96%, 45.5% 94.5%, 40.9% 96%, 36.4% 100%, 31.8% 100%, 27.3% 100%, 22.7% 94.5%, 18.2% 100%, 13.6% 100%, 9.1% 100%, 4.5% 100%, 0.0% 96%);
 }
 
-/* ── Cards: cream, not white ─────────────────────────────────────────────── */
-/* The printed menu's panels are warm cream on black; pure white glares against
-   charcoal. */
+/* ── Cards and rows ──────────────────────────────────────────────────────── */
+/* White on cream, a warm keyline instead of a black one, and a soft shadow
+   rather than the hard offset block the old skin used. The hard shadow is
+   punchy, but eight of them stacked down a phone read as loud rather than
+   appetising. The lift stays on the press, where it is felt and not just seen. */
 .cat-card,
 .item-list,
-.item-row { background: var(--bb-cream); }
-.item-row + .item-row { border-top: 2px dotted rgba(12, 12, 12, 0.22); }
-
+.item-row { background: var(--white); }
 .cat-card {
-  border-color: var(--bb-char);
-  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.55);
+  border: 2px solid var(--bb-tan);
+  border-radius: 18px;
+  box-shadow: 0 10px 20px -14px var(--bb-shadow);
+  transition: transform .13s ease, box-shadow .13s ease, border-color .13s ease;
 }
+.cat-card:hover {
+  border-color: var(--bb-yellow);
+  box-shadow: 0 14px 26px -14px var(--bb-shadow);
+  transform: translateY(-2px);
+}
+.cat-card:active { transform: translateY(1px); box-shadow: 0 6px 14px -12px var(--bb-shadow); }
+.cat-card-chev { background: var(--bb-yellow); color: var(--bb-char); }
+.cat-card:hover .cat-card-chev { background: var(--bb-red); color: #fff; }
+.cat-card-count { color: #6f6559; }
 
-/* Back-to-sections control: a charcoal chip with a yellow keyline, so it reads
-   as a control on the dark page rather than as another cream card. */
+.item-list {
+  border: 2px solid var(--bb-tan);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px -14px var(--bb-shadow);
+}
+.item-row + .item-row { border-top: 2px dotted var(--bb-tan); }
+.item-row:hover { background: #FFF9E8; }
+.item-row-name { color: var(--ink); }
+.item-row-desc { color: #6f6559; }
+/* The price sits in a yellow chip, so it takes the charcoal ink, not the red:
+   red on yellow measures 2.9:1, under the 4.5:1 a price has to clear. Charcoal
+   on the same chip is 11.6:1. */
+.item-row-price,
+/* and the same chip in the item sheet, which is a different class — it was the
+   one price still measuring 2.9:1 after the row prices were fixed */
+.item-detail-price { color: var(--bb-char); }
+.item-row-view,
+.item-row-tag { color: #fff; }
+
+/* Back to the sections: a cream chip with a charcoal keyline. It is a way out,
+   not a call to action, so it does not take the yellow. */
 .cat-back {
-  background: var(--bb-char);
-  color: var(--bb-yellow);
-  border: 2px solid var(--bb-yellow);
+  background: var(--white);
+  color: var(--bb-char);
+  border: 2px solid var(--bb-char);
+  border-radius: 999px;
 }
+.cat-back:hover { background: var(--bb-yellow); }
 
-/* ── The tap hint ────────────────────────────────────────────────────────── */
-/* It ships charcoal-on-cream; on a charcoal page it has to invert or it
-   disappears into the background. */
-.tap {
+/* ── The things you tap ──────────────────────────────────────────────────── */
+/* The sticker press is kept — it is the most likeable thing about the old skin
+   and it costs nothing on cream. Softened from pure black to the warm shadow so
+   it reads as a raised button rather than a cut-out. */
+.add-btn {
   background: var(--bb-yellow);
   color: var(--bb-char);
-  border-color: var(--bb-char);
+  box-shadow: 0 4px 0 -1px #D9A90A;
+  transition: transform .1s ease, box-shadow .1s ease, background .15s ease;
 }
-
-/* ── Sticker press, carried over from the previous skin ──────────────────── */
-.add-btn {
-  box-shadow: 3px 3px 0 var(--ink);
-  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
-}
-.add-btn:hover  { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); }
-.add-btn:active { transform: translate(2px, 2px);   box-shadow: 1px 1px 0 var(--ink); }
+.add-btn:hover { background: #FFD336; }
+.add-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 -1px #D9A90A; }
 
 .qty-btn {
-  box-shadow: 2px 2px 0 var(--ink);
-  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
+  box-shadow: 0 3px 0 -1px var(--bb-tan);
+  transition: transform .1s ease, box-shadow .1s ease, background .15s ease;
 }
-.qty-btn:hover  { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--ink); }
-.qty-btn:active { transform: translate(1px, 1px);   box-shadow: 0 0 0 var(--ink); }
+.qty-btn:active { transform: translateY(2px); box-shadow: none; }
 
-/* Elements that already carry the sticker shadow only gain the press-down. */
-.cat-card:active     { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
-.checkout-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+/* Checkout is the only red button on the page, so it cannot be mistaken for
+   anything else. */
+.checkout-btn {
+  background: var(--bb-red);
+  color: #fff;
+  box-shadow: 0 5px 0 -1px #A81409;
+}
+.checkout-btn:hover { background: #EE3324; }
+.checkout-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 -1px #A81409; }
+
+/* ── Basket ──────────────────────────────────────────────────────────────── */
+/* .cart-side, not .cart — .cart is the header's basket BUTTON, and the panel
+   carries its own class. Styling .cart quietly aimed all of this at the button
+   instead, where a more specific rule was already winning, so none of it
+   showed and the panel kept the hard offset shadow. */
+.cart-side {
+  background: var(--white);
+  border: 2px solid var(--bb-tan);
+  border-radius: 18px;
+  box-shadow: 0 14px 30px -18px var(--bb-shadow);
+}
+.cart-header {
+  background: var(--bb-char);
+  color: #fff;
+  border-bottom: 3px solid var(--bb-yellow);
+}
+/* The basket's own switch sits on white, where the 50% charcoal the band uses
+   renders as a dead grey slab. Cream ground, charcoal ink, yellow for the one
+   that is on. */
+.cart-mode-toggle { background: var(--bb-cream); }
+.cart-mode-btn { color: var(--bb-char); }
+.cart-mode-btn.active { background: var(--bb-yellow); color: var(--bb-char); }
+.cart-row + .cart-row { border-top: 2px dotted var(--bb-tan); }
+.cart-summary .total { color: var(--bb-red); }
+.cart-mobile-bar {
+  background: var(--bb-char);
+  border-top: 3px solid var(--bb-yellow);
+}
+.count-pill { background: var(--bb-red); color: #fff; }
+
+/* ── Item modal ──────────────────────────────────────────────────────────── */
+/* The photograph is the reason this sheet opens, so the panel gets out of its
+   way: white, generous radius, and the only colour is the price and the button. */
+.modal {
+  background: var(--white);
+  border: 2px solid var(--bb-tan);
+  border-radius: 22px;
+}
+.modal-head { border-bottom: 2px dotted var(--bb-tan); }
+.modal-footer { border-top: 2px dotted var(--bb-tan); background: #FFFDF7; }
+.modal-overlay { background: rgba(12, 12, 12, 0.62); }
+.modal-close { background: var(--bb-cream); color: var(--bb-char); }
+.modal-close:hover { background: var(--bb-yellow); }
+
+/* ── Notices ─────────────────────────────────────────────────────────────── */
+/* .menu-notice is the "pick a section, then tap an item" hint — it is help, not
+   a warning, and styling it with the closed-shop treatment gave the top of the
+   page a red alarm box before anyone had done anything wrong. It takes the
+   friendly yellow; only the closed banner gets to shout. */
+.menu-notice {
+  background: var(--bb-yellow);
+  border: 0;
+  border-radius: 16px;
+  color: var(--bb-char);
+  box-shadow: 0 6px 0 -1px #D9A90A, 0 12px 22px -12px var(--bb-shadow);
+}
+.menu-notice .tap { background: var(--bb-char); color: var(--bb-yellow); }
+
+.closed-banner {
+  background: #FFF3F1;
+  border: 2px solid var(--bb-red);
+  border-radius: 16px;
+  color: #8E1109;
+}
+.ls-banner {
+  background: #FFF8E1;
+  border: 2px solid var(--bb-yellow);
+  border-radius: 16px;
+  color: #5A4506;
+}
