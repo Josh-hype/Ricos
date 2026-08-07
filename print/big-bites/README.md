@@ -172,7 +172,11 @@ sizes a photo by its canvas because it cannot decode a PNG past the header. The
 script drops border only — every pixel it removes is alpha ≤ 16, it refuses to
 run otherwise, and it checks the opaque pixel count is unchanged afterwards.
 
-Two gaps left. Each is a hole the reference fills and this sheet leaves empty —
+`hallumi.png` sits in the empty right-hand side of Sides, above where the
+Sides/Salad column's burger begins. It carries its own red halftone, which is
+the sheet's own device, so it reads as artwork rather than as a pasted cutout.
+
+One gap left. Each is a hole the reference fills and this sheet leaves empty —
 nothing is faked or substituted. The Garlic Bread list still holds a 14mm
 gutter open for its missing photo.
 

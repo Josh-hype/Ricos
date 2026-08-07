@@ -433,7 +433,7 @@ function milkshakes() {
             throw new Error('coolers no longer share one price — they cannot fold into a single row');
           return row('Cooler', coolers[0].price, coolers.map((i) => `${flavour(i.name)} Cooler`).join(', '), 'plain');
         })() : ''}
-      </ul>`, shot('shake', 30, 'side', { dx: 7.7, dy: -31.8, sc: 1.15 }), 52)}
+      </ul>`, shot('shake', 30, 'side', { dx: 8.5, dy: -10.1, sc: 1.15 }), 52)}
     </section>`;
 }
 
@@ -949,6 +949,10 @@ const html = `<!doctype html>
      clear on every row but the last, where the Mixed Kebab's description
      runs long — and a centred photo sits straight across it. */
   .shot.midtop { position: absolute; top: var(--dy, 0mm); right: calc(38mm - var(--dx, 0mm)); z-index: 0; }
+  /* Top of the gutter a list already reserves, against the panel edge —
+     the empty right-hand side of Sides, above where the food column's
+     burger begins. */
+  .shot.topright { position: absolute; top: var(--dy, 0mm); right: calc(0mm - var(--dx, 0mm)); z-index: 0; }
   /* A photo that is far taller than it is wide — the doner spit — cannot use
      the .side placement: at the width its height allows it is only ~22mm
      7mm that placement hangs past the block would clip a third of it and drop
@@ -1444,6 +1448,7 @@ const html = `<!doctype html>
   .kebblk .sizehdr   { position: relative; left: 3.4mm;  top: 1.3mm; }
   .kebblk .items     { position: relative; left: 0mm;    top: 0.3mm; }
   .parmblk h3        { position: relative; left: -2.9mm; top: 0mm;   scale: 0.95; }
+  .parmblk .items    { position: relative; left: -1.9mm; top: 0mm; }
 
   .sidesblk h3       { position: relative; left: 0.5mm;  top: 1.6mm; }
   .sidesblk .items   { position: relative; left: 13.2mm; top: 8.7mm; scale: 1.2; }
@@ -1484,9 +1489,9 @@ ${/* Section order and panel assignment follow the designer's artwork exactly:
       Don't reshuffle these without checking the reference sheets again. */''}
 ${page('side-a', `
   <div class="panel">
-    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, firstOnly: /\bcan\b/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], img: shot('new-pepsi-coke', 34, 'side', { ink: true, dx: 9, dy: -21.7 }), slot: 44, chipsBelow: true })}
+    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, firstOnly: /\bcan\b/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], img: shot('new-pepsi-coke', 34, 'side', { ink: true, dx: 9.8, dy: -6.1 }), slot: 44, chipsBelow: true })}
     ${milkshakes()}
-    ${list('desserts', { desc: true, img: shot('cake', 46, 'side', { dx: 3.2, dy: -21.4 }), slot: 52, cls: 'dessertblk norule' })}
+    ${list('desserts', { desc: true, img: shot('cake', 46, 'side', { dx: 3.2, dy: -6.6 }), slot: 52, cls: 'dessertblk norule' })}
     ${kidsBox()}
   </div>
   <div class="panel">
@@ -1507,14 +1512,14 @@ ${page('side-b', `
   </div>
   <div class="panel tight">
     ${sizedList('garlic-bread', 'size', ['11"', '13"'], { tone: ['red', 'red'], slot: 14 })}
-    ${list('calzone', { dense: true, desc: true, img: shot('calzone', 40, 'mid', { dx: 9.3, dy: -10.3 }), slot: 0, chip: '11"', cls: 'calzblk' })}
+    ${list('calzone', { dense: true, desc: true, img: shot('calzone', 40, 'mid', { dx: 13.5, dy: 1.6 }), slot: 0, chip: '11"', cls: 'calzblk' })}
     ${sizedList('kebab', 'size', ['MEDIUM', 'LARGE'], { title: 'Kebabs', img: shot('doner-pit', 15, 'midtop', { dx: -6.6, dy: 2.6, sc: 1.1 }), slot: 0, cls: 'kebblk' })}
-    ${list('parmesan', { dense: true, desc: true, img: shot('parmasan', 44, 'side', { dx: -4.5, dy: -13.5, sc: 0.95 }), slot: 48, cls: 'parmblk' })}
-    ${list('wraps', { dense: true, desc: true, img: shot('wrap', 46, 'side', { dx: -5, dy: -13.5, sc: 0.95 }), slot: 48, title: 'Wrap' })}
+    ${list('parmesan', { dense: true, desc: true, img: shot('parmasan', 44, 'side', { dx: -4.5, dy: 0, sc: 0.95 }), slot: 48, cls: 'parmblk' })}
+    ${list('wraps', { dense: true, desc: true, img: shot('wrap', 46, 'side', { dx: -5.3, dy: 2.4, sc: 0.95 }), slot: 48, title: 'Wrap' })}
   </div>
   <div class="panel">
     ${sizedList('burgers', 'size', ['1/4 lb', '1/2 lb'], { slot: 12, firstOnly: /(¼|1\/4)\s*lb/i, secondOnly: /(½|1\/2)\s*lb/i, defaultCol: null })}
-    ${list('sides', { dense: true, title: 'Sides', slot: 56, cls: 'sidesblk' })}
+    ${list('sides', { dense: true, title: 'Sides', slot: 56, cls: 'sidesblk', img: shot('hallumi', 36, 'topright', { dy: -1 }) })}
     ${list('salad', { dense: true, desc: true, slot: 56, cls: 'saladblk' })}
     ${sidesSaladColumn()}
   </div>
