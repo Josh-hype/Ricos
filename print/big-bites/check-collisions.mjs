@@ -30,13 +30,17 @@ const hits = await p.evaluate(() => {
      same — so overlap there is intent, not a fault. What matters is that those
      numerals still read, which is what the shadow on .p2 is for; anything
      overlapping a mid photo without one is reported. */
-  document.querySelectorAll('.shot.mid').forEach((img) => {
+  /* .midtop is the same placement anchored to the top of the list rather than
+     centred on it. It must be named here: '.shot.mid' does not match it, so
+     adding the class without adding it here would have taken that photo out
+     of this check entirely while the run still reported clean. */
+  document.querySelectorAll('.shot.mid, .shot.midtop').forEach((img) => {
     const ir = img.getBoundingClientRect();
     img.closest('.blkrow').querySelectorAll('.n, .p, .p2').forEach((el) => {
       const shadowed = getComputedStyle(el).textShadow !== 'none';
       for (const r of inkRects(el)) {
         if (over(r, ir) && !shadowed) {
-          hits.push(`"${el.textContent.trim().slice(0, 30)}" sits on ${img.getAttribute('src')} with no shadow to carry it`);
+          hits.push(`"${el.textContent.trim().slice(0, 30)}" sits on ${(img.getAttribute('src') || img.dataset.src)} with nothing behind it to carry it`);
           break;
         }
       }
@@ -46,7 +50,11 @@ const hits = await p.evaluate(() => {
      one photo the lists are allowed to run over was the one nothing checked.
      It is treated like .mid — overlap is the design, but only where the text
      carries a shadow to stay legible on the photo. */
-  document.querySelectorAll('.shot.side, .shot.below').forEach((img) => {
+  /* .topright is a gutter photo like .side, and had to be named here: it
+     matches neither this selector nor the mid one, so the halloumi went on
+     with no text-overlap check at all while the run reported clean. Second
+     time a new placement class has slipped past this list. */
+  document.querySelectorAll('.shot.side, .shot.below, .shot.topright').forEach((img) => {
     const ir = img.getBoundingClientRect();
     const soft = img.classList.contains('below');
     const scope = img.closest('.blkrow') || img.closest('.panel');
@@ -64,7 +72,7 @@ const hits = await p.evaluate(() => {
         if (a > 0.85) return;
       }
       for (const r of inkRects(el)) {
-        if (over(r, ir)) { hits.push(`"${el.textContent.trim().slice(0, 40)}" runs under ${img.getAttribute('src')}`); break; }
+        if (over(r, ir)) { hits.push(`"${el.textContent.trim().slice(0, 40)}" runs under ${(img.getAttribute('src') || img.dataset.src)}`); break; }
       }
     });
   });
@@ -74,7 +82,16 @@ const hits = await p.evaluate(() => {
     if (img.closest('.halftone')) return;
     const blk = img.closest('.blk') || img.closest('.panel'); if (!blk) return;
     const ir = img.getBoundingClientRect(), br = blk.getBoundingClientRect();
-    if (ir.top < br.top - 1 || ir.bottom > br.bottom + 1) hits.push(`${img.getAttribute('src')} escapes its section by ${Math.round(Math.max(br.top - ir.top, ir.bottom - br.bottom))}px`);
+    /* A photograph the owner has placed by hand is MEANT to leave its section
+       — that is what placing it means. But the allowance is bounded by the
+       offset it was actually given, not waived: a blanket exemption would have
+       stopped this catching a photo that had run away for some other reason,
+       which is the whole job of this check. */
+    const MM = 96 / 25.4;
+    const dy = Math.abs(parseFloat(getComputedStyle(img).getPropertyValue('--dy')) || 0) * MM;
+    const slack = dy + 3 * MM;
+    const out = Math.max(br.top - ir.top, ir.bottom - br.bottom);
+    if (out > slack) hits.push(`${(img.getAttribute('src') || img.dataset.src)} escapes its section by ${Math.round(out)}px, which is ${Math.round(out - slack)}px more than the ${Math.round(dy / MM)}mm it was placed by`);
   });
   return hits;
 });

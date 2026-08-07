@@ -22,7 +22,11 @@ reprint.** The printed menu cannot drift from what you actually charge.
 ## Typefaces
 
 **Archivo** (two static instances cut from the variable font) for the section
-plaques, spine wordmark, kids ribbon, phone number and ticker straps.
+plaques, the spine wordmark and address, kids ribbon, phone number and ticker
+straps. The spine was Montserrat until the owner called it off-brand: it had
+been matched to the ChatGPT reference, whose spine sets in a normal-width face
+— but the reference is not the brand, and a normal-width wordmark on the one
+edge you see folded read as a different shop next to the sheet's own plaques.
 **Oswald** Medium for the price lists. **Montserrat** for marketing copy: the
 dips list, deal cards, the spine wordmark and the cover's delivery and
 opening-hours block. All vendored in `fonts/`; nothing is fetched.
@@ -105,25 +109,129 @@ runs on tighter leading (`.panel.tight`) — again, as the reference does.
 
 ## Assets still needed
 
-Three gaps left. The owner supplied the **Kids Menu lockup**, the
-**Sides/Salad food column**, the **drink cans** and the **cover pizza** on
-2026-08-06; all four are in place. The column carries the burger, the
-chips-and-nuggets and the salad bowl in one cutout, so it replaced the
-separate `sides.png` and `salad.png` placements.
+The owner replaced most of the missing artwork on 2026-08-06: the **Kids Menu
+lockup**, the **cover pizza**, then `hero`, `parmasan`, `calzone` and
+`doner-pit`. Eleven photographs are placed — the cover pizza, the meal-deal
+lockup, the pizza, cake, shake, wrap, calzone, parmesan, doner spit, the drink
+cans and the Sides/Salad column.
 
-Each remaining gap is a hole the reference fills and this sheet currently
-leaves empty — nothing is faked or substituted.
+The drink cans on the sheet are **`new-pepsi-coke.png`**, placed byte for byte
+as the owner supplied it — no key, no trim, no edit of any kind. It arrives as
+a 1024×1536 canvas carrying a 741×726 photograph, so it is placed with
+`shot(..., { ink: true })`: the build reads the PNG's alpha channel (pure Node,
+`zlib` is a built-in) and lays the photo out by where the *picture* is rather
+than by the size of the canvas. Without that the cans print a third of the size
+of the space reserved for them, and the empty frame overruns the panel.
+
+### The earlier cans, and why `pepsi-coke.png` is generated
+
+Kept for the record; `pepsi-coke.jpg`/`.png` are no longer on the sheet.
+
+The owner supplied `pepsi-coke.jpg` — a stock cutout served as JPEG, so the
+transparency checkerboard is baked into the pixels. It cannot be placed as
+supplied: on the black panel it prints a grey chequered rectangle. **The PNG
+next to it is generated from it** by `key-checkerboard.py`, and both files are
+committed so the key can be re-run:
+
+    python3 print/big-bites/key-checkerboard.py img/pepsi-coke.jpg img/pepsi-coke.png
+    python3 print/big-bites/trim-alpha.py img/pepsi-coke.png
+
+Two earlier keys shipped damaged and the owner caught the second one. Both
+failed the same way — by asking "is this pixel light and neutral?", which is
+equally true of the checkerboard, of an aluminium can top, of the white
+Coca-Cola script, of the silver rim at a can's foot and of the white band down
+the Coke can's edge. The first cut both can tops flat. The second left a dashed
+black gash down the side of the Coke can: the white band keyed out inside the
+white squares and stayed inside the grey ones.
+
+The script tests **alternation**, not colour — real backdrop swings light/dark
+every cell, a white can edge is flat however exactly its colour matches the
+square beneath it — and measures that by correlation, which is blind to both
+gain and offset and so reads the cans' cast shadow as the dimmed backdrop it
+is. It ends by compositing its own output back onto a synthetic checkerboard
+and comparing against the source: **0.03%** of the frame differs. Reproducing
+the two shipped defects scores **0.77%** (the gash) and **6.02%** (the flat
+tops), which is what the 0.3% threshold is set against — 1%, the obvious round
+number, would have passed the gash.
+
+The photograph between Dips and Meal Deals is **`hero-neww.png`**, which is a
+full rectangular photograph rather than a cutout — it has no alpha channel at
+all, so it sits on the panel as a picture with edges rather than as food
+floating on black. It is placed at 92mm, not the 108mm the cutout before it
+used: at 108mm it stands 72mm tall and overruns the panel by 10mm, because a
+4:3 photograph is far deeper than the 2:1 lockup it replaced.
+
+`sides-salad.png` is back on the inner right panel, at the width and position
+it had before. `burger-meal.png` and `kebab.png` are **off the sheet** on the
+owner's instruction, and stay in `img/` cut and keyed.
+Putting one back is a one-line change at its section's call site — but note
+that `slotOf()` returns the greater of the photo's width and the section's
+`slot`, so removing a photo means releasing its gutter too or the list keeps a
+hole where the picture was.
+
+**Trim a new cutout before placing it:** `python3 print/big-bites/trim-alpha.py
+img/<name>.png`. Two of the owner's four uploads were 1024×1536 canvases
+carrying a picture only 576px tall sitting at the bottom, and the generator
+sizes a photo by its canvas because it cannot decode a PNG past the header. The
+script drops border only — every pixel it removes is alpha ≤ 16, it refuses to
+run otherwise, and it checks the opaque pixel count is unchanged afterwards.
+
+`hallumi.png` sits in the empty right-hand side of Sides, above where the
+Sides/Salad column's burger begins. It carries its own red halftone, which is
+the sheet's own device, so it reads as artwork rather than as a pasted cutout.
+
+One gap left. Each is a hole the reference fills and this sheet leaves empty —
+nothing is faked or substituted. The Garlic Bread list still holds a 14mm
+gutter open for its missing photo.
 
 | # | Asset | Where it goes | Spec |
 |---|-------|---------------|------|
-| 1 | **Burger, on its own** | Burgers, inner right panel — the panel's empty upper right | Transparent PNG, ≥1200px wide. The supplied Sides/Salad column has a burger at its top, but the column is 2:1 tall and at panel width it only reaches as high as the Sides list; covering Burgers too would need it 143mm wide, wider than the panel |
+| 1 | **Burger, on its own** | Burgers, inner right panel — the panel's empty upper right | Transparent PNG, ≥1200px wide. `hero.png` has a burger in it, but it is a four-item lockup with a can and a fries carton, so it reads as a meal deal rather than as the Burgers section |
 | 2 | **Garlic bread** | Garlic Bread, inner middle panel | Transparent PNG, ≥1000px wide |
-| 3 | **Parmesan** | Parmesan, inner middle panel | Transparent PNG, ≥1000px wide |
-| 7 | **Bigger burger hero** | Above Meal Deals — already in place, but soft | The current file is 635px, which is 149dpi at 108mm — every build prints the dpi table, and the build throws below 140. ≥1200px wide puts it over 300 |
+
+### Fitting a photo to the inner middle panel
+
+That panel carries five sections and is **full** — before these photos went on
+it had 3mm of slack in 290mm. Two things cost height there, and neither is
+obvious from the call site:
+
+- **`--rowmin`** holds the row open to the photo's height + 3mm. A photo taller
+  than its own list pushes the panel down by the difference: the calzone at
+  46mm wide is 29mm tall against a 28mm list, so it cost 4mm. At 40mm it costs
+  nothing and is barely smaller on the page.
+- **The gutter wraps a description.** Any `slot` at all on Kebabs costs ~2.6mm
+  (one row wraps); at 26mm a second and third wrap and it costs **14.8mm**. The
+  doner spit is 18mm wide for that reason — 22mm is the last width that stays
+  on the cheap side of the cliff.
+
+The remaining 3mm came out of `.panel.tight`'s inter-section gap (2.4mm →
+1.8mm), which is the same trade that panel already makes elsewhere. Nothing was
+shrunk on the price lists — the type on this panel still matches the reference.
 
 Everything else on the sheet is either live menu data or generated here (the
 plaques, the halftone, the torn deal-box edges, the phone and clock icons, the
 QR) and needs no artwork.
+
+## Checking the facts
+
+    node print/big-bites/audit-facts.mjs
+
+Reads the finished sheet and checks it against the shop's own data from the
+other direction to the build: every item in `menu-visual.json` must be on the
+paper and nothing may be on the paper that is not in the data, and the phone,
+address, postcode, domain, delivery terms, minimum order, radius and **all
+seven days of opening hours** must match `config.json`.
+
+It reports four things by design, all documented under *Presentation vs. data*:
+the Kids box prints each meal's required-option text rather than its item name
+(twice), and the two Pizza Deals fold into one box with a price per line
+(twice). 147 items in the data, 146 rows on the sheet.
+
+Its own hours check was wrong first time and passed seven days without testing
+anything — `config.json` stores `windows: [{open, close}]` on each day, not
+`open`/`close` directly, so reading `v.open` gave `undefined` and the check
+skipped. Worth remembering when adding to it: a check that reads the wrong
+field reports clean.
 
 ## Before sending to print
 

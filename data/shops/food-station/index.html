@@ -126,7 +126,6 @@
     nav.main a{display:block;padding:14px 0;border-bottom:2px solid var(--line);font-size:1rem;}
     .burger{display:block;order:3;}
     .hdr-actions{margin-left:auto;}
-    .hdr-actions .btn.ghost{display:none;}
     .navscrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:65;display:none;}
     .navscrim.on{display:block;}
   }
@@ -586,13 +585,11 @@
      so their responsive values cannot be lost to source order. */
   .utility{border-bottom:1px solid rgba(255,255,255,.16);background:#030303;color:#ddd;
            font-size:.69rem;font-weight:700;letter-spacing:.035em;text-transform:uppercase;}
-  .utility .wrap{min-height:38px;display:flex;align-items:center;justify-content:space-between;gap:24px;}
+  .utility .wrap{min-height:38px;display:flex;align-items:center;justify-content:center;gap:24px;}
   .utility-list{display:flex;align-items:center;gap:25px;white-space:nowrap;}
   .utility-list span{display:inline-flex;align-items:center;gap:7px;}
   .utility-list i{color:var(--yellow);font-style:normal;font-size:.82rem;}
   .utility-list span:first-child i{color:var(--red);}
-  .utility-contact{white-space:nowrap;color:#f1eadc;}
-  .utility-contact strong{color:var(--yellow);}
 
   header.bar{position:sticky;top:0;background:rgba(0,0,0,.94);border-bottom:1px solid rgba(255,255,255,.14);
              backdrop-filter:blur(14px);}
@@ -611,8 +608,6 @@
   .hdr-actions .btn{min-height:46px;border-width:1px;border-radius:7px;box-shadow:none;padding:11px 21px;
                     font-size:.78rem;letter-spacing:.04em;}
   .hdr-actions .btn:hover{transform:translateY(-1px);box-shadow:none;}
-  .hdr-actions .btn.ghost{border-color:#eee;color:#f8f4eb;}
-  .hdr-actions .btn.ghost:hover{border-color:var(--yellow);color:var(--yellow);}
   .burger{position:relative;z-index:80;}
 
   .ticker--top{display:none;}
@@ -736,7 +731,6 @@
     .utility .wrap{min-height:34px;overflow:hidden;}
     .utility-list{gap:17px;font-size:.61rem;animation:utilityDrift 18s linear infinite;}
     .utility-list span:nth-child(3){display:none;}
-    .utility-contact{display:none;}
     @keyframes utilityDrift{0%,35%{transform:translateX(0)}65%,100%{transform:translateX(-38px)}}
     @media(prefers-reduced-motion:reduce){.utility-list{animation:none;}}
     header.bar .wrap{min-height:72px;gap:10px;padding-top:8px;padding-bottom:8px;}
@@ -866,6 +860,59 @@
   @media(max-width:620px){
     .bb-editor{right:8px;bottom:8px;width:min(340px,calc(100vw - 16px));max-height:46vh;}
   }
+  /* ── Mobile drawer: the containing-block fix ──────────────────────────
+     A position:fixed element is laid out against the viewport ONLY while no
+     ancestor has a transform, filter or backdrop-filter. The header has one,
+     so the drawer was being laid out against the HEADER — 320x122, the
+     header's own box. Its background and gold border filled only that, and the
+     five links fell out of the bottom and down the hero with nothing behind
+     them. That is the menu "not rendering properly".
+     This has to sit at the END of the sheet: the late override block re-states
+     header.bar with the blur, and at equal specificity the last rule wins —
+     the same fix written higher up did nothing at all.
+     The header is rgba(0,0,0,.94) underneath, so there is nothing to see
+     through and nothing lost by dropping the blur on a phone. */
+  @media(max-width:1080px){
+    header.bar{backdrop-filter:none;-webkit-backdrop-filter:none;}
+  }
+
+  /* ── Phone: the owner's pass ──────────────────────────────────────────
+     Everything here is phone-only and sits at the end of the sheet for the
+     same reason the drawer fix does — the late override block above restates
+     several of these selectors, and at equal specificity the last rule wins. */
+  @media(max-width:560px){
+    /* 1. The logo and the town, side by side, and the mark bigger. It was
+          stacked — logo over EASINGWOLD — which is what made the header 85px
+          deep and the mark small inside it. Room for this came from the
+          Call us button coming off. */
+    .brand{flex-direction:row;align-items:center;gap:8px;scale:1;}
+    .brand img{height:56px;}
+    header.bar.compact .brand img{height:48px;}
+    /* Side by side, the town has to share one row with the order button and the
+       menu button. Set as it was it made the header 431px wide inside a 390px
+       viewport and pushed the burger clean off the screen. The star costs 27px
+       of that row on its own, so it comes off on a phone and stays everywhere
+       else. */
+    .hdr-loc{font-size:.55rem;letter-spacing:.06em;gap:0;padding:0;white-space:nowrap;}
+    .hdr-loc::before{content:none;}
+    header.bar .wrap{gap:8px;}
+
+    /* 2. The rolling stripe, 40% thinner. Measured, not guessed: 49px before,
+          29px after — the type and the padding come down together so the band
+          shrinks without the words shrinking out of proportion to it. */
+    .ticker{border-top-width:2px;border-bottom-width:2px;}
+    main > .ticker:not(.ticker--top) .roll{font-size:.72rem;letter-spacing:1.1px;padding:4px 0 3px;}
+
+    /* 3. One vertical rhythm down the page. The four long sections ran 62, 66,
+          66 and 70px top and bottom — close enough to look like a mistake
+          rather than a decision, and too airy for a phone — and the trust bar
+          was 12 top against 22 bottom, the offer band 34 against 28. All on
+          44px now, the bar symmetrical at 22. Two of these sections only
+          exist once the claims script has run, which is why a survey of the
+          static page does not show them. */
+    .feat, .story, .find, .cta, .cta-band, .platforms{padding-top:44px;padding-bottom:44px;}
+    .trustbar{padding-top:22px;padding-bottom:22px;}
+  }
 </style>
 </head>
 <body>
@@ -921,7 +968,6 @@
       <span><i>⚡</i>Delivery &amp; collection</span>
       <span><i>★</i>Made in {{shopCity}}</span>
     </div>
-    <span class="utility-contact">Order direct <strong>·</strong> {{shopPhone}}</span>
   </div>
 </div>
 
@@ -944,7 +990,6 @@
     <div class="navscrim" id="navScrim" hidden></div>
 
     <div class="hdr-actions">
-      <a class="btn ghost sm" href="tel:{{shopPhoneTel}}">☎ Call us</a>
       <a class="btn sm hdr-order" href="/order">▣ Order now</a>
       <button class="burger" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="mainNav">
         <span></span><span></span><span></span>

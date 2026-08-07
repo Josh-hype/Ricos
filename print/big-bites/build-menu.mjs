@@ -12,6 +12,7 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import path from 'node:path';
+import zlib from 'node:zlib';
 
 const ROOT = path.resolve(import.meta.dirname, '../..');
 const SHOP = path.join(ROOT, 'data/shops/food-station');
@@ -74,6 +75,11 @@ const QR_TARGET = 'https://bigbiteseasingwold.co.uk';
    on a bare one — and the name-only font check could not see it. */
 const STAR = '<svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.4l2.9 6.1 6.7.9-4.9 4.6 1.2 6.6-5.9-3.2-5.9 3.2 1.2-6.6L2.4 9.4l6.7-.9z"/></svg>';
 const ARROW = '<svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M3 12h17M13 5l7 7-7 7"/></svg>';
+/* Drawn as its own path rather than the arrow above under a rotate(): a
+   transform on the glyph would be one more thing Chromium's print path can
+   resolve differently from screen, and this sheet has been bitten by that
+   twice already. */
+const ARROW_UP = '<svg class="gl" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M12 21V4M5 11l7-7 7 7"/></svg>';
 
 /* Every id this build actually places on a panel. A renamed or emptied
    category already throws; an ADDED one used to sail through — nothing
@@ -120,26 +126,104 @@ function imgSize(name) {
   return { w: b.readUInt32BE(16), h: b.readUInt32BE(20) };
 }
 
+/* Where the PICTURE is inside the canvas, which is not the same question as
+   how big the canvas is. A cutout often arrives centred in a much larger
+   transparent frame — the owner's second drink-cans file is 1024x1536 carrying
+   a 741x726 photograph — and a sheet that sizes by the canvas prints the food
+   at a third of the space it reserved for it. trim-alpha.py normally settles
+   that by cutting the empty border off, but a file the owner has asked to be
+   left alone byte for byte cannot be trimmed, so the layout has to be told
+   instead.
+
+   Pure Node: PNG scanlines are zlib, and zlib is a built-in. Only the alpha
+   channel is reconstructed — enough to find the bounding box, and it skips
+   anything that is not 8-bit with alpha rather than guessing. Cross-checked
+   against Pillow on every cutout in img/. */
+const inkCache = new Map();
+function imgInk(name) {
+  if (inkCache.has(name)) return inkCache.get(name);
+  const b = fs.readFileSync(path.join(import.meta.dirname, 'img', `${name}.png`));
+  const w = b.readUInt32BE(16), h = b.readUInt32BE(20);
+  const depth = b[24], colour = b[25], interlace = b[28];
+  const chan = colour === 6 ? 4 : colour === 4 ? 2 : 0;
+  if (depth !== 8 || !chan || interlace !== 0) return null;   // no alpha to read
+
+  const idat = [];
+  for (let p = 8; p + 8 <= b.length;) {
+    const len = b.readUInt32BE(p), type = b.toString('ascii', p + 4, p + 8);
+    if (type === 'IDAT') idat.push(b.subarray(p + 8, p + 8 + len));
+    p += 12 + len;
+    if (type === 'IEND') break;
+  }
+  const raw = zlib.inflateSync(Buffer.concat(idat));
+  const stride = w * chan;
+  const cur = Buffer.alloc(stride), prev = Buffer.alloc(stride);
+  let x0 = w, x1 = -1, y0 = h, y1 = -1, off = 0;
+  for (let y = 0; y < h; y++) {
+    const filter = raw[off++];
+    raw.copy(cur, 0, off, off + stride);
+    off += stride;
+    for (let i = 0; i < stride; i++) {
+      const a = i >= chan ? cur[i - chan] : 0, bb = prev[i], c = i >= chan ? prev[i - chan] : 0;
+      let v = cur[i];
+      if (filter === 1) v += a;
+      else if (filter === 2) v += bb;
+      else if (filter === 3) v += (a + bb) >> 1;
+      else if (filter === 4) {
+        const pp = a + bb - c, pa = Math.abs(pp - a), pb = Math.abs(pp - bb), pc = Math.abs(pp - c);
+        v += (pa <= pb && pa <= pc) ? a : pb <= pc ? bb : c;
+      }
+      cur[i] = v & 0xff;
+    }
+    for (let x = 0; x < w; x++) {
+      if (cur[x * chan + chan - 1] > 16) {
+        if (x < x0) x0 = x;
+        if (x > x1) x1 = x;
+        if (y < y0) y0 = y;
+        y1 = y;
+      }
+    }
+    cur.copy(prev);
+  }
+  const ink = x1 < 0 ? null : { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1, cw: w, chh: h };
+  inkCache.set(name, ink);
+  return ink;
+}
+
 /* Food photography, cut out of the sheet the owner supplied — see img/README.
    On the reference the photo sits at the panel's RIGHT EDGE and the price
    columns hug the item names to its left — prices are not flush right.
    `place: 'side'` does that; 'below' centres it underneath. Widths are capped
    by the source resolution; img/README records the dpi each lands at. */
 const shotDpi = [];
-function shot(name, width, place = 'side') {
+function shot(name, width, place = 'side', { ink = false, dx = 0, dy = 0, sc = 1 } = {}) {
   if (!name) return '';
   const { w, h } = imgSize(name);
-  const tall = (width * h / w).toFixed(1);
+  /* `width` is the width of the PICTURE, and with ink:true that is measured
+     rather than assumed to be the canvas. The wrapper is the size of the
+     picture and the image hangs out of it on transparent margins, so the
+     layout, the gutter, the row height and the collision gate all see the food
+     and not the empty frame around it. Used where a file may not be trimmed. */
+  const box = ink ? imgInk(name) : null;
+  if (ink && !box) throw new Error(`${name}.png carries no alpha — ink:true cannot measure it`);
+  const src = box ? box.w : w;
+  const scale = width / src;                       // mm per source pixel
+  const tall = ((box ? box.h : h) * scale).toFixed(1);
   /* Record what each placement actually resolves to, so the documented figures
      cannot drift from the sheet the way they did when the photos were
      enlarged. Below 140dpi is too soft to send anywhere. */
-  const exact = w / (width / 25.4);
+  const exact = src / (width / 25.4);
   const dpi = Math.round(exact);
-  shotDpi.push({ name, px: `${w}x${h}`, mm: width, dpi });
+  shotDpi.push({ name, px: `${src}x${box ? box.h : h}`, mm: width, dpi });
   // Test the exact value: rounding let 139.5dpi through a "140dpi floor".
   if (exact < 140) throw new Error(`${name}.png at ${width}mm is ${exact.toFixed(1)}dpi — too soft to print`);
-  return `<img class="shot ${place}" src="img/${name}.png" alt=""
-    style="width:${width}mm;--shoth:${tall}mm" />`;
+  if (!box) {
+    return `<img class="shot ${place}" src="img/${name}.png" alt=""
+    style="width:${width}mm;--shoth:${tall}mm;--dx:${dx}mm;--dy:${dy}mm;--sc:${sc}" />`;
+  }
+  return `<span class="shot ${place} inkbox" data-src="img/${name}.png"
+    style="width:${width}mm;height:${tall}mm;--shoth:${tall}mm;--dx:${dx}mm;--dy:${dy}mm;--sc:${sc}"><img src="img/${name}.png" alt=""
+    style="width:${(w * scale).toFixed(1)}mm;left:${(-box.x * scale).toFixed(1)}mm;top:${(-box.y * scale).toFixed(1)}mm" /></span>`;
 }
 
 /* The list reserves the photo's column with padding, so the price column lands
@@ -281,7 +365,7 @@ function list(id, { dense = false, cols = 1, title = null, desc = false, img = '
    prices in their own columns, with the topping line under the name — exactly
    as the designer's sheet does. Items without the option get one price and a
    dash, which is how the reference handles Tray Doner and the like. */
-function sizedList(id, optId, headings, { title = null, img = '', secondOnly = null, firstOnly = null, defaultCol = 1, tight = true, tone = ['gold', 'red'], nameTone = '', slot = 0, labels = null, chipsBelow = false } = {}) {
+function sizedList(id, optId, headings, { title = null, img = '', secondOnly = null, firstOnly = null, defaultCol = 1, tight = true, tone = ['gold', 'red'], nameTone = '', slot = 0, labels = null, chipsBelow = false, cls = '' } = {}) {
   const c = cat(id);
   const rows = c.items.map((i) => {
     const opt = (i.options || []).find((o) => o.id === optId);
@@ -317,7 +401,7 @@ function sizedList(id, optId, headings, { title = null, img = '', secondOnly = n
       </li>`;
   }).join('');
   return `
-    <section class="blk">
+    <section class="blk${cls ? ' ' + cls : ''}">
       ${chipsBelow
         ? `${header(esc(title || c.name))}
            <div class="chiprow" style="padding-right:${slotOf(img, slot).toFixed(1)}mm">${chips(labels || headings, tone)}</div>`
@@ -349,7 +433,7 @@ function milkshakes() {
             throw new Error('coolers no longer share one price — they cannot fold into a single row');
           return row('Cooler', coolers[0].price, coolers.map((i) => `${flavour(i.name)} Cooler`).join(', '), 'plain');
         })() : ''}
-      </ul>`, shot('shake', 30), 52)}
+      </ul>`, shot('shake', 30, 'side', { dx: 8.5, dy: -10.1, sc: 1.15 }), 52)}
     </section>`;
 }
 
@@ -539,8 +623,8 @@ const cover = `
       <div class="hours">${hours}</div>
       <div class="strap red website">${esc(site)}</div>
       <div class="qrwrap">
-        <div class="qrtxt"><b>SCAN<br />ME</b><span class="arrow">${ARROW}</span></div>
         <div class="qr">${qr}</div>
+        <div class="qrtxt"><span class="arrow">${ARROW_UP}</span><b>SCAN ME</b></div>
       </div>
       ${cfg.allergens?.noticeAtCheckout ? `<p class="allergy"><b>Allergies?</b> ${esc(cfg.allergens.noticeAtCheckout)}</p>` : ''}
     </div>
@@ -704,7 +788,7 @@ const html = `<!doctype html>
      reference's size (0.94x the roomy panels) and the 1.3mm that costs is
      taken out of the gaps between blocks instead — render.mjs reported a 5px
      overrun here when it was not. */
-  .panel.tight .blk { margin-bottom: 2.4mm; }
+  .panel.tight .blk { margin-bottom: 1.8mm; }
   .panel.tight .blk h3 { font-size: 10mm; margin-bottom: 0; }
   .panel.tight .hrule { margin: .4mm 0 .9mm; }
   .panel.tight .items.dense li { padding: 0; font-size: 2.95mm; }
@@ -847,20 +931,41 @@ const html = `<!doctype html>
   .shot { height: auto; display: block; filter: drop-shadow(0 1.2mm 1.8mm rgba(0,0,0,.65)); }
   /* At the panel's right edge; the list's own padding keeps the text clear. */
   /* The reference runs its photos large and lets the panel edge crop them. */
-  .shot.side { position: absolute; top: 50%; translate: 0 -50%; right: -7mm; }
+  .shot { scale: var(--sc, 1); }
+  .shot.side { position: absolute; top: calc(50% + var(--dy, 0mm)); translate: 0 -50%; right: calc(-7mm - var(--dx, 0mm)); }
   /* The reference holds its outer-face photos well clear of the fold; a crease
      through artwork sitting on the rule is a real print risk. */
-  .side-a .shot.side { right: 12mm; }
+  .side-a .shot.side { right: calc(12mm - var(--dx, 0mm)); }
   /* The reference runs its cake hard against the panel edge, which is what
      lets the Desserts prices reach the same right margin as Milk Shakes'.
      Inset 12mm like the others, the photo ate the column and the prices sat
      11mm further left than every other section on the panel. */
-  .side-a .dessertblk .shot.side { right: 2mm; }
+  .side-a .dessertblk .shot.side { right: calc(2mm - var(--dx, 0mm)); }
   /* right:30mm put this 6mm into the price column, which only read because a
      blurred shadow was propping the numerals up. Clear of them now. */
-  .shot.mid { position: absolute; top: 50%; translate: 0 -50%; right: 38mm; z-index: 0; }
+  .shot.mid { position: absolute; top: calc(50% + var(--dy, 0mm)); translate: 0 -50%; right: calc(38mm - var(--dx, 0mm)); z-index: 0; }
+  /* Same corridor, anchored to the top of the list instead of centred. The
+     corridor between the name column and the price columns is 24mm wide and
+     clear on every row but the last, where the Mixed Kebab's description
+     runs long — and a centred photo sits straight across it. */
+  .shot.midtop { position: absolute; top: var(--dy, 0mm); right: calc(38mm - var(--dx, 0mm)); z-index: 0; }
+  /* Top of the gutter a list already reserves, against the panel edge —
+     the empty right-hand side of Sides, above where the food column's
+     burger begins. */
+  .shot.topright { position: absolute; top: var(--dy, 0mm); right: calc(0mm - var(--dx, 0mm)); z-index: 0; }
+  /* A photo that is far taller than it is wide — the doner spit — cannot use
+     the .side placement: at the width its height allows it is only ~22mm
+     7mm that placement hangs past the block would clip a third of it and drop
+     the rest on the fold rule. This one sits fully inside the block instead. */
+  .shot.tall { position: absolute; top: 50%; translate: 0 -50%; right: 0; }
   .blkrow .items { position: relative; z-index: 1; }
-  .shot.below { margin: 3mm auto 0; }
+  .shot.below { margin: 3mm auto 0; position: relative; left: var(--dx, 0mm); top: var(--dy, 0mm); }
+  /* A wrapper the size of the picture, with the image hanging out of it on
+     its transparent margins. Nothing is cropped — overflow stays visible —
+     but every measurement taken of this photo, including the collision
+     gate's, is of the food rather than of the canvas around it. */
+  .inkbox { overflow: visible; }
+  .inkbox > img { position: absolute; display: block; max-width: none; }
   /* The reference sets the pizza on a gold halftone. Generated, not drawn. */
   .halftone {
     /* Out of the flow and cropped by the panel, so the list gets the whole
@@ -868,7 +973,7 @@ const html = `<!doctype html>
     /* Below the list's last price row rather than through it. The list runs to
        the foot of the panel now, so the photograph takes the corner and bleeds
        off two edges instead of sitting under the numerals. */
-    position: absolute; right: 1mm; bottom: 1mm; display: flex; justify-content: flex-end; align-items: flex-end;
+    position: absolute; right: 41.5mm; bottom: 21.6mm; display: flex; justify-content: flex-end; align-items: flex-end;
     /* Behind the prices: the reference tucks the pizza under the stuffed-crust
        line rather than over it, and white numerals on a photo are unreadable. */
     z-index: 0;
@@ -1022,7 +1127,7 @@ const html = `<!doctype html>
   .sscol {
     /* Explicit height: an <img> is a replaced element, so top+bottom alone
        leave it at its intrinsic aspect instead of stretching. */
-    position: absolute; right: -4mm; top: 106mm; height: 194mm; z-index: 0;
+    position: absolute; right: 1.6mm; top: 136.4mm; height: 194mm; z-index: 0;
     width: 62mm; display: block;
     /* The column is 2:1; filling from the top of Sides to the foot of the
        panel needs a 3:1 box, so it is cropped left/right rather than shrunk —
@@ -1174,26 +1279,42 @@ const html = `<!doctype html>
      strip, not on the strip-plus-bleed, which is what the reference does
      (5.8mm each side of its cap). Centred on the full 32mm it sat 1.4mm
      over the trim line. */
-  .spine { justify-content: space-between; padding: 6mm 3mm 6mm 0; }
-  .side-a .spine { padding-bottom: 6mm; }
-  /* NOT the condensed display face. Measured off the shipped outlines,
-     BarlowCondensed-900 gives ink/cap 0.62 over B,G,T,E,S where the
-     reference's spine averages 0.94, and its letter advance/cap is 1.14
-     against the plaques' 0.65 — it sets this wordmark in a normal-width face.
-     Montserrat-700 measures 0.87, within 7%. Tracking cannot widen a glyph,
-     only the gaps, so this needs the face change. 23.7mm gives cap 16.6mm
-     against the reference's 16.9, and .10em over nine gaps brings the run to
-     ~143mm, matching. */
+  /* The owner's 15%: both runs inset 45.5mm — 15% of the 303mm strip — from
+     the top and bottom edges, so neither runs to the cut. 6mm before.
+     At the sizes they were set in, the two runs together came to 210mm
+     against the 212mm that inset leaves, so they would have all but
+     touched in the middle; the address gives up the difference rather than
+     the wordmark, which is the brand mark and stays at full size. */
+  .spine { justify-content: space-between; padding: 45.5mm 3mm 45.5mm 0; }
+  .side-a .spine { padding-bottom: 45.5mm; }
+  /* The brand's own display face, as every plaque, the ticker straps and the
+     phone number are set in. This used to be Montserrat, chosen because the
+     ChatGPT reference's spine measured as a normal-width face — but the
+     reference is not the brand, and against the sheet's own plaques a
+     normal-width wordmark on the one edge you see folded read as a different
+     shop. PlaqueOut is the same instance the outer-face plaques use.
+     Condensed, so it needs more size and more tracking than Montserrat did to
+     hold the same run down the spine; both are set from the measurement
+     below, not by eye. */
   .spine b {
-    font-family: 'Montserrat', system-ui, sans-serif; font-weight: 700;
-    font-size: 17.6mm; letter-spacing: .10em; text-transform: uppercase;
+    font-family: 'PlaqueOut', 'Oswald', system-ui, sans-serif; font-weight: 900;
+    /* line-height 1, because in vertical writing mode the LINE BOX is what
+       runs across the strip — not the cap. Left at normal it was 23mm across a
+       21mm trimmed strip and the wordmark crossed the trim. */
+    font-size: 18mm; line-height: 1; letter-spacing: .12em; text-transform: uppercase;
   }
-  .spine span { font-size: 4.6mm; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #fff; }
+  .spine span {
+    font-family: 'PlaqueOut', 'Oswald', system-ui, sans-serif; font-weight: 900;
+    font-size: 4.2mm; letter-spacing: .12em; text-transform: uppercase; color: #fff;
+  }
 
   /* The reference sets a red disc with a handset beside the phone and one with
      a clock beside the opening times. Both are inline SVG — drawn, so they stay
      vector in the PDF and need no asset. */
   .ico { display: inline-block; vertical-align: middle; margin-right: -2mm; width: 11mm; height: 11mm; flex: none; position: relative; z-index: 1; }
+  /* The -2mm tuck slid the disc under the T of "Tel". It is kept for the clock,
+     which sits against a plaque with its own inset, and released here. */
+  .telline .ico { margin-right: 1.5mm; }
   .ico svg { display: block; width: 100%; height: 100%; }
   /* The supplied wordmark, keyed to transparency so the panel's own black and
      its faint yellow glow read through instead of a slightly-off black box.
@@ -1208,7 +1329,13 @@ const html = `<!doctype html>
   /* The display face draws well above its em box, so the number's glyphs ran over
      the line above even though the two boxes never touched. The margin is
      clearance for the overshoot, not decoration — don't trim it. */
-  .tel b { display: block; margin-top: 1.5mm; font-size: 21mm; line-height: 1; letter-spacing: .04em; color: #f8e3bf; }
+  /* The gap is set on the INK, not the boxes: measured at 300dpi it was
+     6.8mm between the bottom of "Tel : 01347" and the top of the numerals,
+     nearly all of it the half-leading inside two line boxes rather than this
+     margin. Pulled up until the ink gap reads a little under 2mm. The
+     clearance the old comment defended is still there — the display face's
+     overshoot is what the measurement is against. */
+  .tel b { display: block; margin-top: -3.4mm; font-size: 21mm; line-height: 1; letter-spacing: .04em; color: #f8e3bf; }
 
   /* The cover's straps are the same device as a section header, so they take
      the same plaque — a flat yellow bar next to a bitten one would read as an
@@ -1248,8 +1375,10 @@ const html = `<!doctype html>
   .hours span { text-align: left; }
   .hours b { color: #fff; text-align: left; }
 
-  .qrwrap { display: flex; align-items: center; justify-content: center; gap: 3mm; padding-top: 0; }
-  .qrtxt .arrow { display: block; font-size: 6mm; color: #f9b902; line-height: 1; }
+  /* Caption UNDER the code with the arrow pointing up at it — the owner's
+     arrangement. Column, so the two stack. */
+  .qrwrap { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1mm; padding-top: 0; }
+  .qrtxt .arrow { display: block; font-size: 5mm; color: #f9b902; line-height: 1; }
   /* Reserved for the pizza / basil / tomato photograph the reference floods the
      lower half of the cover with. Empty until that asset exists. */
   /* A spacer for the missing cover photograph: it absorbs slack, it must not
@@ -1291,13 +1420,65 @@ const html = `<!doctype html>
   .coverbody { position: relative; z-index: 1; }
   .qr { width: 30mm; height: 30mm; background: #fff; padding: 1.5mm; border-radius: 1.5mm; }
   .qr svg { width: 100%; height: 100%; display: block; }
-  .qrtxt { text-align: right; }
-  .qrtxt b { display: block; font-size: 4.6mm; color: #f9b902; transform: skewX(-8deg); }
+  .qrtxt { text-align: center; }
+  .qrtxt b { display: block; font-size: 4.6mm; color: #f9b902; transform: skewX(-8deg); letter-spacing: .04em; }
   .qrtxt span { font-size: 2.9mm; font-weight: 700; }
   /* The flood now runs behind this, and small type on a lit pizza crust is
      unreadable. A dark plate under it keeps the notice legible without
      covering the photograph. */
   .allergy { margin-top: auto; }
+
+  /* ================= the owner's placements =================
+     Straight from the editor export, verbatim: every offset and every scale
+     the owner set, in the millimetres they set them in. Nothing here is
+     capped, rounded or second-guessed.
+
+     They are offsets and scales, NOT changes to the flow — which is what the
+     editor previews and what the owner approved on screen. A block that moves
+     does not push its neighbours, and a block that grows does not rewrap: it
+     paints bigger from its own centre, exactly as it did in the editor. That
+     is also why nothing overflows a panel here — the layout boxes are
+     untouched.
+
+     position:relative + left/top is plain layout, not a paint-time transform,
+     so it prints where it measures. The scale property is a transform, and it
+     is used only where the owner scaled something. */
+  .dessertblk .items { position: relative; left: 0mm;    top: -1.3mm; }
+  .kidsticket        { position: relative; left: 0.3mm;  top: 0.3mm; }
+
+  .side-a .panel:nth-child(2) .blk:first-child h3 { position: relative; left: -0.3mm; top: -2.6mm; }
+  .dipcols .chips    { position: relative; left: 7.9mm;  top: -0.3mm; scale: 1.15; }
+
+  .dealsblk h3       { position: relative; left: 0mm;    top: 9mm; }
+  .deal:nth-child(1) { position: relative; left: 0.3mm;  top: 9.3mm; }
+  .deal:nth-child(2) { position: relative; left: 0mm;    top: 9.3mm; }
+  .deal:nth-child(3) { position: relative; left: 0.3mm;  top: 8.7mm; }
+  .deal:nth-child(4) { position: relative; left: 0.3mm;  top: 9mm; }
+  .deal:nth-child(5) { position: relative; left: 0.3mm;  top: 8.5mm; }
+  .deal:nth-child(6) { position: relative; left: 0.8mm;  top: 8.5mm; }
+
+  .calzblk .sizehdr  { position: relative; left: 0.3mm;  top: 1.3mm; }
+  .kebblk .sizehdr   { position: relative; left: 3.4mm;  top: 1.3mm; }
+  .kebblk .items     { position: relative; left: 0mm;    top: 0.3mm; }
+  .parmblk h3        { position: relative; left: -2.9mm; top: 0mm;   scale: 0.95; }
+  .parmblk .items    { position: relative; left: -1.9mm; top: 0mm; }
+
+  .sidesblk h3       { position: relative; left: 0.5mm;  top: 1.6mm; }
+  .drinksblk .items  { position: relative; left: 0mm;    top: -1.3mm; }
+  .pizzablk .items   { position: relative; left: 3.4mm;  top: 2.6mm;  scale: 1.05; }
+  .supp              { position: relative; top: 8.7mm; }
+  .sidesblk .items   { position: relative; left: 12.9mm; top: 9mm;   scale: 1.2; }
+  .saladblk h3       { position: relative; left: -1.3mm; top: 10.6mm; }
+  .saladblk .items   { position: relative; left: -0.3mm; top: 10.8mm; }
+
+  .cover .tel        { position: relative; left: 1.1mm;  top: 18.3mm; }
+  .cover .strap.plain{ position: relative; left: 1.1mm;  top: 17.5mm; }
+  .cover .strapline  { position: relative; left: 20.1mm; top: 18.8mm; }
+  .cover .strapline .strap { position: relative; left: 1.9mm; top: 0.5mm; }
+  .cover .fine       { position: relative; left: -0.8mm; top: 18.8mm; }
+  .cover .hours      { position: relative; left: 1.3mm;  top: 19.1mm; scale: 0.9; }
+  .strap.website     { position: relative; left: 0mm;    top: -86.3mm; scale: 1.45; }
+  .qrwrap            { position: relative; left: -1.6mm; top: 9.3mm;  scale: 1.1; }
 
   /* ---- foot ticker ---- */
   .ticker {
@@ -1324,14 +1505,14 @@ ${/* Section order and panel assignment follow the designer's artwork exactly:
       Don't reshuffle these without checking the reference sheets again. */''}
 ${page('side-a', `
   <div class="panel">
-    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, firstOnly: /\bcan\b/i, tight: false, tone: ['gold', 'gold'], labels: ['Can', 'Bottle'], img: shot('pepsi-coke', 34), slot: 44, chipsBelow: true })}
+    ${sizedList('drinks', 'size', ['CAN', 'BOTTLE'], { secondOnly: /\d+\s*ml|bottle/i, firstOnly: /\bcan\b/i, tight: false, tone: ['gold', 'gold'], cls: 'drinksblk', labels: ['Can', 'Bottle'], img: shot('new-pepsi-coke', 34, 'side', { ink: true, dx: 9.8, dy: -6.1 }), slot: 44, chipsBelow: true })}
     ${milkshakes()}
-    ${list('desserts', { desc: true, img: shot('cake', 46), slot: 52, cls: 'dessertblk norule' })}
+    ${list('desserts', { desc: true, img: shot('cake', 46, 'side', { dx: 3.2, dy: -6.6 }), slot: 52, cls: 'dessertblk norule' })}
     ${kidsBox()}
   </div>
   <div class="panel">
     ${dips()}
-    ${shot('burger-meal', 108, 'below')}
+    ${shot('hero-neww', 92, 'below', { dx: -0.5, dy: 9.3, sc: 1.5 })}
     ${deals()}
   </div>
   ${cover}
@@ -1340,21 +1521,21 @@ ${page('side-a', `
 ${page('side-b', `
   <div class="panel">
     <div class="pzcol">
-      ${sizedList('pizza', 'size', ['11"', '13"'], { tone: ['red', 'red'], nameTone: 'gold', slot: 5 })}
+      ${sizedList('pizza', 'size', ['11"', '13"'], { tone: ['red', 'red'], nameTone: 'gold', slot: 5, cls: 'pizzablk' })}
       ${stuffedCrust()}
     </div>
     <div class="halftone">${shot('pizza', 50, 'below')}</div>
   </div>
   <div class="panel tight">
     ${sizedList('garlic-bread', 'size', ['11"', '13"'], { tone: ['red', 'red'], slot: 14 })}
-    ${list('calzone', { dense: true, desc: true, img: shot('calzone', 46, 'mid'), slot: 14, chip: '11"' })}
-    ${sizedList('kebab', 'size', ['MEDIUM', 'LARGE'], { title: 'Kebabs', img: shot('kebab', 42, 'mid'), slot: 4 })}
-    ${list('parmesan', { dense: true, desc: true, slot: 48 })}
-    ${list('wraps', { dense: true, desc: true, img: shot('wrap', 46), slot: 48, title: 'Wrap' })}
+    ${list('calzone', { dense: true, desc: true, img: shot('calzone', 40, 'mid', { dx: 13.5, dy: 1.6 }), slot: 0, chip: '11"', cls: 'calzblk' })}
+    ${sizedList('kebab', 'size', ['MEDIUM', 'LARGE'], { title: 'Kebabs', img: shot('doner-pit', 15, 'midtop', { dx: -6.6, dy: 2.6, sc: 1.1 }), slot: 0, cls: 'kebblk' })}
+    ${list('parmesan', { dense: true, desc: true, img: shot('parmasan', 44, 'side', { dx: -4.5, dy: 0, sc: 0.95 }), slot: 48, cls: 'parmblk' })}
+    ${list('wraps', { dense: true, desc: true, img: shot('wrap', 46, 'side', { dx: -5.3, dy: 2.4, sc: 0.95 }), slot: 48, title: 'Wrap' })}
   </div>
   <div class="panel">
     ${sizedList('burgers', 'size', ['1/4 lb', '1/2 lb'], { slot: 12, firstOnly: /(¼|1\/4)\s*lb/i, secondOnly: /(½|1\/2)\s*lb/i, defaultCol: null })}
-    ${list('sides', { dense: true, title: 'Sides', slot: 56 })}
+    ${list('sides', { dense: true, title: 'Sides', slot: 56, cls: 'sidesblk', img: shot('hallumi', 36, 'topright', { dx: 2.9, dy: -16.3, sc: 1.3 }) })}
     ${list('salad', { dense: true, desc: true, slot: 56, cls: 'saladblk' })}
     ${sidesSaladColumn()}
   </div>
