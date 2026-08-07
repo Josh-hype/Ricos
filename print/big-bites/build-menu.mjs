@@ -1442,7 +1442,7 @@ ${page('side-a', `
   </div>
   <div class="panel">
     ${dips()}
-    ${shot('hero', 108, 'below')}
+    ${shot('hero-neww', 92, 'below')}
     ${deals()}
   </div>
   ${cover}

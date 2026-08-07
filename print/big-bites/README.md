@@ -150,6 +150,13 @@ the two shipped defects scores **0.77%** (the gash) and **6.02%** (the flat
 tops), which is what the 0.3% threshold is set against — 1%, the obvious round
 number, would have passed the gash.
 
+The photograph between Dips and Meal Deals is **`hero-neww.png`**, which is a
+full rectangular photograph rather than a cutout — it has no alpha channel at
+all, so it sits on the panel as a picture with edges rather than as food
+floating on black. It is placed at 92mm, not the 108mm the cutout before it
+used: at 108mm it stands 72mm tall and overruns the panel by 10mm, because a
+4:3 photograph is far deeper than the 2:1 lockup it replaced.
+
 `sides-salad.png` is back on the inner right panel, at the width and position
 it had before. `burger-meal.png` and `kebab.png` are **off the sheet** on the
 owner's instruction, and stay in `img/` cut and keyed.
