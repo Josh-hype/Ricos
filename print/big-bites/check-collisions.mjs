@@ -76,12 +76,18 @@ const hits = await p.evaluate(() => {
     /* The pizza shot is positioned to be cropped by the panel edge on purpose,
        so "escaping its section" is the intent, not a fault. */
     if (img.closest('.halftone')) return;
-    /* Hand-placed photographs are meant to leave their section — that is what
-       placing them means. Their text-overlap check above still runs. */
-    if (img.classList.contains('placed')) return;
     const blk = img.closest('.blk') || img.closest('.panel'); if (!blk) return;
     const ir = img.getBoundingClientRect(), br = blk.getBoundingClientRect();
-    if (ir.top < br.top - 1 || ir.bottom > br.bottom + 1) hits.push(`${(img.getAttribute('src') || img.dataset.src)} escapes its section by ${Math.round(Math.max(br.top - ir.top, ir.bottom - br.bottom))}px`);
+    /* A photograph the owner has placed by hand is MEANT to leave its section
+       — that is what placing it means. But the allowance is bounded by the
+       offset it was actually given, not waived: a blanket exemption would have
+       stopped this catching a photo that had run away for some other reason,
+       which is the whole job of this check. */
+    const MM = 96 / 25.4;
+    const dy = Math.abs(parseFloat(getComputedStyle(img).getPropertyValue('--dy')) || 0) * MM;
+    const slack = dy + 3 * MM;
+    const out = Math.max(br.top - ir.top, ir.bottom - br.bottom);
+    if (out > slack) hits.push(`${(img.getAttribute('src') || img.dataset.src)} escapes its section by ${Math.round(out)}px, which is ${Math.round(out - slack)}px more than the ${Math.round(dy / MM)}mm it was placed by`);
   });
   return hits;
 });
