@@ -180,7 +180,11 @@
   },
   "_comment_closures": "One-off emergency closures. Each \"YYYY-MM-DD\" (shop-local) takes online ordering OFFLINE for that whole day and shows a popup with the message. Self-expires once the date passes (a past date is ignored). Empty means no closure in effect; add an entry when a day needs to be taken offline.",
   "closures": {
-    "_comment": "OPEN — trading to the regular hours above. Big Bites reopened after the rebrand on 2026-08-07 and the indefinite \"*\" closure was removed then. Add a \"YYYY-MM-DD\" entry with { title, message } to close a single day, or a \"*\" entry to close online ordering until further notice: /api/order rejects, no slots are offered, and the order page shows the popup + banner with that message."
+    "_comment": "CLOSED — the \"*\" key closes online ordering until further notice: /api/order rejects with this message, listSlots() offers no slots, and the order page shows the popup + banner and disables checkout. Big Bites did not open on 2026-08-07 as planned. It is INDEFINITE on purpose rather than dated to one day: a dated entry expires by itself and would have put the shop back on sale the next morning whether or not anyone was ready to cook. TO REOPEN: delete the \"*\" entry (leave \"closures\": {}) and push to main.",
+    "*": {
+      "title": "We\u2019re opening soon!",
+      "message": "We\u2019re not taking orders just yet \u2014 we\u2019re opening very soon. Thanks for your patience, and see you shortly!"
+    }
   },
   "ordering": {
     "timezone": "Europe/London",
