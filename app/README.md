@@ -1,18 +1,29 @@
-# LumiPOS — Sunmi T2 app (Capacitor)
+# LumiPOS — the Android app (Capacitor)
 
 A thin native Android wrapper around the existing web staff EPOS. **One APK for
-all shops**, provisioned per device. Self-contained: nothing here affects the web
-build or the live sites (the Cloudflare build only ever looks at `public/`).
+every shop AND both devices**, provisioned per device. Self-contained: nothing
+here affects the web build or the live sites (the Cloudflare build only ever
+looks at `public/`).
 
-> **Status: scaffold.** Builds toward a real APK but isn't a finished/signed one —
-> that needs the Android SDK + a physical T2. See `docs/PHASE2_APP.md` for the full
-> picture, decisions, and the open cross-origin-auth question.
+**Two devices run this same APK** — see `docs/PRODUCTS.md`:
+- **Sunmi T2** — the full LumiPOS till (printer + cash drawer + counter sales).
+- **ZCS Z93** — the small unit a **LumiWEB** shop gets: built-in 80mm printer,
+  no drawer, used to receive and print online orders.
+
+The printer backend is chosen **at runtime, per call**, so there is no
+per-device build. Don't fork the APK.
+
+> **Status: LIVE.** Running on a real Sunmi T2s and on a Z93, taking orders, and
+> **fully on OTA** — a push to `main` touching `templates/staff/**` or
+> `app/web/**` republishes the bundle to every till. The one outstanding APK item
+> is **signing** (the Z93 is on a debug build — `docs/TODO.md`). Background and
+> decisions: `docs/PHASE2_APP.md`; live state: `docs/SESSION_HANDOFF.md`.
 
 ## Prerequisites (on your Mac)
 - Node 18+ and the repo root deps (you already have these).
 - **Android Studio** (gives you the Android SDK, platform-tools, an emulator).
 - A JDK 17+ (Android Studio bundles one).
-- The Sunmi T2 in developer mode (USB debugging) to install/test on-device.
+- The device (T2 or Z93) in developer mode (USB debugging) to install/test on-device.
 
 ## First build
 ```bash
@@ -60,9 +71,12 @@ every request is routed to that backend. Re-provision by clearing app storage.
 - ✅ Token auth — bundled mode talks to the shop backend; the web is unchanged. The
   bearer token + base URL live in `@capacitor/preferences` (off localStorage), loaded
   in an async bootstrap that every shimmed request awaits.
-- ✅ `printReceipt` / `kickDrawer` wired to the Sunmi inner-printer service (drawer via
-  the ESC/POS `sendRAWData` pulse). **Needs the `com.sunmi:printerlibrary` Gradle dep
-  (README step 3) and an on-device smoke-test** — can't be verified in the cloud build.
+- ✅ `printDoc` / `printReceipt` wired to **both** printer backends — the Sunmi
+  inner-printer service (T2) and the bundled ZCS SmartPos SDK (Z93) — picked per
+  call. `kickDrawer` is the ESC/POS `sendRAWData` pulse and is **Sunmi-only**; on a
+  Z93 it returns `drawer-not-connected`, which is correct (no drawer port).
+  Both SDKs are wired in automatically by `app/scripts/inject-native.mjs`.
+  Printer changes can't be verified in the cloud build — smoke-test on-device.
 - ⏳ `collectCardPayment` is still a stub — Stripe Terminal is scoped in
   `docs/PHASE3_TERMINAL.md` (reader decision pending).
 - ⏳ Live-update channel + wiring the Sale flow to the bridge — see `docs/PHASE2_APP.md`.

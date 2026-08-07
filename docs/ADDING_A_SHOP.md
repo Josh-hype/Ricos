@@ -8,6 +8,19 @@ by a `SHOP_SLUG` (lowercase, dashes only) and lives entirely under
 This document is the step-by-step checklist for onboarding a new shop
 end-to-end, from gathering info to going live.
 
+## 0. First — which product are they buying?
+
+Steps 1–5 are **identical for both products**; only step 6 (the device) and
+what you bill them differ. See `docs/PRODUCTS.md`.
+
+| | **LumiPOS** (~£35/wk) | **LumiWEB** (£19/wk) |
+|---|---|---|
+| They get | The full till — counter sales, cash drawer, Z report | The website + web back office only |
+| Hardware | **Sunmi T2** (big dual-screen all-in-one) | **ZCS Z93** (small unit, built-in 80mm printer, no drawer) |
+
+Nothing in the codebase branches on this — same folder, same build, same
+Cloudflare project either way.
+
 ---
 
 ## 1. Collect this info from the shop owner
@@ -238,6 +251,32 @@ Walk through end-to-end on the new domain:
 Once green, give the shop their staff password and a setup guide for
 their kitchen screen (any web browser at `<shop-domain>/staff` works —
 Smart TV, tablet, laptop with HDMI to a monitor, etc.).
+
+---
+
+## 6. Provision their device (LumiPOS T2 **or** LumiWEB Z93)
+
+Both devices run the **same APK** and provision the same way — see
+`docs/PRODUCTS.md`.
+
+1. **Pick a 6-digit Restaurant ID** and add it to the `DIRECTORY` in
+   **`app/web/provision.js`**, pointing at the shop's **reachable custom
+   domain**:
+   ```js
+   '<6 digits>': 'https://<shop-domain>',
+   ```
+   ⚠️ Never a `*.pages.dev` host — they're firewalled on this Cloudflare
+   setup and return 403 ("Host not in allowlist"). ⚠️ This is **shared code**
+   under `app/web/`, so pushing it to `main` also triggers an **OTA publish to
+   every live device**. That's fine (the directory is additive), but it is a
+   fleet deploy — don't bundle it with anything untested.
+2. Set **`TILL_SETUP_PASSWORD`** in the shop's Cloudflare project (see the
+   secrets list above). Without it the ID route is disabled and only the
+   "use a site address instead" fallback works.
+3. On the device: open **LumiPOS → "Set up this till"** → enter the Restaurant
+   ID + that password. Re-provision by clearing app storage.
+4. Log in with the staff PIN and **print a test ticket** — that's the only way
+   to confirm the printer backend bound (Sunmi on a T2, ZCS on a Z93).
 
 ---
 

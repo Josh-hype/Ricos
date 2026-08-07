@@ -1,5 +1,11 @@
 # Session handoff — read me first to resume
 
+> **What we sell and on what hardware: `docs/PRODUCTS.md`.** Short version —
+> **LumiPOS** = the full till on a **Sunmi T2**; **LumiWEB** = website only with a
+> small **ZCS Z93** (built-in 80mm printer, no drawer) on the counter. One APK
+> serves both; the printer backend is picked at runtime. Anything below that says
+> "the Sunmi T2 app" means that one APK.
+
 ## ⚡ LIVE STATE — Sunmi T2s app + OTA (resume here; updated 2026-06-02 pm)
 **LumiPOS is RUNNING on a real Sunmi T2s, taking orders, AND fully on OTA.** Bundled universal
 app: WebView loads the bundled staff UI; `app/web/native.js` rewrites relative `/api/...` to the

@@ -144,6 +144,23 @@ Walk through on the live URL with a real card (you'll refund after):
       order with "Save card" ticked, sign back in on a fresh browser,
       confirm the saved card appears as a tile
 
+## Phase 8b — Their device (LumiPOS Sunmi T2 / LumiWEB ZCS Z93)
+
+Same APK and same steps for both — `docs/PRODUCTS.md` says which they get.
+Skip only if the shop is website-only *and* isn't taking a Z93.
+
+- [ ] Pick a **6-digit Restaurant ID** and add it to `DIRECTORY` in
+      **`app/web/provision.js`** → the shop's **custom domain** (never a
+      `*.pages.dev` — 403). This is shared `app/web/` code, so merging it to
+      `main` **OTA-publishes to every live device** — treat it as a fleet deploy.
+- [ ] `TILL_SETUP_PASSWORD` set on the Pages project (Phase 5) — without it the
+      ID route is off and only the "site address" fallback works
+- [ ] On the device: **LumiPOS → Set up this till** → Restaurant ID + password
+- [ ] Log in with the staff PIN and **print a test ticket** — the only proof the
+      printer bound (Sunmi backend on a T2, ZCS backend on a Z93)
+- [ ] T2 only: **kick the cash drawer** (a Z93 has no drawer and correctly
+      reports `drawer-not-connected`)
+
 ## Phase 9 — Hand off to the shop
 
 - [ ] Give the shop's manager the staff PIN

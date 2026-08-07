@@ -5,16 +5,43 @@ the project is set up. Don't invent a different structure — if something here
 seems wrong, ask before changing the architecture.
 
 This repo (`Josh-hype/Ricos`) is **one multi-tenant codebase** that powers
-**multiple restaurant websites** from a single source. Today it runs two live
-shops, with a third scaffolded (pre-launch):
+**multiple restaurant websites** from a single source:
 
 - **Rico's Peri Peri** — York (slug `ricos`) — live
-- **Food Station** — Easingwold (slug `food-station`) — live
+- **Big Bites** — Easingwold (slug **`food-station`**) — live. ⚠️ The shop
+  rebranded from "Food Station" to "Big Bites"; **the slug did not change**, so
+  the folder, the Cloudflare project and `SHOP_SLUG` are all still
+  `food-station`. Don't rename it.
+- **Mega Chippy** — Acomb, York (slug `mega-chippy`) — live, **LumiWEB** (see below)
+- **One Sip** — (slug `one-sip`) — live, till-only: no website, no online ordering
 - **The Grub Hub** — York (slug `grub-hub`) — pre-launch: collection-only, and
   its `stripe.connectedAccountId` + `business` legal fields are still
   placeholders (the build warns loudly; card payments are off until they're set).
 
 More shops are added the same way (see "Adding a new shop").
+`data/platform/registry.json` is the commercial source of truth (Connect
+accounts, who's live, what each pays).
+
+---
+
+## Two products, two devices — read `docs/PRODUCTS.md`
+
+Don't guess at this, and don't call every device "the till":
+
+- **LumiPOS** = the **full EPOS**, running on a **Sunmi T2** (big dual-screen
+  all-in-one: printer, cash drawer, counter sales). ~£35/wk.
+- **LumiWEB** = **website only** (online ordering + web back office), with a
+  small **ZCS Z93** on the counter — a compact Android unit with a built-in
+  80mm printer and no drawer — so staff see and print online orders. **£19/wk.**
+
+**One APK (`uk.co.ricos.epos`, launcher name "LumiPOS") serves both devices**;
+the printer backend is picked at **runtime, per call** — Sunmi's woyou service
+first, then the bundled ZCS SmartPos SDK. Same codebase, same build, same
+Cloudflare setup for both products: the difference is commercial and physical,
+not architectural, so there is no product flag in `config.json` to branch on.
+
+Full detail — device specs, the ID→host provisioning directory, who's on what,
+and where each subsystem is documented — is in **`docs/PRODUCTS.md`**.
 
 ---
 

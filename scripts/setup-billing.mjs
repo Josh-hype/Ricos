@@ -43,12 +43,24 @@ const CATALOGUE = {
   // Food Station's agreed all-in weekly rate — a single combined line (£19),
   // not the itemised software+hardware breakdown, so it needs its own Price.
   fsWeekly: { name: 'LumiPOS Weekly (Food Station)', amountP: 1900, lookup: 'lumipos_food_station_weekly' },
+  // LumiWEB = website + web back office only (the shop gets a small ZCS Z93 to
+  // print online orders, not a full T2 till) — see docs/PRODUCTS.md. £19/wk is
+  // the standard rate for it. Kept as its OWN Price rather than reusing
+  // fsWeekly: same amount today, different product, prices move independently.
+  lumiweb:  { name: 'LumiWEB Weekly',                amountP: 1900, lookup: 'lumiweb_weekly' },
 };
 
 // ── Who pays for what. Name/email/domain default from the shop's config.json. ──
+// Add a shop here when its rate is agreed AND it's ready to sign a Direct Debit
+// mandate — the script prints a setup link for anything listed without an active
+// subscription. Deliberately not read from data/platform/registry.json: that
+// records what a shop should pay, this is the act of asking for it.
 const SHOPS = [
-  { slug: 'ricos',        items: ['software', 'hardware', 'terminal'] }, // £35/wk
-  { slug: 'food-station', items: ['fsWeekly'] },                         // £19/wk (agreed all-in rate)
+  { slug: 'ricos',        items: ['software', 'hardware', 'terminal'] }, // £35/wk  LumiPOS
+  { slug: 'food-station', items: ['fsWeekly'] },                         // £19/wk  LumiPOS (agreed all-in rate)
+  // { slug: 'mega-chippy', items: ['lumiweb'] },                        // £19/wk  LumiWEB — registry still shows
+  //                                                                     //         subscription "pending"; uncomment
+  //                                                                     //         to mint their mandate link.
 ];
 
 const STRIPE_BASE = 'https://api.stripe.com/v1';

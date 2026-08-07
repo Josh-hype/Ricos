@@ -1,4 +1,7 @@
-# LumiPOS subscription billing (charging the shops)
+# Subscription billing (charging the shops)
+
+> Covers **both products** — LumiPOS (full till, Sunmi T2) and LumiWEB (website
+> only, ZCS Z93). What each one *is*: `docs/PRODUCTS.md`.
 
 This is the **platform's** revenue — Lumin Labs charging each shop a fixed
 **weekly** fee. It is completely separate from the customer-facing ordering flow
@@ -9,18 +12,29 @@ and a one-time Direct Debit mandate link.
 
 ## What each shop pays (weekly)
 
-| Item                | Price/wk | Rico's | Food Station |
-|---------------------|---------:|:------:|:------------:|
-| LumiPOS Software    |   £10    |   ✓    |      –       |
-| LumiPOS Till Hardware | £15    |   ✓    |      –       |
-| LumiPOS Card Terminal | £10    |   ✓    |      –       |
-| LumiPOS Weekly (Food Station, all-in) | £19 | – | ✓ |
-| **Total**           |          | **£35**| **£19**      |
+| Item                | Price/wk | Rico's | Big Bites (`food-station`) | Mega Chippy |
+|---------------------|---------:|:------:|:--------------------------:|:-----------:|
+| LumiPOS Software    |   £10    |   ✓    |      –       | – |
+| LumiPOS Till Hardware | £15    |   ✓    |      –       | – |
+| LumiPOS Card Terminal | £10    |   ✓    |      –       | – |
+| LumiPOS Weekly (Food Station, all-in) | £19 | – | ✓ | – |
+| **LumiWEB Weekly** (website only) | **£19** | – | – | ✓ |
+| **Total**           |          | **£35**| **£19**      | **£19** |
 
 Amounts live in `scripts/setup-billing.mjs` (`CATALOGUE`, in pence) — the source
-of truth. Rico's is billed as three itemised Prices; **Food Station is on a single
-agreed all-in £19/wk Price** (`lumipos_food_station_weekly`), so it isn't the
-software+hardware breakdown.
+of truth. Rico's is billed as three itemised Prices; **Big Bites is on a single
+agreed all-in £19/wk LumiPOS Price** (`lumipos_food_station_weekly`), so it isn't
+the software+hardware breakdown.
+
+**LumiWEB is the standard £19/wk website-only rate** (`lumiweb_weekly`) — a
+*separate* Price from Big Bites' all-in line even though both happen to be £19,
+because they are different products and their prices move independently. Every
+LumiWEB shop goes on `lumiweb_weekly`.
+
+`SHOPS` in the script is who gets billed; add a shop there when its rate is
+agreed and it's ready to sign a mandate. It's deliberately **not** auto-derived
+from `data/platform/registry.json` — the registry records what a shop *should*
+pay, this script is the act of asking them to pay it.
 
 ## One-time prerequisite
 
