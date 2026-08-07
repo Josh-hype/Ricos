@@ -114,6 +114,15 @@ export const onRequestGet = async ({ request, env }) => {
   // derived as the exact remainder of takings.
   const eatInCount = takings.filter(o => /^(counter|link)-eatin$/.test(o.source || '')).length;
   const takeawayCount = takings.filter(o => /^(counter|link)-takeaway$/.test(o.source || '')).length;
+  /* Counter walk-ins. Every non-delivery sale is stored with fulfillment
+     'collection' (see _lib/counter-totals.js), so a walk-in served over the
+     counter is indistinguishable from a collection the customer came back for
+     unless the sale mode in o.source is read — which is why the back office
+     reported one "Collection" figure covering both. Same additive shape as the
+     dine-in split above: `collection` below is untouched, walk-ins are a SUBSET
+     of it, and any order predating the sale modes has no source and simply
+     counts as collection, as it always did. */
+  const walkInCount = takings.filter(o => /^(counter|link)-walkin$/.test(o.source || '')).length;
 
   const summary = {
     from,
@@ -142,6 +151,9 @@ export const onRequestGet = async ({ request, env }) => {
     },
     collection: takings.filter(o => o.fulfillment === 'collection').length,
     delivery: takings.filter(o => o.fulfillment === 'delivery').length,
+    // A SUBSET of `collection`, never a sibling of it — anything adding
+    // walkIn + collection + delivery would double-count the walk-ins.
+    walkIn: walkInCount,
     // Hospitality split (coffee shops / restaurants). Eat-in and takeaway sales
     // both carry fulfillment 'collection', so the two counts above can't tell them
     // apart — a dine-in venue would otherwise see its whole day filed under
