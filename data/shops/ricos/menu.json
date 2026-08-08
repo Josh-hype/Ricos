@@ -297,6 +297,11 @@
             "whenMeal": true
           }
         ]
+      },
+      {
+        "id": "chicken-chips",
+        "name": "Chicken and Chips",
+        "priceP": 895
       }
     ]
   },

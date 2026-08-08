@@ -392,6 +392,13 @@
             ]
           }
         ]
+      },
+      {
+        "id": "chicken-chips",
+        "name": "Chicken and Chips",
+        "price": 8.95,
+        "desc": "Char-grilled peri chicken with chips, in your spice.",
+        "spicy": true
       }
     ]
   },
