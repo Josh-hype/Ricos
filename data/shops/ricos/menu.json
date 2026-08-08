@@ -301,7 +301,22 @@
       {
         "id": "chicken-chips",
         "name": "Chicken and Chips",
-        "priceP": 895
+        "priceP": 895,
+        "mealAddP": 0,
+        "mealChoose": [
+          {
+            "label": "Drink",
+            "count": 1,
+            "category": "drinks",
+            "exclude": [
+              "btl-pepsi",
+              "btl-coke",
+              "btl-diet",
+              "btl-tango",
+              "btl-7up"
+            ]
+          }
+        ]
       }
     ]
   },

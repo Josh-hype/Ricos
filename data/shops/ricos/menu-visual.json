@@ -397,8 +397,27 @@
         "id": "chicken-chips",
         "name": "Chicken and Chips",
         "price": 8.95,
-        "desc": "Char-grilled peri chicken with chips, in your spice.",
-        "spicy": true
+        "desc": "Char-grilled peri chicken with chips, in your spice. Comes with a drink.",
+        "spicy": true,
+        "meal": {
+          "label": "Includes a drink",
+          "addPrice": 0,
+          "forced": true,
+          "choose": [
+            {
+              "label": "Drink",
+              "count": 1,
+              "category": "drinks",
+              "exclude": [
+                "btl-pepsi",
+                "btl-coke",
+                "btl-diet",
+                "btl-tango",
+                "btl-7up"
+              ]
+            }
+          ]
+        }
       }
     ]
   },

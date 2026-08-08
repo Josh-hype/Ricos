@@ -5557,9 +5557,12 @@ function openItemDetail(id) {
     if (mod.priceDeltaPBySize && active && mod.priceDeltaPBySize[active] != null) return mod.priceDeltaPBySize[active];
     return mod.priceDeltaP || 0;
   }
+  // A forced meal is always on — there is no toggle to read (see itemDetailHTML).
+  const forcedMeal = !!(v.meal && v.meal.forced);
+  const isMealOn = () => forcedMeal || !!(mealInput && mealInput.checked);
   function recalc() {
     let p = canonical.priceP || 0;
-    if (mealInput && mealInput.checked && canonical.mealAddP) p += canonical.mealAddP;
+    if (isMealOn() && canonical.mealAddP) p += canonical.mealAddP;
     const active = activeSize();
     optModIds(body).forEach(id => { p += modDeltaP(canonical.modifiers?.find(m => m.id === id), active); });
     // Multi-select checkboxes: selected highlight + size-aware +£ label.
@@ -5698,7 +5701,7 @@ function openItemDetail(id) {
     });
     if (optionErr) return;
     // When the meal has side/drink pickers, require every one to be chosen.
-    const isMeal = mealInput ? mealInput.checked : false;
+    const isMeal = isMealOn();
     let mealChoices = [];
     if (isMeal && mealChoicesEl) {
       const selects = [...mealChoicesEl.querySelectorAll('select')];
@@ -5741,16 +5744,27 @@ function itemDetailHTML(v, canonical) {
   const options = groups.length
     ? `<div class="item-section">${groups.map(g => optionGroupHTML(g, canonical)).join('')}</div>`
     : '';
+  // A "forced" meal (visual meal.forced) is one whose choices ARE the item — the
+  // included drink on Rico's Chicken and Chips, Mega Chippy's specials. There is
+  // nothing to opt into, so the toggle would be wrong (leave it unticked and the
+  // line records no meal and no choices at all). Drop it and show the pickers
+  // straight away, exactly as the website does.
+  const forcedMeal = !!(v.meal && v.meal.forced);
+  // May come back empty on a self-serve-drinks till, which drops the drink slot
+  // — then a forced meal has nothing to ask, and only the label is worth showing.
+  const mealChoices = v.meal && v.meal.choose ? mealChooseHTML(v.meal.choose) : '';
   const meal = v.meal
     ? `<div class="item-section">
-         <label class="meal-toggle">
-           <input type="checkbox" />
-           <span>${escapeHtml(v.meal.label || 'Make it a meal')}</span>
-           <span class="meal-add">+£${((canonical?.mealAddP || 0) / 100).toFixed(2)}</span>
-         </label>
-         ${v.meal.choose
-            ? `<div class="meal-choices" id="mealChoices" style="display:none">
-                 ${mealChooseHTML(v.meal.choose)}
+         ${forcedMeal
+            ? `<div class="sec-label">${escapeHtml(v.meal.label || 'Included')}</div>`
+            : `<label class="meal-toggle">
+                 <input type="checkbox" />
+                 <span>${escapeHtml(v.meal.label || 'Make it a meal')}</span>
+                 <span class="meal-add">+£${((canonical?.mealAddP || 0) / 100).toFixed(2)}</span>
+               </label>`}
+         ${mealChoices
+            ? `<div class="meal-choices" id="mealChoices"${forcedMeal ? '' : ' style="display:none"'}>
+                 ${mealChoices}
                  <div class="opt-required-err" id="mealChoiceErr" aria-live="polite"></div>
                </div>`
             : ''}
