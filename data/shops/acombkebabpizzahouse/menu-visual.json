@@ -1,0 +1,29 @@
+[
+  {
+    "id": "mains",
+    "name": "Mains",
+    "icon": "🍔",
+    "items": [
+      { "id": "main-1", "name": "First Item",  "price": 8.00, "desc": "Short description shown under the name on the menu page." },
+      { "id": "main-2", "name": "Second Item", "price": 9.50, "desc": "Another description.", "meal": { "label": "+ side & drink", "addPrice": 3.00 } }
+    ]
+  },
+  {
+    "id": "sides",
+    "name": "Sides",
+    "icon": "🍟",
+    "items": [
+      { "id": "side-chips", "name": "Chips",   "price": 3.50, "desc": "Chunky cut, lightly salted." },
+      { "id": "side-slaw",  "name": "Coleslaw","price": 2.50, "desc": "Fresh, made daily." }
+    ]
+  },
+  {
+    "id": "drinks",
+    "name": "Drinks",
+    "icon": "🥤",
+    "items": [
+      { "id": "drink-coke",  "name": "Can of Coke",    "price": 1.90 },
+      { "id": "drink-water", "name": "Bottle of Water","price": 1.50 }
+    ]
+  }
+]

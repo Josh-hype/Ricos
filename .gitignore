@@ -40,3 +40,7 @@ public/**/*.inline*.js
 
 # NOT generated — these static files are served as-is and stay tracked:
 #   public/_redirects
+
+# design-loop working files (screenshots, fetched webfonts)
+tools/design-loop/runs/
+tools/design-loop/.cache/

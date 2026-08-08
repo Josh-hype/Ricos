@@ -1,0 +1,26 @@
+[
+  {
+    "id": "mains",
+    "name": "Mains",
+    "items": [
+      { "id": "main-1", "name": "First Item",  "priceP": 800 },
+      { "id": "main-2", "name": "Second Item", "priceP": 950, "mealAddP": 300 }
+    ]
+  },
+  {
+    "id": "sides",
+    "name": "Sides",
+    "items": [
+      { "id": "side-chips", "name": "Chips",  "priceP": 350 },
+      { "id": "side-slaw",  "name": "Coleslaw","priceP": 250 }
+    ]
+  },
+  {
+    "id": "drinks",
+    "name": "Drinks",
+    "items": [
+      { "id": "drink-coke",  "name": "Can of Coke", "priceP": 190 },
+      { "id": "drink-water", "name": "Bottle of Water", "priceP": 150 }
+    ]
+  }
+]
