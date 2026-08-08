@@ -160,3 +160,62 @@ test('control characters are stripped from notes, spice and custom names', () =>
   }, config, { allowCustom: true });
   assert.ok(!hasCtl(c.lines[0].name), 'custom name stripped');
 });
+
+/* ---- autoOnlineDiscount minimum spend (promo.autoOnlineDiscount.minSubtotalPence) ----
+   Acomb Pizza & Kebab runs "10% off online orders over £12", so the standing
+   discount had to grow an optional floor. The fixture config has no
+   minSubtotalPence, so these build one on top of it — which also proves the
+   default (absent ⇒ no floor) is what every other shop still gets, since the
+   tests above pass unchanged. */
+const withMin = (minSubtotalPence) => ({
+  ...config,
+  promo: { ...config.promo, autoOnlineDiscount: { ...config.promo.autoOnlineDiscount, minSubtotalPence } },
+});
+const subtotalOf = (qty, cfg) =>
+  computeTotals({ items: [{ id: 'burger', qty }], fulfillment: 'collection' }, cfg);
+
+test('minSubtotalPence: the discount is withheld below the floor and applied at it', () => {
+  // burger is 800p, so qty 1 = 800 (below a 1200 floor) and qty 2 = 1600 (above).
+  const below = subtotalOf(1, withMin(1200));
+  assert.equal(below.subtotalP, 800);
+  assert.equal(below.discountP, 0);
+  assert.equal(below.discountLabel, null, 'no label when nothing was discounted');
+
+  const above = subtotalOf(2, withMin(1200));
+  assert.equal(above.subtotalP, 1600);
+  assert.equal(above.discountP, 160);
+});
+
+test('minSubtotalPence is inclusive: a subtotal exactly on the floor qualifies', () => {
+  // Exactly 1600 against a 1600 floor — the boundary a ">" would silently fail,
+  // and the one a customer hits when they build a basket to the advertised
+  // number on the nose.
+  const t = subtotalOf(2, withMin(1600));
+  assert.equal(t.subtotalP, 1600);
+  assert.equal(t.discountP, 160);
+});
+
+test('minSubtotalPence is tested on the subtotal, not the total (fees do not lift a basket over)', () => {
+  // Floor 850 against an 800 subtotal: below on the subtotal, ABOVE once the
+  // 100p service fee is added. The customer is promised a discount against the
+  // menu prices, so the fee must not drag a sub-floor basket into the offer.
+  const t = subtotalOf(1, withMin(850));
+  assert.equal(t.subtotalP, 800);
+  assert.ok(t.subtotalP + t.serviceFeeP > 850, 'the fee alone would clear the floor');
+  assert.equal(t.discountP, 0);
+});
+
+test('minSubtotalPence absent or zero keeps the discount unconditional', () => {
+  for (const cfg of [config, withMin(0)]) {
+    const t = subtotalOf(1, cfg);
+    assert.equal(t.subtotalP, 800);
+    assert.equal(t.discountP, 80);
+  }
+});
+
+test('a counter sale never gets the discount, floor or no floor', () => {
+  const t = computeTotals({ items: [{ id: 'burger', qty: 4 }], fulfillment: 'collection' },
+    withMin(1200), { suppressPromo: true });
+  assert.equal(t.subtotalP, 3200);
+  assert.equal(t.discountP, 0);
+});

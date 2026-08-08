@@ -134,12 +134,13 @@
     },
     "lastOrderBeforeCloseMinutes": 30
   },
-  "_comment_promo": "Optional online discounts, both disabled by default — enable ONLY the one this shop actually runs. (1) autoOnlineDiscount: `percent`% off EVERY online order's subtotal, for everyone; shows in the cart, the SEO meta description and the terms page. (2) firstOrders: a signed-in customer gets `percent`% off their first `limit` orders — a welcome offer that rewards sign-ups. It's enforced server-side against the account (guests never qualify), only spends a redemption once the order is actually placed/paid, and takes precedence over autoOnlineDiscount (they don't stack). A matching banner shows on the landing page when it's on.",
+  "_comment_promo": "Standing offer agreed with the owner: 10% off EVERY online order with a subtotal of £12 or more (not a first-order welcome offer). minSubtotalPence is tested on the SUBTOTAL, before service fee and delivery. firstOrders stays off — the two do not stack and firstOrders would take precedence.",
   "promo": {
     "autoOnlineDiscount": {
-      "enabled": false,
-      "label": "10% off online orders",
-      "percent": 10
+      "enabled": true,
+      "label": "10% off online orders over £12",
+      "percent": 10,
+      "minSubtotalPence": 1200
     },
     "firstOrders": {
       "enabled": false,

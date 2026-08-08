@@ -136,7 +136,14 @@ export function computeTotals(input, config, opts = {}) {
   //     their first N orders. Eligibility is per-customer, so /api/order decides
   //     it and injects it here; a walk-in or guest never carries it.
   //   - config.promo.autoOnlineDiscount: the shop's standing "% off all online
-  //     orders" offer, applied to everyone.
+  //     orders" offer, applied to everyone. OPTIONALLY gated on a minimum spend
+  //     (minSubtotalPence) — Acomb Pizza & Kebab runs 10% off orders of £12 or
+  //     more, so the offer can't be farmed on a £3 side. The gate is on the
+  //     SUBTOTAL, before the service fee and delivery, which is the number the
+  //     customer sees against the menu prices; testing it after fees would mean
+  //     a £11.50 basket qualified once delivery was added, which reads as a bug
+  //     from either side of the counter. Absent ⇒ no threshold, exactly the
+  //     previous behaviour, so every other shop is untouched.
   let discountP = 0;
   let discountLabel = null;
   if (opts.firstOrderDiscount && !opts.suppressPromo) {
@@ -144,9 +151,13 @@ export function computeTotals(input, config, opts = {}) {
     discountP = Math.min(subtotalP, Math.round(subtotalP * (pct / 100)));
     discountLabel = opts.firstOrderDiscount.label || `${pct}% off`;
   } else if (config.promo?.autoOnlineDiscount?.enabled && !opts.suppressPromo) {
-    const pct = Math.max(0, Math.min(100, Number(config.promo.autoOnlineDiscount.percent) || 0));
-    discountP = Math.min(subtotalP, Math.round(subtotalP * (pct / 100)));
-    discountLabel = config.promo.autoOnlineDiscount.label;
+    const auto = config.promo.autoOnlineDiscount;
+    const minP = Math.max(0, Math.round(Number(auto.minSubtotalPence) || 0));
+    if (subtotalP >= minP) {
+      const pct = Math.max(0, Math.min(100, Number(auto.percent) || 0));
+      discountP = Math.min(subtotalP, Math.round(subtotalP * (pct / 100)));
+      discountLabel = auto.label;
+    }
   }
 
   // Delivery fee. /api/order resolves it via resolveDelivery (outcode OR

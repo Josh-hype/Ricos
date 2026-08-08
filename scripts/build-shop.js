@@ -424,9 +424,16 @@ const contactLine = phone
   : 'using the contact details on our website';
 
 // Terms: the promotional-discount clause only appears for shops that run one.
+// A shop can gate the offer on a minimum spend (promo.autoOnlineDiscount
+// .minSubtotalPence). Where it's set, BOTH the terms clause and the SEO
+// tagline have to say so — an advertised "10% off all online orders" that the
+// checkout silently refuses on a £5 basket is the kind of thing that ends up in
+// front of Trading Standards, not just in a support email.
 const promo = config.promo?.autoOnlineDiscount;
+const promoMinP = Math.max(0, Math.round(Number(promo?.minSubtotalPence) || 0));
+const promoMinText = promoMinP ? ` of £${(promoMinP / 100).toFixed(2).replace(/\.00$/, '')} or more` : '';
 const promoSection = (promo && promo.enabled)
-  ? `<h2>Promotional discounts</h2>\n    <p>The ${promo.percent}% online discount is applied automatically to the subtotal of qualifying online orders. We may change or end this offer at any time.</p>`
+  ? `<h2>Promotional discounts</h2>\n    <p>The ${promo.percent}% online discount is applied automatically to the subtotal of qualifying online orders${promoMinText}. The minimum is measured on the subtotal, before any service or delivery charge. We may change or end this offer at any time.</p>`
   : '';
 
 // First-orders welcome offer: a landing-page banner + a plain-text sentence,
@@ -648,7 +655,7 @@ const tokens = {
   firstOrderPromoBadge,
   firstOrderPromoText,
   // SEO meta sentence — only advertises the discount for shops that run it.
-  promoTagline:            (promo && promo.enabled) ? ` ${promo.percent}% off all online orders.` : '',
+  promoTagline:            (promo && promo.enabled) ? ` ${promo.percent}% off online orders${promoMinText}.` : '',
   // Landing-page SEO <head>: JSON-LD Restaurant schema + canonical + OG/Twitter.
   seoHead:                 buildSeoHead(),
 };
