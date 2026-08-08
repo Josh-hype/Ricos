@@ -10,7 +10,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700&family=Oswald:wght@500&display=swap" rel="stylesheet" />
 
   <style>
     /* Dark house style, taken from the owner's reference visual. This is the
@@ -23,15 +23,33 @@
       --gold:{{themeAccent}};
       --ink:{{themeBackground}};
       --surface:{{themeSurface}};
-      --panel:#111;
+      /* Matched to the reference: the category cards are the same black as the
+         page (measured rgb(10,10,10) vs a page of rgb(9,9,9)) — they read as
+         photos floating on black, carried by the 1px hairline alone, not as
+         lifted grey plates. */
+      --panel:#0a0a0a;
       --line:rgba(255,255,255,.10);
       --white:#fff;
-      /* Not pure grey-on-black: at 14px the reference's muted copy needs to
-         clear 4.5:1 on #0a0a0a, and #a8a8a8 is the point where it does. */
-      --muted:#a8a8a8;
+      /* Measured off the reference: supporting copy there is a light grey
+         (#d4d4d4 in the promise strip, #cfcfcf in the footer), not mid-grey.
+         Well clear of 4.5:1 on #0a0a0a either way. */
+      --muted:#cfcfcf;
+      /* --red is the fill red, sampled from the reference. It is only 3.6:1 on
+         the near-black page, so small text (13-16px) uses --red-text instead;
+         --red stays for fills and for 32px+ display type, which clears the 3:1
+         large-text bar. */
+      --red-text:#e63b3f;
       --display:"Anton",Impact,"Arial Narrow",sans-serif;
+      /* The reference uses TWO condensed faces: a very condensed one for the
+         display headlines (Anton is the closest free match) and a medium
+         condensed grotesque for every small all-caps label — nav, buttons,
+         eyebrows, promise headings, footer column headings. Setting those in
+         the body sans made them ~40% too small and far too tracked out
+         (measured cap 9-10px against the reference's 15-17). Oswald 500 is the
+         medium-condensed face. */
+      --label:"Oswald","Arial Narrow",Impact,sans-serif;
       --body:"DM Sans",system-ui,-apple-system,sans-serif;
-      --wrap:1240px;
+      --wrap:1370px;
     }
     *{box-sizing:border-box}
     html{-webkit-text-size-adjust:100%}
@@ -47,9 +65,9 @@
     /* ---------- buttons ---------- */
     .btn{
       display:inline-flex;align-items:center;gap:12px;
-      font-family:var(--body);font-weight:700;font-size:.82rem;
-      letter-spacing:.12em;text-transform:uppercase;
-      padding:15px 26px;border-radius:6px;border:2px solid transparent;
+      font-family:var(--label);font-weight:500;font-size:1.35rem;
+      letter-spacing:.03em;text-transform:uppercase;line-height:1.05;
+      padding:16px 26px;border-radius:10px;border:2px solid transparent;
       min-height:48px;   /* thumb-sized on a phone, whatever the design implies */
       transition:background .18s ease,border-color .18s ease,transform .18s ease;
     }
@@ -58,8 +76,12 @@
     .btn-primary:hover{background:var(--red-dark)}
     .btn-ghost{border-color:rgba(255,255,255,.75);color:#fff}
     .btn-ghost:hover{background:rgba(255,255,255,.1)}
+    /* The reference badge is an unfilled ring — a light hairline with the
+       button red showing through — not the dark disc a translucent black fill
+       produces. White on #cf1c20 is 5.4:1. */
     .btn .arrow{
-      width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.28);
+      width:26px;height:26px;border-radius:50%;
+      background:transparent;border:1.5px solid rgba(255,255,255,.85);
       display:grid;place-items:center;font-size:.8rem;flex:0 0 auto;
     }
     .btn-ghost .arrow{display:none}
@@ -67,24 +89,37 @@
     /* ---------- header ---------- */
     header.site{
       position:absolute;top:0;left:0;right:0;z-index:40;
-      padding:18px 0;
+      padding:10px 0;
+      /* The reference sits the nav on black; without a scrim the kebab spit
+         shows through and the links drop to ~3.4:1. */
+      background:linear-gradient(180deg,rgba(0,0,0,.88) 0%,rgba(0,0,0,.55) 62%,rgba(0,0,0,0) 100%);
     }
     header.site .wrap{display:flex;align-items:center;gap:28px}
     .brand{display:block;line-height:1}
     .brand b{
-      font-family:var(--display);font-size:2rem;letter-spacing:.02em;
+      font-family:var(--display);font-size:3.4rem;letter-spacing:.12em;
       color:var(--red);display:block;
     }
+    /* The tagline is locked to the width of the wordmark above it, as in the
+       reference — so it is set in the condensed display face, not tracked-out
+       DM Sans. */
     .brand span{
-      display:block;font-size:.62rem;font-weight:700;letter-spacing:.22em;
-      text-transform:uppercase;color:#fff;margin-top:3px;
+      display:block;font-family:var(--display);font-size:1.3rem;font-weight:400;
+      letter-spacing:.09em;text-transform:uppercase;color:#fff;margin-top:4px;
     }
-    nav.main{margin-left:auto;display:flex;gap:30px;align-items:center}
+    /* Reference nav: five links on a ~45px rhythm, then a wide breathing gap
+       before the CTA pill (link run 507-990, pill 1171-1388). */
+    nav.main{margin-left:auto;display:flex;gap:45px;align-items:center}
     nav.main a{
-      font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+      font-family:var(--label);font-size:1.3rem;font-weight:500;
+      letter-spacing:.06em;text-transform:uppercase;
       color:#e8e8e8;padding:6px 0;position:relative;
     }
-    nav.main a.on,nav.main a:hover{color:var(--red)}
+    /* Without this the nav link rule out-specifies .btn and the header CTA
+       renders smaller than the identical button in the hero and footer. */
+    nav.main a.btn{font-size:1.35rem;letter-spacing:.03em;padding:16px 26px}
+    nav.main .btn{margin-left:136px}
+    nav.main a.on,nav.main a:hover{color:var(--red-text)}
     nav.main a.on::after{
       content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--red);
     }
@@ -94,54 +129,86 @@
     }
 
     /* ---------- hero ---------- */
+    /* The reference hero is 0.69 x the page width (995px at 1440). Capped at
+       940 so the promise strip still peeks above the fold on a 900px laptop. */
+    /* hero.png is 1536x1024 with dead black in its top ~62 rows, bottom ~56
+       rows and left ~38% of columns. At `cover` the file scales 0.94 into the
+       1440x940 box, so every one of those dead bands was on screen: a ~72px
+       black band under the pizza and a flat black bottom-left quadrant. This
+       crop shows source x 43%->98%, y 24%->78% instead — the food fills the
+       frame and the pizza is cut by the hero's bottom edge, as in the
+       reference. 180% of a 1440 box is a 1.7x upscale of the asset; re-export
+       hero.png at >=2600px wide and it can go tighter still. */
     .hero{
-      position:relative;min-height:640px;display:flex;align-items:center;
-      background:#000 url("/assets/hero.png") center right/cover no-repeat;
+      position:relative;min-height:clamp(640px,68vw,940px);display:flex;align-items:center;
+      background:#000 url("/assets/hero.png") no-repeat;
+      background-size:180% auto;
+      background-position:96% 52%;
     }
-    /* The photo carries its own dark left side, but not enough of one to hold
-       48px type at AA on every crop — this guarantees it at any width. */
+    /* Held back from the reference's much lighter scrim: the red "DIFFERENCE"
+       is 144px here and runs to 45% of the page width, and #cf1c20 only holds
+       3:1 for large text while the plate behind it stays under ~L33. So the
+       first three stops keep the copy band dark and the decay is spent on the
+       right half, where the reference is brightest. */
     .hero::before{
       content:"";position:absolute;inset:0;
-      background:linear-gradient(90deg,rgba(5,5,5,.94) 0%,rgba(5,5,5,.80) 38%,rgba(5,5,5,.25) 68%,rgba(5,5,5,.05) 100%);
+      background:linear-gradient(90deg,rgba(5,5,5,.90) 0%,rgba(5,5,5,.84) 26%,rgba(5,5,5,.80) 46%,rgba(5,5,5,.34) 66%,rgba(5,5,5,.06) 86%,rgba(5,5,5,0) 100%);
     }
-    .hero .wrap{position:relative;z-index:2;padding-top:120px;padding-bottom:80px}
+    /* width:100% or the flex hero shrink-wraps the container and centres it. */
+    .hero .wrap{position:relative;z-index:2;width:100%;padding-top:170px;padding-bottom:150px}
     .hero h1{
       font-family:var(--display);font-weight:400;margin:0;
-      font-size:clamp(3rem,7.4vw,6.1rem);line-height:.92;letter-spacing:.005em;
+      font-size:clamp(3rem,9.3vw,8.4rem);line-height:1;letter-spacing:.005em;
       text-transform:uppercase;
     }
-    .hero h1 .hl{color:var(--red);display:block}
+    /* The reference sets the red line ~8% larger than the white one. */
+    .hero h1 .hl{color:var(--red);display:block;font-size:1.08em}
     .hero p.sub{
-      margin:26px 0 0;font-size:1.12rem;color:#e9e9e9;max-width:32ch;line-height:1.55;
+      margin:26px 0 0;font-size:1.7rem;color:#e9e9e9;max-width:32ch;line-height:1.55;
     }
     .hero .cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
 
     /* ---------- promise strip ---------- */
     .promise{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#080808}
+    /* Full-bleed: in the reference the dividers sit exactly on the quarter
+       lines of the viewport, not of the content container. */
     .promise .wrap{
-      display:grid;grid-template-columns:repeat(4,1fr);
+      display:grid;grid-template-columns:repeat(4,1fr);max-width:none;padding:0;
     }
     .promise .cell{
-      display:flex;gap:16px;align-items:flex-start;padding:30px 26px;
+      position:relative;display:flex;gap:16px;align-items:flex-start;padding:60px 36px;
     }
-    .promise .cell + .cell{border-left:1px solid var(--line)}
-    .promise svg{width:38px;height:38px;flex:0 0 auto;color:var(--red)}
+    /* The strip is full-bleed but its END cells sit on the page gutter, as in
+       the reference (first icon at x=75 against a 59px gutter). 40px + the
+       centring margin lands it there at any width. */
+    .promise .cell:first-child{padding-left:calc(40px + max(0px,(100vw - 1370px) / 2))}
+    .promise .cell:last-child{padding-right:calc(40px + max(0px,(100vw - 1370px) / 2))}
+    /* Short centred ticks, not full-height rules — a full border-left made the
+       four cells read as a boxed table. Reference tick is ~105 CSS px in a
+       ~213px band. */
+    .promise .cell + .cell::before{
+      content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);
+      width:1px;height:105px;background:var(--line);
+    }
+    .promise svg{width:68px;height:68px;flex:0 0 auto;color:var(--red)}
     .promise h3{
-      margin:0 0 5px;font-size:.84rem;font-weight:700;letter-spacing:.1em;
+      font-family:var(--label);
+      margin:0 0 5px;font-size:1.2rem;font-weight:500;letter-spacing:.02em;
       text-transform:uppercase;color:#fff;
     }
-    .promise p{margin:0;font-size:.86rem;color:var(--muted);line-height:1.45}
+    .promise p{margin:0;font-size:1.02rem;color:var(--muted);line-height:1.7}
 
     /* ---------- section heading ---------- */
-    .sec{padding:78px 0}
-    .sec-head{text-align:center;margin-bottom:44px}
+    .sec{padding:40px 0 78px}
+    .sec-head{text-align:center;margin-bottom:20px}
     .eyebrow{
-      font-size:.8rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
-      color:var(--red);margin:0 0 10px;
+      font-family:var(--label);
+      font-size:1.4rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;
+      color:var(--red-text);margin:0 0 10px;
     }
     .sec-head h2{
       font-family:var(--display);font-weight:400;margin:0;
-      font-size:clamp(2rem,4.4vw,3.2rem);line-height:1;text-transform:uppercase;
+      font-size:clamp(2.2rem,5vw,3.65rem);line-height:1;text-transform:uppercase;
     }
     .rule{width:58px;height:3px;background:var(--red);margin:16px auto 0;border-radius:2px}
 
@@ -153,15 +220,26 @@
       transition:border-color .2s ease,transform .2s ease;
     }
     .cat:hover{border-color:var(--red);transform:translateY(-3px)}
-    .cat .shot{aspect-ratio:1/1;overflow:hidden}
+    .cat .shot{position:relative;aspect-ratio:7/10;overflow:hidden}
     .cat .shot img{width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
     .cat:hover .shot img{transform:scale(1.05)}
+    /* Four of the five supplied shots are lit on white/pale backgrounds and
+       measure 2-3x brighter than the reference row (kebabs 202, sides 157,
+       burgers 145 against a reference range of 49-112). Until the assets are
+       reshot, knock them back and warm them so the row reads as one dark set.
+       The pizza tile is already darker than its reference counterpart, so it
+       is left alone. */
+    .cats .cat:not(:first-child) .shot img{filter:brightness(.82) saturate(1.05)}
+    .cats .cat:not(:first-child) .shot::after{
+      content:"";position:absolute;inset:0;pointer-events:none;
+      background:linear-gradient(180deg,rgba(117,45,17,.14),rgba(10,10,10,.30));
+    }
     .cat .foot{
       display:flex;align-items:center;justify-content:space-between;gap:10px;
       padding:16px 16px;
     }
     .cat .foot b{
-      font-family:var(--display);font-weight:400;font-size:1.22rem;
+      font-family:var(--display);font-weight:400;font-size:2.1rem;
       letter-spacing:.03em;text-transform:uppercase;
     }
     .cat .go{
@@ -170,28 +248,46 @@
     }
 
     /* ---------- offer band ---------- */
+    /* Reference band is a wide, shallow letterbox: 1322x434, photo taking the
+       right 51%. 1.4fr plus a shot with an unresolvable height:100% let
+       offer-pizza.png's own 3:2 ratio set the row to 515px instead. */
     .offer{
-      position:relative;border:1px solid var(--red);border-radius:4px;overflow:hidden;
-      display:grid;grid-template-columns:1.05fr 1fr;align-items:center;background:#0d0d0d;
+      position:relative;border:1px solid rgba(207,28,32,.42);border-radius:4px;overflow:hidden;
+      display:grid;grid-template-columns:1fr 1.05fr;align-items:center;background:#0d0d0d;
     }
     .offer .copy{padding:52px 48px}
     .offer h2{
       font-family:var(--display);font-weight:400;margin:0;line-height:.98;
-      font-size:clamp(2.1rem,4.2vw,3.1rem);text-transform:uppercase;
+      font-size:clamp(2.4rem,5.1vw,4.5rem);text-transform:uppercase;
     }
-    .offer h2 .hl{color:var(--red);display:block}
+    .offer h2 .hl{color:var(--red);display:block;font-size:1.1em}
     .offer p{margin:18px 0 0;color:#e2e2e2;font-size:1rem}
     .offer .code{margin:10px 0 0;font-size:1rem;color:#e2e2e2}
-    .offer .code b{color:var(--red);font-weight:700;letter-spacing:.06em}
-    .offer .shot{height:100%;min-height:300px}
-    .offer .shot img{width:100%;height:100%;object-fit:cover}
+    .offer .code b{color:var(--red-text);font-weight:700;letter-spacing:.06em}
+    .offer .shot{position:relative;height:432px}
+    /* In the reference the photo dissolves into the copy panel over ~200px;
+       here its brightly lit table edge butted straight against the panel and
+       left a one-pixel seam from L=13 to L=149. Masking the image out reveals
+       .offer's own #0d0d0d, so the fade lands exactly on the panel colour. */
+    .offer .shot img{
+      width:100%;height:100%;object-fit:cover;
+      -webkit-mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.45) 14%,#000 40%);
+      mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.45) 14%,#000 40%);
+    }
     .offer .btn{margin-top:28px}
 
     /* ---------- footer ---------- */
-    footer.site{background:#070707;border-top:1px solid var(--line);padding:64px 0 0}
-    .fgrid{display:grid;grid-template-columns:1.4fr 1fr 1.3fr 1.2fr;gap:40px}
+    /* No rule along the top: in the reference the footer just continues the
+       page black. The rule above the legal line IS in the reference — kept. */
+    footer.site{background:#070707;padding:36px 0 0}
+    /* Reference hairlines land at x=393/658/1046 across the 1322 container. */
+    .fgrid{display:grid;grid-template-columns:1.26fr 1fr 1.46fr 1.26fr;gap:4px}
+    /* Faint column hairlines, as in the reference. Dropped once the columns
+       stack (see the breakpoints) where they would read as stray lines. */
+    .fgrid > div + div{border-left:1px solid rgba(255,255,255,.07);padding-left:36px}
     footer.site h4{
-      margin:0 0 20px;font-size:.82rem;font-weight:700;letter-spacing:.16em;
+      font-family:var(--label);
+      margin:0 0 20px;font-size:1.3rem;font-weight:500;letter-spacing:.05em;
       text-transform:uppercase;color:#fff;
     }
     footer.site p{margin:0;color:var(--muted);font-size:.9rem;line-height:1.65}
@@ -206,12 +302,13 @@
     .contact .line{display:flex;gap:12px;align-items:flex-start;font-size:.9rem;color:var(--muted)}
     .contact .line svg{width:17px;height:17px;color:var(--red);flex:0 0 auto;margin-top:3px}
     .contact a:hover{color:#fff}
+    .contact .btn{justify-self:start}
     .social{display:flex;gap:11px;margin-top:22px}
     .social a{
-      width:38px;height:38px;border-radius:50%;background:#171717;display:grid;place-items:center;
-      color:#fff;transition:background .18s ease;
+      width:38px;height:38px;border-radius:50%;background:#fff;display:grid;place-items:center;
+      color:#0a0a0a;transition:background .18s ease,color .18s ease;
     }
-    .social a:hover{background:var(--red)}
+    .social a:hover{background:var(--red);color:#fff}
     .social svg{width:17px;height:17px}
     .legal{
       margin-top:56px;border-top:1px solid var(--line);padding:22px 0;
@@ -223,9 +320,10 @@
     @media(max-width:1080px){
       .cats{grid-template-columns:repeat(3,1fr)}
       .promise .wrap{grid-template-columns:repeat(2,1fr)}
-      .promise .cell:nth-child(3){border-left:0}
+      .promise .cell:nth-child(3)::before{display:none}
       .promise .cell:nth-child(n+3){border-top:1px solid var(--line)}
       .fgrid{grid-template-columns:1fr 1fr;gap:36px}
+      .fgrid > div + div{border-left:0;padding-left:0}
     }
     @media(max-width:760px){
       nav.main{
@@ -237,20 +335,44 @@
       nav.main a{padding:14px 0;border-bottom:1px solid var(--line);width:100%}
       nav.main a.on::after{display:none}
       .burger{display:block}
-      .hero{min-height:0;background-position:center}
+      /* Back to cover on a phone: the desktop 180% crop is sized against the
+         viewport, so on a 390px screen it would not cover the hero box.
+         82% keeps the doner cone and the pizza inside the narrow cover crop —
+         at centre the phone hero is just the dark back bar. */
+      .hero{min-height:0;background-size:cover;background-position:82% center}
       .hero .wrap{padding-top:132px;padding-bottom:56px}
       .hero::before{background:linear-gradient(180deg,rgba(5,5,5,.90) 0%,rgba(5,5,5,.72) 55%,rgba(5,5,5,.88) 100%)}
       .hero p.sub{max-width:none}
       .hero .cta .btn{flex:1 1 auto;justify-content:center}
       .sec{padding:54px 0}
       .cats{grid-template-columns:repeat(2,1fr);gap:14px}
+      /* Five cards in a 2-up grid leaves Drinks orphaned beside an empty
+         cell — run it full width as a banner tile instead. */
+      .cats .cat:last-child{grid-column:1/-1}
+      .cats .cat:last-child .shot{aspect-ratio:16/9}
       .offer{grid-template-columns:1fr}
-      .offer .shot{order:-1;min-height:210px}
+      .offer .shot{order:-1;height:210px}
+      /* One column: the photo sits above the copy, so fade its bottom, not its
+         left edge. */
+      .offer .shot img{
+        -webkit-mask-image:linear-gradient(180deg,#000 62%,rgba(0,0,0,.55) 84%,transparent 100%);
+        mask-image:linear-gradient(180deg,#000 62%,rgba(0,0,0,.55) 84%,transparent 100%);
+      }
       .offer .copy{padding:34px 26px}
       .promise .wrap{grid-template-columns:1fr}
-      .promise .cell{border-left:0!important}
+      /* Full-bleed strip: put the cell back on the page gutter on a phone, and
+         centre the copy on the icon — at one line per statement the flex-start
+         alignment left ~55px of dead space under every row. */
+      .promise .cell{align-items:center;padding:22px 24px}
+      .promise .cell:first-child{padding-left:24px}
+      .promise .cell:last-child{padding-right:24px}
+      .promise .cell::before{display:none}
+      .promise svg{width:48px;height:48px}
       .promise .cell + .cell{border-top:1px solid var(--line)}
       .fgrid{grid-template-columns:1fr;gap:34px}
+      /* Thumb-sized rows without changing the visual rhythm. */
+      .flinks{gap:4px}
+      .flinks a,.contact .line{min-height:44px;align-items:center}
     }
   </style>
 </head>
@@ -287,15 +409,15 @@
 <section class="promise">
   <div class="wrap">
     <div class="cell">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 16V7h11v9M14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="2"/><circle cx="17.5" cy="17.5" r="2"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5.2" cy="17.5" r="3"/><circle cx="18.6" cy="17.5" r="3"/><path d="M8.2 17.5h7.4"/><rect x="1.4" y="4.4" width="6" height="5" rx=".9"/><path d="M7.4 9.4v3.1a1.6 1.6 0 0 0 1.6 1.6h2.3l2.6-7.7h2.4"/><path d="m15.9 6.4 2.7 11.1"/></svg>
       <div><h3>Fast Delivery</h3><p>Quick &amp; reliable delivery to your door</p></div>
     </div>
     <div class="cell">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 3 3 20h18L12 3Z"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="9.4" cy="16.6" r="1.2" fill="currentColor"/><circle cx="14.6" cy="16.6" r="1.2" fill="currentColor"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.2 3.4 19.8q8.6 3.4 17.2 0Z"/><path d="M5.4 16.2q6.6 2.6 13.2 0"/><circle cx="12" cy="11" r="1.15" fill="currentColor" stroke="none"/><circle cx="9.6" cy="16" r="1.15" fill="currentColor" stroke="none"/><circle cx="14.4" cy="16" r="1.15" fill="currentColor" stroke="none"/></svg>
       <div><h3>Fresh Ingredients</h3><p>We use only the freshest ingredients</p></div>
     </div>
     <div class="cell">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 2c2.6 3.2 1 5.2.2 6.2C11 9.6 9.5 11 9.5 13a2.5 2.5 0 0 0 5 0c0-.9-.3-1.6-.7-2.2 2.4 1.1 4.2 3.3 4.2 6A6 6 0 0 1 6 16.8C6 11.6 12 9.6 12 2Z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.2c1.8 2.3 .6 3.8 0 4.6 -.8 1 -1.6 1.8 -1.6 3a1.6 1.6 0 0 0 3.2 0c0 -.6 -.2 -1 -.4 -1.4 1.5 .7 2.5 2.1 2.5 3.7a3.7 3.7 0 0 1 -7.4 0c0 -3.5 3.7 -4.8 3.7 -9.9Z"/><path d="M3 17.4h18c-.6 2.6-3 4.4-5.7 4.4H8.7C6 21.8 3.6 20 3 17.4Z"/></svg>
       <div><h3>Cooked to Perfection</h3><p>Our food is cooked fresh, just for you</p></div>
     </div>
     <div class="cell">
@@ -313,7 +435,11 @@
       <div class="rule"></div>
     </div>
     <div class="cats">
-      <a class="cat" href="/order"><div class="shot"><img src="/assets/offer-pizza.png" alt="Freshly baked pizza" loading="lazy" /></div><div class="foot"><b>Pizza</b><span class="go">→</span></div></a>
+      <!-- TODO: needs its own portrait pizza photo (>=700x1000, dark ground).
+           Until then this reuses the offer-band shot; the only overflow axis in
+           a 7:10 slot is X, so object-position is offset horizontally to at
+           least frame it differently from the offer band below. -->
+      <a class="cat" href="/order"><div class="shot"><img src="/assets/offer-pizza.png" alt="Freshly baked pizza" loading="lazy" style="object-position:38% 50%" /></div><div class="foot"><b>Pizza</b><span class="go">→</span></div></a>
       <a class="cat" href="/order"><div class="shot"><img src="/assets/kebab.jpg" alt="Doner kebab" loading="lazy" /></div><div class="foot"><b>Kebabs</b><span class="go">→</span></div></a>
       <a class="cat" href="/order"><div class="shot"><img src="/assets/burger.jpg" alt="Burger" loading="lazy" /></div><div class="foot"><b>Burgers</b><span class="go">→</span></div></a>
       <a class="cat" href="/order"><div class="shot"><img src="/assets/sides.jpg" alt="Sides" loading="lazy" /></div><div class="foot"><b>Sides</b><span class="go">→</span></div></a>
@@ -322,16 +448,16 @@
   </div>
 </section>
 
-<section class="sec" id="offers" style="padding-top:0">
+<section class="sec" id="offers" style="padding:0">
   <div class="wrap">
     <div class="offer">
       <div class="copy">
-        <h2>10% Off<span class="hl">Your First Order</span></h2>
+        <h2><span class="hl">10% Off</span>Your First Order</h2>
         <p>Order online today and get 10% off your first order</p>
         <p class="code">Use code: <b>ACOMB10</b></p>
         <a class="btn btn-primary" href="/order">Order Now <span class="arrow">→</span></a>
       </div>
-      <div class="shot"><img src="/assets/offer-pizza.png" alt="Pizza in a takeaway box" loading="lazy" /></div>
+      <div class="shot"><img src="/assets/offer-pizza.png" alt="Freshly baked pizza on a wooden board" loading="lazy" /></div>
     </div>
   </div>
 </section>
