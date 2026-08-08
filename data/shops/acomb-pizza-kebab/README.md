@@ -1,4 +1,4 @@
-# Acomb Pizza & Kebab House (`acombkebabpizzahouse`)
+# Acomb Pizza & Kebab House (`acomb-pizza-kebab`)
 
 **LumiWEB** customer — website + web back office, ZCS Z93 on the counter.
 £19/wk. See `docs/PRODUCTS.md`.
@@ -20,7 +20,7 @@ is required and isn't here. That's expected; upload the files below and it will.
 Then run the design loop — see `tools/design-loop/README.md`:
 
 ```bash
-node tools/design-loop/render.mjs acombkebabpizzahouse     # build + screenshot
+node tools/design-loop/render.mjs acomb-pizza-kebab     # build + screenshot
 ```
 
 …and the agent loop drives it from there until the page matches `reference/`.
@@ -47,5 +47,5 @@ warning on every run, so nothing here can be forgotten silently:
 
 Then the Cloudflare project, KV namespaces, secrets and domain — follow
 `docs/SHOP_CHECKLIST.md`, and don't forget to add
-`data/shops/acombkebabpizzahouse/*` to **every other project's** build-watch
+`data/shops/acomb-pizza-kebab/*` to **every other project's** build-watch
 Exclude paths, or a change here rebuilds all of them.

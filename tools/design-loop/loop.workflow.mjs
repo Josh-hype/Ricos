@@ -25,7 +25,7 @@ export const meta = {
  * breaks on a phone, that is reported, not silently improved.
  * ------------------------------------------------------------------------- */
 
-const slug = (args && args.slug) || 'acombkebabpizzahouse';
+const slug = (args && args.slug) || 'acomb-pizza-kebab';
 const MAX_ROUNDS = (args && args.maxRounds) || 6;
 const SHOP = `data/shops/${slug}`;
 

@@ -104,7 +104,7 @@ this Cloudflare setup and return 403).
 | Mega Chippy, Acomb | `mega-chippy` | **LumiWEB** | £19 | ZCS Z93 |
 | One Sip | `one-sip` | LumiPOS, till-only (no website, no Stripe) | £0 — family venue, provided free | not provisioned in `provision.js` |
 | The Grub Hub | `grub-hub` | LumiPOS | £35 | pre-launch |
-| Acomb Kebab & Pizza House | `acombkebabpizzahouse` *(not scaffolded yet)* | **LumiWEB** | £19 | Z93 to supply |
+| Acomb Pizza & Kebab | `acomb-pizza-kebab` *(folder scaffolded, pre-launch)* | **LumiWEB** | £19 | Z93 to supply |
 
 Commercial state (Stripe Connect, subscription status, processor) is in
 `data/platform/registry.json`, which the owner console reads. Note it currently

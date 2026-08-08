@@ -1,5 +1,5 @@
 {
-  "_comment": "Acomb Pizza & Kebab House, Acomb (York) — LumiWEB customer (website + web back office only, ZCS Z93 on the counter; see docs/PRODUCTS.md). PRE-LAUNCH: every TODO_ value below is unfilled and the build warns about each one — nothing here is a guess. Card payments stay off until stripe.connectedAccountId is a real acct_ id. The landing page is built from the owner's reference visual using tools/design-loop (assets in assets/, the reference image in reference/).",
+  "_comment": "Acomb Pizza & Kebab (slug acomb-pizza-kebab), Acomb (York) — LumiWEB customer (website + web back office only, ZCS Z93 on the counter; see docs/PRODUCTS.md). PRE-LAUNCH: every TODO_ value below is unfilled and the build warns about each one — nothing here is a guess. Card payments stay off until stripe.connectedAccountId is a real acct_ id. The landing page is built from the owner's reference visual using tools/design-loop (assets in assets/, the reference image in reference/).",
   "business": {
     "tradingName": "Acomb Pizza & Kebab House",
     "_comment_shortName": "Conversational short form used in page headers, aria labels and the staff PWA name (e.g. 'Pizza Bob's' instead of 'Pizza Bob's Burgers Ltd').",
