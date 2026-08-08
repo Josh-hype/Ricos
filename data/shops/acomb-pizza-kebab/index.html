@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{shopName}} — pizza & kebabs in Acomb, York</title>
+  <meta name="description" content="{{shopName}} on Front Street, Acomb. Fresh pizzas, doner and shish kebabs, burgers and sides for collection or delivery in York." />
+  <meta name="theme-color" content="#0a0a0a" />
+  {{seoHead}}
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* Dark house style, taken from the owner's reference visual. This is the
+       first shop on the platform whose site is dark rather than cream, so the
+       palette lives here rather than leaning on the shared defaults. */
+    :root{
+      --red:{{themePrimary}};
+      --red-dark:{{themePrimaryDark}};
+      --red-deep:{{themePrimaryDeep}};
+      --gold:{{themeAccent}};
+      --ink:{{themeBackground}};
+      --surface:{{themeSurface}};
+      --panel:#111;
+      --line:rgba(255,255,255,.10);
+      --white:#fff;
+      /* Not pure grey-on-black: at 14px the reference's muted copy needs to
+         clear 4.5:1 on #0a0a0a, and #a8a8a8 is the point where it does. */
+      --muted:#a8a8a8;
+      --display:"Anton",Impact,"Arial Narrow",sans-serif;
+      --body:"DM Sans",system-ui,-apple-system,sans-serif;
+      --wrap:1240px;
+    }
+    *{box-sizing:border-box}
+    html{-webkit-text-size-adjust:100%}
+    body{
+      margin:0;background:var(--ink);color:var(--white);
+      font-family:var(--body);font-size:16px;line-height:1.6;
+      overflow-x:hidden;
+    }
+    img{max-width:100%;display:block}
+    a{color:inherit;text-decoration:none}
+    .wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px}
+
+    /* ---------- buttons ---------- */
+    .btn{
+      display:inline-flex;align-items:center;gap:12px;
+      font-family:var(--body);font-weight:700;font-size:.82rem;
+      letter-spacing:.12em;text-transform:uppercase;
+      padding:15px 26px;border-radius:6px;border:2px solid transparent;
+      min-height:48px;   /* thumb-sized on a phone, whatever the design implies */
+      transition:background .18s ease,border-color .18s ease,transform .18s ease;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn-primary{background:var(--red);color:#fff}
+    .btn-primary:hover{background:var(--red-dark)}
+    .btn-ghost{border-color:rgba(255,255,255,.75);color:#fff}
+    .btn-ghost:hover{background:rgba(255,255,255,.1)}
+    .btn .arrow{
+      width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.28);
+      display:grid;place-items:center;font-size:.8rem;flex:0 0 auto;
+    }
+    .btn-ghost .arrow{display:none}
+
+    /* ---------- header ---------- */
+    header.site{
+      position:absolute;top:0;left:0;right:0;z-index:40;
+      padding:18px 0;
+    }
+    header.site .wrap{display:flex;align-items:center;gap:28px}
+    .brand{display:block;line-height:1}
+    .brand b{
+      font-family:var(--display);font-size:2rem;letter-spacing:.02em;
+      color:var(--red);display:block;
+    }
+    .brand span{
+      display:block;font-size:.62rem;font-weight:700;letter-spacing:.22em;
+      text-transform:uppercase;color:#fff;margin-top:3px;
+    }
+    nav.main{margin-left:auto;display:flex;gap:30px;align-items:center}
+    nav.main a{
+      font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+      color:#e8e8e8;padding:6px 0;position:relative;
+    }
+    nav.main a.on,nav.main a:hover{color:var(--red)}
+    nav.main a.on::after{
+      content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--red);
+    }
+    .burger{
+      display:none;margin-left:auto;background:none;border:0;color:#fff;
+      width:48px;height:48px;font-size:1.5rem;cursor:pointer;
+    }
+
+    /* ---------- hero ---------- */
+    .hero{
+      position:relative;min-height:640px;display:flex;align-items:center;
+      background:#000 url("/assets/hero.png") center right/cover no-repeat;
+    }
+    /* The photo carries its own dark left side, but not enough of one to hold
+       48px type at AA on every crop — this guarantees it at any width. */
+    .hero::before{
+      content:"";position:absolute;inset:0;
+      background:linear-gradient(90deg,rgba(5,5,5,.94) 0%,rgba(5,5,5,.80) 38%,rgba(5,5,5,.25) 68%,rgba(5,5,5,.05) 100%);
+    }
+    .hero .wrap{position:relative;z-index:2;padding-top:120px;padding-bottom:80px}
+    .hero h1{
+      font-family:var(--display);font-weight:400;margin:0;
+      font-size:clamp(3rem,7.4vw,6.1rem);line-height:.92;letter-spacing:.005em;
+      text-transform:uppercase;
+    }
+    .hero h1 .hl{color:var(--red);display:block}
+    .hero p.sub{
+      margin:26px 0 0;font-size:1.12rem;color:#e9e9e9;max-width:32ch;line-height:1.55;
+    }
+    .hero .cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
+
+    /* ---------- promise strip ---------- */
+    .promise{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#080808}
+    .promise .wrap{
+      display:grid;grid-template-columns:repeat(4,1fr);
+    }
+    .promise .cell{
+      display:flex;gap:16px;align-items:flex-start;padding:30px 26px;
+    }
+    .promise .cell + .cell{border-left:1px solid var(--line)}
+    .promise svg{width:38px;height:38px;flex:0 0 auto;color:var(--red)}
+    .promise h3{
+      margin:0 0 5px;font-size:.84rem;font-weight:700;letter-spacing:.1em;
+      text-transform:uppercase;color:#fff;
+    }
+    .promise p{margin:0;font-size:.86rem;color:var(--muted);line-height:1.45}
+
+    /* ---------- section heading ---------- */
+    .sec{padding:78px 0}
+    .sec-head{text-align:center;margin-bottom:44px}
+    .eyebrow{
+      font-size:.8rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+      color:var(--red);margin:0 0 10px;
+    }
+    .sec-head h2{
+      font-family:var(--display);font-weight:400;margin:0;
+      font-size:clamp(2rem,4.4vw,3.2rem);line-height:1;text-transform:uppercase;
+    }
+    .rule{width:58px;height:3px;background:var(--red);margin:16px auto 0;border-radius:2px}
+
+    /* ---------- category cards ---------- */
+    .cats{display:grid;grid-template-columns:repeat(5,1fr);gap:18px}
+    .cat{
+      position:relative;display:block;border:1px solid rgba(255,255,255,.14);
+      border-radius:4px;overflow:hidden;background:var(--panel);
+      transition:border-color .2s ease,transform .2s ease;
+    }
+    .cat:hover{border-color:var(--red);transform:translateY(-3px)}
+    .cat .shot{aspect-ratio:1/1;overflow:hidden}
+    .cat .shot img{width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
+    .cat:hover .shot img{transform:scale(1.05)}
+    .cat .foot{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:16px 16px;
+    }
+    .cat .foot b{
+      font-family:var(--display);font-weight:400;font-size:1.22rem;
+      letter-spacing:.03em;text-transform:uppercase;
+    }
+    .cat .go{
+      width:34px;height:34px;border-radius:50%;background:var(--red);color:#fff;
+      display:grid;place-items:center;font-size:.85rem;flex:0 0 auto;
+    }
+
+    /* ---------- offer band ---------- */
+    .offer{
+      position:relative;border:1px solid var(--red);border-radius:4px;overflow:hidden;
+      display:grid;grid-template-columns:1.05fr 1fr;align-items:center;background:#0d0d0d;
+    }
+    .offer .copy{padding:52px 48px}
+    .offer h2{
+      font-family:var(--display);font-weight:400;margin:0;line-height:.98;
+      font-size:clamp(2.1rem,4.2vw,3.1rem);text-transform:uppercase;
+    }
+    .offer h2 .hl{color:var(--red);display:block}
+    .offer p{margin:18px 0 0;color:#e2e2e2;font-size:1rem}
+    .offer .code{margin:10px 0 0;font-size:1rem;color:#e2e2e2}
+    .offer .code b{color:var(--red);font-weight:700;letter-spacing:.06em}
+    .offer .shot{height:100%;min-height:300px}
+    .offer .shot img{width:100%;height:100%;object-fit:cover}
+    .offer .btn{margin-top:28px}
+
+    /* ---------- footer ---------- */
+    footer.site{background:#070707;border-top:1px solid var(--line);padding:64px 0 0}
+    .fgrid{display:grid;grid-template-columns:1.4fr 1fr 1.3fr 1.2fr;gap:40px}
+    footer.site h4{
+      margin:0 0 20px;font-size:.82rem;font-weight:700;letter-spacing:.16em;
+      text-transform:uppercase;color:#fff;
+    }
+    footer.site p{margin:0;color:var(--muted);font-size:.9rem;line-height:1.65}
+    .flinks{list-style:none;margin:0;padding:0;display:grid;gap:11px}
+    .flinks a{color:var(--muted);font-size:.9rem;display:inline-flex;gap:9px;align-items:center}
+    .flinks a::before{content:"›";color:var(--red);font-weight:700}
+    .flinks a:hover{color:#fff}
+    .hours{display:grid;gap:11px}
+    .hours .row{display:flex;justify-content:space-between;gap:18px;font-size:.9rem;color:var(--muted)}
+    .hours .row b{font-weight:500;color:var(--muted)}
+    .contact{display:grid;gap:14px}
+    .contact .line{display:flex;gap:12px;align-items:flex-start;font-size:.9rem;color:var(--muted)}
+    .contact .line svg{width:17px;height:17px;color:var(--red);flex:0 0 auto;margin-top:3px}
+    .contact a:hover{color:#fff}
+    .social{display:flex;gap:11px;margin-top:22px}
+    .social a{
+      width:38px;height:38px;border-radius:50%;background:#171717;display:grid;place-items:center;
+      color:#fff;transition:background .18s ease;
+    }
+    .social a:hover{background:var(--red)}
+    .social svg{width:17px;height:17px}
+    .legal{
+      margin-top:56px;border-top:1px solid var(--line);padding:22px 0;
+      text-align:center;font-size:.8rem;color:#8a8a8a;
+    }
+    .legal a{color:#8a8a8a;text-decoration:underline}
+
+    /* ---------- responsive ---------- */
+    @media(max-width:1080px){
+      .cats{grid-template-columns:repeat(3,1fr)}
+      .promise .wrap{grid-template-columns:repeat(2,1fr)}
+      .promise .cell:nth-child(3){border-left:0}
+      .promise .cell:nth-child(n+3){border-top:1px solid var(--line)}
+      .fgrid{grid-template-columns:1fr 1fr;gap:36px}
+    }
+    @media(max-width:760px){
+      nav.main{
+        display:none;position:absolute;top:100%;left:0;right:0;
+        flex-direction:column;gap:0;background:#0d0d0d;border-top:1px solid var(--line);
+        padding:8px 24px 16px;
+      }
+      nav.main.open{display:flex}
+      nav.main a{padding:14px 0;border-bottom:1px solid var(--line);width:100%}
+      nav.main a.on::after{display:none}
+      .burger{display:block}
+      .hero{min-height:0;background-position:center}
+      .hero .wrap{padding-top:132px;padding-bottom:56px}
+      .hero::before{background:linear-gradient(180deg,rgba(5,5,5,.90) 0%,rgba(5,5,5,.72) 55%,rgba(5,5,5,.88) 100%)}
+      .hero p.sub{max-width:none}
+      .hero .cta .btn{flex:1 1 auto;justify-content:center}
+      .sec{padding:54px 0}
+      .cats{grid-template-columns:repeat(2,1fr);gap:14px}
+      .offer{grid-template-columns:1fr}
+      .offer .shot{order:-1;min-height:210px}
+      .offer .copy{padding:34px 26px}
+      .promise .wrap{grid-template-columns:1fr}
+      .promise .cell{border-left:0!important}
+      .promise .cell + .cell{border-top:1px solid var(--line)}
+      .fgrid{grid-template-columns:1fr;gap:34px}
+    }
+  </style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="{{shopName}} home">
+      <b>ACOMB</b><span>Pizza Kebab House</span>
+    </a>
+    <button class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="nav">☰</button>
+    <nav class="main" id="nav">
+      <a href="/" class="on">Home</a>
+      <a href="/order">Menu</a>
+      <a href="#offers">Offers</a>
+      <a href="#about">About Us</a>
+      <a href="#contact">Contact</a>
+      <a class="btn btn-primary" href="/order" style="color:#fff">Order Now <span class="arrow">→</span></a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>Taste the<span class="hl">Difference</span></h1>
+    <p class="sub">Delicious Pizzas. Fresh Kebabs.<br />Made for you, every time.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="/order">Order Now <span class="arrow">→</span></a>
+      <a class="btn btn-ghost" href="/order">View Menu</a>
+    </div>
+  </div>
+</section>
+
+<section class="promise">
+  <div class="wrap">
+    <div class="cell">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 16V7h11v9M14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="2"/><circle cx="17.5" cy="17.5" r="2"/></svg>
+      <div><h3>Fast Delivery</h3><p>Quick &amp; reliable delivery to your door</p></div>
+    </div>
+    <div class="cell">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 3 3 20h18L12 3Z"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="9.4" cy="16.6" r="1.2" fill="currentColor"/><circle cx="14.6" cy="16.6" r="1.2" fill="currentColor"/></svg>
+      <div><h3>Fresh Ingredients</h3><p>We use only the freshest ingredients</p></div>
+    </div>
+    <div class="cell">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 2c2.6 3.2 1 5.2.2 6.2C11 9.6 9.5 11 9.5 13a2.5 2.5 0 0 0 5 0c0-.9-.3-1.6-.7-2.2 2.4 1.1 4.2 3.3 4.2 6A6 6 0 0 1 6 16.8C6 11.6 12 9.6 12 2Z"/></svg>
+      <div><h3>Cooked to Perfection</h3><p>Our food is cooked fresh, just for you</p></div>
+    </div>
+    <div class="cell">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19M6 15h4"/></svg>
+      <div><h3>Safe &amp; Secure</h3><p>Secure online payments every time</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="menu">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Our Menu</p>
+      <h2>Something for everyone</h2>
+      <div class="rule"></div>
+    </div>
+    <div class="cats">
+      <a class="cat" href="/order"><div class="shot"><img src="/assets/offer-pizza.png" alt="Freshly baked pizza" loading="lazy" /></div><div class="foot"><b>Pizza</b><span class="go">→</span></div></a>
+      <a class="cat" href="/order"><div class="shot"><img src="/assets/kebab.jpg" alt="Doner kebab" loading="lazy" /></div><div class="foot"><b>Kebabs</b><span class="go">→</span></div></a>
+      <a class="cat" href="/order"><div class="shot"><img src="/assets/burger.jpg" alt="Burger" loading="lazy" /></div><div class="foot"><b>Burgers</b><span class="go">→</span></div></a>
+      <a class="cat" href="/order"><div class="shot"><img src="/assets/sides.jpg" alt="Sides" loading="lazy" /></div><div class="foot"><b>Sides</b><span class="go">→</span></div></a>
+      <a class="cat" href="/order"><div class="shot"><img src="/assets/drinks.jpg" alt="Cold drinks" loading="lazy" /></div><div class="foot"><b>Drinks</b><span class="go">→</span></div></a>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="offers" style="padding-top:0">
+  <div class="wrap">
+    <div class="offer">
+      <div class="copy">
+        <h2>10% Off<span class="hl">Your First Order</span></h2>
+        <p>Order online today and get 10% off your first order</p>
+        <p class="code">Use code: <b>ACOMB10</b></p>
+        <a class="btn btn-primary" href="/order">Order Now <span class="arrow">→</span></a>
+      </div>
+      <div class="shot"><img src="/assets/offer-pizza.png" alt="Pizza in a takeaway box" loading="lazy" /></div>
+    </div>
+  </div>
+</section>
+
+<footer class="site" id="contact">
+  <div class="wrap">
+    <div class="fgrid">
+      <div id="about">
+        <a class="brand" href="/" style="margin-bottom:18px"><b>ACOMB</b><span>Pizza Kebab House</span></a>
+        <p>We serve the best pizzas and kebabs in town. Fresh ingredients, great taste, fast delivery.</p>
+        <div class="social">
+          <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5h1.65V3.6c-.29-.04-1.27-.12-2.41-.12-2.39 0-4.02 1.46-4.02 4.13V9.9H7.5V13h2.77v8h3.23Z"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="3.8"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor"/></svg></a>
+          <a href="#" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 3h2.6a5.4 5.4 0 0 0 4.4 4.4v2.7a8 8 0 0 1-4.4-1.5v5.8A5.9 5.9 0 1 1 10.7 8.6v2.8a3.1 3.1 0 1 0 2.2 3V3Z"/></svg></a>
+          <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12s0-3-.4-4.4a2.7 2.7 0 0 0-1.9-1.9C18.3 5.3 12 5.3 12 5.3s-6.3 0-7.7.4a2.7 2.7 0 0 0-1.9 1.9C2 9 2 12 2 12s0 3 .4 4.4a2.7 2.7 0 0 0 1.9 1.9c1.4.4 7.7.4 7.7.4s6.3 0 7.7-.4a2.7 2.7 0 0 0 1.9-1.9C22 15 22 12 22 12ZM10 15.2V8.8l5.3 3.2L10 15.2Z"/></svg></a>
+        </div>
+      </div>
+
+      <div>
+        <h4>Quick Links</h4>
+        <ul class="flinks">
+          <li><a href="/">Home</a></li>
+          <li><a href="/order">Menu</a></li>
+          <li><a href="#offers">Offers</a></li>
+          <li><a href="#about">About Us</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Opening Hours</h4>
+        <div class="hours">
+          <div class="row"><b>Monday – Thursday</b><span>4:00pm – 11:45pm</span></div>
+          <div class="row"><b>Friday – Saturday</b><span>4:00pm – 12:45am</span></div>
+          <div class="row"><b>Sunday</b><span>4:00pm – 11:45pm</span></div>
+        </div>
+      </div>
+
+      <div>
+        <h4>Contact Us</h4>
+        <div class="contact">
+          <a class="line" href="tel:{{shopPhoneTel}}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 3.5h3.2l1.6 4-2 1.4a12.5 12.5 0 0 0 5.3 5.3l1.4-2 4 1.6V17a2.5 2.5 0 0 1-2.7 2.5A15.6 15.6 0 0 1 2.5 6.2 2.5 2.5 0 0 1 5 3.5Z"/></svg>
+            <span>{{shopPhone}}</span>
+          </a>
+          <div class="line">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg>
+            <span>{{shopFullAddress}}</span>
+          </div>
+          <a class="btn btn-primary" href="/order" style="margin-top:6px">Order Now <span class="arrow">→</span></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="legal">
+      © <span id="yr">2026</span> {{shopName}}. All rights reserved. ·
+      <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> ·
+      <a href="/allergy-info.html">Allergy info</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+  var burger = document.getElementById('burger'), nav = document.getElementById('nav');
+  burger.addEventListener('click', function () {
+    var open = nav.classList.toggle('open');
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    burger.textContent = open ? '✕' : '☰';
+  });
+  nav.addEventListener('click', function (e) {
+    if (e.target.closest('a')) { nav.classList.remove('open'); burger.textContent = '☰'; burger.setAttribute('aria-expanded', 'false'); }
+  });
+</script>
+</body>
+</html>

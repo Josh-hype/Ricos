@@ -7,24 +7,25 @@
     "legalName": "TODO_LEGAL_NAME",
     "companyNumber": "TODO_COMPANY_NUMBER",
     "address": {
-      "line1": "TODO_ADDRESS_LINE_1",
+      "line1": "2 Front Street",
       "city": "York",
-      "postcode": "TODO_POSTCODE",
+      "postcode": "YO24 3BQ",
       "country": "United Kingdom"
     },
-    "phone": "TODO_PHONE",
+    "phone": "01904 785588",
     "email": "TODO_ORDERS_EMAIL",
     "domain": "TODO_DOMAIN"
   },
-  "_comment_theme": "Brand colours — STILL THE TEMPLATE DEFAULT (Rico's red). tools/design-loop replaces these with the palette sampled from the owner's reference visual. Don't hand-pick them before the reference is in.",
+  "_comment_theme": "Sampled from the owner's reference visual: near-black page (#0a0a0a), brand red around #cf1c20, gold from the logo badge. This is a DARK site — unlike every other shop on the platform, whose order page is cream. The design loop refines these against the measured palette.",
   "theme": {
-    "primary": "#c8261c",
-    "primaryDark": "#a01910",
-    "primaryDeep": "#7d1208",
-    "accent": "#f5b71e",
-    "accentDeep": "#d99a00",
-    "background": "#fff5d8",
-    "surface": "#fffaeb"
+    "primary": "#cf1c20",
+    "primaryDark": "#a81317",
+    "primaryDeep": "#7d0d10",
+    "accent": "#c9a227",
+    "accentDeep": "#9c7b12",
+    "background": "#0a0a0a",
+    "surface": "#141414",
+    "chrome": "#0a0a0a"
   },
   "fulfillment": {
     "collection": {
@@ -55,13 +56,13 @@
     "connectedAccountId": "acct_REPLACE_WITH_STRIPE_CONNECT_ID"
   },
   "hours": {
-    "_comment": "24-hour format. Closes after midnight are written as 25:00 = 01:00 next day. lastOrderBeforeCloseMinutes is subtracted automatically for the cut-off.",
+    "_comment": "From the shop's Google Business Profile (Aug 2026): Sun-Thu 4pm-11:45pm, Fri+Sat 4pm-12:45am. A close after midnight is written past 24:00 — 24:45 = 00:45 the next day. lastOrderBeforeCloseMinutes is subtracted for the online cut-off.",
     "monday": {
       "closed": false,
       "windows": [
         {
-          "open": "12:00",
-          "close": "22:00"
+          "open": "16:00",
+          "close": "23:45"
         }
       ]
     },
@@ -69,8 +70,8 @@
       "closed": false,
       "windows": [
         {
-          "open": "12:00",
-          "close": "22:00"
+          "open": "16:00",
+          "close": "23:45"
         }
       ]
     },
@@ -78,8 +79,8 @@
       "closed": false,
       "windows": [
         {
-          "open": "12:00",
-          "close": "22:00"
+          "open": "16:00",
+          "close": "23:45"
         }
       ]
     },
@@ -87,8 +88,8 @@
       "closed": false,
       "windows": [
         {
-          "open": "12:00",
-          "close": "22:00"
+          "open": "16:00",
+          "close": "23:45"
         }
       ]
     },
@@ -96,8 +97,8 @@
       "closed": false,
       "windows": [
         {
-          "open": "12:00",
-          "close": "22:00"
+          "open": "16:00",
+          "close": "24:45"
         }
       ]
     },
@@ -105,8 +106,8 @@
       "closed": false,
       "windows": [
         {
-          "open": "12:00",
-          "close": "22:00"
+          "open": "16:00",
+          "close": "24:45"
         }
       ]
     },
@@ -114,8 +115,8 @@
       "closed": false,
       "windows": [
         {
-          "open": "12:00",
-          "close": "22:00"
+          "open": "16:00",
+          "close": "23:45"
         }
       ]
     }
