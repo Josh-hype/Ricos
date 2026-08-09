@@ -10,7 +10,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700&family=Oswald:wght@500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700&family=Kaushan+Script&family=Oswald:wght@500&display=swap" rel="stylesheet" />
 
   <style>
     /* Dark house style, taken from the owner's reference visual. This is the
@@ -147,20 +147,50 @@
       background:linear-gradient(90deg,rgba(4,4,4,.74) 0%,rgba(4,4,4,.44) 24%,rgba(4,4,4,0) 46%);
     }
     /* width:100% or the flex hero shrink-wraps the container and centres it. */
-    .hero .wrap{position:relative;z-index:2;width:100%;padding-top:150px;padding-bottom:120px}
+    .hero .wrap{position:relative;z-index:2;width:100%;padding-top:130px;padding-bottom:70px}
     /* Capped so the copy stays in the dark-left zone and never overlaps the food
        (which starts ~42% across). min() keeps it clear at every width. */
     .hero-copy{max-width:min(560px,46%)}
+    /* Script kicker above the headline with a short red underline swash —
+       the reference's "Fresh. Hot. Made for you." */
+    .hero .kicker{
+      font-family:'Kaushan Script',cursive;font-weight:400;
+      font-size:clamp(1.25rem,1.9vw,1.9rem);color:#fff;
+      margin:0 0 12px;position:relative;display:inline-block;line-height:1;
+    }
+    .hero .kicker::after{
+      content:"";position:absolute;left:2px;right:12%;bottom:-6px;height:2px;
+      background:var(--red);border-radius:2px;
+    }
+    /* Grunge lettering: an SVG turbulence mask (filter def inline at the top of
+       <body>) erodes fine speckles out of the Anton letters, giving the
+       reference's worn/stamped look without a bespoke distressed webfont. */
     .hero h1{
       font-family:var(--display);font-weight:400;margin:0;
       font-size:clamp(2.6rem,6.4vw,6.4rem);line-height:.98;letter-spacing:.005em;
-      text-transform:uppercase;
+      text-transform:uppercase;filter:url(#grunge);
     }
     .hero h1 .hl{color:var(--red);display:block;font-size:1.06em}
     .hero p.sub{
-      margin:24px 0 0;font-size:clamp(1.05rem,1.5vw,1.5rem);color:#e9e9e9;line-height:1.5;
+      margin:22px 0 0;font-size:clamp(1.05rem,1.4vw,1.4rem);color:#e9e9e9;line-height:1.5;
     }
-    .hero .cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:32px}
+    .hero .cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px}
+    /* Feature badges pulled into the hero (the reference has them here, not in a
+       separate strip): red ring icon + title + sub, in a row along the bottom. */
+    /* One row of four, as in the reference — and sized so all four stay inside
+       the image's dark-left zone. At the previous size the row ran to 58% and
+       the last two badges landed on the lit pizza (measured plate luminance 98,
+       peaks 253), which is unreadable however the text is coloured. The
+       reference fits them in the left ~45%, so this does too. */
+    .hero-feats{display:flex;flex-wrap:nowrap;gap:18px;margin-top:34px;max-width:min(600px,44%)}
+    .hero-feat{display:flex;align-items:center;gap:9px;white-space:nowrap}
+    .hero-feat .ic{
+      width:38px;height:38px;border-radius:50%;flex:0 0 auto;
+      border:1.5px solid rgba(207,28,32,.85);display:grid;place-items:center;color:var(--red);
+    }
+    .hero-feat .ic svg{width:18px;height:18px}
+    .hero-feat b{display:block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#fff;line-height:1.12}
+    .hero-feat span{display:block;font-size:.62rem;color:#c2c2c2;margin-top:2px}
 
     /* ---------- promise strip ---------- */
     .promise{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#080808}
@@ -200,9 +230,20 @@
       font-size:1.4rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;
       color:var(--red-text);margin:0 0 10px;
     }
+    /* Script eyebrow ("Our Favourites") — matches the hero kicker's hand. */
+    .eyebrow.script{
+      font-family:'Kaushan Script',cursive;font-weight:400;text-transform:none;
+      letter-spacing:0;font-size:clamp(1.1rem,1.7vw,1.6rem);
+    }
     .sec-head h2{
       font-family:var(--display);font-weight:400;margin:0;
       font-size:clamp(2.2rem,5vw,3.65rem);line-height:1;text-transform:uppercase;
+    }
+    /* Heading flanked by red rules, as in the reference. */
+    .sec-head h2.ruled{display:flex;align-items:center;justify-content:center;gap:22px}
+    .sec-head h2.ruled::before,.sec-head h2.ruled::after{
+      content:"";height:2px;background:var(--red);border-radius:2px;
+      width:clamp(40px,9vw,120px);flex:0 0 auto;
     }
     .rule{width:58px;height:3px;background:var(--red);margin:16px auto 0;border-radius:2px}
 
@@ -329,6 +370,12 @@
       .hero .wrap{padding:34px 24px 44px}
       .hero-copy{max-width:none}
       .hero .cta .btn{flex:1 1 auto;justify-content:center}
+      /* Badges: two per row on a phone rather than a cramped single line. */
+      .hero-feats{display:grid;grid-template-columns:1fr 1fr;gap:18px 14px;margin-top:32px;max-width:none}
+      .hero-feat .ic{width:40px;height:40px}
+      .hero-feat .ic svg{width:19px;height:19px}
+      .sec-head h2.ruled{gap:12px}
+      .sec-head h2.ruled::before,.sec-head h2.ruled::after{width:clamp(16px,6vw,40px)}
       .sec{padding:54px 0}
       .cats{grid-template-columns:repeat(2,1fr);gap:14px}
       /* Five cards in a 2-up grid leaves Drinks orphaned beside an empty
@@ -363,6 +410,20 @@
 </head>
 <body>
 
+<!-- Grunge filter for the hero lettering. Fractal noise displaces the glyph
+     edges and a steep alpha curve bites fine speckles out of the fill, giving
+     the reference's worn/stamped look from the clean Anton webfont — no
+     bespoke distressed font to license or self-host. Purely decorative. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <filter id="grunge" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" seed="7" result="n" />
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2" xChannelSelector="R" yChannelSelector="G" result="d" />
+    <feComponentTransfer in="d">
+      <feFuncA type="discrete" tableValues="0 0 .35 1 1 1 1 1" />
+    </feComponentTransfer>
+  </filter>
+</svg>
+
 <header class="site">
   <div class="wrap">
     <a class="brand" href="/" aria-label="{{shopName}} home">
@@ -384,33 +445,31 @@
   <div class="hero-media" aria-hidden="true"></div>
   <div class="wrap">
     <div class="hero-copy">
+      <p class="kicker">Fresh. Hot. Made for you.</p>
       <h1>Taste the<span class="hl">Difference</span></h1>
-      <p class="sub">Delicious Pizzas. Fresh Kebabs.<br />Made for you, every time.</p>
+      <p class="sub">Delicious pizzas. Juicy kebabs.<br />Made fresh with quality ingredients,<br />just for you.</p>
       <div class="cta">
         <a class="btn btn-primary" href="/order">Order Now <span class="arrow">→</span></a>
         <a class="btn btn-ghost" href="/order">View Menu</a>
       </div>
     </div>
-  </div>
-</section>
-
-<section class="promise">
-  <div class="wrap">
-    <div class="cell">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5.2" cy="17.5" r="3"/><circle cx="18.6" cy="17.5" r="3"/><path d="M8.2 17.5h7.4"/><rect x="1.4" y="4.4" width="6" height="5" rx=".9"/><path d="M7.4 9.4v3.1a1.6 1.6 0 0 0 1.6 1.6h2.3l2.6-7.7h2.4"/><path d="m15.9 6.4 2.7 11.1"/></svg>
-      <div><h3>Fast Delivery</h3><p>Quick &amp; reliable delivery to your door</p></div>
-    </div>
-    <div class="cell">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.2 3.4 19.8q8.6 3.4 17.2 0Z"/><path d="M5.4 16.2q6.6 2.6 13.2 0"/><circle cx="12" cy="11" r="1.15" fill="currentColor" stroke="none"/><circle cx="9.6" cy="16" r="1.15" fill="currentColor" stroke="none"/><circle cx="14.4" cy="16" r="1.15" fill="currentColor" stroke="none"/></svg>
-      <div><h3>Fresh Ingredients</h3><p>We use only the freshest ingredients</p></div>
-    </div>
-    <div class="cell">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.2c1.8 2.3 .6 3.8 0 4.6 -.8 1 -1.6 1.8 -1.6 3a1.6 1.6 0 0 0 3.2 0c0 -.6 -.2 -1 -.4 -1.4 1.5 .7 2.5 2.1 2.5 3.7a3.7 3.7 0 0 1 -7.4 0c0 -3.5 3.7 -4.8 3.7 -9.9Z"/><path d="M3 17.4h18c-.6 2.6-3 4.4-5.7 4.4H8.7C6 21.8 3.6 20 3 17.4Z"/></svg>
-      <div><h3>Cooked to Perfection</h3><p>Our food is cooked fresh, just for you</p></div>
-    </div>
-    <div class="cell">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19M6 15h4"/></svg>
-      <div><h3>Safe &amp; Secure</h3><p>Secure online payments every time</p></div>
+    <div class="hero-feats">
+      <div class="hero-feat">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.4c1.9 2.4 .7 4 0 4.9-.9 1.1-1.8 2-1.8 3.4a1.8 1.8 0 0 0 3.6 0c0-.7-.2-1.2-.5-1.7 1.7.8 2.9 2.4 2.9 4.3a4.2 4.2 0 0 1-8.4 0c0-3.9 4.2-5.3 4.2-10.9Z"/></svg></span>
+        <div><b>Fresh</b><span>Made Daily</span></div>
+      </div>
+      <div class="hero-feat">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="5.2"/><path d="m8.6 13.4-1.4 7 4.8-2.4 4.8 2.4-1.4-7"/><path d="m12 6.4 1 2 2.2.3-1.6 1.5.4 2.2-2-1.1-2 1.1.4-2.2L9.8 8.7l2.2-.3Z"/></svg></span>
+        <div><b>Quality</b><span>Premium Ingredients</span></div>
+      </div>
+      <div class="hero-feat">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="17.4" r="2.4"/><circle cx="17.6" cy="17.4" r="2.4"/><path d="M8.4 17.4h6.8l2.4-6.6h2.6"/><path d="M3.6 8.6h4.4l3.1 8.8"/></svg></span>
+        <div><b>Fast Delivery</b><span>Right to Your Door</span></div>
+      </div>
+      <div class="hero-feat">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 21.5V10.2l4.4-6.7c1.3 0 2.2 1.1 1.9 2.4L12.2 10h5.4c1.3 0 2.2 1.2 1.9 2.4l-1.6 6.4c-.2 1.1-1.2 1.8-2.3 1.8H7Z"/><rect x="3" y="10.2" width="4" height="11.3" rx="1"/></svg></span>
+        <div><b>Great Prices</b><span>Best Value Around</span></div>
+      </div>
     </div>
   </div>
 </section>
@@ -418,9 +477,8 @@
 <section class="sec" id="menu">
   <div class="wrap">
     <div class="sec-head">
-      <p class="eyebrow">Our Menu</p>
-      <h2>Something for everyone</h2>
-      <div class="rule"></div>
+      <p class="eyebrow script">Our Favourites</p>
+      <h2 class="ruled"><span>What&rsquo;s Your Craving?</span></h2>
     </div>
     <div class="cats">
       <!-- TODO: needs its own portrait pizza photo (>=700x1000, dark ground).
