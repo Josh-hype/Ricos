@@ -10,7 +10,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700&family=Kaushan+Script&family=Oswald:wght@500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700&family=Kaushan+Script&family=Oswald:wght@500;700&display=swap" rel="stylesheet" />
 
   <style>
     /* Dark house style, taken from the owner's reference visual. This is the
@@ -49,7 +49,11 @@
          medium-condensed face. */
       --label:"Oswald","Arial Narrow",Impact,sans-serif;
       --body:"DM Sans",system-ui,-apple-system,sans-serif;
-      --wrap:1370px;
+      /* Measured off the reference: content sits ~114px in from the left edge
+         and the header CTA ends 102px from the right. 1266 + the 24px .wrap
+         padding lands at x=111 / 1329 on a 1440 page (was 1370 → 59px gutters,
+         ~55px too tight on both sides). */
+      --wrap:1266px;
     }
     *{box-sizing:border-box}
     html{-webkit-text-size-adjust:100%}
@@ -66,15 +70,23 @@
     .btn{
       display:inline-flex;align-items:center;gap:12px;
       font-family:var(--label);font-weight:500;font-size:1.35rem;
-      letter-spacing:.03em;text-transform:uppercase;line-height:1.05;
-      padding:16px 26px;border-radius:10px;border:2px solid transparent;
+      /* No tracking: the cap height already matches the reference exactly, and
+         .03em at 21.6px added 0.65px per gap — 5.2px of the 7.5px by which
+         "ORDER NOW" (104 CSS px) overran the reference's 96.5. */
+      letter-spacing:0;text-transform:uppercase;line-height:1.05;
+      /* Reference pill measures 190x54 CSS; 16/26 padding rendered 201x62. */
+      padding:13px 23px;border-radius:10px;border:2px solid transparent;
       min-height:48px;   /* thumb-sized on a phone, whatever the design implies */
       transition:background .18s ease,border-color .18s ease,transform .18s ease;
     }
     .btn:hover{transform:translateY(-1px)}
     .btn-primary{background:var(--red);color:#fff}
     .btn-primary:hover{background:var(--red-dark)}
-    .btn-ghost{border-color:rgba(255,255,255,.75);color:#fff}
+    /* .58, not .75: at 2px the heavier alpha rendered a solid rgb(192,192,192)
+       run — a bright silver frame — where the reference integrates to ~1.1 CSS
+       px of white and reads as a quiet hairline. The white label on it is
+       untouched (still ~20:1 on the black hero). */
+    .btn-ghost{border-color:rgba(255,255,255,.58);color:#fff}
     .btn-ghost:hover{background:rgba(255,255,255,.1)}
     /* The reference badge is an unfilled ring — a light hairline with the
        button red showing through — not the dark disc a translucent black fill
@@ -92,28 +104,69 @@
       padding:10px 0;
       /* The reference sits the nav on black; without a scrim the kebab spit
          shows through and the links drop to ~3.4:1. */
-      background:linear-gradient(180deg,rgba(0,0,0,.88) 0%,rgba(0,0,0,.55) 62%,rgba(0,0,0,0) 100%);
+      /* Solid black for the first 11px so the red rule below sits on flat black
+         rather than on the kebab spit — the reference's rows 0-4 are ≤(9,6,9)
+         right across the capture, including the columns where the oven glow is
+         otherwise bright. */
+      background:linear-gradient(180deg,#000 0,#000 11px,rgba(0,0,0,.88) 11px,rgba(0,0,0,.55) 62%,rgba(0,0,0,0) 100%);
+    }
+    /* Full-bleed red hairline across the very top — it is in the reference
+       (every column red at rows 6-9 of the 929px capture, ~2px there = 3px at
+       1440), inset ~8px from the page edge with black above it. It hangs off
+       header.site rather than body{border-top} because the header is
+       position:absolute;top:0 and would paint straight over it. */
+    header.site::before{
+      content:"";position:absolute;top:8px;left:0;right:0;height:3px;background:var(--red);
     }
     header.site .wrap{display:flex;align-items:center;gap:28px}
     /* The owner's real badge logo (assets/logo-mark.png — the black background
        keyed off so it floats on the page), used instead of the reference's
        text wordmark. */
     .brand{display:inline-flex;line-height:1}
-    .brand-logo{display:block;height:66px;width:auto}
+    /* The reference badge shows 88x90px of visible artwork. This asset is 83%
+       ink inside its box, so a 110px box yields ~91px of mark. The header is
+       position:absolute, so the taller badge overhangs the hero rather than
+       reflowing anything. */
+    .brand-logo{display:block;height:110px;width:auto}
+    /* logo-mark.png carries ~11px of transparent padding at the 110px header
+       size, so the visible disc floated 15px right and 11px high of the
+       reference's (108-196 x / 30-118 y). Shifted visually only — position
+       offsets keep the flex row's geometry unchanged. The footer badge is a
+       different size and is not covered by the reference, so it keeps its box. */
+    header.site .brand-logo{position:relative;left:-14px;top:9px}
     footer.site .brand-logo{height:88px}
-    @media(max-width:560px){ .brand-logo{height:52px} }
-    /* Reference nav: five links on a ~45px rhythm, then a wide breathing gap
-       before the CTA pill (link run 507-990, pill 1171-1388). */
-    nav.main{margin-left:auto;display:flex;gap:45px;align-items:center}
+    /* Step down once the nav collapses so the badge doesn't crowd the burger.
+       Both rules live here, before the ≤760px block, so the narrower query
+       still wins on a phone. */
+    /* The transparent-padding offset scales with the badge, so step it down
+       with the height rather than leaving the desktop value to overshoot. */
+    @media(max-width:760px){ .brand-logo{height:78px} header.site .brand-logo{left:-10px;top:6px} }
+    @media(max-width:560px){ .brand-logo{height:70px} header.site .brand-logo{left:-9px;top:6px} }
+    /* Reference nav: five links on a ~57px rhythm (link edges 497.6 / 596.8 /
+       696.0 / 807.6 / 936.2, run ending at 1004), then a breathing gap before
+       the CTA pill. At 45px the run ended 51px short at x=953 and the nav read
+       tight against the same-width logo and pill. */
+    /* Fluid so the wider rhythm + the wider link type can't push the CTA pill
+       past the right gutter between 760px (where the nav collapses) and ~1010px.
+       3.96vw resolves to exactly 57px at the 1440 the reference was measured at. */
+    nav.main{margin-left:auto;display:flex;gap:clamp(30px,3.96vw,57px);align-items:center}
     nav.main a{
-      font-family:var(--label);font-size:1.3rem;font-weight:500;
+      /* 1.14rem: at 1.05 the nav caps measured 11.5 CSS px against the
+         reference's 12.5 (MENU 37.5 vs 40.5), ~8% under across all five links.
+         Still a clear step below the 1.35rem CTA label, as the reference has.
+         Tracking already matches. */
+      font-family:var(--label);font-size:1.14rem;font-weight:500;
       letter-spacing:.06em;text-transform:uppercase;
       color:#e8e8e8;padding:6px 0;position:relative;
     }
     /* Without this the nav link rule out-specifies .btn and the header CTA
        renders smaller than the identical button in the hero and footer. */
-    nav.main a.btn{font-size:1.35rem;letter-spacing:.03em;padding:16px 26px}
-    nav.main .btn{margin-left:136px}
+    nav.main a.btn{font-size:1.35rem;letter-spacing:0;padding:13px 23px}
+    /* 88px, paired with the 57px link rhythm above: the wider run plus this gap
+       lands the link run's end at ~1001 (reference 1004) and holds the pill at
+       x≈1146. The pill's right edge stays on the symmetric --wrap gutter at
+       1329 rather than chasing the reference's asymmetric 1341. */
+    nav.main .btn{margin-left:clamp(32px,6.11vw,88px)}
     nav.main a.on,nav.main a:hover{color:var(--red-text)}
     nav.main a.on::after{
       content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--red);
@@ -124,39 +177,84 @@
     }
 
     /* ---------- hero ---------- */
-    /* Owner's direction: show the WHOLE hero image, don't fade the food. The
-       asset (1536x1024, aspect 1.5) has a near-black left ~40% (measured
-       brightness 1-10) and the pizza/kebab in the right ~58%. So the image is
-       shown at its own aspect with `cover` (min-height tracks 66vw, which at a
-       1440 page is ~950px ~ the asset's own 960px height — negligible crop, the
-       whole shot on screen) and the heading sits in that natural dark-left zone.
-       No scrim over the food: the vignette below is fully transparent past 46%,
-       and the copy is width-capped so it can never reach the pizza. */
+    /* The asset (1536x1024, aspect 1.5) has a near-black left ~40% (measured
+       brightness 1-10) and the pizza/kebab in the right ~58%; the heading sits
+       in that natural dark-left zone. No scrim over the food: the vignette
+       below is fully transparent past 46%, and the copy is width-capped so it
+       can never reach the pizza.
+       Band height: the reference cuts the photo off hard at y=800 on a 1440
+       page (55.5vw), and a best-fit crop test puts the reference's framing at
+       offset 0 — i.e. TOP-anchored, with the bottom ~160px (the pizza board and
+       the counter under it) cropped away. 66vw + `center center` showed the
+       whole shot and left 180px of dead hero under the badge row. The 600px
+       floor is not cosmetic: below ~1080px the copy block is nearly as tall as
+       55.5vw, and without it the kicker slides up under the (now 130px) header. */
     .hero{
       position:relative;display:flex;align-items:center;
-      min-height:clamp(540px,66vw,980px);background:var(--ink);
+      min-height:clamp(600px,55.5vw,820px);background:var(--ink);
     }
     .hero-media{
       position:absolute;inset:0;
-      background:#0a0a0a url("/assets/hero.png") center center/cover no-repeat;
+      background:#0a0a0a url("/assets/hero.png") center top/cover no-repeat;
     }
     /* Left-only vignette: guarantees text contrast on the dark-left even if the
-       framing shifts, and is fully clear (alpha 0) across the food from 46% on. */
+       framing shifts, and is fully clear (alpha 0) across the food from 54% on.
+       The stop moved 46% → 54% (662px → 777px at 1440) to carry the dark ground
+       past the badge row's new right edge at x=639, where this crop starts the
+       lit crust 37px further left than the reference's does. It is a gentle
+       ramp, not a scrim: ~0.12 alpha at x=662 falling to 0 at 777, and it lands
+       on the one hero block measured brighter than the reference (x360-720
+       y600-803: ref (31,21,14) vs build (49,37,26)). */
+    /* Two layers, because the copy block needs more ground than the headline
+       does. The linear ramp is the original left vignette; the radial adds a
+       bottom-left pool under the CTA row and the badge row only. Measured on
+       the clean strip between the two (y662-700, x111-660) the build read
+       #0e0c09 / meanL 0.0105 with per-channel std ~(28,23,17) — the counter's
+       speckle showing through — against the reference's flat #050401 / 0.0012 /
+       std ~(5,4,3). The radial's ~0.46 alpha there takes it to ≈#070605. It
+       costs no contrast (every glyph in that band already sits at 8.4:1 or
+       better on near-black) and it stays clear of the pizza, which the
+       reference keeps bright. */
     .hero-media::after{
       content:"";position:absolute;inset:0;
-      background:linear-gradient(90deg,rgba(4,4,4,.74) 0%,rgba(4,4,4,.44) 24%,rgba(4,4,4,0) 46%);
+      background:
+        radial-gradient(96% 52% at 0% 100%, rgba(4,4,4,.72) 0%, rgba(4,4,4,.40) 58%, rgba(4,4,4,0) 100%),
+        linear-gradient(90deg,rgba(4,4,4,.74) 0%,rgba(4,4,4,.44) 24%,rgba(4,4,4,0) 54%);
     }
     /* width:100% or the flex hero shrink-wraps the container and centres it. */
-    .hero .wrap{position:relative;z-index:2;width:100%;padding-top:130px;padding-bottom:70px}
+    /* The copy is centred in the band, so the padding difference (top minus
+       bottom) is what bottom-weights it. The reference sits the kicker at
+       y≈188 with only ~35px under the badge row — a ~145px asymmetry — and the
+       taller headline below eats into that, hence 130/16 rather than 130/70. */
+    /* padding-top 144, not 130: the stack below gained 14px net (kicker gap
+       +26, sub -11, cta -5, badge margin +11, badge row -7 from the smaller
+       icons). The wrap is centred in the band, so holding the kicker's glyph
+       top at y=186 means moving padding-top by the SAME amount as the content
+       change, not half of it — half the added padding is given back by the
+       re-centring. */
+    .hero .wrap{position:relative;z-index:2;width:100%;padding-top:161px;padding-bottom:16px}
     /* Capped so the copy stays in the dark-left zone and never overlaps the food
        (which starts ~42% across). min() keeps it clear at every width. */
     .hero-copy{max-width:min(560px,46%)}
     /* Script kicker above the headline with a short red underline swash —
        the reference's "Fresh. Hot. Made for you." */
+    /* Kaushan Script, not Nothing You Could Do. The earlier rejection of Kaushan
+       was made on a SIZE-MATCHED sample, which is the wrong comparison: NYCD is
+       a print-hand whose letters are disconnected, so it has to be set ~8%
+       larger to fill the same box and then carries far more white between the
+       glyphs. Measured on the actual string "Fresh. Hot. Made for you." (canvas
+       ink box, the reference face measured off landing-desktop.png at
+       x114.7-364.3):
+         reference          249.6 x 31.0  (aspect 8.05)
+         NYCD 27px          323   x 33    (aspect 9.79)  <- 29% too wide
+         Kaushan 25px       253   x 31    (aspect 8.16)  <- matches
+       So 1.74vw (=25.06px at 1440), not 1.9vw. Margin 38px is retuned below
+       against the rendered ink; the reference leaves 44px between the kicker's
+       glyph bottom and the H1 cap top (cap top at 257.3). */
     .hero .kicker{
-      font-family:'Kaushan Script',cursive;font-weight:400;
-      font-size:clamp(1.25rem,1.9vw,1.9rem);color:#fff;
-      margin:0 0 12px;position:relative;display:inline-block;line-height:1;
+      font-family:'Kaushan Script','Segoe Script',cursive;font-weight:400;
+      font-size:clamp(1.15rem,1.74vw,1.7rem);color:#fff;
+      margin:0 0 40px;position:relative;display:inline-block;line-height:1;
     }
     .hero .kicker::after{
       content:"";position:absolute;left:2px;right:12%;bottom:-6px;height:2px;
@@ -167,30 +265,109 @@
        reference's worn/stamped look without a bespoke distressed webfont. */
     .hero h1{
       font-family:var(--display);font-weight:400;margin:0;
-      font-size:clamp(2.6rem,6.4vw,6.4rem);line-height:.98;letter-spacing:.005em;
+      /* Reference caps are 94.6 CSS px ("TASTE THE" 390.6 wide at 1440); 6.4vw
+         rendered 81 caps / 340 wide, 13-14% short, which cost the headline its
+         dominance over body copy that already measured correct. Line pitch 1.03
+         restores the reference's 1.21x cap-height baseline step. */
+      font-size:clamp(2.6rem,7.4vw,7.4rem);line-height:1.03;letter-spacing:.005em;
       text-transform:uppercase;filter:url(#grunge);
     }
-    .hero h1 .hl{color:var(--red);display:block;font-size:1.06em}
+    /* Reference ratio between the two lines is 63/61 = 1.03. */
+    .hero h1 .hl{color:var(--red);display:block;font-size:1.03em}
+    /* 11px, not 22: the reference puts its first sub line at 492.9 against a
+       "DIFFERENCE" bottom of 466.6 — a tighter join than the headline→kicker
+       one above it. */
     .hero p.sub{
-      margin:22px 0 0;font-size:clamp(1.05rem,1.4vw,1.4rem);color:#e9e9e9;line-height:1.5;
+      margin:11px 0 0;font-size:clamp(1.05rem,1.4vw,1.4rem);color:#e9e9e9;line-height:1.5;
     }
-    .hero .cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px}
+    .hero .cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:25px}
     /* Feature badges pulled into the hero (the reference has them here, not in a
        separate strip): red ring icon + title + sub, in a row along the bottom. */
-    /* One row of four, as in the reference — and sized so all four stay inside
-       the image's dark-left zone. At the previous size the row ran to 58% and
-       the last two badges landed on the lit pizza (measured plate luminance 98,
-       peaks 253), which is unreadable however the text is coloured. The
-       reference fits them in the left ~45%, so this does too. */
-    .hero-feats{display:flex;flex-wrap:nowrap;gap:18px;margin-top:34px;max-width:min(600px,44%)}
-    .hero-feat{display:flex;align-items:center;gap:9px;white-space:nowrap}
+    /* One row of four on an EVEN pitch, as in the reference. A flex row can't do
+       this: its intrinsic widths bunched Fresh against Quality (ring lefts
+       111/215/367/508, gaps 104/152/141 against the reference's even ~145), so
+       this is a 4-column grid and the pitch is the column, not the content.
+       Two measurements set the numbers, both taken off landing-desktop.png:
+       - The row is OUTDENTED from the copy column. Reference ring 1 starts at
+         x=83.7 while the kicker/H1/buttons above all start at 113-116. Hence the
+         negative margin, tapered by the clamp so it can never push the first
+         ring off-screen once the page gutter has closed (0 at ≤1160px wide).
+       - Pitch 145 = the reference's mean (its own gaps run 138/147/149). An
+         even 140 looked close enough but is 14px short by the fourth ring, and
+         that is precisely where the row has no slack: it put "FAST DELIVERY"
+         3.5px from the Great Prices ring and left the third divider tick
+         nowhere to go but on top of "Right to Your Door".
+       Result: ring lefts 82/227/372/517 against the reference's 82/220/367/516,
+       and the last ink ("Best Value Around") ends at x≈647 against the
+       reference's 645. The lit crust on THIS crop starts ~37px left of the
+       reference's, at x≈634, so the tail of that label leans on the hero scrim
+       to carry dark ground under it — measured 6.4:1 for #c2c2c2 over x634-650
+       once the scrim below was deepened, which is what makes the reference's
+       true pitch affordable here. Without the outdent the same row would end at
+       676, well past anything the scrim can hold. */
+    .hero-feats{
+      display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+      /* A plain px cap, NOT min(580px,42%): a percentage max-width resolves
+         against the wrap's 1218px content box, not the viewport, so a 42% that
+         looked like 605px was really 512 — a 128px pitch, which wrapped three
+         sub-labels instead of one. */
+      margin-top:56px;max-width:580px;
+      margin-left:calc(-1 * clamp(0px,(100vw - 1160px)/4,29px));
+    }
+    /* flex-start, not centre: in the reference all four headings share one cap
+       band (measured 714.6-723.9 css on every badge) and only Quality's
+       two-line sub hangs below it. Centring would drop QUALITY ~8px under
+       FRESH. nowrap moves to the heading alone so the SUB can still wrap. */
+    .hero-feat{display:flex;align-items:flex-start;gap:6px}
+    /* The text box is capped BELOW the column width on purpose. The reference
+       column is ~147 wide but its text only ever occupies ~78 of it, leaving a
+       gutter for the divider tick — which is how "Premium Ingredients" (90 at
+       this size) wraps while "Right to Your Door" and "Best Value Around" (78)
+       stay on one line. Let the text fill the whole 93px column instead and
+       nothing wraps at all, which is not what the reference shows. */
+    .hero-feat > div{max-width:84px}
+    /* Thin neutral hairline between each pair of badges, as in the reference
+       (measured ~40 CSS px tall, rgba white ~.16 — dim grey, not red). The
+       columns now butt together, so the tick is offset off the column edge to
+       sit ~17px before the next ring, where the reference puts it (tick at
+       x≈203, ring 2 at 220). */
+    .hero-feat + .hero-feat{position:relative}
+    /* top:13px, not 50%: the reference centres the tick on the RING (tick
+       705.3-745.6, ring 702.5-748.5, both centred on 725.5), not on the cell —
+       and the cell is now taller than the ring because Quality's sub wraps.
+       13 = the ring's own centre in cell coordinates (-10 margin + 23 radius).
+       Measured 41.9 css tall in the reference, so 40 stands. */
+    .hero-feat + .hero-feat::before{
+      content:"";position:absolute;left:-7px;top:13px;transform:translateY(-50%);
+      width:1px;height:40px;background:rgba(255,255,255,.16);
+    }
+    /* 46px ring, the reference's measured diameter (47/45/47/48 across the
+       four); the 38px it was reads as a lighter accent than the reference's
+       beside type of the same size. Affordable now only because the outdent
+       above pays for the extra width. margin-top centres the ring on the
+       heading + FIRST sub line (16.1 + 2 + 15.9 = 34px against a 46px ring),
+       not on the whole text block — otherwise Quality's wrapped second line
+       would drag its ring down out of line with the other three. */
     .hero-feat .ic{
-      width:38px;height:38px;border-radius:50%;flex:0 0 auto;
+      width:46px;height:46px;border-radius:50%;flex:0 0 auto;margin-top:-10px;
       border:1.5px solid rgba(207,28,32,.85);display:grid;place-items:center;color:var(--red);
     }
-    .hero-feat .ic svg{width:18px;height:18px}
-    .hero-feat b{display:block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#fff;line-height:1.12}
-    .hero-feat span{display:block;font-size:.62rem;color:#c2c2c2;margin-top:2px}
+    .hero-feat .ic svg{width:23px;height:23px}
+    /* The reference sets these caps in the same medium-condensed face as the
+       nav. .81rem, not .9: measured across all four labels in the reference's
+       cap band (source rows 461-467) the build ran a consistent ~10.5% wide —
+       FRESH 34.0 vs 31.0, QUALITY 46.5 vs 41.9, FAST DELIVERY 83.5 vs 76.0,
+       GREAT PRICES 81.0 vs 72.9. That surplus is also what crowded the row: on
+       an even 140px pitch "FAST DELIVERY" ended 3.5px short of the Great Prices
+       ring where the reference leaves 20px. */
+    .hero-feat b{display:block;font-family:var(--label);font-size:.81rem;font-weight:500;letter-spacing:.02em;text-transform:uppercase;color:#fff;line-height:1.12;white-space:nowrap}
+    /* .57rem for the same reason as the .81rem on b above: measured against the
+       reference's own sub row, the build ran wide — "Right to Your Door" 85 vs
+       74.4, "Made Daily" 47.5 vs 45.0. That surplus is what left the fourth
+       column with no gutter for its tick. This stops short of the reference's
+       implied ~8.7px and holds 9.12px, which still measures 7.7-8.1:1 against
+       the hero ground either side of it. */
+    .hero-feat span{display:block;font-size:.57rem;color:#c2c2c2;margin-top:2px}
 
     /* ---------- promise strip ---------- */
     .promise{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#080808}
@@ -224,33 +401,82 @@
 
     /* ---------- section heading ---------- */
     .sec{padding:40px 0 78px}
+    /* The reference joins the hero photo to the "Our Favourites" script almost
+       flush — its eyebrow's first ink is 13px under the 800px photo cut (glyph
+       top 812.4). 40px put it at 846 and pushed the h2 off a ~890px fold.
+       Scoped to the section that follows the hero so later sections keep the
+       40px; #offers zeroes its own top padding below. */
+    .hero + .sec{padding-top:11px}
+    /* #offers used to carry this inline, which put it out of reach of the
+       ≤760px .sec rule and left the phone with a 78px bottom on the offer band
+       against 54px everywhere else — the 123px void above the footer. */
+    #offers{padding-top:0}
     .sec-head{text-align:center;margin-bottom:20px}
     .eyebrow{
       font-family:var(--label);
       font-size:1.4rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;
       color:var(--red-text);margin:0 0 10px;
     }
-    /* Script eyebrow ("Our Favourites") — matches the hero kicker's hand. */
+    /* Script eyebrow ("Our Favourites") — matches the hero kicker's hand, so it
+       moves to the same brush signature (see .hero .kicker). Size unchanged:
+       at 18px this string measures 106 x 17 CSS against the reference's
+       ~124 x 15.5. Kaushan runs narrower per unit of height than the reference
+       face on this string, so holding the HEIGHT is the right trade — dropping
+       to 17px to chase the width would cost height without closing it (102 x 14).
+       line-height 1.05, not the inherited 1.6: that 1.6 gave an 18px script a
+       29px line box, and the dead leading inside it is most of why the join to
+       the heading measured 26-27px against the reference's 11. Killing the
+       leading plus the 10px margin takes ~20px out; .hero + .sec gives 9px of
+       it back so the script's own ink stays put at y≈813. */
     .eyebrow.script{
-      font-family:'Kaushan Script',cursive;font-weight:400;text-transform:none;
-      letter-spacing:0;font-size:clamp(1.1rem,1.7vw,1.6rem);
+      font-family:'Kaushan Script','Segoe Script',cursive;font-weight:400;text-transform:none;
+      letter-spacing:0;font-size:clamp(.95rem,1.27vw,1.2rem);
+      line-height:1.05;margin:0 0 6px;
     }
+    /* A counterpoint to the hero, not a second hero: the reference sets these
+       caps at 0.34x the hero headline's (31 CSS tall, string 336 wide). At
+       5vw they measured 0.64x and the two headings read as the same rank.
+       Face: the medium-condensed LABEL family at 700, not the display face.
+       Anton rendered the identical string at 1.32x the reference's ink mass
+       (0.623 vs 0.473) with 6.5px stems against 5.0 and counters closed to
+       slits — the reference heading is a lighter, slightly wider condensed
+       gothic. The hero h1 stays on Anton; it matches there (1.11 on the same
+       test). 2.95vw ≈ 42.5px puts the Oswald cap at ~31. The floor drops from
+       1.75rem because Oswald is wider than Anton per px and the ruled heading
+       has to stay on one line on a phone.
+       2.95vw overshot the target it was set for: at 42px Oswald 700 puts the W
+       cap at 34.5 and the string at 417, against the reference's 31.0 and 336.
+       2.62vw = 37.7px lands the cap on 31.0 exactly (measured). The string still
+       comes out ~359 with the -.02em: Oswald 700 runs ~11% wide per unit of cap
+       height compared with the reference face (string/cap 12.09 vs 10.85), so
+       matching the CAP is the right trade — shrinking further to chase the width
+       would put the heading under the reference's size. */
     .sec-head h2{
-      font-family:var(--display);font-weight:400;margin:0;
-      font-size:clamp(2.2rem,5vw,3.65rem);line-height:1;text-transform:uppercase;
+      font-family:var(--label);font-weight:700;margin:0;
+      font-size:clamp(1.5rem,2.62vw,2.35rem);line-height:1;text-transform:uppercase;
+      letter-spacing:-.02em;
     }
     /* Heading flanked by red rules, as in the reference. */
     .sec-head h2.ruled{display:flex;align-items:center;justify-content:center;gap:22px}
     .sec-head h2.ruled::before,.sec-head h2.ruled::after{
       content:"";height:2px;background:var(--red);border-radius:2px;
-      width:clamp(40px,9vw,120px);flex:0 0 auto;
+      /* Reference rules are ~45 CSS px each (left 474→521 = 48, right 921→961 =
+         42), with a 22px gap to the text — not the ~68 an earlier measurement
+         claimed. At 4.7vw they rendered 68/67 and the whole ornament spanned
+         597px against the reference's 487, reading as a banner across the page.
+         3.1vw = 44.6px at 1440. */
+      width:clamp(30px,3.1vw,46px);flex:0 0 auto;
     }
     .rule{width:58px;height:3px;background:var(--red);margin:16px auto 0;border-radius:2px}
 
     /* ---------- category cards ---------- */
     .cats{display:grid;grid-template-columns:repeat(5,1fr);gap:18px}
     .cat{
-      position:relative;display:block;border:1px solid rgba(255,255,255,.14);
+      /* Warm hairline, not a neutral grey one: the reference outline back-solves
+         to ~rgb(21,21,21) with a red cast; rgba(255,255,255,.14) rendered
+         rgb(44,44,44) and read as an outlined plate rather than a photo
+         floating on black. This renders rgb(38,13,13). */
+      position:relative;display:block;border:1px solid rgba(207,28,32,.14);
       border-radius:4px;overflow:hidden;background:var(--panel);
       transition:border-color .2s ease,transform .2s ease;
     }
@@ -258,17 +484,54 @@
     .cat .shot{position:relative;aspect-ratio:7/10;overflow:hidden}
     .cat .shot img{width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
     .cat:hover .shot img{transform:scale(1.05)}
-    /* Four of the five supplied shots are lit on white/pale backgrounds and
-       measure 2-3x brighter than the reference row (kebabs 202, sides 157,
-       burgers 145 against a reference range of 49-112). Until the assets are
-       reshot, knock them back and warm them so the row reads as one dark set.
-       The pizza tile is already darker than its reference counterpart, so it
-       is left alone. */
-    .cats .cat:not(:first-child) .shot img{filter:brightness(.82) saturate(1.05)}
-    .cats .cat:not(:first-child) .shot::after{
+    /* ONE grade for all five tiles. Two things were wrong before.
+       (1) The rule was :not(:first-child), so Pizza was ungraded and sat at
+           mean L 0.132 against 0.057-0.059 for its neighbours — 2.3x the
+           luminance of every other tile, and on a phone (2-up) it lands
+           straight beside the palest one.
+       (2) The sepia() was actively making the problem it was meant to fix.
+           It drove saturation DOWN to 0.27-0.56 and manufactured a flat neutral
+           warm grey — #665345 is the one colour in the whole render with no
+           counterpart anywhere in the reference palette (0.157 share), and it
+           is almost entirely this row. The only photography the owner supplied
+           (the hero) is a rich warm family on black: mean #5a2d15, L 0.083,
+           saturation 0.76. There is no desaturated mid-grey in it at all.
+       So: no sepia, and saturate UP not down. Target every tile at mean L
+       0.07-0.10 and saturation >=0.65 — i.e. the hero's own numbers — which
+       means bringing Pizza down as well as bringing the other four up. The
+       overlay goes neutral so it darkens without tinting toward that grey. */
+    .cats .cat .shot img{filter:brightness(.78) contrast(1.14) saturate(1.12)}
+    .cats .cat .shot::after{
       content:"";position:absolute;inset:0;pointer-events:none;
-      background:linear-gradient(180deg,rgba(117,45,17,.14),rgba(10,10,10,.30));
+      background:linear-gradient(180deg,rgba(0,0,0,.18),rgba(10,10,10,.55));
     }
+    /* Drinks is the exception in the other direction: drinks.jpg is an
+       already-dark ice-bucket shot, and under the common grade it measured 27-32
+       V points below Kebabs/Sides/Burgers, with the Coca-Cola red reading muddy
+       brown. It gets the grade without the brightness cut and a lighter overlay,
+       which brings it back in line with the row rather than above it. */
+    .cats .cat:last-child .shot img{filter:brightness(1) contrast(1.14) saturate(1.12)}
+    .cats .cat:last-child .shot::after{
+      background:linear-gradient(180deg,rgba(0,0,0,.10),rgba(10,10,10,.34));
+    }
+    /* offer-pizza.png is the only pizza asset in the folder and it is used
+       TWICE on this page — this tile and the offer band ~500px below, both on
+       screen together. cover fits the 1536x1024 source into a 227x325 box at
+       0.317, which shows essentially the whole pizza, so the two read as one
+       photograph repeated. Zooming the tile to a two-slice wedge breaks that
+       read. The hover rule is not optional: .cat:hover .shot img{scale(1.05)}
+       below would otherwise reset the zoom on hover. This is a workaround —
+       the real fix is a second pizza photo (see the TODO in the markup). */
+    /* Same brightness exemption as Drinks, for the opposite-looking reason: the
+       1.9x crop lands on the dark topping and crust rather than the lit board,
+       so under the common grade this tile fell to L=0.047 — from 2.3x the row's
+       luminance to 0.6x it. Without the cut it measures L=0.081, inside the
+       0.07-0.10 band with the rest of the row. */
+    .cats .cat:first-child .shot img{
+      filter:brightness(1) contrast(1.14) saturate(1.12);
+      transform-origin:42% 34%;transform:scale(1.9);
+    }
+    .cats .cat:first-child:hover .shot img{transform:scale(2)}
     .cat .foot{
       display:flex;align-items:center;justify-content:space-between;gap:10px;
       padding:16px 16px;
@@ -367,21 +630,68 @@
       .hero{display:block;min-height:0}
       .hero-media{position:relative;height:auto;aspect-ratio:3/2;background-size:cover}
       .hero-media::after{display:none}
-      .hero .wrap{padding:34px 24px 44px}
+      /* 24px bottom, not 44: with 54px on top of the section below, the
+         hero→heading boundary measured 104.5px on a phone against 55px between
+         the cards and the offer panel. 24 brings it to 78 and puts the three
+         block boundaries within 12px of each other. */
+      .hero .wrap{padding:34px 24px 24px}
       .hero-copy{max-width:none}
       .hero .cta .btn{flex:1 1 auto;justify-content:center}
       /* Badges: two per row on a phone rather than a cramped single line. */
-      .hero-feats{display:grid;grid-template-columns:1fr 1fr;gap:18px 14px;margin-top:32px;max-width:none}
-      .hero-feat .ic{width:40px;height:40px}
+      .hero-feats{display:grid;grid-template-columns:1fr 1fr;gap:18px 14px;margin-top:32px;max-width:none;margin-left:0}
+      /* 2-up the heading + first sub line (17 + 2 + 20.5 = 39.5px) already
+         matches the 40px ring, so the desktop centring offset isn't wanted. */
+      .hero-feat .ic{width:40px;height:40px;margin-top:0}
       .hero-feat .ic svg{width:19px;height:19px}
+      /* In a 2x2 grid the divider reads as a stray line. */
+      .hero-feat + .hero-feat::before{display:none}
+      /* The desktop sizes exist only because four badges share 44% of a 1440
+         page; 2-up at full width there is no such constraint, and .62rem =
+         9.9px grey is below the floor for supporting copy on a phone. Dropping
+         the inherited nowrap is required, not optional: "Premium Ingredients"
+         at 12.8px is ~125px and 40+9+125 overruns the 164px column. */
+      /* flex-start, not the desktop centre: "Premium Ingredients" wraps to two
+         lines here, which makes the Quality cell 20px taller than the Fresh
+         cell beside it, and centring dropped "FRESH" 10.5px below "QUALITY".
+         Top-aligned, all four icons and all four headings share a baseline. */
+      /* gap back to 9px too: the 6px desktop value exists only to squeeze four
+         badges into 40% of a 1440 page, which is not a constraint 2-up. */
+      .hero-feat,.hero-feat b{white-space:normal}
+      .hero-feat{align-items:flex-start;gap:9px}
+      /* The 84px desktop cap exists to reserve a gutter for the divider tick in
+         a 145px column; 2-up there is no tick and the column is 164px. */
+      .hero-feat > div{max-width:none}
+      .hero-feat b{font-size:.95rem}
+      .hero-feat span{font-size:.8rem}
       .sec-head h2.ruled{gap:12px}
       .sec-head h2.ruled::before,.sec-head h2.ruled::after{width:clamp(16px,6vw,40px)}
-      .sec{padding:54px 0}
+      /* The .hero + .sec override is desktop framing (it exists to match the
+         reference's flush photo join); on a phone every section keeps the same
+         54px so the block rhythm stays even. */
+      .sec,.hero + .sec{padding:54px 0}
+      /* #offers wins on ID specificity over the .sec rule above, and
+         footer.site is never reduced for phones, so the three big block
+         boundaries measured 84 / 55 / 90px — the cards→offer join ~35% tighter
+         than the two either side of it. 24px on each lands all three at 78. */
+      #offers{padding-top:24px}
+      footer.site{padding-top:24px}
+      /* The only tappable links on the page still at inline text size: 17px of
+         ink with ~9px between them. 14px of padding gives a 45px target and
+         ~12px of separation, absorbed by .legal's existing 22px padding. Don't
+         shrink the type to compensate — 12.8px is the floor for legal copy. */
+      .legal a{display:inline-block;padding:14px 6px}
       .cats{grid-template-columns:repeat(2,1fr);gap:14px}
       /* Five cards in a 2-up grid leaves Drinks orphaned beside an empty
          cell — run it full width as a banner tile instead. */
       .cats .cat:last-child{grid-column:1/-1}
       .cats .cat:last-child .shot{aspect-ratio:16/9}
+      /* At 2-up the card is 164px wide: "Burgers" in Anton 2.1rem needs 116px
+         and the 34px arrow badge needs 44px more than the 130px inner width
+         allows, so the badge was being sliced by the card edge (silently — .cat
+         is overflow:hidden). 12px padding + 1.5rem type leaves ~11px of slack.
+         Don't shrink .go: 34px is already the smallest thing in a 44px row. */
+      .cat .foot{padding:14px 12px}
+      .cat .foot b{font-size:1.5rem;min-width:0}
       .offer{grid-template-columns:1fr}
       .offer .shot{order:-1;height:210px}
       /* One column: the photo sits above the copy, so fade its bottom, not its
@@ -406,6 +716,13 @@
       .flinks{gap:4px}
       .flinks a,.contact .line{min-height:44px;align-items:center}
     }
+    /* Once the heading wraps, the flex rules detach from it and float level
+       with the gap between the two lines, reading as stray marks. At the new
+       1.75rem floor it stays on one line down to ~382px, so the guard sits at
+       400 rather than the 440 the wider type needed. */
+    @media(max-width:400px){
+      .sec-head h2.ruled::before,.sec-head h2.ruled::after{display:none}
+    }
   </style>
 </head>
 <body>
@@ -415,12 +732,22 @@
      the reference's worn/stamped look from the clean Anton webfont — no
      bespoke distressed font to license or self-host. Purely decorative. -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-  <filter id="grunge" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
-    <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" seed="7" result="n" />
-    <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2" xChannelSelector="R" yChannelSelector="G" result="d" />
-    <feComponentTransfer in="d">
-      <feFuncA type="discrete" tableValues="0 0 .35 1 1 1 1 1" />
+  <!-- Speckle, not displacement. Displacing the glyph outline (the previous
+       approach) trades one artefact for another: at a high scale the edges go
+       furry, and at a low enough scale to keep them clean the texture vanishes
+       altogether — which is where it ended up, solid white against a reference
+       that is visibly pitted. So the outline is left exactly as Anton draws it
+       and the noise is used only to knock holes OUT of the fill: threshold the
+       turbulence into hard specks, then subtract them from the glyph. -->
+  <filter id="grunge" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" seed="11" result="n" />
+    <!-- Keep only the top of the noise range as opaque specks; everything else
+         becomes fully transparent, so the subtraction is speckles rather than a
+         uniform wash that would just grey the letters down. -->
+    <feComponentTransfer in="n" result="specks">
+      <feFuncA type="discrete" tableValues="0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1" />
     </feComponentTransfer>
+    <feComposite in="SourceGraphic" in2="specks" operator="out" />
   </filter>
 </svg>
 
@@ -455,19 +782,19 @@
     </div>
     <div class="hero-feats">
       <div class="hero-feat">
-        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.4c1.9 2.4 .7 4 0 4.9-.9 1.1-1.8 2-1.8 3.4a1.8 1.8 0 0 0 3.6 0c0-.7-.2-1.2-.5-1.7 1.7.8 2.9 2.4 2.9 4.3a4.2 4.2 0 0 1-8.4 0c0-3.9 4.2-5.3 4.2-10.9Z"/></svg></span>
+        <span class="ic"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.3 1.4c1.7 3 .9 4.9-.3 6.4-1 1.3-2 2.3-2 3.7a1.6 1.6 0 0 0 3.2 0c0-.6-.1-1.1-.4-1.6 2.1 1.1 3.5 3.2 3.5 5.6a5.9 5.9 0 0 1-11.8 0c0-2.6 1.3-4.2 2.5-5.7 1.6-2 5.3-4.6 5.3-8.4Z"/></svg></span>
         <div><b>Fresh</b><span>Made Daily</span></div>
       </div>
       <div class="hero-feat">
-        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="5.2"/><path d="m8.6 13.4-1.4 7 4.8-2.4 4.8 2.4-1.4-7"/><path d="m12 6.4 1 2 2.2.3-1.6 1.5.4 2.2-2-1.1-2 1.1.4-2.2L9.8 8.7l2.2-.3Z"/></svg></span>
+        <span class="ic"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 13.6 6.4 21.6l5.6-2.9 5.6 2.9-1.6-8Z"/><path fill-rule="evenodd" d="M12 2.2a6.7 6.7 0 1 0 0 13.4 6.7 6.7 0 0 0 0-13.4Zm0 3 1.5 3 3.3.5-2.4 2.3.6 3.3L12 12.7l-3 1.6.6-3.3L7.2 8.7l3.3-.5Z"/></svg></span>
         <div><b>Quality</b><span>Premium Ingredients</span></div>
       </div>
       <div class="hero-feat">
-        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="17.4" r="2.4"/><circle cx="17.6" cy="17.4" r="2.4"/><path d="M8.4 17.4h6.8l2.4-6.6h2.6"/><path d="M3.6 8.6h4.4l3.1 8.8"/></svg></span>
+        <span class="ic"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.2 7.4h8.2c.6 0 1 .4 1 1v1.5h2.2c.4 0 .8.2 1 .6l1.5 2.6c.1.2.2.4.2.6v2c0 .5-.4.9-.9.9h-1.3a2.4 2.4 0 0 0-4.8 0h-2.6a2.4 2.4 0 0 0-4.8 0h-.5c-.5 0-.9-.4-.9-.9V8.4c0-.6.4-1 1-1Z"/><circle cx="8.3" cy="16.6" r="1.9"/><circle cx="16.5" cy="16.6" r="1.9"/><path d="M.6 9.1h3.9v1.5H.6Zm-.4 3h3.6v1.5H.2Zm1.3 3h3v1.5h-3Z"/></svg></span>
         <div><b>Fast Delivery</b><span>Right to Your Door</span></div>
       </div>
       <div class="hero-feat">
-        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 21.5V10.2l4.4-6.7c1.3 0 2.2 1.1 1.9 2.4L12.2 10h5.4c1.3 0 2.2 1.2 1.9 2.4l-1.6 6.4c-.2 1.1-1.2 1.8-2.3 1.8H7Z"/><rect x="3" y="10.2" width="4" height="11.3" rx="1"/></svg></span>
+        <span class="ic"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7.6 21.4h7.1c1.2 0 2.2-.8 2.5-2l1.5-6.2c.3-1.4-.7-2.7-2.2-2.7h-4.6l.9-3.6c.3-1.5-.8-2.9-2.3-2.9L7.6 9.7Z"/><rect x="2.4" y="9.4" width="4.1" height="12" rx="1"/></svg></span>
         <div><b>Great Prices</b><span>Best Value Around</span></div>
       </div>
     </div>
@@ -481,20 +808,38 @@
       <h2 class="ruled"><span>What&rsquo;s Your Craving?</span></h2>
     </div>
     <div class="cats">
-      <!-- TODO: needs its own portrait pizza photo (>=700x1000, dark ground).
-           Until then this reuses the offer-band shot; the only overflow axis in
-           a 7:10 slot is X, so object-position is offset horizontally to at
-           least frame it differently from the offer band below. -->
-      <a class="cat" href="/order"><div class="shot"><img src="/assets/offer-pizza.png" alt="Freshly baked pizza" loading="lazy" style="object-position:38% 50%" /></div><div class="foot"><b>Pizza</b><span class="go">→</span></div></a>
+      <!-- TODO: needs its OWN portrait pizza photo (>=700x1000, dark ground).
+           offer-pizza.png is used twice on this page — here and in the offer
+           band ~500px below, both on screen together at 1080px tall — and there
+           is no second pizza asset in the folder to break that up. Until one
+           exists the tile is zoomed to 1.9x (see .cats .cat:first-child in the
+           CSS) so it shows a two-slice wedge rather than the whole pizza, and
+           the two slots stop reading as one photograph. That zoom costs
+           sharpness — it upscales the source ~1.2x for the device pixels — so
+           it is a workaround, not the fix. -->
+      <a class="cat" href="/order"><div class="shot"><img src="/assets/offer-pizza.png" alt="Freshly baked pizza" loading="lazy" style="object-position:50% 45%" /></div><div class="foot"><b>Pizza</b><span class="go">→</span></div></a>
+      <!-- TODO: kebab.jpg is 550x432 — the tile needs 454x650 device px, so
+           cover upscales the middle 302x432 by 1.50x. It is measurably the
+           softest tile on the page (gradient energy 0.050 vs 0.116-0.169 for
+           the other four). Geometry is fine; the file just needs re-supplying
+           at >=830x650 (or a portrait re-shoot). No CSS fix possible. -->
       <a class="cat" href="/order"><div class="shot"><img src="/assets/kebab.jpg" alt="Doner kebab" loading="lazy" /></div><div class="foot"><b>Kebabs</b><span class="go">→</span></div></a>
       <a class="cat" href="/order"><div class="shot"><img src="/assets/burger.jpg" alt="Burger" loading="lazy" /></div><div class="foot"><b>Burgers</b><span class="go">→</span></div></a>
       <a class="cat" href="/order"><div class="shot"><img src="/assets/sides.jpg" alt="Sides" loading="lazy" /></div><div class="foot"><b>Sides</b><span class="go">→</span></div></a>
-      <a class="cat" href="/order"><div class="shot"><img src="/assets/drinks.jpg" alt="Cold drinks" loading="lazy" /></div><div class="foot"><b>Drinks</b><span class="go">→</span></div></a>
+      <!-- TODO: needs an UPRIGHT drinks shot (standing can/bottle, >=454x650).
+           drinks.jpg is a 1400x979 landscape frame of a can lying on its side;
+           the 7/10 tile can only show the middle 49% of it, which slices the
+           wordmark at both ends ("Coca-Col") and cuts off the can's ends. Do
+           not give this one tile a different aspect-ratio — all five share 7/10
+           and the row would misalign. Until a new photo exists, crop to the can
+           end and ice rather than mid-wordmark; no object-position keeps the
+           wordmark whole at 49% visible width. -->
+      <a class="cat" href="/order"><div class="shot"><img src="/assets/drinks.jpg" alt="Cold drinks" loading="lazy" style="object-position:100% 50%" /></div><div class="foot"><b>Drinks</b><span class="go">→</span></div></a>
     </div>
   </div>
 </section>
 
-<section class="sec" id="offers" style="padding:0">
+<section class="sec" id="offers">
   <div class="wrap">
     <div class="offer">
       <div class="copy">
