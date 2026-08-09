@@ -177,25 +177,23 @@
     }
 
     /* ---------- hero ---------- */
-    /* The asset (1536x1024, aspect 1.5) has a near-black left ~40% (measured
-       brightness 1-10) and the pizza/kebab in the right ~58%; the heading sits
-       in that natural dark-left zone. No scrim over the food: the vignette
-       below is fully transparent past 46%, and the copy is width-capped so it
-       can never reach the pizza.
-       Band height: the reference cuts the photo off hard at y=800 on a 1440
-       page (55.5vw), and a best-fit crop test puts the reference's framing at
-       offset 0 — i.e. TOP-anchored, with the bottom ~160px (the pizza board and
-       the counter under it) cropped away. 66vw + `center center` showed the
-       whole shot and left 180px of dead hero under the badge row. The 600px
-       floor is not cosmetic: below ~1080px the copy block is nearly as tall as
-       55.5vw, and without it the kicker slides up under the (now 130px) header. */
+    /* The asset is 1536x770 — the owner's shot with the dead black BELOW the
+       pizza board cropped off (172px) so the board sits near the bottom edge
+       instead of floating in empty space. That makes it 2:1, and the whole
+       pizza has to stay visible, so two things follow:
+         - the band is sized close to 2:1 (52vw ≈ 749px at 1440), because the
+           squarer the container the more `cover` has to trim off the sides;
+         - what it trims is taken off the LEFT, via `right center`. The left of
+           this shot is pure black, so losing some costs nothing, whereas the
+           right carries the kebab spit and the oven.
+       The copy still sits on that black left, and the food is untouched. */
     .hero{
       position:relative;display:flex;align-items:center;
-      min-height:clamp(600px,55.5vw,820px);background:var(--ink);
+      min-height:clamp(560px,52vw,790px);background:#000;
     }
     .hero-media{
       position:absolute;inset:0;
-      background:#0a0a0a url("/assets/hero.png") center top/cover no-repeat;
+      background:#000 url("/assets/hero.png") right center/cover no-repeat;
     }
     /* Left-only vignette: guarantees text contrast on the dark-left even if the
        framing shifts, and is fully clear (alpha 0) across the food from 54% on.
@@ -601,7 +599,13 @@
          food, so stack — show the WHOLE image as a banner (its own 3:2 aspect,
          no crop, no fade) and drop the heading onto the black page below it. */
       .hero{display:block;min-height:0}
-      .hero-media{position:relative;height:auto;aspect-ratio:3/2;background-size:cover}
+      /* 2/1 = the asset's own aspect, so the phone banner shows the WHOLE shot
+         with nothing cropped. It was 3/2, which was right for the previous
+         asset and cut the board off this one. `contain` rather than `cover`
+         belt-and-braces: at exactly matching aspect they are identical, and if
+         the asset is ever swapped again this fails to letterbox on black (which
+         is invisible here) instead of silently cropping the food. */
+      .hero-media{position:relative;height:auto;aspect-ratio:2/1;background-size:contain;background-position:center}
       .hero-media::after{display:none}
       /* 24px bottom, not 44: with 54px on top of the section below, the
          hero→heading boundary measured 104.5px on a phone against 55px between
