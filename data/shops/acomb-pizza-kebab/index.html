@@ -95,18 +95,13 @@
       background:linear-gradient(180deg,rgba(0,0,0,.88) 0%,rgba(0,0,0,.55) 62%,rgba(0,0,0,0) 100%);
     }
     header.site .wrap{display:flex;align-items:center;gap:28px}
-    .brand{display:block;line-height:1}
-    .brand b{
-      font-family:var(--display);font-size:3.4rem;letter-spacing:.12em;
-      color:var(--red);display:block;
-    }
-    /* The tagline is locked to the width of the wordmark above it, as in the
-       reference — so it is set in the condensed display face, not tracked-out
-       DM Sans. */
-    .brand span{
-      display:block;font-family:var(--display);font-size:1.3rem;font-weight:400;
-      letter-spacing:.09em;text-transform:uppercase;color:#fff;margin-top:4px;
-    }
+    /* The owner's real badge logo (assets/logo-mark.png — the black background
+       keyed off so it floats on the page), used instead of the reference's
+       text wordmark. */
+    .brand{display:inline-flex;line-height:1}
+    .brand-logo{display:block;height:66px;width:auto}
+    footer.site .brand-logo{height:88px}
+    @media(max-width:560px){ .brand-logo{height:52px} }
     /* Reference nav: five links on a ~45px rhythm, then a wide breathing gap
        before the CTA pill (link run 507-990, pill 1171-1388). */
     nav.main{margin-left:auto;display:flex;gap:45px;align-items:center}
@@ -129,44 +124,43 @@
     }
 
     /* ---------- hero ---------- */
-    /* The reference hero is 0.69 x the page width (995px at 1440). Capped at
-       940 so the promise strip still peeks above the fold on a 900px laptop. */
-    /* hero.png is 1536x1024 with dead black in its top ~62 rows, bottom ~56
-       rows and left ~38% of columns. At `cover` the file scales 0.94 into the
-       1440x940 box, so every one of those dead bands was on screen: a ~72px
-       black band under the pizza and a flat black bottom-left quadrant. This
-       crop shows source x 43%->98%, y 24%->78% instead — the food fills the
-       frame and the pizza is cut by the hero's bottom edge, as in the
-       reference. 180% of a 1440 box is a 1.7x upscale of the asset; re-export
-       hero.png at >=2600px wide and it can go tighter still. */
+    /* Owner's direction: show the WHOLE hero image, don't fade the food. The
+       asset (1536x1024, aspect 1.5) has a near-black left ~40% (measured
+       brightness 1-10) and the pizza/kebab in the right ~58%. So the image is
+       shown at its own aspect with `cover` (min-height tracks 66vw, which at a
+       1440 page is ~950px ~ the asset's own 960px height — negligible crop, the
+       whole shot on screen) and the heading sits in that natural dark-left zone.
+       No scrim over the food: the vignette below is fully transparent past 46%,
+       and the copy is width-capped so it can never reach the pizza. */
     .hero{
-      position:relative;min-height:clamp(640px,68vw,940px);display:flex;align-items:center;
-      background:#000 url("/assets/hero.png") no-repeat;
-      background-size:180% auto;
-      background-position:96% 52%;
+      position:relative;display:flex;align-items:center;
+      min-height:clamp(540px,66vw,980px);background:var(--ink);
     }
-    /* Held back from the reference's much lighter scrim: the red "DIFFERENCE"
-       is 144px here and runs to 45% of the page width, and #cf1c20 only holds
-       3:1 for large text while the plate behind it stays under ~L33. So the
-       first three stops keep the copy band dark and the decay is spent on the
-       right half, where the reference is brightest. */
-    .hero::before{
+    .hero-media{
+      position:absolute;inset:0;
+      background:#0a0a0a url("/assets/hero.png") center center/cover no-repeat;
+    }
+    /* Left-only vignette: guarantees text contrast on the dark-left even if the
+       framing shifts, and is fully clear (alpha 0) across the food from 46% on. */
+    .hero-media::after{
       content:"";position:absolute;inset:0;
-      background:linear-gradient(90deg,rgba(5,5,5,.90) 0%,rgba(5,5,5,.84) 26%,rgba(5,5,5,.80) 46%,rgba(5,5,5,.34) 66%,rgba(5,5,5,.06) 86%,rgba(5,5,5,0) 100%);
+      background:linear-gradient(90deg,rgba(4,4,4,.74) 0%,rgba(4,4,4,.44) 24%,rgba(4,4,4,0) 46%);
     }
     /* width:100% or the flex hero shrink-wraps the container and centres it. */
-    .hero .wrap{position:relative;z-index:2;width:100%;padding-top:170px;padding-bottom:150px}
+    .hero .wrap{position:relative;z-index:2;width:100%;padding-top:150px;padding-bottom:120px}
+    /* Capped so the copy stays in the dark-left zone and never overlaps the food
+       (which starts ~42% across). min() keeps it clear at every width. */
+    .hero-copy{max-width:min(560px,46%)}
     .hero h1{
       font-family:var(--display);font-weight:400;margin:0;
-      font-size:clamp(3rem,9.3vw,8.4rem);line-height:1;letter-spacing:.005em;
+      font-size:clamp(2.6rem,6.4vw,6.4rem);line-height:.98;letter-spacing:.005em;
       text-transform:uppercase;
     }
-    /* The reference sets the red line ~8% larger than the white one. */
-    .hero h1 .hl{color:var(--red);display:block;font-size:1.08em}
+    .hero h1 .hl{color:var(--red);display:block;font-size:1.06em}
     .hero p.sub{
-      margin:26px 0 0;font-size:1.7rem;color:#e9e9e9;max-width:32ch;line-height:1.55;
+      margin:24px 0 0;font-size:clamp(1.05rem,1.5vw,1.5rem);color:#e9e9e9;line-height:1.5;
     }
-    .hero .cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
+    .hero .cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:32px}
 
     /* ---------- promise strip ---------- */
     .promise{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#080808}
@@ -262,8 +256,6 @@
     }
     .offer h2 .hl{color:var(--red);display:block;font-size:1.1em}
     .offer p{margin:18px 0 0;color:#e2e2e2;font-size:1rem}
-    .offer .code{margin:10px 0 0;font-size:1rem;color:#e2e2e2}
-    .offer .code b{color:var(--red-text);font-weight:700;letter-spacing:.06em}
     .offer .shot{position:relative;height:432px}
     /* In the reference the photo dissolves into the copy panel over ~200px;
        here its brightly lit table edge butted straight against the panel and
@@ -303,13 +295,6 @@
     .contact .line svg{width:17px;height:17px;color:var(--red);flex:0 0 auto;margin-top:3px}
     .contact a:hover{color:#fff}
     .contact .btn{justify-self:start}
-    .social{display:flex;gap:11px;margin-top:22px}
-    .social a{
-      width:38px;height:38px;border-radius:50%;background:#fff;display:grid;place-items:center;
-      color:#0a0a0a;transition:background .18s ease,color .18s ease;
-    }
-    .social a:hover{background:var(--red);color:#fff}
-    .social svg{width:17px;height:17px}
     .legal{
       margin-top:56px;border-top:1px solid var(--line);padding:22px 0;
       text-align:center;font-size:.8rem;color:#8a8a8a;
@@ -335,14 +320,14 @@
       nav.main a{padding:14px 0;border-bottom:1px solid var(--line);width:100%}
       nav.main a.on::after{display:none}
       .burger{display:block}
-      /* Back to cover on a phone: the desktop 180% crop is sized against the
-         viewport, so on a 390px screen it would not cover the hero box.
-         82% keeps the doner cone and the pizza inside the narrow cover crop —
-         at centre the phone hero is just the dark back bar. */
-      .hero{min-height:0;background-size:cover;background-position:82% center}
-      .hero .wrap{padding-top:132px;padding-bottom:56px}
-      .hero::before{background:linear-gradient(180deg,rgba(5,5,5,.90) 0%,rgba(5,5,5,.72) 55%,rgba(5,5,5,.88) 100%)}
-      .hero p.sub{max-width:none}
+      /* Phone: the landscape shot can't hold left-text without overlapping the
+         food, so stack — show the WHOLE image as a banner (its own 3:2 aspect,
+         no crop, no fade) and drop the heading onto the black page below it. */
+      .hero{display:block;min-height:0}
+      .hero-media{position:relative;height:auto;aspect-ratio:3/2;background-size:cover}
+      .hero-media::after{display:none}
+      .hero .wrap{padding:34px 24px 44px}
+      .hero-copy{max-width:none}
       .hero .cta .btn{flex:1 1 auto;justify-content:center}
       .sec{padding:54px 0}
       .cats{grid-template-columns:repeat(2,1fr);gap:14px}
@@ -381,7 +366,7 @@
 <header class="site">
   <div class="wrap">
     <a class="brand" href="/" aria-label="{{shopName}} home">
-      <b>ACOMB</b><span>Pizza Kebab House</span>
+      <img class="brand-logo" src="/assets/logo-mark.png" alt="{{shopName}}" width="1006" height="1037" />
     </a>
     <button class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="nav">☰</button>
     <nav class="main" id="nav">
@@ -396,12 +381,15 @@
 </header>
 
 <section class="hero">
+  <div class="hero-media" aria-hidden="true"></div>
   <div class="wrap">
-    <h1>Taste the<span class="hl">Difference</span></h1>
-    <p class="sub">Delicious Pizzas. Fresh Kebabs.<br />Made for you, every time.</p>
-    <div class="cta">
-      <a class="btn btn-primary" href="/order">Order Now <span class="arrow">→</span></a>
-      <a class="btn btn-ghost" href="/order">View Menu</a>
+    <div class="hero-copy">
+      <h1>Taste the<span class="hl">Difference</span></h1>
+      <p class="sub">Delicious Pizzas. Fresh Kebabs.<br />Made for you, every time.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="/order">Order Now <span class="arrow">→</span></a>
+        <a class="btn btn-ghost" href="/order">View Menu</a>
+      </div>
     </div>
   </div>
 </section>
@@ -452,9 +440,8 @@
   <div class="wrap">
     <div class="offer">
       <div class="copy">
-        <h2><span class="hl">10% Off</span>Your First Order</h2>
-        <p>Order online today and get 10% off your first order</p>
-        <p class="code">Use code: <b>ACOMB10</b></p>
+        <h2><span class="hl">10% Off</span>Every Order Over&nbsp;£12</h2>
+        <p>Order online and get 10% off automatically on every order over £12 — no code needed.</p>
         <a class="btn btn-primary" href="/order">Order Now <span class="arrow">→</span></a>
       </div>
       <div class="shot"><img src="/assets/offer-pizza.png" alt="Freshly baked pizza on a wooden board" loading="lazy" /></div>
@@ -466,14 +453,8 @@
   <div class="wrap">
     <div class="fgrid">
       <div id="about">
-        <a class="brand" href="/" style="margin-bottom:18px"><b>ACOMB</b><span>Pizza Kebab House</span></a>
+        <a class="brand" href="/" style="margin-bottom:18px"><img class="brand-logo" src="/assets/logo-mark.png" alt="{{shopName}}" width="1006" height="1037" /></a>
         <p>We serve the best pizzas and kebabs in town. Fresh ingredients, great taste, fast delivery.</p>
-        <div class="social">
-          <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5h1.65V3.6c-.29-.04-1.27-.12-2.41-.12-2.39 0-4.02 1.46-4.02 4.13V9.9H7.5V13h2.77v8h3.23Z"/></svg></a>
-          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="3.8"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor"/></svg></a>
-          <a href="#" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 3h2.6a5.4 5.4 0 0 0 4.4 4.4v2.7a8 8 0 0 1-4.4-1.5v5.8A5.9 5.9 0 1 1 10.7 8.6v2.8a3.1 3.1 0 1 0 2.2 3V3Z"/></svg></a>
-          <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12s0-3-.4-4.4a2.7 2.7 0 0 0-1.9-1.9C18.3 5.3 12 5.3 12 5.3s-6.3 0-7.7.4a2.7 2.7 0 0 0-1.9 1.9C2 9 2 12 2 12s0 3 .4 4.4a2.7 2.7 0 0 0 1.9 1.9c1.4.4 7.7.4 7.7.4s6.3 0 7.7-.4a2.7 2.7 0 0 0 1.9-1.9C22 15 22 12 22 12ZM10 15.2V8.8l5.3 3.2L10 15.2Z"/></svg></a>
-        </div>
       </div>
 
       <div>
