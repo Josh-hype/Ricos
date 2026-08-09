@@ -309,14 +309,14 @@
        once the scrim below was deepened, which is what makes the reference's
        true pitch affordable here. Without the outdent the same row would end at
        676, well past anything the scrim can hold. */
+    /* Three badges, flush left with the ORDER NOW button above them. The
+       negative margin that used to pull the row out of the content column is
+       gone: the owner wants these aligned to the button, so the row simply
+       starts on the same left edge as everything else in .hero-copy and is
+       sized by its content rather than stretched across a fixed cap. */
     .hero-feats{
-      display:grid;grid-template-columns:repeat(4,1fr);gap:0;
-      /* A plain px cap, NOT min(580px,42%): a percentage max-width resolves
-         against the wrap's 1218px content box, not the viewport, so a 42% that
-         looked like 605px was really 512 — a 128px pitch, which wrapped three
-         sub-labels instead of one. */
-      margin-top:56px;max-width:580px;
-      margin-left:calc(-1 * clamp(0px,(100vw - 1160px)/4,29px));
+      display:flex;flex-wrap:wrap;gap:0 34px;
+      margin-top:52px;margin-left:0;max-width:520px;
     }
     /* flex-start, not centre: in the reference all four headings share one cap
        band (measured 714.6-723.9 css on every badge) and only Quality's
@@ -341,8 +341,10 @@
        and the cell is now taller than the ring because Quality's sub wraps.
        13 = the ring's own centre in cell coordinates (-10 margin + 23 radius).
        Measured 41.9 css tall in the reference, so 40 stands. */
+    /* Centred in the 34px flex gap (was -7px, which was measured for grid
+       columns that butted together). */
     .hero-feat + .hero-feat::before{
-      content:"";position:absolute;left:-7px;top:13px;transform:translateY(-50%);
+      content:"";position:absolute;left:-17px;top:13px;transform:translateY(-50%);
       width:1px;height:40px;background:rgba(255,255,255,.16);
     }
     /* 46px ring, the reference's measured diameter (47/45/47/48 across the
@@ -485,57 +487,24 @@
       transition:border-color .2s ease,transform .2s ease;
     }
     .cat:hover{border-color:var(--red);transform:translateY(-3px)}
-    .cat .shot{position:relative;aspect-ratio:7/10;overflow:hidden}
+    /* 4/5, not 7/10. Every source photo here is LANDSCAPE, so the taller the
+       tile the more of each shot gets thrown away at the sides — 7/10 was
+       discarding over half the frame. */
+    .cat .shot{position:relative;aspect-ratio:4/5;overflow:hidden}
     .cat .shot img{width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
     .cat:hover .shot img{transform:scale(1.05)}
-    /* ONE grade for all five tiles. Two things were wrong before.
-       (1) The rule was :not(:first-child), so Pizza was ungraded and sat at
-           mean L 0.132 against 0.057-0.059 for its neighbours — 2.3x the
-           luminance of every other tile, and on a phone (2-up) it lands
-           straight beside the palest one.
-       (2) The sepia() was actively making the problem it was meant to fix.
-           It drove saturation DOWN to 0.27-0.56 and manufactured a flat neutral
-           warm grey — #665345 is the one colour in the whole render with no
-           counterpart anywhere in the reference palette (0.157 share), and it
-           is almost entirely this row. The only photography the owner supplied
-           (the hero) is a rich warm family on black: mean #5a2d15, L 0.083,
-           saturation 0.76. There is no desaturated mid-grey in it at all.
-       So: no sepia, and saturate UP not down. Target every tile at mean L
-       0.07-0.10 and saturation >=0.65 — i.e. the hero's own numbers — which
-       means bringing Pizza down as well as bringing the other four up. The
-       overlay goes neutral so it darkens without tinting toward that grey. */
-    .cats .cat .shot img{filter:brightness(.78) contrast(1.14) saturate(1.12)}
+    /* The food is the selling point — it is shown at full brightness. An earlier
+       pass graded the whole row down to brightness(.78) under a
+       rgba(10,10,10,.55) overlay, chasing a mean-luminance figure taken off the
+       reference; the arithmetic worked and the result was five dull tiles. The
+       overlay that remains is a bottom-weighted scrim, there only so the label
+       sitting over the image keeps its contrast, and it is nearly clear at the
+       top where the food actually is. */
+    .cats .cat .shot img{filter:contrast(1.06) saturate(1.08)}
     .cats .cat .shot::after{
       content:"";position:absolute;inset:0;pointer-events:none;
-      background:linear-gradient(180deg,rgba(0,0,0,.18),rgba(10,10,10,.55));
+      background:linear-gradient(180deg,rgba(0,0,0,0) 55%,rgba(8,8,8,.34) 100%);
     }
-    /* Drinks is the exception in the other direction: drinks.jpg is an
-       already-dark ice-bucket shot, and under the common grade it measured 27-32
-       V points below Kebabs/Sides/Burgers, with the Coca-Cola red reading muddy
-       brown. It gets the grade without the brightness cut and a lighter overlay,
-       which brings it back in line with the row rather than above it. */
-    .cats .cat:last-child .shot img{filter:brightness(1) contrast(1.14) saturate(1.12)}
-    .cats .cat:last-child .shot::after{
-      background:linear-gradient(180deg,rgba(0,0,0,.10),rgba(10,10,10,.34));
-    }
-    /* offer-pizza.png is the only pizza asset in the folder and it is used
-       TWICE on this page — this tile and the offer band ~500px below, both on
-       screen together. cover fits the 1536x1024 source into a 227x325 box at
-       0.317, which shows essentially the whole pizza, so the two read as one
-       photograph repeated. Zooming the tile to a two-slice wedge breaks that
-       read. The hover rule is not optional: .cat:hover .shot img{scale(1.05)}
-       below would otherwise reset the zoom on hover. This is a workaround —
-       the real fix is a second pizza photo (see the TODO in the markup). */
-    /* Same brightness exemption as Drinks, for the opposite-looking reason: the
-       1.9x crop lands on the dark topping and crust rather than the lit board,
-       so under the common grade this tile fell to L=0.047 — from 2.3x the row's
-       luminance to 0.6x it. Without the cut it measures L=0.081, inside the
-       0.07-0.10 band with the rest of the row. */
-    .cats .cat:first-child .shot img{
-      filter:brightness(1) contrast(1.14) saturate(1.12);
-      transform-origin:42% 34%;transform:scale(1.9);
-    }
-    .cats .cat:first-child:hover .shot img{transform:scale(2)}
     .cat .foot{
       display:flex;align-items:center;justify-content:space-between;gap:10px;
       padding:16px 16px;
@@ -786,10 +755,6 @@
     </div>
     <div class="hero-feats">
       <div class="hero-feat">
-        <span class="ic"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.3 1.4c1.7 3 .9 4.9-.3 6.4-1 1.3-2 2.3-2 3.7a1.6 1.6 0 0 0 3.2 0c0-.6-.1-1.1-.4-1.6 2.1 1.1 3.5 3.2 3.5 5.6a5.9 5.9 0 0 1-11.8 0c0-2.6 1.3-4.2 2.5-5.7 1.6-2 5.3-4.6 5.3-8.4Z"/></svg></span>
-        <div><b>Fresh</b><span>Made Daily</span></div>
-      </div>
-      <div class="hero-feat">
         <span class="ic"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 13.6 6.4 21.6l5.6-2.9 5.6 2.9-1.6-8Z"/><path fill-rule="evenodd" d="M12 2.2a6.7 6.7 0 1 0 0 13.4 6.7 6.7 0 0 0 0-13.4Zm0 3 1.5 3 3.3.5-2.4 2.3.6 3.3L12 12.7l-3 1.6.6-3.3L7.2 8.7l3.3-.5Z"/></svg></span>
         <div><b>Quality</b><span>Premium Ingredients</span></div>
       </div>
@@ -812,16 +777,13 @@
       <h2 class="ruled"><span>What&rsquo;s Your Craving?</span></h2>
     </div>
     <div class="cats">
-      <!-- TODO: needs its OWN portrait pizza photo (>=700x1000, dark ground).
-           offer-pizza.png is used twice on this page — here and in the offer
-           band ~500px below, both on screen together at 1080px tall — and there
-           is no second pizza asset in the folder to break that up. Until one
-           exists the tile is zoomed to 1.9x (see .cats .cat:first-child in the
-           CSS) so it shows a two-slice wedge rather than the whole pizza, and
-           the two slots stop reading as one photograph. That zoom costs
-           sharpness — it upscales the source ~1.2x for the device pixels — so
-           it is a workaround, not the fix. -->
-      <a class="cat" href="/order"><div class="shot"><img src="/assets/offer-pizza.png" alt="Freshly baked pizza" loading="lazy" style="object-position:50% 45%" /></div><div class="foot"><b>Pizza</b><span class="go">→</span></div></a>
+      <!-- Shows the whole pizza. A previous pass zoomed this tile to 1.9x so it
+           would not read as the same photograph as the offer band below; the
+           cure was worse than the complaint — at that magnification it stopped
+           being recognisable as a pizza at all, which is the one thing a tile
+           labelled PIZZA has to do. Repetition is the lesser problem, and the
+           real fix is a second pizza photo if one ever turns up. -->
+      <a class="cat" href="/order"><div class="shot"><img src="/assets/offer-pizza.png" alt="Freshly baked pizza" loading="lazy" /></div><div class="foot"><b>Pizza</b><span class="go">→</span></div></a>
       <!-- TODO: kebab.jpg is 550x432 — the tile needs 454x650 device px, so
            cover upscales the middle 302x432 by 1.50x. It is measurably the
            softest tile on the page (gradient energy 0.050 vs 0.116-0.169 for
