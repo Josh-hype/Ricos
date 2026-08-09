@@ -215,11 +215,15 @@
        costs no contrast (every glyph in that band already sits at 8.4:1 or
        better on near-black) and it stays clear of the pizza, which the
        reference keeps bright. */
+    /* The v2 hero asset needs almost none of this: its left 38% measures a flat
+       brightness of 0 (literal black), so the heavy scrim the previous shot
+       needed would only dull the food for nothing. What is left is a light
+       right-side falloff that keeps the copy band absolutely flat where the
+       badge row runs long, and it is fully clear (alpha 0) by 40% — before the
+       pizza starts at 42%. */
     .hero-media::after{
       content:"";position:absolute;inset:0;
-      background:
-        radial-gradient(96% 52% at 0% 100%, rgba(4,4,4,.72) 0%, rgba(4,4,4,.40) 58%, rgba(4,4,4,0) 100%),
-        linear-gradient(90deg,rgba(4,4,4,.74) 0%,rgba(4,4,4,.44) 24%,rgba(4,4,4,0) 54%);
+      background:linear-gradient(90deg,rgba(4,4,4,.34) 0%,rgba(4,4,4,.18) 22%,rgba(4,4,4,0) 40%);
     }
     /* width:100% or the flex hero shrink-wraps the container and centres it. */
     /* The copy is centred in the band, so the padding difference (top minus
