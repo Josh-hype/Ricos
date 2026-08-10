@@ -696,88 +696,57 @@
       nav.main a{padding:14px 0;border-bottom:1px solid var(--line);width:100%}
       nav.main a.on::after{display:none}
       .burger{display:block}
-      /* Phone composition, matched to Big Bites: kicker and headline run full
-         width at the top, then the supporting line and the badges sit in a left
-         column with the photograph filling the right and bleeding off the
-         screen, and the buttons and offer full width beneath. Replaces the old
-         full-width banner, which spent the whole first screen on the photo and
-         pushed the headline and buttons below the fold.
+      /* Phone: the WHOLE shot, uncropped, as a full-bleed banner with the copy
+         stacked beneath.
 
-         Big Bites gets there by dissolving .hero-copy onto the wrap's grid with
-         display:contents. Here .hero-media is a SIBLING of .wrap rather than a
-         child, so it can never be a grid item of .wrap — the grid has to be
-         .hero itself, with BOTH wrappers dissolved. The DOM is untouched (this
-         is a phone-only rule and desktop still uses .hero-media as an absolute
-         full-bleed layer), and the reading order is unchanged:
-         kicker → headline → line → badges → photo → buttons → offer. */
-      .hero{
-        display:grid;grid-template-columns:50% 1fr;align-items:start;
-        min-height:0;padding:150px 24px 28px;overflow-x:clip;
-      }
-      /* Dissolved so their children land on .hero's grid. Both lose their own
-         padding and max-width with it, which is why the padding above moved
-         onto .hero. */
-      .hero .wrap{display:contents}
-      .hero-copy{display:contents}
-      /* Column 1, not full width. The photo now runs from the top of the
-         section, so anything spanning 1/-1 crosses it: measured, 21.9% of
-         "DIFFERENCE" fell below 3:1 against the food, worst 1.01:1, because the
-         word is 276px at the desktop 41.6px and only 176 of that was on black.
-         Confining the headline is what "everything else fits around it" costs.
+         This replaces a two-column composition where the photo filled the right
+         half and bled off the screen. That version showed roughly a third of the
+         image — sized to its own height in a ~215px column, the visible window
+         was 28% of the frame — so the doner and the pizza survived and
+         everything either side was cut. There is no way to show all of a 1.56:1
+         landscape shot inside a narrow column and have it be anything but tiny,
+         so the column goes and the banner returns.
 
-         6.3vw is the largest size that keeps DIFFERENCE — the longest word, so
-         the one that governs — inside the column at every phone width: it needs
-         ≤28.8px at 430, ≤25.2 at 390 and ≤23.5 at 360, and 6.3vw gives 27.1,
-         24.6 and 22.7. The kicker follows it into the column. */
-      .hero .kicker{grid-column:1;grid-row:1;font-size:.95rem}
-      .hero h1{grid-column:1;grid-row:2;font-size:clamp(1.2rem,6.3vw,1.8rem)}
-      /* The <br>s are desktop line-breaking for a 560px column; in a 44% phone
-         column they compound with natural wrapping and produce a six-line
-         rag. Dropped so the text wraps to the column it's actually in. */
-      /* `.hero p.sub`, not `.hero .sub` — the base rule at the top of this file
-         is (0,2,1) and a media query adds no specificity, so the class-only
-         form set the grid position (nothing else claims those) while silently
-         losing font-size and leaving it at the desktop 16.8px. */
-      .hero p.sub{grid-column:1;grid-row:3;margin-top:12px;font-size:.78rem;line-height:1.42}
-      .hero p.sub br{display:none}
-      .hero-feats{grid-column:1;grid-row:4}
-      .hero .cta{grid-column:1/-1;grid-row:5;margin-top:26px}
-      .hero-offer{grid-column:1/-1;grid-row:6}
-      /* Fills whatever height the copy column comes to, as Big Bites' does, so
-         the hero is sized by its words rather than by a fixed image ratio.
-         auto 100% + right: the box is far narrower than the shot, so sizing to
-         its height and anchoring right frames the pizza, doner and oven and
-         clips only the dead black left. margin-right pulls it past .hero's
-         24px padding to the screen edge so it bleeds, and overflow-x:clip above
-         stops that bleed becoming horizontal scroll. */
-      /* Spans the whole copy stack (rows 1-4) and bleeds UP past .hero's top
-         padding, so the food starts at the very top of the section instead of
-         below the headline. Measured at 430 it was 275px of a 920px hero, with
-         everything above it on the right left as black; this roughly doubles
-         it.
-
-         Rows 1-2 are the kicker and headline, which span 1/-1, so this overlaps
-         them in the grid. That is safe and deliberate: the media box is sized to
-         its own height and anchored at 76%, so its left edge shows the shot's
-         dead black, and .hero-media is the first child of .hero — the copy is
-         later in the DOM and paints over it. The headline therefore sits on
-         black either way, which is checked by measurement below the fold. */
+         aspect-ratio matches the asset exactly and `contain` is belt-and-braces:
+         at a matching ratio the two are identical, and if the asset is ever
+         swapped this letterboxes on black (invisible on this page) rather than
+         silently cropping the food again. Full width also makes it the largest
+         the image can be without cropping — at 430 that is 430x276, more area
+         than the 215x465 column it replaces. */
+      .hero{display:block;min-height:0;padding:0;overflow-x:clip}
       .hero-media{
-        grid-column:2;grid-row:1/5;position:relative;inset:auto;
-        align-self:stretch;height:auto;min-height:100%;
-        margin-top:-150px;margin-right:-24px;
-        background-position:76% center;background-size:auto 100%;
+        position:relative;inset:auto;grid-column:auto;grid-row:auto;
+        height:auto;min-height:0;margin:0;
+        aspect-ratio:1536/986;background-size:contain;background-position:center;
       }
       .hero-media::after{display:none}
+      /* Back out of the grid: .wrap and .hero-copy are real boxes again, and
+         every child returns to normal flow. */
+      .hero .wrap{display:block;padding:26px 24px 28px}
+      .hero-copy{display:block;max-width:none}
+      .hero .kicker,.hero h1,.hero p.sub,
+      .hero-feats,.hero .cta,.hero-offer{grid-column:auto;grid-row:auto}
+      /* The headline goes back to its full size — it was cut to 6.3vw only to
+         fit beside the photo, and there is no photo beside it now. */
+      .hero .kicker{font-size:1rem}
+      .hero h1{font-size:clamp(2rem,9vw,2.8rem)}
+      /* The <br>s are desktop line-breaking for a 560px column and read as a
+         ragged stack at phone widths, so the text wraps to its own measure.
+         `.hero p.sub`, not `.hero .sub` — the base rule is (0,2,1) and a media
+         query adds no specificity, so the class-only form silently lost the
+         font-size and left it at the desktop 16.8px. */
+      .hero p.sub{margin-top:14px;font-size:.9rem;line-height:1.5}
+      .hero p.sub br{display:none}
+      .hero .cta{margin-top:24px}
       /* Full width on a phone — a 440px card in a 342px column would wrap. */
       .hero-offer{max-width:none;margin-top:22px}
       .hero .cta .btn{flex:1 1 auto;justify-content:center}
-      /* Single column now, not 2-up: the badges live in a 46% column beside the
-         photo, where two per row would leave ~75px each. */
-      .hero-feats{display:flex;flex-direction:column;gap:13px;margin-top:16px;max-width:none;margin-left:0}
+      /* Two per row again: the badges have the full width back, so a single
+         column would leave three-quarters of the line empty. */
+      .hero-feats{display:grid;grid-template-columns:1fr 1fr;gap:18px 14px;margin-top:26px;max-width:none;margin-left:0}
       /* 2-up the heading + first sub line (17 + 2 + 20.5 = 39.5px) already
          matches the 40px ring, so the desktop centring offset isn't wanted. */
-      .hero-feat .ic{width:32px;height:32px;margin-top:0;flex:0 0 auto}
+      .hero-feat .ic{width:40px;height:40px;margin-top:0;flex:0 0 auto}
       .hero-feat .ic svg{width:16px;height:16px}
       /* In a 2x2 grid the divider reads as a stray line. */
       .hero-feat + .hero-feat::before{display:none}
@@ -800,8 +769,11 @@
       /* Down from .95/.8: these now share a 44% column with the photo instead of
          running 2-up at full width, and at the old sizes "FAST DELIVERY" and
          "Premium Ingredients" each broke over two lines. */
-      .hero-feat b{font-size:.8rem;line-height:1.2}
-      .hero-feat span{font-size:.68rem;line-height:1.25}
+      /* Back up from .8/.68: those were sized for a 46% column beside the photo.
+         2-up at full width the cells are ~165px, which carries the original
+         sizes without wrapping. */
+      .hero-feat b{font-size:.95rem;line-height:1.2}
+      .hero-feat span{font-size:.8rem;line-height:1.3}
       .sec-head h2.ruled{gap:12px}
       .sec-head h2.ruled::before,.sec-head h2.ruled::after{width:clamp(16px,6vw,40px)}
       /* The .hero + .sec override is desktop framing (it exists to match the
@@ -1065,6 +1037,36 @@
   nav.addEventListener('click', function (e) {
     if (e.target.closest('a')) { nav.classList.remove('open'); burger.textContent = '☰'; burger.setAttribute('aria-expanded', 'false'); }
   });
+
+  /* Layout scratchpad loader. The editor itself is a separate file, fetched
+     ONLY when ?edit=1 is present — a normal visitor downloads nothing. */
+  if (new URLSearchParams(location.search).get("edit") === "1") {
+    /* Which blocks this page exposes to the editor: [label, selector].
+       The editor is shared (templates/editor.js) and knows nothing about this
+       shop — see docs/LAYOUT_EDITOR.md. Selectors that match nothing are
+       skipped, so the hero entries cover both the desktop and phone layouts. */
+    window.LAYOUT_EDITOR_BLOCKS = [
+      ["Header nav", "nav.main"],
+      ["Logo badge", "header.site .brand"],
+      ["Hero photo", ".hero-media"],
+      ["Hero kicker", ".hero .kicker"],
+      ["Hero headline", ".hero h1"],
+      ["Hero paragraph", ".hero p.sub"],
+      ["Order buttons", ".hero .cta"],
+      ["10% offer card", ".hero-offer"],
+      ["Hero badges (all)", ".hero-feats"],
+      ["Category tiles", ".cats"],
+      ["Offer band", ".offer"],
+      ["Offer band photo", ".offer .shot"],
+      ["About section", "#about .wrap"],
+      ["Contact section", "#contact .wrap"],
+      ["Footer", "footer.site .wrap"]
+    ];
+    var s = document.createElement("script");
+    s.src = "/assets/editor.js";
+    s.defer = true;
+    document.head.appendChild(s);
+  }
 </script>
 </body>
 </html>
