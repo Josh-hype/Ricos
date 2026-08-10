@@ -9741,20 +9741,17 @@
       {
         "id": "cal-doner",
         "name": "Doner Calzone",
-        "price": 12.5,
-        "desc": "Doner, onion, mushroom."
+        "price": 12.5
       },
       {
         "id": "cal-kiev",
         "name": "Kiev Calzone",
-        "price": 12.5,
-        "desc": "Chicken, ham, garlic butter."
+        "price": 12.5
       },
       {
         "id": "cal-meat",
         "name": "Meat Calzone",
-        "price": 12.5,
-        "desc": "Pepperoni, salami, ham, bacon."
+        "price": 12.5
       },
       {
         "id": "cal-veg",
@@ -9765,7 +9762,6 @@
         "id": "cal-hot",
         "name": "Hot Calzone",
         "price": 12.5,
-        "desc": "Pepperoni, onion, jalapeno.",
         "spicyTag": true
       }
     ]
@@ -10680,7 +10676,6 @@
         "id": "parmo-plain",
         "name": "Plain Parmesan",
         "price": 10.5,
-        "desc": "Pounded chicken, golden crumb, bechamel & cheese.",
         "options": [
           {
             "id": "chips-choice",
@@ -10769,7 +10764,6 @@
         "id": "parmo-bbq",
         "name": "BBQ Parmesan",
         "price": 12.0,
-        "desc": "Parmo topped with BBQ sauce & cheese.",
         "options": [
           {
             "id": "chips-choice",
@@ -10858,7 +10852,6 @@
         "id": "parmo-hot",
         "name": "Hot Parmesan",
         "price": 12.0,
-        "desc": "Pepperoni, jalapeno, garlic butter.",
         "spicyTag": true,
         "options": [
           {
@@ -11036,7 +11029,6 @@
         "id": "parmo-doner",
         "name": "Doner Parmesan",
         "price": 12.0,
-        "desc": "Doner & cheese.",
         "options": [
           {
             "id": "chips-choice",
@@ -12667,7 +12659,7 @@
       },
       {
         "id": "bg-combo",
-        "name": "Big Bites Burger",
+        "name": "Long Burger",
         "price": 9.5,
         "desc": "Cheese burger, chicken burger, doner · ¼lb · Served with chips",
         "options": [
@@ -13395,7 +13387,7 @@
       {
         "id": "sd-halloumi-fries",
         "name": "Halloumi Fries",
-        "price": 9.0
+        "price": 7.0
       }
     ]
   },

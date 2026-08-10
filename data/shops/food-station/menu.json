@@ -11108,7 +11108,7 @@
       },
       {
         "id": "bg-combo",
-        "name": "Big Bites Burger",
+        "name": "Long Burger",
         "priceP": 950,
         "modifiers": [
           {
@@ -11693,7 +11693,7 @@
       {
         "id": "sd-halloumi-fries",
         "name": "Halloumi Fries",
-        "priceP": 900,
+        "priceP": 700,
         "modifiers": []
       }
     ]
