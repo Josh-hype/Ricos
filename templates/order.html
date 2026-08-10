@@ -2385,8 +2385,14 @@ function serviceFeeGBP() {
    geocode, so the browser must ask /api/delivery-quote rather than pricing the
    outcode locally. Otherwise a far postcode inside a priced outcode would show a
    fee and only get rejected at final submit. */
+/* Which shops can't price delivery in the browser. "zones" belongs here for the
+   same reason "radius" does: the answer needs the postcode geocoded, which only
+   the server does. Omitting it was a live bug — the zones shop fell through to
+   the local outcode check below, and a zones shop has no allowedOutcodes list
+   (its area is polygons, not postcode prefixes), so the list built as [] and
+   EVERY delivery postcode was refused, including the shop's own. */
 function needsServerQuote(d) {
-  return !!d && (d.mode === 'radius' || Number(d.maxMiles) > 0);
+  return !!d && (d.mode === 'radius' || d.mode === 'zones' || Number(d.maxMiles) > 0);
 }
 
 /* Delivery fee in pounds. Per-outcode if the shop configures feeByOutcode,
