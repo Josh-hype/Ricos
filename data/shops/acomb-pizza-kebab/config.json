@@ -34,19 +34,249 @@
     "delivery": {
       "enabled": true,
       "_comment_mode": "Pick the delivery pricing model. 'outcode' = charge by postcode area (fill in allowedOutcodes + feeByOutcode below; this is Rico's model). 'radius' = charge by straight-line distance from the shop in bands (delete the outcode fields, add a radius block — see _comment_radius; this is Food Station's model). Distance lookups use postcodes.io (free, no key). See docs/ADDING_A_SHOP.md.",
-      "mode": "outcode",
+      "mode": "zones",
       "minimumOrderPence": 1500,
       "_comment_areaDescription": "Used in delivery messages: 'we deliver {areaDescription} only'. Keep natural so the sentence reads well.",
-      "areaDescription": "in our delivery area",
-      "_comment_feePence": "[outcode mode] Default delivery fee in pence, for any allowed outcode not given its own price in feeByOutcode.",
-      "feePence": 200,
-      "_comment_postcodes": "[outcode mode] Outcodes (postcode prefixes) the shop delivers to. Must match the shop's own postcode area prefix (the letters before the digits).",
-      "allowedOutcodes": [
-        "XX1"
-      ],
-      "_comment_feeByOutcode": "[outcode mode] Optional per-outcode delivery fee overrides in pence (key = postcode prefix). Outcodes not listed fall back to feePence. Leave empty to charge feePence everywhere.",
-      "feeByOutcode": {},
-      "_comment_radius": "[radius mode] Set mode to 'radius', remove the three outcode fields above (keep minimumOrderPence + areaDescription), and add: \"radius\": { \"maxMiles\": 5, \"bands\": [ { \"maxMiles\": 1, \"feePence\": 100 }, { \"maxMiles\": 2, \"feePence\": 200 } ] }. Origin defaults to the shop's own postcode (override with radius.origin {lat,lng}). Bands checked low-to-high; beyond the largest maxMiles = no delivery."
+      "areaDescription": "in our delivery area around Acomb and York",
+      "_comment_zones": "Traced by the owner from the shop's previous provider's delivery map (_reference-src/untitled.geojson). FIRST match wins, so these are ordered cheapest first. Fees taken from that map: yellow free, blue and pink both £1.50, orange £3.00; £15 minimum on every zone.",
+      "zones": [
+        {
+          "name": "Acomb & Poppleton",
+          "feePence": 0,
+          "polygon": [
+            [
+              53.923941,
+              -1.120972
+            ],
+            [
+              53.954797,
+              -1.093106
+            ],
+            [
+              53.961128,
+              -1.10497
+            ],
+            [
+              53.968594,
+              -1.117385
+            ],
+            [
+              53.977681,
+              -1.12649
+            ],
+            [
+              53.988226,
+              -1.136974
+            ],
+            [
+              53.990822,
+              -1.138629
+            ],
+            [
+              53.988713,
+              -1.150768
+            ],
+            [
+              53.975085,
+              -1.169253
+            ],
+            [
+              53.959992,
+              -1.180289
+            ],
+            [
+              53.941645,
+              -1.177806
+            ],
+            [
+              53.926703,
+              -1.164287
+            ],
+            [
+              53.920042,
+              -1.153251
+            ],
+            [
+              53.923941,
+              -1.120972
+            ]
+          ]
+        },
+        {
+          "name": "West (Rufforth, Askham)",
+          "feePence": 150,
+          "polygon": [
+            [
+              53.989064,
+              -1.150826
+            ],
+            [
+              53.993903,
+              -1.16208
+            ],
+            [
+              53.961679,
+              -1.204996
+            ],
+            [
+              53.928265,
+              -1.193113
+            ],
+            [
+              53.916213,
+              -1.172979
+            ],
+            [
+              53.920101,
+              -1.154495
+            ],
+            [
+              53.927293,
+              -1.164727
+            ],
+            [
+              53.941672,
+              -1.17793
+            ],
+            [
+              53.959737,
+              -1.18024
+            ],
+            [
+              53.975658,
+              -1.168688
+            ],
+            [
+              53.982452,
+              -1.159446
+            ],
+            [
+              53.989064,
+              -1.150826
+            ]
+          ]
+        },
+        {
+          "name": "South (Bishopthorpe, Copmanthorpe)",
+          "feePence": 150,
+          "polygon": [
+            [
+              53.959324,
+              -1.086568
+            ],
+            [
+              53.954899,
+              -1.093212
+            ],
+            [
+              53.923957,
+              -1.12087
+            ],
+            [
+              53.923147,
+              -1.127441
+            ],
+            [
+              53.921622,
+              -1.140605
+            ],
+            [
+              53.920185,
+              -1.151698
+            ],
+            [
+              53.907117,
+              -1.14482
+            ],
+            [
+              53.917012,
+              -1.092745
+            ],
+            [
+              53.930009,
+              -1.077199
+            ],
+            [
+              53.941868,
+              -1.084497
+            ],
+            [
+              53.946005,
+              -1.081727
+            ],
+            [
+              53.949317,
+              -1.079079
+            ],
+            [
+              53.951046,
+              -1.079162
+            ],
+            [
+              53.959324,
+              -1.086568
+            ]
+          ]
+        },
+        {
+          "name": "North-east (Clifton)",
+          "feePence": 300,
+          "polygon": [
+            [
+              53.984765,
+              -1.133635
+            ],
+            [
+              53.979212,
+              -1.128239
+            ],
+            [
+              53.977512,
+              -1.126311
+            ],
+            [
+              53.968102,
+              -1.11706
+            ],
+            [
+              53.964474,
+              -1.110892
+            ],
+            [
+              53.960279,
+              -1.10299
+            ],
+            [
+              53.955175,
+              -1.092967
+            ],
+            [
+              53.962433,
+              -1.082174
+            ],
+            [
+              53.981252,
+              -1.08121
+            ],
+            [
+              53.99757,
+              -1.091811
+            ],
+            [
+              53.994057,
+              -1.109736
+            ],
+            [
+              53.990658,
+              -1.123228
+            ],
+            [
+              53.984765,
+              -1.133635
+            ]
+          ]
+        }
+      ]
     }
   },
   "_comment_serviceFee": "Per-order platform fee in pence. Charged to the customer and kept by the platform.",
