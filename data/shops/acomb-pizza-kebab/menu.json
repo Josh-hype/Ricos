@@ -6,177 +6,4552 @@
       {
         "id": "pizza-margherita-pizza",
         "name": "Margherita Pizza",
-        "priceP": 850
+        "priceP": 850,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-easy-one-pizza",
         "name": "Easy One Pizza",
-        "priceP": 850
+        "priceP": 850,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-al-funghi-pizza",
         "name": "Al Funghi Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-mr-cheese-pizza",
         "name": "Mr Cheese Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-vegetarian-pizza",
         "name": "Vegetarian Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-spicy-vegetarian-pizza",
         "name": "Spicy Vegetarian Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-london-pizza",
         "name": "London Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-prosciutto-funghi-pizza",
         "name": "Prosciutto Funghi Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-prosciutto-pizza",
         "name": "Prosciutto Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-hawaiian-pizza",
         "name": "Hawaiian Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-caribbean-pizza",
         "name": "Caribbean Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-four-seasons-pizza",
         "name": "Four Seasons Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-tuna-ham-pizza",
         "name": "Tuna Ham Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-tuna-and-sweetcorn-pizza",
         "name": "Tuna & Sweetcorn Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-pepperoni-pizza",
         "name": "Pepperoni Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-pepperoni-chicken-pizza",
         "name": "Pepperoni Chicken Pizza",
-        "priceP": 1000
+        "priceP": 1000,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-hot-shot-pizza",
         "name": "Hot Shot Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-americana-hot-pizza",
         "name": "Americana Hot Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-americana-pizza",
         "name": "Americana Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-meat-feast-pizza",
         "name": "Meat Feast Pizza",
-        "priceP": 1000
+        "priceP": 1000,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-nice-n-spicy-pizza",
         "name": "Nice 'n' Spicy Pizza",
-        "priceP": 1000
+        "priceP": 1000,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-volkan-special-pizza",
         "name": "Volkan Special Pizza",
-        "priceP": 1000
+        "priceP": 1000,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-bbq-porker-pizza",
         "name": "BBQ Porker Pizza",
-        "priceP": 1000
+        "priceP": 1000,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-chicken-and-bacon-pizza",
         "name": "Chicken & Bacon Pizza",
-        "priceP": 1000
+        "priceP": 1000,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-doner-pizza",
         "name": "Doner Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-spicy-doner-pizza",
         "name": "Spicy Doner Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-hot-lips-pizza",
         "name": "Hot Lips Pizza",
-        "priceP": 1000
+        "priceP": 1000,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-bolognese-pizza",
         "name": "Bolognese Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-spicy-beef-pizza",
         "name": "Spicy Beef Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-hot-stuff-pizza",
         "name": "Hot Stuff Pizza",
-        "priceP": 1000
+        "priceP": 1000,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-hot-and-spicy-pizza",
         "name": "Hot & Spicy Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-vali-special-pizza",
         "name": "Vali Special Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-pollo-funghi-pizza",
         "name": "Pollo Funghi Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-chicken-and-sweetcorn-pizza",
         "name": "Chicken & Sweetcorn Pizza",
-        "priceP": 950
+        "priceP": 950,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       },
       {
         "id": "pizza-bbq-chicken-and-bacon-pizza",
         "name": "BBQ Chicken & Bacon Pizza",
-        "priceP": 1000
+        "priceP": 1000,
+        "modifiers": [
+          {
+            "id": "sz-11",
+            "label": "11\"",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-14",
+            "label": "14\"",
+            "priceDeltaP": 200
+          },
+          {
+            "id": "base-deep",
+            "label": "Deep Pan",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-thin",
+            "label": "Thin Crust",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "base-stuffed",
+            "label": "Stuffed Crust",
+            "priceDeltaP": 400,
+            "priceDeltaPBySize": {
+              "sz-14": 500
+            }
+          },
+          {
+            "id": "xt-tomato",
+            "label": "Tomato",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-onion",
+            "label": "Onion",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-mushroom",
+            "label": "Mushroom",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-pineapple",
+            "label": "Pineapple",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-sweetcorn",
+            "label": "Sweetcorn",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-black-olives",
+            "label": "Black Olives",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-jalapenos",
+            "label": "Jalapenos",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-garlic-butter",
+            "label": "Garlic Butter",
+            "priceDeltaP": 120
+          },
+          {
+            "id": "xt-ham",
+            "label": "Ham",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-salami",
+            "label": "Salami",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-pepperoni",
+            "label": "Pepperoni",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-prawns",
+            "label": "Prawns",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-tuna",
+            "label": "Tuna",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-doner-meat",
+            "label": "Doner Meat",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-beef",
+            "label": "Spicy Beef",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-chicken",
+            "label": "Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bacon",
+            "label": "Bacon",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-spicy-chicken",
+            "label": "Spicy Chicken",
+            "priceDeltaP": 170
+          },
+          {
+            "id": "xt-bolognese",
+            "label": "Bolognese",
+            "priceDeltaP": 170
+          }
+        ]
       }
     ]
   },
