@@ -364,6 +364,26 @@
       text-transform:uppercase;letter-spacing:.02em;color:#fff;
     }
     .ho-note{display:block;margin-top:7px;font-size:.83rem;line-height:1.45;color:var(--muted)}
+    /* Float it into the black gap between the headline and the doner rather
+       than leaving it in flow, where it added ~148px to a band that is already
+       content-driven and pushed the whole page down.
+
+       Positioned against .hero .wrap, which is centred with a fixed 1266px cap,
+       so its content box is the SAME 1218px wide at 1440 and at 1920 — a px
+       offset here is stable across widths in a way a viewport percentage is
+       not. left is 584 = the wrap's 24px padding plus the 560px copy column, so
+       it starts exactly where that column ends — offsets here resolve against
+       the padding box, so a bare 560 would sit 24px INSIDE the copy. top:150px
+       sits it under the nav and above the headline.
+
+       The floor is 1240px because the food scales with the viewport while this
+       offset does not: the doner's left edge lands at ~0.733 x viewport, so it
+       reaches the card's right edge (864px) at about 1180px wide. Below the
+       breakpoint the card returns to flow, which is what the phone layout wants
+       anyway. */
+    @media(min-width:1240px){
+      .hero-offer{position:absolute;left:584px;top:150px;width:280px;max-width:none;margin-top:0}
+    }
 
     .hero-feats{
       display:flex;flex-wrap:wrap;gap:0 34px;
