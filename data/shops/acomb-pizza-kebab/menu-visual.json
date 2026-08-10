@@ -420,7 +420,7 @@
     "id": "kebabs",
     "name": "Kebabs",
     "icon": "🥙",
-    "note": "All served with a pitta bread, salad & separate sauce",
+    "note": "Served with a pitta bread, salad & separate sauce, unless the item says otherwise",
     "items": [
       {
         "id": "kebabs-shish-kebab",
@@ -520,38 +520,43 @@
     "id": "parmesans",
     "name": "Parmesans",
     "icon": "🧀",
-    "note": "Chicken breast coated in breadcrumbs topped with tomato sauce & cheese, served with chips",
+    "note": "Coated in breadcrumbs, topped with tomato sauce & cheese, served with chips",
     "items": [
       {
         "id": "parmesans-plain-parmesan",
         "name": "Plain Parmesan",
-        "price": 11.0
+        "price": 11.0,
+        "desc": "Chicken breast"
       },
       {
         "id": "parmesans-hot-shot-parmesan",
         "name": "Hot Shot Parmesan",
         "price": 12.0,
-        "desc": "With pepperoni & jalapenos"
+        "desc": "Chicken breast. With pepperoni & jalapenos"
       },
       {
         "id": "parmesans-bacon-parmesan",
         "name": "Bacon Parmesan",
-        "price": 12.0
+        "price": 12.0,
+        "desc": "Chicken breast"
       },
       {
         "id": "parmesans-kiev-parmesan",
         "name": "Kiev Parmesan",
-        "price": 12.0
+        "price": 12.0,
+        "desc": "Chicken breast"
       },
       {
         "id": "parmesans-sweetcorn-parmesan",
         "name": "Sweetcorn Parmesan",
-        "price": 12.0
+        "price": 12.0,
+        "desc": "Chicken breast"
       },
       {
         "id": "parmesans-margherita-parmesan",
         "name": "Margherita Parmesan",
-        "price": 12.0
+        "price": 12.0,
+        "desc": "Chicken breast"
       },
       {
         "id": "parmesans-vegetarian-parmesan",
@@ -561,7 +566,8 @@
       {
         "id": "parmesans-bbq-parmesan",
         "name": "BBQ Parmesan",
-        "price": 12.0
+        "price": 12.0,
+        "desc": "Chicken breast"
       }
     ]
   },
