@@ -187,7 +187,12 @@ encrypted/secret variables (not plaintext):
   Connect routes payment to each shop's connected account)
 - `STRIPE_PUBLISHABLE_KEY` — same
 - `STRIPE_WEBHOOK_SECRET` — same
-- `RESEND_API_KEY` — your Resend account (shared)
+- `RESEND_API_KEY` — **one key per shop**, not a shared one. In Resend →
+  API keys → Create, name it after the slug, permission **Sending access**
+  (never Full access — the site only ever sends), and scope it to the shop's
+  own domain. A per-shop key means a leak is revoked without taking every
+  other site's email down with it. Resend shows the key once; copy it straight
+  into Cloudflare as a **Secret**, never plaintext.
 - `RESEND_FROM_EMAIL` — e.g. `orders@<shop-domain>`
 - `RESEND_FROM_NAME` — e.g. shop's trading name
 - `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` — your

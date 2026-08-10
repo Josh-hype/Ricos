@@ -86,7 +86,9 @@ Add each as **encrypted** (the lock icon), not plaintext:
 - [ ] `STRIPE_SECRET_KEY` (your platform key — same across shops)
 - [ ] `STRIPE_PUBLISHABLE_KEY`
 - [ ] `STRIPE_WEBHOOK_SECRET`
-- [ ] `RESEND_API_KEY` (shared)
+- [ ] `RESEND_API_KEY` — **create a new key per shop** (Resend → API keys →
+      Create; name = slug, permission **Sending access**, scoped to this
+      shop's domain). Do NOT reuse another shop's key.
 - [ ] `RESEND_FROM_EMAIL` = `orders@<shop-domain>`
 - [ ] `RESEND_FROM_NAME` = shop's trading name
 - [ ] `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`

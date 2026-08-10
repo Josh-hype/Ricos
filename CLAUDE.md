@@ -230,7 +230,11 @@ Each project (`ricos`, the Food Station project, and any future shop):
   `ORDERS_KV`, `CUSTOMERS_KV`, `MARKETING_KV`, `SLOTS_KV`, `STAFF_LOGIN_KV`
 - **Secrets** (encrypted env vars — names the code actually reads):
   - Stripe: `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`
-  - Email (Resend): `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_FROM_NAME`
+  - Email (Resend): `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_FROM_NAME`.
+    Unlike the Stripe/Twilio credentials, the Resend key is **per shop** —
+    create a fresh "Sending access" key scoped to that shop's domain, so one
+    leak doesn't take every site's email down. The domain must also be added
+    and verified in Resend before that shop can send.
   - SMS (Twilio): `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`
   - Sessions/staff: `SESSION_SECRET`, `STAFF_PIN_HASH` (staff log in with a
     PIN; store its hash, never the raw PIN). Optional: `MANAGER_PIN_HASH` (a
