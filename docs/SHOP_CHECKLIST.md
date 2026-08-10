@@ -157,6 +157,10 @@ Walk through on the live URL with a real card (you'll refund after):
 Same APK and same steps for both — `docs/PRODUCTS.md` says which they get.
 Skip only if the shop is website-only *and* isn't taking a Z93.
 
+- [ ] **LumiWEB shops only:** set `pos.ordersOnly: true` in the shop's
+      `config.json`. One APK serves both products, so without it the Z93 shows
+      the full EPOS — counter sales and the card-reader tile — to a shop that
+      is only paying for a website. See `docs/PRODUCTS.md`.
 - [ ] Pick a **6-digit Restaurant ID** and add it to `DIRECTORY` in
       **`app/web/provision.js`** → the shop's **custom domain** (never a
       `*.pages.dev` — 403). This is shared `app/web/` code, so merging it to

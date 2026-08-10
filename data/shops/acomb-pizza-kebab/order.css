@@ -1,44 +1,52 @@
-/* Acomb Pizza & Kebab — order page corrections for a DARK brand.
+/* Acomb Pizza & Kebab — order page palette.
  *
- * The shared order page is written for the platform's light house style: it
- * takes --cream/--paper from the shop's theme as LIGHT surfaces, while --ink
- * (the text colour) is hardcoded dark. This is the first shop whose theme sets
- * those to near-black (#0a0a0a / #141414), so anywhere the page paints "ink on
- * paper" it was painting near-black on near-black.
- *
- * Measured before writing this: 22 text runs below WCAG AA on the built page,
- * including every price at 2.26:1 and the hovered menu row at 1.01:1 — i.e.
- * invisible. Each rule below fixes one measured failure; nothing here is
- * decorative. (One reported failure was a false positive: label.sr-only is a
- * screen-reader-only label and is meant to be invisible.)
- *
- * This is a per-shop file appended by scripts/build-shop.js, so none of it
+ * The ORDER page uses Big Bites' colours at the owner's request; the landing
+ * page keeps Acomb's own dark red-on-black identity. That split is the reason
+ * this lives here rather than in config.json: theme.* feeds BOTH pages, so
+ * editing it would have repainted the bespoke landing page too. This file is
+ * appended by scripts/build-shop.js to the end of the order page's own <style>
+ * block, so a :root here overrides the one the template wrote, and nothing
  * reaches any other shop.
+ *
+ * What this replaces: the previous version of this file was 25 lines of
+ * contrast corrections, each fixing a measured WCAG failure caused by feeding
+ * near-black theme values (#0a0a0a / #141414) into a template that treats
+ * --cream/--paper as LIGHT surfaces while hardcoding --ink dark — prices at
+ * 2.26:1, the hovered menu row at 1.01:1, and so on. Restoring light surfaces
+ * removes the cause, so every one of those corrections is deleted rather than
+ * carried over: on a cream page they would be wrong in the other direction.
  */
 
-/* Menu row hover. The rows are white cards, but hover set the background to
-   --paper (#141414 here) while the item name stayed --ink (#181210): the name
-   vanished the moment you moused over it. */
-.item-row:hover { background: #f4f1ea; }
-.item-row:hover .item-row-main,
-.item-row:hover .item-row-main * { color: #181210; }
+:root {
+  /* Big Bites' theme values, verbatim from data/shops/food-station/config.json. */
+  --red:        #E32619;
+  --red-dark:   #C11F13;
+  --red-deep:   #A81409;
+  --yellow:     #F7C61A;
+  --yellow-deep:#D9A90A;
+  --cream:      #FBF3DE;
+  --paper:      #FFFDF7;
 
-/* Prices sat as --red on --accent — #cf1c20 on #c9a227, 2.26:1. The gold is
-   the brand's, so keep it and put dark ink on it instead (12.1:1). */
+  /* The shared sheet's muted grey (#8a807c) is 3.8:1 on white — under AA for
+     body text, and it carries the empty-basket prompt among other things.
+     Big Bites warms and darkens it to 5.5:1; same palette, same problem, so
+     the same value. */
+  --grey: #6f6559;
+}
+
+/* Taking Big Bites' palette means inheriting the one place it does not work
+   unaided. The price sits in a --yellow chip, and --red on it measures 2.86:1
+   here (Big Bites measured 2.9 and fixed it the same way) — under the 4.5:1 a
+   price has to clear, and a price is the last thing on the page that should be
+   hard to read. Charcoal on the same chip is 11.6:1 and leaves the chip itself
+   untouched. Two classes because the item sheet uses its own. */
 .item-row-price,
-.item-detail-price { color: #17110a; }
+.item-detail-price { color: #0C0C0C; }
 
-/* Header controls sit directly on the near-black page, so anything still
-   inheriting the dark --ink was invisible against it. */
-.back-link { color: #ececec; }
-.back-link:hover { color: #fff; }
-.mode-toggle button { color: #d8d8d8; }
-.mode-toggle button.active { color: #17110a; }
-/* The cart's own mode toggle is NOT on the dark page — it sits on the white
-   basket panel, so it needs the opposite treatment. Lumping the two together
-   fixed one and broke the other (1.43:1 grey on white). */
-.cart-mode-toggle .cart-mode-btn { color: #4a443c; }
-.cart-mode-toggle .cart-mode-btn.active { color: #17110a; }
-
-/* Empty-basket line was 3.85:1 on white. */
-.cart-empty p { color: #5f584f; }
+/* The delivery bar's sub-line is cream at 85% alpha on the red, which measures
+   3.39:1. Removing the alpha only reaches 4.24 — cream and this red simply
+   cannot clear 4.5 together, at any opacity. White does, at 4.61. This is the
+   line that tells a customer which postcodes are served, so it is worth the
+   step in tone. Big Bites has the same pairing and the same shortfall; fixing
+   it there is a separate change to its own order.css. */
+.service-bar p { color: #fff; opacity: 1; }

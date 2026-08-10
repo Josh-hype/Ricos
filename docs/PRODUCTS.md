@@ -94,6 +94,22 @@ host directory is in `app/web/provision.js`:
 shop's reachable custom domain, never a `*.pages.dev` (those are firewalled on
 this Cloudflare setup and return 403).
 
+### ⚠️ A LumiWEB shop must set `pos.ordersOnly: true`
+
+One APK serves both products, so a Z93 shows the **full EPOS** by default —
+counter sale modes and the card-reader tile included. That is wrong for a shop
+paying £19 for a website: it is not buying counter sales.
+
+`pos.ordersOnly: true` in that shop's `config.json` hides the counter mode bar
+(`templates/staff/index.html:2354`) and the card-reader tile (`:3328`), leaving
+the order board the device is actually there for. It is the ONLY thing that
+distinguishes the two products in software — there is still no `product` flag,
+and nothing else branches.
+
+Forget it and the shop gets an EPOS it hasn't paid for, and staff get counter
+buttons that make no sense on a till with no drawer. Mega Chippy has it set;
+Acomb Pizza & Kebab did not until it was spotted on the device.
+
 ---
 
 ## Who is on what today
