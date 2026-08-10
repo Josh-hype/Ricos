@@ -211,10 +211,19 @@
        900 above 1500) however tall the band gets.
        Anchored BOTTOM rather than centre so the slack appears above the food,
        where the asset is pure black and the nav sits, instead of being split
-       top and bottom and leaving a visible edge under the counter. */
+       top and bottom and leaving a visible edge under the counter.
+
+       The asset was cropped 1024 -> 986 rows: below y=986 there is nothing, and
+       since it is bottom-anchored those dead rows were sitting between the
+       board and the band's bottom edge as a black strip (37px at 1440). Cutting
+       them lands the last real row of the photo ON the band's bottom edge, so
+       the gap closes and the whole composition drops by the same amount — the
+       cut and the shift are the same edit, not two. The caps are scaled by the
+       same 986/1024 (60vw -> 57.8vw, 900 -> 867) so the food keeps the size it
+       had; leaving them alone would have magnified it by 4%. */
     .hero-media{
       position:absolute;inset:0;
-      background:#000 url("/assets/final-hero.png") right bottom/auto min(100%,60vw,900px) no-repeat;
+      background:#000 url("/assets/final-hero.png") right bottom/auto min(100%,57.8vw,867px) no-repeat;
     }
     /* Left-only vignette: guarantees text contrast on the dark-left even if the
        framing shifts, and is fully clear (alpha 0) across the food from 54% on.
@@ -346,24 +355,30 @@
        one and change the other, or the page advertises a discount the server
        will not apply. */
     .hero-offer{
-      display:block;max-width:440px;margin-top:26px;
-      background:rgba(18,16,14,.94);border:2px solid var(--line);border-radius:16px;
-      padding:14px 18px 15px;transition:border-color .18s ease;
+      display:block;max-width:440px;margin-top:26px;text-align:center;
+      background:rgba(18,16,14,.94);border:1px solid rgba(255,255,255,.62);border-radius:14px;
+      padding:11px 14px 12px;transition:border-color .18s ease;
     }
-    .hero-offer:hover{border-color:rgba(255,255,255,.24)}
+    .hero-offer:hover{border-color:rgba(255,255,255,.9)}
     .ho-eyebrow{
       display:block;font-family:var(--label);font-weight:500;font-size:.82rem;
       letter-spacing:1.5px;text-transform:uppercase;color:var(--red-text);
     }
-    .ho-main{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-top:5px}
+    /* A stack, not a flex row. Side by side, "10% off" (~90px) plus the
+       condition (~172px) needed 271px of the 222px available once the card came
+       down to 250, so it broke across three lines and made the box TALLER than
+       the wide version it replaced. Stacked, each line sits on its own and the
+       card is shorter than either. */
+    .ho-main{margin-top:2px}
     /* 2.1rem = 33.6px, so --red clears the 3:1 large-text bar; the small print
        below uses --muted and the eyebrow --red-text for the same reason. */
-    .ho-main b{font-family:var(--display);font-weight:400;font-size:2.1rem;line-height:1;color:var(--red)}
+    .ho-main b{display:block;font-family:var(--display);font-weight:400;font-size:2.1rem;line-height:1;color:var(--red)}
     .ho-main span{
-      font-family:var(--label);font-weight:500;font-size:1.15rem;
+      display:block;margin-top:4px;
+      font-family:var(--label);font-weight:500;font-size:1.02rem;
       text-transform:uppercase;letter-spacing:.02em;color:#fff;
     }
-    .ho-note{display:block;margin-top:7px;font-size:.83rem;line-height:1.45;color:var(--muted)}
+    .ho-note{display:block;margin-top:6px;font-size:.78rem;line-height:1.4;color:var(--muted)}
     /* Float it into the black gap between the headline and the doner rather
        than leaving it in flow, where it added ~148px to a band that is already
        content-driven and pushed the whole page down.
@@ -382,7 +397,11 @@
        breakpoint the card returns to flow, which is what the phone layout wants
        anyway. */
     @media(min-width:1240px){
-      .hero-offer{position:absolute;left:584px;top:150px;width:280px;max-width:none;margin-top:0}
+      /* 250 not 280, and down to 186 from 150, at the owner's request — the copy
+         is short enough that the wider box carried dead space either side once
+         it was centred. Still clears the doner: at the 1240px floor the card
+         now ends at 834 against a doner edge at ~915. */
+      .hero-offer{position:absolute;left:584px;top:186px;width:250px;max-width:none;margin-top:0}
     }
 
     .hero-feats{
@@ -678,7 +697,7 @@
          matching aspect they are identical, and if the asset is ever swapped
          again this fails to letterbox on black (invisible here) instead of
          silently cropping the food. */
-      .hero-media{position:relative;height:auto;aspect-ratio:3/2;background-size:contain;background-position:center}
+      .hero-media{position:relative;height:auto;aspect-ratio:1536/986;background-size:contain;background-position:center}
       .hero-media::after{display:none}
       /* 24px bottom, not 44: with 54px on top of the section below, the
          hero→heading boundary measured 104.5px on a phone against 55px between
