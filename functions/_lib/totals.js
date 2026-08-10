@@ -13,6 +13,10 @@ export function computeTotals(input, config, opts = {}) {
   const itemsById = indexMenu(menu);
   const lines = [];
   let subtotalP = 0;
+  // Derived up here as well as below, because collection-only items have to be
+  // rejected inside the line loop, before the totals section that used to be the
+  // first place this was needed.
+  const fulfillmentMode = input.fulfillment === 'delivery' ? 'delivery' : 'collection';
 
   for (const line of input.items || []) {
     // Manual / off-menu line: the staff till lets an operator type a custom name
@@ -43,6 +47,18 @@ export function computeTotals(input, config, opts = {}) {
     // via allowPosOnly; the customer web checkout never does.
     if (item.posOnly && !opts.allowPosOnly) {
       return { ok: false, reason: `Item not available online: ${line.id}` };
+    }
+    // Collection-only items (the shop's "PICKUP ONLY" deals) may not ride along
+    // on a delivery order. Checked here rather than in the API layer because
+    // this is the one place every order — web, till, pay-by-link — is priced,
+    // so there is no route that can bypass it. The staff flows opt out via
+    // allowCollectionOnly: the rule is the shop's own pricing policy, not a
+    // safety constraint, and an operator who agrees to deliver one shouldn't
+    // have to fight the till. The message names the item because by the time
+    // this fires the customer may have switched to delivery with it already in
+    // the basket, and "something in your basket" is useless to them.
+    if (item.collectionOnly && fulfillmentMode === 'delivery' && !opts.allowCollectionOnly) {
+      return { ok: false, reason: `${item.name} is collection only — please remove it or switch to collection.` };
     }
     const qty = Math.max(1, Math.min(20, Math.floor(Number(line.qty)) || 1));
     let lineP = item.priceP;
@@ -124,7 +140,7 @@ export function computeTotals(input, config, opts = {}) {
     return { ok: false, reason: 'Cart is empty.' };
   }
 
-  const fulfillment = input.fulfillment === 'delivery' ? 'delivery' : 'collection';
+  const fulfillment = fulfillmentMode;
 
   // Promo: percentage off the online subtotal. Counter sales (taken in-person at
   // the till) opt out via opts.suppressPromo — the online discount isn't intended

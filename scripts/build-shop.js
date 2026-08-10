@@ -72,6 +72,14 @@ function validateMenus(menu, visual) {
     if (typeof vi.price === 'number' && typeof mi.priceP === 'number' && Math.round(vi.price * 100) !== mi.priceP) {
       errors.push(`"${id}" base price: menu-visual £${vi.price} (=${Math.round(vi.price * 100)}p) != menu.json ${mi.priceP}p`);
     }
+    // collectionOnly is enforced server-side off menu.json, but the badge and
+    // the "can't add this to a delivery order" guard on the order page read
+    // menu-visual.json. If the two disagree the customer is either shown a
+    // restriction that isn't real, or — the dangerous way round — allowed to
+    // build a delivery basket that /api/order will refuse at the last step.
+    if (!!vi.collectionOnly !== !!mi.collectionOnly) {
+      errors.push(`"${id}" collectionOnly: menu-visual ${!!vi.collectionOnly} != menu.json ${!!mi.collectionOnly} (the page and the server would disagree about whether it can be delivered)`);
+    }
     const mods = new Map((mi.modifiers || []).map(x => [x.id, x]));
     const used = new Set();
     for (const opt of vi.options || []) {

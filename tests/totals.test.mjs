@@ -103,6 +103,51 @@ test('posOnly item is blocked online but allowed when opts.allowPosOnly', () => 
   assert.equal(allowed.subtotalP, 500);
 });
 
+test('collectionOnly item: fine on collection, refused on delivery, staff can override', () => {
+  const collect = computeTotals({ items: [{ id: 'pickupdeal', qty: 1 }], fulfillment: 'collection' }, config);
+  assert.equal(collect.ok, true);
+  assert.equal(collect.subtotalP, 1499);
+
+  const deliver = computeTotals(
+    { items: [{ id: 'pickupdeal', qty: 1 }], fulfillment: 'delivery', deliveryAddress: { postcode: 'YO2 3AB' } },
+    config,
+  );
+  assert.equal(deliver.ok, false);
+  // Names the item — by the time this fires it may be one line among several.
+  assert.match(deliver.reason, /Two Pizzas Deal/);
+  assert.match(deliver.reason, /collection only/i);
+
+  // The till opts out: the rule is the shop's pricing policy, not a safety gate.
+  const staff = computeTotals(
+    { items: [{ id: 'pickupdeal', qty: 1 }], fulfillment: 'delivery', deliveryAddress: { postcode: 'YO2 3AB' } },
+    config,
+    { allowCollectionOnly: true },
+  );
+  assert.equal(staff.ok, true);
+});
+
+test('collectionOnly blocks the whole delivery order, not just its own line', () => {
+  const t = computeTotals(
+    { items: [{ id: 'burger', qty: 1 }, { id: 'pickupdeal', qty: 1 }], fulfillment: 'delivery', deliveryAddress: { postcode: 'YO2 3AB' } },
+    config,
+  );
+  assert.equal(t.ok, false);
+  // Asserted on the reason, not just ok:false — this basket is £22.99, comfortably
+  // over the £12 delivery minimum, so a bare ok:false could be hiding a different
+  // rejection entirely.
+  assert.match(t.reason, /Two Pizzas Deal/);
+});
+
+test('an ordinary item is unaffected by the collectionOnly rule on delivery', () => {
+  // qty 3, because one burger is £8 and the fixture's delivery minimum is £12 —
+  // at qty 1 this passes for the wrong reason.
+  const t = computeTotals(
+    { items: [{ id: 'burger', qty: 3 }], fulfillment: 'delivery', deliveryAddress: { postcode: 'YO2 3AB' } },
+    config,
+  );
+  assert.equal(t.ok, true);
+});
+
 test('custom line rejected unless opts.allowCustom, then priced from staff-entered pence', () => {
   const blocked = computeTotals({ items: [{ custom: true, name: 'X', priceP: 999, qty: 1 }], fulfillment: 'collection' }, config);
   assert.equal(blocked.ok, false);

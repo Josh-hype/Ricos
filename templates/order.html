@@ -1419,6 +1419,14 @@
   .item-row.soldout .item-row-view { display: none; }
   .item-row-tag.soldout { background: #fdecea; color: var(--error); border: 1px solid var(--error);
     font-weight: 700; text-transform: uppercase; letter-spacing: .3px; }
+  /* Collection-only badge. Deliberately NOT the default red — on this page red
+     means spicy or sold out, and this is neither a warning nor a heat level,
+     just a fact about how you can get it. Drawn from currentColor rather than a
+     palette token because order.html is shared: the same rule has to read on
+     the cream shops and on a dark-themed one, where a hard-coded ink would
+     vanish. */
+  .item-row-tag.collectonly { background: transparent; color: inherit;
+    border: 1px solid currentColor; opacity: .72; font-weight: 700; }
 
   /* Emergency closure strip ("we're closed today"). */
   .closed-banner { background: var(--red, var(--error)); color: #fff; text-align: center;
@@ -1824,6 +1832,11 @@ function itemRowHTML(item) {
   let tag = '';
   if (soldOut) {
     tag = `<span class="item-row-tag soldout">Sold out</span>`;
+  } else if (item.collectionOnly) {
+    // Shown in both modes, not just delivery: a customer browsing on collection
+    // needs to know before they switch, and the badge is the only warning they
+    // get until the add is refused.
+    tag = `<span class="item-row-tag collectonly">Collection only</span>`;
   } else if (item.spicy) {
     tag = `<span class="item-row-tag"><span class="fire" aria-hidden="true">🔥</span>Pick your heat</span>`;
   } else if (item.spicyTag) {
@@ -2233,6 +2246,15 @@ function findItem(itemId) {
 function addToCart(itemId, opts) {
   const found = findItem(itemId);
   if (!found) return;
+  // A collection-only item in a delivery basket is refused outright by
+  // /api/order, so catching it at the moment of adding turns a checkout-time
+  // rejection into a choice made when the customer still understands why.
+  // Offered as a switch rather than a flat refusal: wanting the deal is a
+  // perfectly good reason to collect instead.
+  if (found.collectionOnly && state.mode === 'deliver') {
+    if (!confirm(`${found.name} is collection only.\n\nSwitch to collection and add it?`)) return;
+    applyMode('collect');
+  }
   // Chosen meal sides/drink (ids). Names resolved for display via MENU_DATA.
   const choiceIds = (opts.meal && Array.isArray(opts.mealChoices)) ? opts.mealChoices : [];
   const choiceNames = choiceIds.map(id => findItem(id)?.name).filter(Boolean);
@@ -2401,7 +2423,7 @@ function deliveryFeeGBP() {
    standing "% off all online orders" offer. Returns {pct,label}. The server
    (/api/order) recomputes this authoritatively — this is a display hint, so a
    customer who isn't really eligible just sees the price corrected at checkout. */
-function activeDiscount() {
+function activeDiscount(subtotalP) {
   const p = window.SHOP_CONFIG?.promo || {};
   const fo = p.firstOrders;
   const user = state.user;
@@ -2412,8 +2434,17 @@ function activeDiscount() {
   }
   const auto = p.autoOnlineDiscount;
   if (auto && auto.enabled) {
-    const pct = Math.max(0, Math.min(100, Number(auto.percent) || 0));
-    return { pct, label: auto.label || `Online discount (${pct}%)`, ordersLeft: null };
+    // Mirror the server's minimum-spend gate (totals.js). Without it the page
+    // showed the discount on ANY subtotal while /api/order withheld it below
+    // the threshold — so a shop running "10% off over £12" quoted a £10 basket
+    // cheaper than it charged. Wrong in the direction that matters: the
+    // customer sees the price go UP at the last step.
+    const minP = Math.max(0, Math.round(Number(auto.minSubtotalPence) || 0));
+    if ((Number(subtotalP) || 0) >= minP) {
+      const pct = Math.max(0, Math.min(100, Number(auto.percent) || 0));
+      return { pct, label: auto.label || `Online discount (${pct}%)`, ordersLeft: null };
+    }
+    return { pct: 0, label: null, ordersLeft: null };
   }
   return { pct: 0, label: null, ordersLeft: null };
 }
@@ -2423,7 +2454,7 @@ function cartTotals() {
   // displayed total can't drift a penny from what Stripe is charged via
   // floating-point pound arithmetic. Returns pounds for display.
   const subP = state.cart.reduce((s, l) => s + Math.round((Number(l.price) || 0) * 100) * (Number(l.qty) || 0), 0);
-  const disc = activeDiscount();
+  const disc = activeDiscount(subP);
   const discountP = Math.round(subP * (disc.pct / 100));
   const deliveryP = Math.round(deliveryFeeGBP() * 100);
   const serviceP = state.cart.length > 0 ? Math.round(serviceFeeGBP() * 100) : 0;
@@ -2628,9 +2659,33 @@ function applyMode(mode) {
   renderCart();
   refreshPCMessage();
 }
-document.getElementById('modeCollect').addEventListener('click', () => applyMode('collect'));
-document.getElementById('modeDeliver').addEventListener('click', () => applyMode('deliver'));
-document.querySelectorAll('.cart-mode-btn').forEach(b => b.addEventListener('click', () => applyMode(b.dataset.mode)));
+/* Switching TO delivery with a collection-only item already in the basket.
+   Wrapped around applyMode rather than built into it because applyMode also
+   runs on page load restoring saved state, and on the collection-only-shop
+   fallback — a confirm() firing there would be unprompted and baffling. Only
+   the three user-initiated entry points go through this. */
+function collectionOnlyNamesInCart() {
+  const names = state.cart
+    .filter(l => findItem(l.itemId)?.collectionOnly)
+    .map(l => findItem(l.itemId).name);
+  return [...new Set(names)];
+}
+function requestMode(mode) {
+  if (mode === 'deliver') {
+    const names = collectionOnlyNamesInCart();
+    if (names.length) {
+      const many = names.length > 1;
+      if (!confirm(`${names.join(', ')} ${many ? 'are' : 'is'} collection only.\n\nSwitch to delivery and remove ${many ? 'them' : 'it'} from your basket?`)) return;
+      state.cart = state.cart.filter(l => !findItem(l.itemId)?.collectionOnly);
+      saveState();
+      renderCart();
+    }
+  }
+  applyMode(mode);
+}
+document.getElementById('modeCollect').addEventListener('click', () => requestMode('collect'));
+document.getElementById('modeDeliver').addEventListener('click', () => requestMode('deliver'));
+document.querySelectorAll('.cart-mode-btn').forEach(b => b.addEventListener('click', () => requestMode(b.dataset.mode)));
 
 // Collection-only shops (fulfillment.delivery.enabled === false): hide the
 // delivery toggle and force collection, so a customer can't get stuck on a

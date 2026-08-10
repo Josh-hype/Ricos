@@ -5128,5 +5128,2171 @@
         "priceP": 600
       }
     ]
+  },
+  {
+    "id": "meal-deals",
+    "name": "Meal Deals",
+    "items": [
+      {
+        "id": "deal-1",
+        "name": "Deal 1",
+        "priceP": 2300
+      },
+      {
+        "id": "deal-2",
+        "name": "Deal 2",
+        "priceP": 2100,
+        "modifiers": [
+          {
+            "id": "p1-margherita-pizza",
+            "label": "First 11\" pizza: Margherita",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-easy-one-pizza",
+            "label": "First 11\" pizza: Easy One",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-al-funghi-pizza",
+            "label": "First 11\" pizza: Al Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-mr-cheese-pizza",
+            "label": "First 11\" pizza: Mr Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-vegetarian-pizza",
+            "label": "First 11\" pizza: Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-spicy-vegetarian-pizza",
+            "label": "First 11\" pizza: Spicy Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-london-pizza",
+            "label": "First 11\" pizza: London",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-prosciutto-funghi-pizza",
+            "label": "First 11\" pizza: Prosciutto Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-prosciutto-pizza",
+            "label": "First 11\" pizza: Prosciutto",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hawaiian-pizza",
+            "label": "First 11\" pizza: Hawaiian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-caribbean-pizza",
+            "label": "First 11\" pizza: Caribbean",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-four-seasons-pizza",
+            "label": "First 11\" pizza: Four Seasons",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-tuna-ham-pizza",
+            "label": "First 11\" pizza: Tuna Ham",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-tuna-and-sweetcorn-pizza",
+            "label": "First 11\" pizza: Tuna & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-pepperoni-pizza",
+            "label": "First 11\" pizza: Pepperoni",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-pepperoni-chicken-pizza",
+            "label": "First 11\" pizza: Pepperoni Chicken",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-shot-pizza",
+            "label": "First 11\" pizza: Hot Shot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-americana-hot-pizza",
+            "label": "First 11\" pizza: Americana Hot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-americana-pizza",
+            "label": "First 11\" pizza: Americana",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-meat-feast-pizza",
+            "label": "First 11\" pizza: Meat Feast",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-nice-n-spicy-pizza",
+            "label": "First 11\" pizza: Nice 'n' Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-volkan-special-pizza",
+            "label": "First 11\" pizza: Volkan Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-bbq-porker-pizza",
+            "label": "First 11\" pizza: BBQ Porker",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-chicken-and-bacon-pizza",
+            "label": "First 11\" pizza: Chicken & Bacon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-doner-pizza",
+            "label": "First 11\" pizza: Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-spicy-doner-pizza",
+            "label": "First 11\" pizza: Spicy Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-lips-pizza",
+            "label": "First 11\" pizza: Hot Lips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-bolognese-pizza",
+            "label": "First 11\" pizza: Bolognese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-spicy-beef-pizza",
+            "label": "First 11\" pizza: Spicy Beef",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-stuff-pizza",
+            "label": "First 11\" pizza: Hot Stuff",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-and-spicy-pizza",
+            "label": "First 11\" pizza: Hot & Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-vali-special-pizza",
+            "label": "First 11\" pizza: Vali Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-pollo-funghi-pizza",
+            "label": "First 11\" pizza: Pollo Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-chicken-and-sweetcorn-pizza",
+            "label": "First 11\" pizza: Chicken & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-bbq-chicken-and-bacon-pizza",
+            "label": "First 11\" pizza: BBQ Chicken & Bacon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-margherita-pizza",
+            "label": "Second 11\" pizza: Margherita",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-easy-one-pizza",
+            "label": "Second 11\" pizza: Easy One",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-al-funghi-pizza",
+            "label": "Second 11\" pizza: Al Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-mr-cheese-pizza",
+            "label": "Second 11\" pizza: Mr Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-vegetarian-pizza",
+            "label": "Second 11\" pizza: Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-spicy-vegetarian-pizza",
+            "label": "Second 11\" pizza: Spicy Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-london-pizza",
+            "label": "Second 11\" pizza: London",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-prosciutto-funghi-pizza",
+            "label": "Second 11\" pizza: Prosciutto Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-prosciutto-pizza",
+            "label": "Second 11\" pizza: Prosciutto",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hawaiian-pizza",
+            "label": "Second 11\" pizza: Hawaiian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-caribbean-pizza",
+            "label": "Second 11\" pizza: Caribbean",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-four-seasons-pizza",
+            "label": "Second 11\" pizza: Four Seasons",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-tuna-ham-pizza",
+            "label": "Second 11\" pizza: Tuna Ham",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-tuna-and-sweetcorn-pizza",
+            "label": "Second 11\" pizza: Tuna & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-pepperoni-pizza",
+            "label": "Second 11\" pizza: Pepperoni",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-pepperoni-chicken-pizza",
+            "label": "Second 11\" pizza: Pepperoni Chicken",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hot-shot-pizza",
+            "label": "Second 11\" pizza: Hot Shot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-americana-hot-pizza",
+            "label": "Second 11\" pizza: Americana Hot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-americana-pizza",
+            "label": "Second 11\" pizza: Americana",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-meat-feast-pizza",
+            "label": "Second 11\" pizza: Meat Feast",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-nice-n-spicy-pizza",
+            "label": "Second 11\" pizza: Nice 'n' Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-volkan-special-pizza",
+            "label": "Second 11\" pizza: Volkan Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-bbq-porker-pizza",
+            "label": "Second 11\" pizza: BBQ Porker",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-chicken-and-bacon-pizza",
+            "label": "Second 11\" pizza: Chicken & Bacon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-doner-pizza",
+            "label": "Second 11\" pizza: Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-spicy-doner-pizza",
+            "label": "Second 11\" pizza: Spicy Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hot-lips-pizza",
+            "label": "Second 11\" pizza: Hot Lips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-bolognese-pizza",
+            "label": "Second 11\" pizza: Bolognese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-spicy-beef-pizza",
+            "label": "Second 11\" pizza: Spicy Beef",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hot-stuff-pizza",
+            "label": "Second 11\" pizza: Hot Stuff",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hot-and-spicy-pizza",
+            "label": "Second 11\" pizza: Hot & Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-vali-special-pizza",
+            "label": "Second 11\" pizza: Vali Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-pollo-funghi-pizza",
+            "label": "Second 11\" pizza: Pollo Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-chicken-and-sweetcorn-pizza",
+            "label": "Second 11\" pizza: Chicken & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-bbq-chicken-and-bacon-pizza",
+            "label": "Second 11\" pizza: BBQ Chicken & Bacon",
+            "priceDeltaP": 0
+          }
+        ]
+      },
+      {
+        "id": "deal-3",
+        "name": "Deal 3",
+        "priceP": 1350,
+        "modifiers": [
+          {
+            "id": "p1-margherita-pizza",
+            "label": "Your 14\" pizza: Margherita",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-easy-one-pizza",
+            "label": "Your 14\" pizza: Easy One",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-al-funghi-pizza",
+            "label": "Your 14\" pizza: Al Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-mr-cheese-pizza",
+            "label": "Your 14\" pizza: Mr Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-vegetarian-pizza",
+            "label": "Your 14\" pizza: Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-spicy-vegetarian-pizza",
+            "label": "Your 14\" pizza: Spicy Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-london-pizza",
+            "label": "Your 14\" pizza: London",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-prosciutto-funghi-pizza",
+            "label": "Your 14\" pizza: Prosciutto Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-prosciutto-pizza",
+            "label": "Your 14\" pizza: Prosciutto",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hawaiian-pizza",
+            "label": "Your 14\" pizza: Hawaiian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-caribbean-pizza",
+            "label": "Your 14\" pizza: Caribbean",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-four-seasons-pizza",
+            "label": "Your 14\" pizza: Four Seasons",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-tuna-ham-pizza",
+            "label": "Your 14\" pizza: Tuna Ham",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-tuna-and-sweetcorn-pizza",
+            "label": "Your 14\" pizza: Tuna & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-pepperoni-pizza",
+            "label": "Your 14\" pizza: Pepperoni",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-pepperoni-chicken-pizza",
+            "label": "Your 14\" pizza: Pepperoni Chicken",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-shot-pizza",
+            "label": "Your 14\" pizza: Hot Shot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-americana-hot-pizza",
+            "label": "Your 14\" pizza: Americana Hot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-americana-pizza",
+            "label": "Your 14\" pizza: Americana",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-meat-feast-pizza",
+            "label": "Your 14\" pizza: Meat Feast",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-nice-n-spicy-pizza",
+            "label": "Your 14\" pizza: Nice 'n' Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-volkan-special-pizza",
+            "label": "Your 14\" pizza: Volkan Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-bbq-porker-pizza",
+            "label": "Your 14\" pizza: BBQ Porker",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-chicken-and-bacon-pizza",
+            "label": "Your 14\" pizza: Chicken & Bacon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-doner-pizza",
+            "label": "Your 14\" pizza: Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-spicy-doner-pizza",
+            "label": "Your 14\" pizza: Spicy Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-lips-pizza",
+            "label": "Your 14\" pizza: Hot Lips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-bolognese-pizza",
+            "label": "Your 14\" pizza: Bolognese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-spicy-beef-pizza",
+            "label": "Your 14\" pizza: Spicy Beef",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-stuff-pizza",
+            "label": "Your 14\" pizza: Hot Stuff",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-and-spicy-pizza",
+            "label": "Your 14\" pizza: Hot & Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-vali-special-pizza",
+            "label": "Your 14\" pizza: Vali Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-pollo-funghi-pizza",
+            "label": "Your 14\" pizza: Pollo Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-chicken-and-sweetcorn-pizza",
+            "label": "Your 14\" pizza: Chicken & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-bbq-chicken-and-bacon-pizza",
+            "label": "Your 14\" pizza: BBQ Chicken & Bacon",
+            "priceDeltaP": 0
+          }
+        ]
+      },
+      {
+        "id": "deal-4",
+        "name": "Deal 4",
+        "priceP": 2400,
+        "modifiers": [
+          {
+            "id": "p1-margherita-pizza",
+            "label": "Your 11\" pizza: Margherita",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-easy-one-pizza",
+            "label": "Your 11\" pizza: Easy One",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-al-funghi-pizza",
+            "label": "Your 11\" pizza: Al Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-mr-cheese-pizza",
+            "label": "Your 11\" pizza: Mr Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-vegetarian-pizza",
+            "label": "Your 11\" pizza: Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-spicy-vegetarian-pizza",
+            "label": "Your 11\" pizza: Spicy Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-london-pizza",
+            "label": "Your 11\" pizza: London",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-prosciutto-funghi-pizza",
+            "label": "Your 11\" pizza: Prosciutto Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-prosciutto-pizza",
+            "label": "Your 11\" pizza: Prosciutto",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hawaiian-pizza",
+            "label": "Your 11\" pizza: Hawaiian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-caribbean-pizza",
+            "label": "Your 11\" pizza: Caribbean",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-four-seasons-pizza",
+            "label": "Your 11\" pizza: Four Seasons",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-tuna-ham-pizza",
+            "label": "Your 11\" pizza: Tuna Ham",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-tuna-and-sweetcorn-pizza",
+            "label": "Your 11\" pizza: Tuna & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-pepperoni-pizza",
+            "label": "Your 11\" pizza: Pepperoni",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-pepperoni-chicken-pizza",
+            "label": "Your 11\" pizza: Pepperoni Chicken",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-shot-pizza",
+            "label": "Your 11\" pizza: Hot Shot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-americana-hot-pizza",
+            "label": "Your 11\" pizza: Americana Hot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-americana-pizza",
+            "label": "Your 11\" pizza: Americana",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-meat-feast-pizza",
+            "label": "Your 11\" pizza: Meat Feast",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-nice-n-spicy-pizza",
+            "label": "Your 11\" pizza: Nice 'n' Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-volkan-special-pizza",
+            "label": "Your 11\" pizza: Volkan Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-bbq-porker-pizza",
+            "label": "Your 11\" pizza: BBQ Porker",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-chicken-and-bacon-pizza",
+            "label": "Your 11\" pizza: Chicken & Bacon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-doner-pizza",
+            "label": "Your 11\" pizza: Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-spicy-doner-pizza",
+            "label": "Your 11\" pizza: Spicy Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-lips-pizza",
+            "label": "Your 11\" pizza: Hot Lips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-bolognese-pizza",
+            "label": "Your 11\" pizza: Bolognese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-spicy-beef-pizza",
+            "label": "Your 11\" pizza: Spicy Beef",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-stuff-pizza",
+            "label": "Your 11\" pizza: Hot Stuff",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-and-spicy-pizza",
+            "label": "Your 11\" pizza: Hot & Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-vali-special-pizza",
+            "label": "Your 11\" pizza: Vali Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-pollo-funghi-pizza",
+            "label": "Your 11\" pizza: Pollo Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-chicken-and-sweetcorn-pizza",
+            "label": "Your 11\" pizza: Chicken & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-bbq-chicken-and-bacon-pizza",
+            "label": "Your 11\" pizza: BBQ Chicken & Bacon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-margherita-pizza",
+            "label": "Your 14\" pizza: Margherita",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-easy-one-pizza",
+            "label": "Your 14\" pizza: Easy One",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-al-funghi-pizza",
+            "label": "Your 14\" pizza: Al Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-mr-cheese-pizza",
+            "label": "Your 14\" pizza: Mr Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-vegetarian-pizza",
+            "label": "Your 14\" pizza: Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-spicy-vegetarian-pizza",
+            "label": "Your 14\" pizza: Spicy Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-london-pizza",
+            "label": "Your 14\" pizza: London",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-prosciutto-funghi-pizza",
+            "label": "Your 14\" pizza: Prosciutto Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-prosciutto-pizza",
+            "label": "Your 14\" pizza: Prosciutto",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hawaiian-pizza",
+            "label": "Your 14\" pizza: Hawaiian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-caribbean-pizza",
+            "label": "Your 14\" pizza: Caribbean",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-four-seasons-pizza",
+            "label": "Your 14\" pizza: Four Seasons",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-tuna-ham-pizza",
+            "label": "Your 14\" pizza: Tuna Ham",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-tuna-and-sweetcorn-pizza",
+            "label": "Your 14\" pizza: Tuna & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-pepperoni-pizza",
+            "label": "Your 14\" pizza: Pepperoni",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-pepperoni-chicken-pizza",
+            "label": "Your 14\" pizza: Pepperoni Chicken",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hot-shot-pizza",
+            "label": "Your 14\" pizza: Hot Shot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-americana-hot-pizza",
+            "label": "Your 14\" pizza: Americana Hot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-americana-pizza",
+            "label": "Your 14\" pizza: Americana",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-meat-feast-pizza",
+            "label": "Your 14\" pizza: Meat Feast",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-nice-n-spicy-pizza",
+            "label": "Your 14\" pizza: Nice 'n' Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-volkan-special-pizza",
+            "label": "Your 14\" pizza: Volkan Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-bbq-porker-pizza",
+            "label": "Your 14\" pizza: BBQ Porker",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-chicken-and-bacon-pizza",
+            "label": "Your 14\" pizza: Chicken & Bacon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-doner-pizza",
+            "label": "Your 14\" pizza: Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-spicy-doner-pizza",
+            "label": "Your 14\" pizza: Spicy Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hot-lips-pizza",
+            "label": "Your 14\" pizza: Hot Lips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-bolognese-pizza",
+            "label": "Your 14\" pizza: Bolognese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-spicy-beef-pizza",
+            "label": "Your 14\" pizza: Spicy Beef",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hot-stuff-pizza",
+            "label": "Your 14\" pizza: Hot Stuff",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hot-and-spicy-pizza",
+            "label": "Your 14\" pizza: Hot & Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-vali-special-pizza",
+            "label": "Your 14\" pizza: Vali Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-pollo-funghi-pizza",
+            "label": "Your 14\" pizza: Pollo Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-chicken-and-sweetcorn-pizza",
+            "label": "Your 14\" pizza: Chicken & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-bbq-chicken-and-bacon-pizza",
+            "label": "Your 14\" pizza: BBQ Chicken & Bacon",
+            "priceDeltaP": 0
+          }
+        ]
+      },
+      {
+        "id": "deal-5",
+        "name": "Deal 5",
+        "priceP": 2250,
+        "modifiers": [
+          {
+            "id": "p1-margherita-pizza",
+            "label": "First 14\" pizza: Margherita",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-easy-one-pizza",
+            "label": "First 14\" pizza: Easy One",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-al-funghi-pizza",
+            "label": "First 14\" pizza: Al Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-mr-cheese-pizza",
+            "label": "First 14\" pizza: Mr Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-vegetarian-pizza",
+            "label": "First 14\" pizza: Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-spicy-vegetarian-pizza",
+            "label": "First 14\" pizza: Spicy Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-london-pizza",
+            "label": "First 14\" pizza: London",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-prosciutto-funghi-pizza",
+            "label": "First 14\" pizza: Prosciutto Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-prosciutto-pizza",
+            "label": "First 14\" pizza: Prosciutto",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hawaiian-pizza",
+            "label": "First 14\" pizza: Hawaiian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-caribbean-pizza",
+            "label": "First 14\" pizza: Caribbean",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-four-seasons-pizza",
+            "label": "First 14\" pizza: Four Seasons",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-tuna-ham-pizza",
+            "label": "First 14\" pizza: Tuna Ham",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-tuna-and-sweetcorn-pizza",
+            "label": "First 14\" pizza: Tuna & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-pepperoni-pizza",
+            "label": "First 14\" pizza: Pepperoni",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-pepperoni-chicken-pizza",
+            "label": "First 14\" pizza: Pepperoni Chicken",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-shot-pizza",
+            "label": "First 14\" pizza: Hot Shot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-americana-hot-pizza",
+            "label": "First 14\" pizza: Americana Hot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-americana-pizza",
+            "label": "First 14\" pizza: Americana",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-meat-feast-pizza",
+            "label": "First 14\" pizza: Meat Feast",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-nice-n-spicy-pizza",
+            "label": "First 14\" pizza: Nice 'n' Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-volkan-special-pizza",
+            "label": "First 14\" pizza: Volkan Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-bbq-porker-pizza",
+            "label": "First 14\" pizza: BBQ Porker",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-chicken-and-bacon-pizza",
+            "label": "First 14\" pizza: Chicken & Bacon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-doner-pizza",
+            "label": "First 14\" pizza: Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-spicy-doner-pizza",
+            "label": "First 14\" pizza: Spicy Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-lips-pizza",
+            "label": "First 14\" pizza: Hot Lips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-bolognese-pizza",
+            "label": "First 14\" pizza: Bolognese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-spicy-beef-pizza",
+            "label": "First 14\" pizza: Spicy Beef",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-stuff-pizza",
+            "label": "First 14\" pizza: Hot Stuff",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-and-spicy-pizza",
+            "label": "First 14\" pizza: Hot & Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-vali-special-pizza",
+            "label": "First 14\" pizza: Vali Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-pollo-funghi-pizza",
+            "label": "First 14\" pizza: Pollo Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-chicken-and-sweetcorn-pizza",
+            "label": "First 14\" pizza: Chicken & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-bbq-chicken-and-bacon-pizza",
+            "label": "First 14\" pizza: BBQ Chicken & Bacon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-margherita-pizza",
+            "label": "Second 14\" pizza: Margherita",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-easy-one-pizza",
+            "label": "Second 14\" pizza: Easy One",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-al-funghi-pizza",
+            "label": "Second 14\" pizza: Al Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-mr-cheese-pizza",
+            "label": "Second 14\" pizza: Mr Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-vegetarian-pizza",
+            "label": "Second 14\" pizza: Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-spicy-vegetarian-pizza",
+            "label": "Second 14\" pizza: Spicy Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-london-pizza",
+            "label": "Second 14\" pizza: London",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-prosciutto-funghi-pizza",
+            "label": "Second 14\" pizza: Prosciutto Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-prosciutto-pizza",
+            "label": "Second 14\" pizza: Prosciutto",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hawaiian-pizza",
+            "label": "Second 14\" pizza: Hawaiian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-caribbean-pizza",
+            "label": "Second 14\" pizza: Caribbean",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-four-seasons-pizza",
+            "label": "Second 14\" pizza: Four Seasons",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-tuna-ham-pizza",
+            "label": "Second 14\" pizza: Tuna Ham",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-tuna-and-sweetcorn-pizza",
+            "label": "Second 14\" pizza: Tuna & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-pepperoni-pizza",
+            "label": "Second 14\" pizza: Pepperoni",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-pepperoni-chicken-pizza",
+            "label": "Second 14\" pizza: Pepperoni Chicken",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hot-shot-pizza",
+            "label": "Second 14\" pizza: Hot Shot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-americana-hot-pizza",
+            "label": "Second 14\" pizza: Americana Hot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-americana-pizza",
+            "label": "Second 14\" pizza: Americana",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-meat-feast-pizza",
+            "label": "Second 14\" pizza: Meat Feast",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-nice-n-spicy-pizza",
+            "label": "Second 14\" pizza: Nice 'n' Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-volkan-special-pizza",
+            "label": "Second 14\" pizza: Volkan Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-bbq-porker-pizza",
+            "label": "Second 14\" pizza: BBQ Porker",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-chicken-and-bacon-pizza",
+            "label": "Second 14\" pizza: Chicken & Bacon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-doner-pizza",
+            "label": "Second 14\" pizza: Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-spicy-doner-pizza",
+            "label": "Second 14\" pizza: Spicy Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hot-lips-pizza",
+            "label": "Second 14\" pizza: Hot Lips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-bolognese-pizza",
+            "label": "Second 14\" pizza: Bolognese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-spicy-beef-pizza",
+            "label": "Second 14\" pizza: Spicy Beef",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hot-stuff-pizza",
+            "label": "Second 14\" pizza: Hot Stuff",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hot-and-spicy-pizza",
+            "label": "Second 14\" pizza: Hot & Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-vali-special-pizza",
+            "label": "Second 14\" pizza: Vali Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-pollo-funghi-pizza",
+            "label": "Second 14\" pizza: Pollo Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-chicken-and-sweetcorn-pizza",
+            "label": "Second 14\" pizza: Chicken & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-bbq-chicken-and-bacon-pizza",
+            "label": "Second 14\" pizza: BBQ Chicken & Bacon",
+            "priceDeltaP": 0
+          }
+        ]
+      },
+      {
+        "id": "deal-6",
+        "name": "Deal 6",
+        "priceP": 2600,
+        "modifiers": [
+          {
+            "id": "p1-margherita-pizza",
+            "label": "First 11\" pizza: Margherita",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-easy-one-pizza",
+            "label": "First 11\" pizza: Easy One",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-al-funghi-pizza",
+            "label": "First 11\" pizza: Al Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-mr-cheese-pizza",
+            "label": "First 11\" pizza: Mr Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-vegetarian-pizza",
+            "label": "First 11\" pizza: Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-spicy-vegetarian-pizza",
+            "label": "First 11\" pizza: Spicy Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-london-pizza",
+            "label": "First 11\" pizza: London",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-prosciutto-funghi-pizza",
+            "label": "First 11\" pizza: Prosciutto Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-prosciutto-pizza",
+            "label": "First 11\" pizza: Prosciutto",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hawaiian-pizza",
+            "label": "First 11\" pizza: Hawaiian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-caribbean-pizza",
+            "label": "First 11\" pizza: Caribbean",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-four-seasons-pizza",
+            "label": "First 11\" pizza: Four Seasons",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-tuna-ham-pizza",
+            "label": "First 11\" pizza: Tuna Ham",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-tuna-and-sweetcorn-pizza",
+            "label": "First 11\" pizza: Tuna & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-pepperoni-pizza",
+            "label": "First 11\" pizza: Pepperoni",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-pepperoni-chicken-pizza",
+            "label": "First 11\" pizza: Pepperoni Chicken",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-shot-pizza",
+            "label": "First 11\" pizza: Hot Shot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-americana-hot-pizza",
+            "label": "First 11\" pizza: Americana Hot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-americana-pizza",
+            "label": "First 11\" pizza: Americana",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-meat-feast-pizza",
+            "label": "First 11\" pizza: Meat Feast",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-nice-n-spicy-pizza",
+            "label": "First 11\" pizza: Nice 'n' Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-volkan-special-pizza",
+            "label": "First 11\" pizza: Volkan Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-bbq-porker-pizza",
+            "label": "First 11\" pizza: BBQ Porker",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-chicken-and-bacon-pizza",
+            "label": "First 11\" pizza: Chicken & Bacon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-doner-pizza",
+            "label": "First 11\" pizza: Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-spicy-doner-pizza",
+            "label": "First 11\" pizza: Spicy Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-lips-pizza",
+            "label": "First 11\" pizza: Hot Lips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-bolognese-pizza",
+            "label": "First 11\" pizza: Bolognese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-spicy-beef-pizza",
+            "label": "First 11\" pizza: Spicy Beef",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-stuff-pizza",
+            "label": "First 11\" pizza: Hot Stuff",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-and-spicy-pizza",
+            "label": "First 11\" pizza: Hot & Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-vali-special-pizza",
+            "label": "First 11\" pizza: Vali Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-pollo-funghi-pizza",
+            "label": "First 11\" pizza: Pollo Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-chicken-and-sweetcorn-pizza",
+            "label": "First 11\" pizza: Chicken & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-bbq-chicken-and-bacon-pizza",
+            "label": "First 11\" pizza: BBQ Chicken & Bacon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-margherita-pizza",
+            "label": "Second 11\" pizza: Margherita",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-easy-one-pizza",
+            "label": "Second 11\" pizza: Easy One",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-al-funghi-pizza",
+            "label": "Second 11\" pizza: Al Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-mr-cheese-pizza",
+            "label": "Second 11\" pizza: Mr Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-vegetarian-pizza",
+            "label": "Second 11\" pizza: Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-spicy-vegetarian-pizza",
+            "label": "Second 11\" pizza: Spicy Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-london-pizza",
+            "label": "Second 11\" pizza: London",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-prosciutto-funghi-pizza",
+            "label": "Second 11\" pizza: Prosciutto Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-prosciutto-pizza",
+            "label": "Second 11\" pizza: Prosciutto",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hawaiian-pizza",
+            "label": "Second 11\" pizza: Hawaiian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-caribbean-pizza",
+            "label": "Second 11\" pizza: Caribbean",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-four-seasons-pizza",
+            "label": "Second 11\" pizza: Four Seasons",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-tuna-ham-pizza",
+            "label": "Second 11\" pizza: Tuna Ham",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-tuna-and-sweetcorn-pizza",
+            "label": "Second 11\" pizza: Tuna & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-pepperoni-pizza",
+            "label": "Second 11\" pizza: Pepperoni",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-pepperoni-chicken-pizza",
+            "label": "Second 11\" pizza: Pepperoni Chicken",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hot-shot-pizza",
+            "label": "Second 11\" pizza: Hot Shot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-americana-hot-pizza",
+            "label": "Second 11\" pizza: Americana Hot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-americana-pizza",
+            "label": "Second 11\" pizza: Americana",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-meat-feast-pizza",
+            "label": "Second 11\" pizza: Meat Feast",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-nice-n-spicy-pizza",
+            "label": "Second 11\" pizza: Nice 'n' Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-volkan-special-pizza",
+            "label": "Second 11\" pizza: Volkan Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-bbq-porker-pizza",
+            "label": "Second 11\" pizza: BBQ Porker",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-chicken-and-bacon-pizza",
+            "label": "Second 11\" pizza: Chicken & Bacon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-doner-pizza",
+            "label": "Second 11\" pizza: Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-spicy-doner-pizza",
+            "label": "Second 11\" pizza: Spicy Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hot-lips-pizza",
+            "label": "Second 11\" pizza: Hot Lips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-bolognese-pizza",
+            "label": "Second 11\" pizza: Bolognese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-spicy-beef-pizza",
+            "label": "Second 11\" pizza: Spicy Beef",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hot-stuff-pizza",
+            "label": "Second 11\" pizza: Hot Stuff",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hot-and-spicy-pizza",
+            "label": "Second 11\" pizza: Hot & Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-vali-special-pizza",
+            "label": "Second 11\" pizza: Vali Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-pollo-funghi-pizza",
+            "label": "Second 11\" pizza: Pollo Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-chicken-and-sweetcorn-pizza",
+            "label": "Second 11\" pizza: Chicken & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-bbq-chicken-and-bacon-pizza",
+            "label": "Second 11\" pizza: BBQ Chicken & Bacon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-margherita-pizza",
+            "label": "Third 11\" pizza: Margherita",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-easy-one-pizza",
+            "label": "Third 11\" pizza: Easy One",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-al-funghi-pizza",
+            "label": "Third 11\" pizza: Al Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-mr-cheese-pizza",
+            "label": "Third 11\" pizza: Mr Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-vegetarian-pizza",
+            "label": "Third 11\" pizza: Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-spicy-vegetarian-pizza",
+            "label": "Third 11\" pizza: Spicy Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-london-pizza",
+            "label": "Third 11\" pizza: London",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-prosciutto-funghi-pizza",
+            "label": "Third 11\" pizza: Prosciutto Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-prosciutto-pizza",
+            "label": "Third 11\" pizza: Prosciutto",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-hawaiian-pizza",
+            "label": "Third 11\" pizza: Hawaiian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-caribbean-pizza",
+            "label": "Third 11\" pizza: Caribbean",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-four-seasons-pizza",
+            "label": "Third 11\" pizza: Four Seasons",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-tuna-ham-pizza",
+            "label": "Third 11\" pizza: Tuna Ham",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-tuna-and-sweetcorn-pizza",
+            "label": "Third 11\" pizza: Tuna & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-pepperoni-pizza",
+            "label": "Third 11\" pizza: Pepperoni",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-pepperoni-chicken-pizza",
+            "label": "Third 11\" pizza: Pepperoni Chicken",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-hot-shot-pizza",
+            "label": "Third 11\" pizza: Hot Shot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-americana-hot-pizza",
+            "label": "Third 11\" pizza: Americana Hot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-americana-pizza",
+            "label": "Third 11\" pizza: Americana",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-meat-feast-pizza",
+            "label": "Third 11\" pizza: Meat Feast",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-nice-n-spicy-pizza",
+            "label": "Third 11\" pizza: Nice 'n' Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-volkan-special-pizza",
+            "label": "Third 11\" pizza: Volkan Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-bbq-porker-pizza",
+            "label": "Third 11\" pizza: BBQ Porker",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-chicken-and-bacon-pizza",
+            "label": "Third 11\" pizza: Chicken & Bacon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-doner-pizza",
+            "label": "Third 11\" pizza: Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-spicy-doner-pizza",
+            "label": "Third 11\" pizza: Spicy Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-hot-lips-pizza",
+            "label": "Third 11\" pizza: Hot Lips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-bolognese-pizza",
+            "label": "Third 11\" pizza: Bolognese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-spicy-beef-pizza",
+            "label": "Third 11\" pizza: Spicy Beef",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-hot-stuff-pizza",
+            "label": "Third 11\" pizza: Hot Stuff",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-hot-and-spicy-pizza",
+            "label": "Third 11\" pizza: Hot & Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-vali-special-pizza",
+            "label": "Third 11\" pizza: Vali Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-pollo-funghi-pizza",
+            "label": "Third 11\" pizza: Pollo Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-chicken-and-sweetcorn-pizza",
+            "label": "Third 11\" pizza: Chicken & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p3-bbq-chicken-and-bacon-pizza",
+            "label": "Third 11\" pizza: BBQ Chicken & Bacon",
+            "priceDeltaP": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "collection-deals",
+    "name": "Collection Only Deals",
+    "items": [
+      {
+        "id": "collect-2x11",
+        "name": "2 x 11\" Pizzas",
+        "priceP": 1499,
+        "collectionOnly": true,
+        "modifiers": [
+          {
+            "id": "p1-margherita-pizza",
+            "label": "First 11\" pizza: Margherita",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-easy-one-pizza",
+            "label": "First 11\" pizza: Easy One",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-al-funghi-pizza",
+            "label": "First 11\" pizza: Al Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-mr-cheese-pizza",
+            "label": "First 11\" pizza: Mr Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-vegetarian-pizza",
+            "label": "First 11\" pizza: Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-spicy-vegetarian-pizza",
+            "label": "First 11\" pizza: Spicy Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-london-pizza",
+            "label": "First 11\" pizza: London",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-prosciutto-funghi-pizza",
+            "label": "First 11\" pizza: Prosciutto Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-prosciutto-pizza",
+            "label": "First 11\" pizza: Prosciutto",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hawaiian-pizza",
+            "label": "First 11\" pizza: Hawaiian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-caribbean-pizza",
+            "label": "First 11\" pizza: Caribbean",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-four-seasons-pizza",
+            "label": "First 11\" pizza: Four Seasons",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-tuna-ham-pizza",
+            "label": "First 11\" pizza: Tuna Ham",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-tuna-and-sweetcorn-pizza",
+            "label": "First 11\" pizza: Tuna & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-pepperoni-pizza",
+            "label": "First 11\" pizza: Pepperoni",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-pepperoni-chicken-pizza",
+            "label": "First 11\" pizza: Pepperoni Chicken",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-shot-pizza",
+            "label": "First 11\" pizza: Hot Shot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-americana-hot-pizza",
+            "label": "First 11\" pizza: Americana Hot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-americana-pizza",
+            "label": "First 11\" pizza: Americana",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-meat-feast-pizza",
+            "label": "First 11\" pizza: Meat Feast",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-nice-n-spicy-pizza",
+            "label": "First 11\" pizza: Nice 'n' Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-volkan-special-pizza",
+            "label": "First 11\" pizza: Volkan Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-bbq-porker-pizza",
+            "label": "First 11\" pizza: BBQ Porker",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-chicken-and-bacon-pizza",
+            "label": "First 11\" pizza: Chicken & Bacon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-doner-pizza",
+            "label": "First 11\" pizza: Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-spicy-doner-pizza",
+            "label": "First 11\" pizza: Spicy Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-lips-pizza",
+            "label": "First 11\" pizza: Hot Lips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-bolognese-pizza",
+            "label": "First 11\" pizza: Bolognese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-spicy-beef-pizza",
+            "label": "First 11\" pizza: Spicy Beef",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-stuff-pizza",
+            "label": "First 11\" pizza: Hot Stuff",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-hot-and-spicy-pizza",
+            "label": "First 11\" pizza: Hot & Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-vali-special-pizza",
+            "label": "First 11\" pizza: Vali Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-pollo-funghi-pizza",
+            "label": "First 11\" pizza: Pollo Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-chicken-and-sweetcorn-pizza",
+            "label": "First 11\" pizza: Chicken & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p1-bbq-chicken-and-bacon-pizza",
+            "label": "First 11\" pizza: BBQ Chicken & Bacon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-margherita-pizza",
+            "label": "Second 11\" pizza: Margherita",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-easy-one-pizza",
+            "label": "Second 11\" pizza: Easy One",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-al-funghi-pizza",
+            "label": "Second 11\" pizza: Al Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-mr-cheese-pizza",
+            "label": "Second 11\" pizza: Mr Cheese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-vegetarian-pizza",
+            "label": "Second 11\" pizza: Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-spicy-vegetarian-pizza",
+            "label": "Second 11\" pizza: Spicy Vegetarian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-london-pizza",
+            "label": "Second 11\" pizza: London",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-prosciutto-funghi-pizza",
+            "label": "Second 11\" pizza: Prosciutto Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-prosciutto-pizza",
+            "label": "Second 11\" pizza: Prosciutto",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hawaiian-pizza",
+            "label": "Second 11\" pizza: Hawaiian",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-caribbean-pizza",
+            "label": "Second 11\" pizza: Caribbean",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-four-seasons-pizza",
+            "label": "Second 11\" pizza: Four Seasons",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-tuna-ham-pizza",
+            "label": "Second 11\" pizza: Tuna Ham",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-tuna-and-sweetcorn-pizza",
+            "label": "Second 11\" pizza: Tuna & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-pepperoni-pizza",
+            "label": "Second 11\" pizza: Pepperoni",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-pepperoni-chicken-pizza",
+            "label": "Second 11\" pizza: Pepperoni Chicken",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hot-shot-pizza",
+            "label": "Second 11\" pizza: Hot Shot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-americana-hot-pizza",
+            "label": "Second 11\" pizza: Americana Hot",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-americana-pizza",
+            "label": "Second 11\" pizza: Americana",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-meat-feast-pizza",
+            "label": "Second 11\" pizza: Meat Feast",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-nice-n-spicy-pizza",
+            "label": "Second 11\" pizza: Nice 'n' Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-volkan-special-pizza",
+            "label": "Second 11\" pizza: Volkan Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-bbq-porker-pizza",
+            "label": "Second 11\" pizza: BBQ Porker",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-chicken-and-bacon-pizza",
+            "label": "Second 11\" pizza: Chicken & Bacon",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-doner-pizza",
+            "label": "Second 11\" pizza: Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-spicy-doner-pizza",
+            "label": "Second 11\" pizza: Spicy Doner",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hot-lips-pizza",
+            "label": "Second 11\" pizza: Hot Lips",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-bolognese-pizza",
+            "label": "Second 11\" pizza: Bolognese",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-spicy-beef-pizza",
+            "label": "Second 11\" pizza: Spicy Beef",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hot-stuff-pizza",
+            "label": "Second 11\" pizza: Hot Stuff",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-hot-and-spicy-pizza",
+            "label": "Second 11\" pizza: Hot & Spicy",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-vali-special-pizza",
+            "label": "Second 11\" pizza: Vali Special",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-pollo-funghi-pizza",
+            "label": "Second 11\" pizza: Pollo Funghi",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-chicken-and-sweetcorn-pizza",
+            "label": "Second 11\" pizza: Chicken & Sweetcorn",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "p2-bbq-chicken-and-bacon-pizza",
+            "label": "Second 11\" pizza: BBQ Chicken & Bacon",
+            "priceDeltaP": 0
+          }
+        ]
+      },
+      {
+        "id": "collect-3-kids-margherita",
+        "name": "3 Kids Margherita Pizzas",
+        "priceP": 1399,
+        "collectionOnly": true
+      }
+    ]
   }
 ]

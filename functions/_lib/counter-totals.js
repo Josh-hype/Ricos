@@ -59,7 +59,7 @@ export async function priceCounterSale({ items, mode, address: rawAddress }, con
   const totals = computeTotals(
     { items: list, fulfillment, deliveryAddress: address ? { postcode: address.postcode } : undefined },
     config,
-    { suppressPromo: true, suppressServiceFee: true, allowCustom: true, allowPosOnly: true, deliveryFeeP: deliveryFeeP ?? undefined, menu: opts.menu },
+    { suppressPromo: true, suppressServiceFee: true, allowCustom: true, allowPosOnly: true, allowCollectionOnly: true, deliveryFeeP: deliveryFeeP ?? undefined, menu: opts.menu },
   );
   if (!totals.ok) return { ok: false, error: totals.reason };
 
