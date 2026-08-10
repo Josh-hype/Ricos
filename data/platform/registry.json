@@ -109,6 +109,20 @@
         "via": "none",
         "since": "2026-07-16"
       }
+    },
+    {
+      "slug": "acomb-pizza-kebab",
+      "name": "Acomb Pizza & Kebab House",
+      "city": "York",
+      "connectedAccountId": "",
+      "onlineProcessor": "stripe",
+      "live": false,
+      "_subscription_note": "LumiWEB at £19/wk. Not live: Stripe Connect not set up, so card payments are off and the shop cannot trade yet.",
+      "subscription": {
+        "status": "pending",
+        "perWeekPence": 1900,
+        "via": "stripe"
+      }
     }
   ]
 }

@@ -88,6 +88,7 @@ host directory is in `app/web/provision.js`:
 | `190059` | Rico's Peri Peri | `https://ricosyork.co.uk` |
 | `833541` | Big Bites (slug `food-station`) | `https://bigbiteseasingwold.co.uk` |
 | `318181` | Mega Chippy | `https://acombmegachippy.uk` |
+| `604827` | Acomb Pizza & Kebab House | `https://acombpizzakebabhouse.co.uk` |
 
 **Adding a shop with a device means adding it here** — and the host must be the
 shop's reachable custom domain, never a `*.pages.dev` (those are firewalled on
@@ -104,7 +105,7 @@ this Cloudflare setup and return 403).
 | Mega Chippy, Acomb | `mega-chippy` | **LumiWEB** | £19 | ZCS Z93 |
 | One Sip | `one-sip` | LumiPOS, till-only (no website, no Stripe) | £0 — family venue, provided free | not provisioned in `provision.js` |
 | The Grub Hub | `grub-hub` | LumiPOS | £35 | pre-launch |
-| Acomb Pizza & Kebab | `acomb-pizza-kebab` *(folder scaffolded, pre-launch)* | **LumiWEB** | £19 | Z93 to supply |
+| Acomb Pizza & Kebab House | `acomb-pizza-kebab` *(pre-launch — awaiting Stripe Connect)* | **LumiWEB** | £19 | Z93 to supply |
 
 Commercial state (Stripe Connect, subscription status, processor) is in
 `data/platform/registry.json`, which the owner console reads. Note it currently
