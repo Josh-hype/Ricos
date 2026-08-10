@@ -177,23 +177,28 @@
     }
 
     /* ---------- hero ---------- */
-    /* The asset is 1536x770 — the owner's shot with the dead black BELOW the
-       pizza board cropped off (172px) so the board sits near the bottom edge
-       instead of floating in empty space. That makes it 2:1, and the whole
-       pizza has to stay visible, so two things follow:
-         - the band is sized close to 2:1 (52vw ≈ 749px at 1440), because the
-           squarer the container the more `cover` has to trim off the sides;
-         - what it trims is taken off the LEFT, via `right center`. The left of
-           this shot is pure black, so losing some costs nothing, whereas the
-           right carries the kebab spit and the oven.
-       The copy still sits on that black left, and the food is untouched. */
+    /* The asset is 1536x1024 (3:2), and unlike the previous 2:1 shot its
+       content runs almost edge to edge vertically: measured, the spit hardware
+       starts at y=16 and the sauce pots finish at y=980, so there are only 16px
+       of slack above and 44px below. That rules out `cover`. The band ranges
+       from about 1.9:1 to 2.4:1 across viewport widths, and covering a 2.4:1
+       band with a 1.5:1 image scales by width and throws away 392 source rows —
+       which takes the top off the doner AND the bottom off the pizza board.
+
+       So size by HEIGHT instead (`auto 100%`) and anchor right. The image then
+       always fits the band exactly top to bottom, at every width, and the whole
+       pizza survives — which is the one thing that has to hold. What varies is
+       how much black shows to its left, and that is free: the shot's left edge
+       is literally black (max channel 1/255 for every column out to x=280), so
+       the #000 behind it continues seamlessly and the copy sits on flat black
+       rather than on a scrim over food. */
     .hero{
       position:relative;display:flex;align-items:center;
       min-height:clamp(560px,52vw,790px);background:#000;
     }
     .hero-media{
       position:absolute;inset:0;
-      background:#000 url("/assets/hero.png") right center/cover no-repeat;
+      background:#000 url("/assets/final-hero.png") right center/auto 100% no-repeat;
     }
     /* Left-only vignette: guarantees text contrast on the dark-left even if the
        framing shifts, and is fully clear (alpha 0) across the food from 54% on.
@@ -599,13 +604,13 @@
          food, so stack — show the WHOLE image as a banner (its own 3:2 aspect,
          no crop, no fade) and drop the heading onto the black page below it. */
       .hero{display:block;min-height:0}
-      /* 2/1 = the asset's own aspect, so the phone banner shows the WHOLE shot
-         with nothing cropped. It was 3/2, which was right for the previous
-         asset and cut the board off this one. `contain` rather than `cover`
-         belt-and-braces: at exactly matching aspect they are identical, and if
-         the asset is ever swapped again this fails to letterbox on black (which
-         is invisible here) instead of silently cropping the food. */
-      .hero-media{position:relative;height:auto;aspect-ratio:2/1;background-size:contain;background-position:center}
+      /* Match the asset's own aspect so the phone banner shows the WHOLE shot
+         with nothing cropped — now 3/2 again, since the asset changed back to
+         that shape. `contain` rather than `cover` belt-and-braces: at exactly
+         matching aspect they are identical, and if the asset is ever swapped
+         again this fails to letterbox on black (invisible here) instead of
+         silently cropping the food. */
+      .hero-media{position:relative;height:auto;aspect-ratio:3/2;background-size:contain;background-position:center}
       .hero-media::after{display:none}
       /* 24px bottom, not 44: with 54px on top of the section below, the
          hero→heading boundary measured 104.5px on a phone against 55px between
