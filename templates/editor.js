@@ -86,7 +86,54 @@
     i.el.style.rotate = (Number(v.r) || 0) + 'deg';
   }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+  /* ── Text editing ───────────────────────────────────────────────────────────
+     Wording and line breaks are content, not position, and CSS cannot express
+     them — so being able to drag a paragraph but not retype it left half the
+     job in chat. Editing writes to v.t as plain text with \n for the breaks the
+     owner typed, and the original is kept in i.text0 so "changed?" is a real
+     comparison rather than a flag that can drift.
+
+     innerText, not innerHTML: it round-trips <br> as \n and cannot carry markup
+     or a pasted style attribute into the report. On re-apply the text is put
+     back through textContent + <br>, so nothing a paste brought with it can
+     execute. */
+  items.forEach(function (i) { i.text0 = i.el.innerText.replace(/\s+\n/g, '\n').trim(); });
+
+  function applyText(i) {
+    var v = val(i);
+    if (typeof v.t !== 'string' || v.t === i.text0) return;
+    // Rebuild from text nodes + <br> so pasted markup can never be injected.
+    i.el.textContent = '';
+    v.t.split('\n').forEach(function (line, n) {
+      if (n) i.el.appendChild(document.createElement('br'));
+      i.el.appendChild(document.createTextNode(line));
+    });
+  }
+
+  var editing = null;
+  function stopEditing() {
+    if (!editing) return;
+    var i = editing;
+    i.el.removeAttribute('contenteditable');
+    i.el.style.outline = '';
+    val(i).t = i.el.innerText.replace(/\s+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+    editing = null;
+    save();
+    var b = panel.querySelector('[data-text]');
+    if (b) b.textContent = '✎ Edit text';
+  }
+  function startEditing(i) {
+    stopEditing();
+    editing = i;
+    i.el.setAttribute('contenteditable', 'plaintext-only');
+    i.el.style.outline = '2px dashed #ffc400';
+    i.el.focus();
+    panel.querySelector('[data-text]').textContent = '✓ Done editing';
+  }
+
   items.forEach(apply);
+  items.forEach(applyText);
 
   var panel = document.createElement('div');
   panel.className = 'bbe shut';
@@ -101,9 +148,10 @@
     '<div class="row"><button data-flip="fx">Flip ↔</button><button data-flip="fy">Flip ↕</button></div>' +
     '<label class="lab">Turn °<input data-rot type="number" step="5"></label>' +
     '<div class="row"><button data-rot-step="-90">↺ 90°</button><button data-rot-step="-5">↺ 5°</button><button data-rot-step="5">5° ↻</button><button data-rot-step="90">90° ↻</button></div>' +
+    '<div class="row" style="margin-top:6px"><button data-text>✎ Edit text</button></div>' +
     '<div class="row" style="margin-top:6px"><button data-reset>Reset this</button><button data-resetall>Reset all</button></div>' +
     '<div class="row" style="margin-top:6px"><button class="go" data-copy>Copy for Claude</button></div>' +
-    '<p class="hint">Tap a block to select it, then drag it to move. Tap empty space to deselect. Tap empty space to deselect. Saved in this browser only.</p>' +
+    '<p class="hint">Tap a block to select it, then drag it to move. Tap empty space to deselect. To reword something, select it and tap ✎ Edit text — type straight on the page, Enter makes a line break. Saved in this browser only.</p>' +
     '</div>';
   document.body.appendChild(panel);
 
@@ -194,19 +242,37 @@
   panel.querySelector('[data-resetall]').addEventListener('click', function () {
     state = {}; items.forEach(apply); save(); sync();
   });
+  panel.querySelector('[data-text]').addEventListener('click', function () {
+    if (editing) { stopEditing(); return; }
+    var c = cur();
+    if (!c) { alert('Pick a block first, then tap "Edit text".'); return; }
+    startEditing(c);
+  });
+
   panel.querySelector('[data-copy]').addEventListener('click', function () {
+    stopEditing();                                  // capture an edit still in progress
     var moved = items.filter(function (i) { var v = val(i); return v.x || v.y || (v.s && v.s !== 100) || v.fx || v.fy || v.r; });
-    var out = moved.length
-      ? (document.title.split(/[\u2014|\-]/)[0].trim() || 'Layout') + ' changes (' + mode + ', viewport ' + innerWidth + 'px):\n' +
-        moved.map(function (i) {
-          var v = val(i);
-          return '- ' + i.label + '  [' + i.sel + ']  x:' + v.x + 'px  y:' + v.y + 'px'
-            + '  size:' + (v.s || 100) + '%'
-            + (v.r ? '  turn:' + v.r + 'deg' : '')
-            + (v.fx ? '  FLIPPED-H' : '') + (v.fy ? '  FLIPPED-V' : '');
-        }).join('\n') +
-        '\n\n(These are preview offsets — convert to real layout CSS, do not paste translate.)'
-      : 'No changes made.';
+    var retyped = items.filter(function (i) { var v = val(i); return typeof v.t === 'string' && v.t !== i.text0; });
+    var head = (document.title.split(/[\u2014|\-]/)[0].trim() || 'Layout') + ' changes (' + mode + ', viewport ' + innerWidth + 'px):\n';
+    var parts = [];
+    if (moved.length) {
+      parts.push(moved.map(function (i) {
+        var v = val(i);
+        return '- ' + i.label + '  [' + i.sel + ']  x:' + v.x + 'px  y:' + v.y + 'px'
+          + '  size:' + (v.s || 100) + '%'
+          + (v.r ? '  turn:' + v.r + 'deg' : '')
+          + (v.fx ? '  FLIPPED-H' : '') + (v.fy ? '  FLIPPED-V' : '');
+      }).join('\n')
+        + '\n\n(These are preview offsets \u2014 convert to real layout CSS, do not paste translate.)');
+    }
+    if (retyped.length) {
+      parts.push('TEXT CHANGES (" / " marks a line break):\n' + retyped.map(function (i) {
+        return '- ' + i.label + '  [' + i.sel + ']\n'
+          + '  was: ' + i.text0.replace(/\n/g, ' / ') + '\n'
+          + '  now: ' + val(i).t.replace(/\n/g, ' / ');
+      }).join('\n'));
+    }
+    var out = parts.length ? head + parts.join('\n\n') : 'No changes made.';
     navigator.clipboard.writeText(out).then(function () {
       var b = panel.querySelector('[data-copy]');
       b.textContent = 'Copied ✓';
@@ -218,6 +284,14 @@
   var drag = null, pendingTap = null;
   document.addEventListener('pointerdown', function (e) {
     if (panel.contains(e.target)) return;
+    // While a block is being retyped, presses inside it belong to the caret —
+    // dragging would preventDefault and make the text impossible to place a
+    // cursor in. A press anywhere else commits the edit first, so the change is
+    // never lost by clicking away.
+    if (editing) {
+      if (editing.el.contains(e.target) || editing.el === e.target) return;
+      stopEditing();
+    }
     // Prefer whatever block was actually clicked. Some blocks can never be the
     // event target — the chicken sits at z-index 1 under the copy layer, so the
     // pointer always lands on something above it. In that case fall back to the
