@@ -381,7 +381,9 @@
   },
   "_comment_pos": "Till behaviour flags (all optional, default off). requireOrderPin:true makes staff enter their operator code to START every order (walk-in/collection/delivery) — leave it false so staff take orders with no per-order PIN. NOTE: the manager/owner PIN on voids, refunds and cancellations is a SEPARATE gate and is ALWAYS required regardless of this flag. selfServeDrinks:true hides the till's drink picker; externalCardMachine:true marks the Card button as paid immediately for a shop using its own card terminal.",
   "pos": {
-    "requireOrderPin": false
+    "requireOrderPin": false,
+    "_comment_ordersOnly": "This shop is LumiWEB — a website plus a ZCS Z93 on the counter to receive and print ONLINE orders. It is not buying the EPOS, so the device must not offer counter sales. ordersOnly:true hides the counter mode bar and the card-reader tile, leaving the order board. Set this on every LumiWEB shop (Mega Chippy has it too); a LumiPOS shop leaves it off.",
+    "ordersOnly": true
   },
   "payments": {
     "stripeEnabled": true,
