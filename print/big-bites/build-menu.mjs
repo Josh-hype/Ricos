@@ -998,6 +998,20 @@ const html = `<!doctype html>
   .saladblk { margin-top: 7.5mm; }
   .saladblk .items.dense li { font-size: 4.75mm; padding: .5mm 0; }
   .saladblk .items .n em { font-size: 3.3mm; }
+  /* Same treatment, same reason: Calzone and Parmesan are five-line lists that
+     each carried a description line until the owner had them removed. Losing
+     the descriptions halved both blocks and left them stranded above a band of
+     black in slots sized for the taller version. Set at 5.4mm with open leading
+     so each list fills its slot instead. Scoped to these two sections; the
+     panel-fit and collision checks in render.mjs are what bound how far this
+     can go.
+     Both blocks sit inside a tight panel, whose own dense-list rule has four
+     classes to this one's three — so the shorter selector loses on specificity
+     and silently renders at the tight 2.95mm. The panel classes are repeated
+     below to outrank it. Salad above needs no such thing: its panel is not
+     tight. */
+  .panel.tight .calzblk .items.dense li,
+  .panel.tight .parmblk .items.dense li { font-size: 4.4mm; padding: .4mm 0; }
   /* Reference stem/cap is ~0.15 — a Regular. This was set a full weight
      heavier, which is why the lists read as shouty next to it. */
   .items .n { font-weight: 500; text-transform: uppercase; letter-spacing: .005em; }
