@@ -2299,9 +2299,26 @@ function repriceLine(line) {
   if (!item) return null;
   let price = item.price;
   if (line.meal && item.meal) price += item.meal.addPrice;
-  const optPrice = new Map();
-  for (const g of (item.options || [])) for (const c of (g.choices || [])) optPrice.set(c.id, Number(c.price) || 0);
-  for (const id of (line.modifiers || [])) price += (optPrice.get(id) || 0);
+  // Size-priced choices must be resolved against the size ON THIS LINE, exactly
+  // as the item modal and the server both do. Summing the flat `price` here was
+  // wrong for any size-priced modifier: the modal charged correctly, then this
+  // ran on the next page load (revalidateCart) and quietly repriced the basket
+  // DOWN to the small-size figure while /api/order still charged the large one.
+  // On Big Bites that was 50p per topping on a 13" pizza, compounding per
+  // topping — the customer saw one total and was billed a higher one.
+  const choices = optionChoiceMap(item);
+  const sizeKeys = new Set();
+  for (const g of (item.options || [])) for (const c of (g.choices || [])) {
+    if (c.priceBySize) for (const k of Object.keys(c.priceBySize)) sizeKeys.add(k);
+  }
+  const activeSize = (line.modifiers || []).find(id => sizeKeys.has(id)) || null;
+  for (const id of (line.modifiers || [])) {
+    const c = choices.get(id);
+    if (!c) continue;
+    price += (c.priceBySize && activeSize && c.priceBySize[activeSize] != null)
+      ? (Number(c.priceBySize[activeSize]) || 0)
+      : (Number(c.price) || 0);
+  }
   return { ...line, name: item.name, basePrice: item.price, price };
 }
 
