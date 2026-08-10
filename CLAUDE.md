@@ -230,8 +230,21 @@ Each project (`ricos`, the Food Station project, and any future shop):
   `ORDERS_KV`, `CUSTOMERS_KV`, `MARKETING_KV`, `SLOTS_KV`, `STAFF_LOGIN_KV`
 - **Secrets** (encrypted env vars — names the code actually reads):
   - Stripe: `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`
-  - Email (Resend): `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_FROM_NAME`
-  - SMS (Twilio): `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`
+  - Email (Resend): `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_FROM_NAME`.
+    Unlike the Stripe/Twilio credentials, the Resend key is **per shop** —
+    create a fresh "Sending access" key scoped to that shop's domain, so one
+    leak doesn't take every site's email down. The domain must also be added
+    and verified in Resend before that shop can send.
+  - SMS (Twilio): `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`.
+    One Twilio account platform-wide, so the SID and token are **identical on
+    every shop** — reuse them, don't open a second account. Use the Account SID
+    + Primary auth token, **not** a Twilio API Key: the SID goes in the request
+    URL too, so an `SK…` key 401s *and* logs nothing, reading as "Twilio isn't
+    being called". `TWILIO_FROM_NUMBER` is **misnamed** — it holds an
+    **alphanumeric sender ID, i.e. the shop's name** (`Ricos`, `AcombPizza`):
+    max 11 chars, letters/digits/spaces, one-way so customers can't reply. A
+    `+44…` E.164 number also works. All three are optional — unset ⇒ `sendSms`
+    skips, costing pay-by-link and phone-only password resets, nothing else.
   - Sessions/staff: `SESSION_SECRET`, `STAFF_PIN_HASH` (staff log in with a
     PIN; store its hash, never the raw PIN). Optional: `MANAGER_PIN_HASH` (a
     second PIN gating the financial views — Today/Z-report — and manager

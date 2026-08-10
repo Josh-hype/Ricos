@@ -22,7 +22,8 @@
   var DIRECTORY = {
     '190059': 'https://ricosyork.co.uk',
     '833541': 'https://bigbiteseasingwold.co.uk',
-    '318181': 'https://acombmegachippy.uk'
+    '318181': 'https://acombmegachippy.uk',
+    '604827': 'https://acombpizzakebabhouse.co.uk'
   };
 
   function prefs() {

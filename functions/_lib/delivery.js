@@ -1,4 +1,4 @@
-/* Delivery validity + fee resolution, supporting two per-shop modes:
+/* Delivery validity + fee resolution, supporting three per-shop modes:
 
    - "outcode" (default): the existing model — postcode outcode must be in
      allowedOutcodes; fee is feeByOutcode[outcode] or the default feePence.
@@ -8,6 +8,18 @@
      radius.roadFactor (e.g. 1.3) scales it up to approximate real driving
      distance, since a road route is rarely a straight line. Beyond the largest
      band = no delivery.
+   - "zones": arbitrary map polygons, each with its own fee. The customer
+     postcode is geocoded and tested against each polygon in order; the first
+     one that contains it sets the fee, and no match means no delivery.
+
+   Why zones exists: shops arrive already running a delivery map drawn by hand
+   on their previous provider, and those shapes are not rings. Acomb Pizza &
+   Kebab's are a good example — the free zone covers Acomb, two different
+   directions both charge £1.50 at different distances, and the dearest zone
+   reaches north-east well past where the free zone reaches south. A radius
+   can approximate that but will always take streets the shop refuses and
+   refuse streets it takes; outcodes can't even express it, because YO26 spans
+   two of their zones. Polygons reproduce it exactly.
 
    Async because radius mode geocodes. Returns:
      { ok:true, postcode, feePence, distanceMiles? }
@@ -19,9 +31,64 @@
 import { normalisePostcode, validateDeliveryPostcode } from './postcode.js';
 import { geocodePostcode, milesBetween } from './geocode.js';
 
+/* Is a point inside a polygon? Ray casting: count how many edges a ray fired
+   east from the point crosses — odd means inside. Handles concave shapes and
+   the shapes drawn round a road or a river, which is exactly what a hand-drawn
+   delivery map is. No dependency; this is the whole algorithm.
+
+   `ring` is [[lat, lng], ...]. It does not need its last point to repeat the
+   first — the modulo closes it. Points that land exactly ON an edge are
+   decided by floating-point luck; that is acceptable here because a postcode
+   is a centroid, not a doorstep, and the shop can nudge a boundary. */
+export function pointInRing(lat, lng, ring) {
+  if (!Array.isArray(ring) || ring.length < 3) return false;
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const yi = Number(ring[i][0]), xi = Number(ring[i][1]);
+    const yj = Number(ring[j][0]), xj = Number(ring[j][1]);
+    if (!Number.isFinite(yi) || !Number.isFinite(xi) || !Number.isFinite(yj) || !Number.isFinite(xj)) continue;
+    // Does this edge straddle the point's latitude, and is the crossing east of it?
+    const straddles = (yi > lat) !== (yj > lat);
+    if (straddles && lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
+}
+
 export async function resolveDelivery(rawPostcode, config) {
   const d = config.fulfillment.delivery;
   const mode = d.mode || 'outcode';
+
+  if (mode === 'zones') {
+    const np = normalisePostcode(rawPostcode);
+    if (!np) return { ok: false, reason: 'Please enter a valid UK postcode.' };
+
+    const dest = await geocodePostcode(np.formatted);
+    if (!dest) {
+      return { ok: false, reason: "We couldn't check that postcode just now — please try again, or call the shop." };
+    }
+
+    // First match wins, so the list is ordered cheapest/innermost first by
+    // convention — overlapping zones are normal on a hand-drawn map and this is
+    // what decides them. Zones missing a polygon or a fee are skipped rather
+    // than treated as free.
+    const zones = (d.zones || []).filter(
+      (z) => Array.isArray(z.polygon) && z.polygon.length >= 3 && Number.isFinite(Number(z.feePence)),
+    );
+    const hit = zones.find((z) => pointInRing(dest.lat, dest.lng, z.polygon));
+    if (!hit) {
+      return {
+        ok: false,
+        reason: `Sorry, ${np.formatted} is outside our delivery area. You can still collect.`,
+        suggestCollection: true,
+      };
+    }
+    return {
+      ok: true,
+      postcode: np.formatted,
+      feePence: Number(hit.feePence),
+      zoneName: hit.name || undefined,
+    };
+  }
 
   if (mode === 'radius') {
     const r = d.radius || {};

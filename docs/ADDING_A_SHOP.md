@@ -187,11 +187,32 @@ encrypted/secret variables (not plaintext):
   Connect routes payment to each shop's connected account)
 - `STRIPE_PUBLISHABLE_KEY` — same
 - `STRIPE_WEBHOOK_SECRET` — same
-- `RESEND_API_KEY` — your Resend account (shared)
+- `RESEND_API_KEY` — **one key per shop**, not a shared one. In Resend →
+  API keys → Create, name it after the slug, permission **Sending access**
+  (never Full access — the site only ever sends), and scope it to the shop's
+  own domain. A per-shop key means a leak is revoked without taking every
+  other site's email down with it. Resend shows the key once; copy it straight
+  into Cloudflare as a **Secret**, never plaintext.
 - `RESEND_FROM_EMAIL` — e.g. `orders@<shop-domain>`
 - `RESEND_FROM_NAME` — e.g. shop's trading name
-- `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` — your
-  Twilio account (shared)
+- `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` — genuinely shared: one Twilio
+  account serves the platform, so these are identical on every shop. Use the
+  Account SID (starts `AC`) and the Primary auth token. Do **not** create a
+  Twilio API Key — the console recommends them generally, but the SID goes in
+  the request URL here, so an `SK…` key 401s and never reaches Twilio's
+  message log, which looks like the site never called Twilio at all.
+- `TWILIO_FROM_NUMBER` — **per shop, and badly named.** It holds an
+  **alphanumeric sender ID: the shop's name**, so texts show `AcombPizza`
+  rather than a strange number. Max 11 characters, letters/digits/spaces only
+  (no `&`), at least one letter. Nothing to buy in the console. It is
+  **one-way** — customers cannot reply, so never send anything that asks for
+  an answer. A Twilio-owned `+44…` number in E.164 also works if a shop needs
+  replies. The var keeps its name because renaming it would mean re-entering
+  the secret on every live Pages project at once.
+
+All three are optional — unset means `sendSms` returns `{skipped:true}`, which
+costs pay-by-link from the till and password resets for customers who signed up
+with a mobile and no email, but nothing in the ordering flow.
 - `SESSION_SECRET` — a long random string; signs staff login sessions
 - `STAFF_PIN_HASH` — hash of the staff login PIN. Staff enter the PIN at
   `/staff`; store its hash here, never the raw PIN.

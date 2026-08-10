@@ -998,6 +998,20 @@ const html = `<!doctype html>
   .saladblk { margin-top: 7.5mm; }
   .saladblk .items.dense li { font-size: 4.75mm; padding: .5mm 0; }
   .saladblk .items .n em { font-size: 3.3mm; }
+  /* Same treatment, same reason: Calzone and Parmesan are five-line lists that
+     each carried a description line until the owner had them removed. Losing
+     the descriptions halved both blocks and left them stranded above a band of
+     black in slots sized for the taller version. Set at 5.4mm with open leading
+     so each list fills its slot instead. Scoped to these two sections; the
+     panel-fit and collision checks in render.mjs are what bound how far this
+     can go.
+     Both blocks sit inside a tight panel, whose own dense-list rule has four
+     classes to this one's three — so the shorter selector loses on specificity
+     and silently renders at the tight 2.95mm. The panel classes are repeated
+     below to outrank it. Salad above needs no such thing: its panel is not
+     tight. */
+  .panel.tight .calzblk .items.dense li,
+  .panel.tight .parmblk .items.dense li { font-size: 4.4mm; padding: .4mm 0; }
   /* Reference stem/cap is ~0.15 — a Regular. This was set a full weight
      heavier, which is why the lists read as shouty next to it. */
   .items .n { font-weight: 500; text-transform: uppercase; letter-spacing: .005em; }
@@ -1529,7 +1543,13 @@ ${page('side-b', `
   <div class="panel tight">
     ${sizedList('garlic-bread', 'size', ['11"', '13"'], { tone: ['red', 'red'], slot: 14 })}
     ${list('calzone', { dense: true, desc: true, img: shot('calzone', 40, 'mid', { dx: 13.5, dy: 1.6 }), slot: 0, chip: '11"', cls: 'calzblk' })}
-    ${sizedList('kebab', 'size', ['MEDIUM', 'LARGE'], { title: 'Kebabs', img: shot('doner-pit', 15, 'midtop', { dx: -6.6, dy: 2.6, sc: 1.1 }), slot: 0, cls: 'kebblk' })}
+    ${sizedList('kebab', 'size', ['MEDIUM', 'LARGE'], { title: 'Kebabs', /* sc 1.1 -> 1.0 and dy 2.6 -> 1.5. Removing the Chicken Shawarma description
+   shortened this list by a line, which pulled Mixed Kebab up into the foot of
+   the spit photo — its description is the longest on the sheet and the only one
+   that wraps far enough right to run under it. Measured: photo 1626-1811,
+   Mixed Kebab 1793-1819, an 18px overlap. Shrinking and lifting the photo puts
+   its foot at ~1790, above the row, without pushing its head into the plaque. */
+img: shot('doner-pit', 15, 'midtop', { dx: -6.6, dy: 1.5, sc: 1.0 }), slot: 0, cls: 'kebblk' })}
     ${list('parmesan', { dense: true, desc: true, img: shot('parmasan', 44, 'side', { dx: -4.5, dy: 0, sc: 0.95 }), slot: 48, cls: 'parmblk' })}
     ${list('wraps', { dense: true, desc: true, img: shot('wrap', 46, 'side', { dx: -5.3, dy: 2.4, sc: 0.95 }), slot: 48, title: 'Wrap' })}
   </div>

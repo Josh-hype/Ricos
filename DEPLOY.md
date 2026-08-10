@@ -136,18 +136,43 @@ npx wrangler pages secret put RESEND_FROM_EMAIL --project-name=ricos   # e.g. or
 
 ## 5. Twilio (SMS — only if marketing list is wanted)
 
-1. Sign up at https://twilio.com.
-2. **Phone Numbers → Buy a number** (pick a UK alphanumeric sender or a real number — UK SMS shortcodes are pricier).
-3. **Account → API keys & Tokens** → copy Account SID + Auth Token.
-4. Set on Cloudflare:
+There is **one Twilio account for the whole platform**. `TWILIO_ACCOUNT_SID`
+and `TWILIO_AUTH_TOKEN` are the *same values on every shop* — reuse them, don't
+open a second account. Only the From number is per shop.
+
+1. **Account → API keys & Tokens** → copy the **Account SID** and the
+   **Primary auth token**. That pair is the whole credential — do NOT create a
+   Twilio API Key. The console recommends API keys in general, but this
+   integration puts the Account SID in the request URL as well as the auth
+   header (`functions/_lib/sms.js`), so an `SK…` key cannot work. It 401s *and
+   never appears in Twilio's message logs*, which presents as "the site isn't
+   calling Twilio at all".
+2. Pick the sender. **We use an alphanumeric sender ID — the shop's name, not
+   a phone number** — so texts arrive from `Ricos` or `AcombPizza` rather than
+   an unknown `+447…`. No number to rent. Rules: **max 11 characters**, letters,
+   digits and spaces only (no `&`), at least one letter. It is **one-way**:
+   customers cannot reply, so never send anything expecting an answer. Nothing
+   to buy or configure in the console — just put the name in the env var.
+   (A real Twilio number in E.164 also works if a shop ever needs replies.)
+3. Set on Cloudflare (Production **and** Preview):
 
 ```sh
 npx wrangler pages secret put TWILIO_ACCOUNT_SID --project-name=ricos
 npx wrangler pages secret put TWILIO_AUTH_TOKEN  --project-name=ricos
-npx wrangler pages secret put TWILIO_FROM_NUMBER --project-name=ricos   # e.g. +447xxxxxxxxx
+npx wrangler pages secret put TWILIO_FROM_NUMBER --project-name=ricos   # the SHOP NAME, e.g. Ricos — see below
 ```
 
 You can defer this until after launch — the order flow works without Twilio.
+`sendSms` returns `{skipped:true}` when the secrets are absent, so nothing
+errors. What you lose meanwhile: **pay-by-link from the till** (staff fall back
+to "copy link", the order isn't stuck) and **password reset for customers who
+signed up with a mobile and no email** — those have no other route back in.
+
+To check it end to end, log into `/staff` and hit
+`/api/staff/sms-test?to=+447…`. It sends a real message and returns Twilio's
+HTTP status, error code and a plain-English diagnosis instead of failing
+silently. It reports only whether the secrets are present and well-formed,
+never their values.
 
 ## 6. Staff PIN
 

@@ -10043,7 +10043,6 @@
         "id": "kb-chicken",
         "name": "Chicken Shawarma",
         "price": 8.5,
-        "desc": "Chargrilled chicken, salad, pitta, sauce.",
         "options": [
           {
             "id": "size",
@@ -11329,7 +11328,7 @@
         "id": "wr-chicken",
         "name": "Chicken Shawarma Wrap",
         "price": 8.5,
-        "desc": "Chargrilled chicken, salad, sauce.",
+        "desc": "Chicken, salad, sauce.",
         "options": [
           {
             "id": "salad-choice",
@@ -13406,7 +13405,7 @@
         "id": "sl-chicken",
         "name": "Chicken Salad",
         "price": 7.5,
-        "desc": "Mixed salad topped with chargrilled chicken."
+        "desc": "Mixed salad topped with chicken."
       },
       {
         "id": "sl-tuna",

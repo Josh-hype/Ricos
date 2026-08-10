@@ -8,209 +8,5424 @@
         "id": "pizza-margherita-pizza",
         "name": "Margherita Pizza",
         "price": 8.5,
-        "desc": "With cheese & tomato"
+        "desc": "With cheese & tomato",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-easy-one-pizza",
         "name": "Easy One Pizza",
         "price": 8.5,
-        "desc": "BBQ base, BBQ sauce & cheese"
+        "desc": "BBQ base, BBQ sauce & cheese",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-al-funghi-pizza",
         "name": "Al Funghi Pizza",
         "price": 9.5,
-        "desc": "With mushrooms"
+        "desc": "With mushrooms",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-mr-cheese-pizza",
         "name": "Mr Cheese Pizza",
         "price": 9.5,
-        "desc": "With four cheeses"
+        "desc": "With four cheeses",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-vegetarian-pizza",
         "name": "Vegetarian Pizza",
         "price": 9.5,
-        "desc": "With onions, mushrooms, sweetcorn, pineapple, green pepper & black olives"
+        "desc": "With onions, mushrooms, sweetcorn, pineapple, green pepper & black olives",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-spicy-vegetarian-pizza",
         "name": "Spicy Vegetarian Pizza",
         "price": 9.5,
-        "desc": "With double onions, mushrooms, sweetcorn, pineapple, green peppers, jalapenos & chilli"
+        "desc": "With double onions, mushrooms, sweetcorn, pineapple, green peppers, jalapenos & chilli",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-london-pizza",
         "name": "London Pizza",
         "price": 9.5,
-        "desc": "With chips & cheese"
+        "desc": "With chips & cheese",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-prosciutto-funghi-pizza",
         "name": "Prosciutto Funghi Pizza",
         "price": 9.5,
-        "desc": "With ham, mushrooms & cheese"
+        "desc": "With ham, mushrooms & cheese",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-prosciutto-pizza",
         "name": "Prosciutto Pizza",
         "price": 9.5,
-        "desc": "With ham & cheese"
+        "desc": "With ham & cheese",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-hawaiian-pizza",
         "name": "Hawaiian Pizza",
         "price": 9.5,
-        "desc": "With ham, pineapple & cheese"
+        "desc": "With ham, pineapple & cheese",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-caribbean-pizza",
         "name": "Caribbean Pizza",
         "price": 9.5,
-        "desc": "With ham, pineapple & mushrooms"
+        "desc": "With ham, pineapple & mushrooms",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-four-seasons-pizza",
         "name": "Four Seasons Pizza",
         "price": 9.5,
-        "desc": "With mushrooms, onion, ham & green peppers"
+        "desc": "With mushrooms, onion, ham & green peppers",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-tuna-ham-pizza",
         "name": "Tuna Ham Pizza",
         "price": 9.5,
-        "desc": "With tuna & ham"
+        "desc": "With tuna & ham",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-tuna-and-sweetcorn-pizza",
         "name": "Tuna & Sweetcorn Pizza",
         "price": 9.5,
-        "desc": "With tuna & sweetcorn"
+        "desc": "With tuna & sweetcorn",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-pepperoni-pizza",
         "name": "Pepperoni Pizza",
         "price": 9.5,
-        "desc": "With pepperoni"
+        "desc": "With pepperoni",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-pepperoni-chicken-pizza",
         "name": "Pepperoni Chicken Pizza",
         "price": 10.0,
-        "desc": "With pepperoni & chicken"
+        "desc": "With pepperoni & chicken",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-hot-shot-pizza",
         "name": "Hot Shot Pizza",
-        "price": 9.5
+        "price": 9.5,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-americana-hot-pizza",
         "name": "Americana Hot Pizza",
         "price": 9.5,
-        "desc": "With salami, onion & jalapenos"
+        "desc": "With salami, onion & jalapenos",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-americana-pizza",
         "name": "Americana Pizza",
         "price": 9.5,
-        "desc": "Salami, onions, green peppers"
+        "desc": "Salami, onions, green peppers",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-meat-feast-pizza",
         "name": "Meat Feast Pizza",
         "price": 10.0,
-        "desc": "With pepperoni, salami, ham & onions"
+        "desc": "With pepperoni, salami, ham & onions",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-nice-n-spicy-pizza",
         "name": "Nice 'n' Spicy Pizza",
         "price": 10.0,
-        "desc": "With pepperoni, spicy beef, mushrooms, jalapenos & onions"
+        "desc": "With pepperoni, spicy beef, mushrooms, jalapenos & onions",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-volkan-special-pizza",
         "name": "Volkan Special Pizza",
         "price": 10.0,
-        "desc": "BBQ base with pepperoni & doner"
+        "desc": "BBQ base with pepperoni & doner",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-bbq-porker-pizza",
         "name": "BBQ Porker Pizza",
         "price": 10.0,
-        "desc": "With pepperoni, ham, bacon & BBQ sauce"
+        "desc": "With pepperoni, ham, bacon & BBQ sauce",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-chicken-and-bacon-pizza",
         "name": "Chicken & Bacon Pizza",
         "price": 10.0,
-        "desc": "With chicken & bacon"
+        "desc": "With chicken & bacon",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-doner-pizza",
         "name": "Doner Pizza",
         "price": 9.5,
-        "desc": "With doner meat, onions & mushrooms"
+        "desc": "With doner meat, onions & mushrooms",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-spicy-doner-pizza",
         "name": "Spicy Doner Pizza",
         "price": 9.5,
-        "desc": "With chilli sauce, doner meat, onions & jalapenos"
+        "desc": "With chilli sauce, doner meat, onions & jalapenos",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-hot-lips-pizza",
         "name": "Hot Lips Pizza",
         "price": 10.0,
-        "desc": "With doner meat, spicy beef, pepperoni, red onion & jalapenos"
+        "desc": "With doner meat, spicy beef, pepperoni, red onion & jalapenos",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-bolognese-pizza",
         "name": "Bolognese Pizza",
         "price": 9.5,
-        "desc": "With bolognese sauce & onions"
+        "desc": "With bolognese sauce & onions",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-spicy-beef-pizza",
         "name": "Spicy Beef Pizza",
         "price": 9.5,
-        "desc": "With spicy beef, onions & jalapenos"
+        "desc": "With spicy beef, onions & jalapenos",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-hot-stuff-pizza",
         "name": "Hot Stuff Pizza",
         "price": 10.0,
-        "desc": "With spicy chicken, spicy beef, garlic & jalapenos"
+        "desc": "With spicy chicken, spicy beef, garlic & jalapenos",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-hot-and-spicy-pizza",
         "name": "Hot & Spicy Pizza",
         "price": 9.5,
-        "desc": "With bolognese sauce, onions & jalapenos"
+        "desc": "With bolognese sauce, onions & jalapenos",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-vali-special-pizza",
         "name": "Vali Special Pizza",
         "price": 9.5,
-        "desc": "With chicken, bacon & pepperoni"
+        "desc": "With chicken, bacon & pepperoni",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-pollo-funghi-pizza",
         "name": "Pollo Funghi Pizza",
         "price": 9.5,
-        "desc": "With chicken & mushrooms"
+        "desc": "With chicken & mushrooms",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-chicken-and-sweetcorn-pizza",
         "name": "Chicken & Sweetcorn Pizza",
-        "price": 9.5
+        "price": 9.5,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "pizza-bbq-chicken-and-bacon-pizza",
         "name": "BBQ Chicken & Bacon Pizza",
         "price": 10.0,
-        "desc": "BBQ sauce, chicken & bacon"
+        "desc": "BBQ sauce, chicken & bacon",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-11",
+                "label": "11\"",
+                "price": 0
+              },
+              {
+                "id": "sz-14",
+                "label": "14\"",
+                "price": 2
+              }
+            ]
+          },
+          {
+            "id": "base",
+            "label": "Base",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "base-deep",
+                "label": "Deep Pan",
+                "price": 0
+              },
+              {
+                "id": "base-thin",
+                "label": "Thin Crust",
+                "price": 0
+              },
+              {
+                "id": "base-stuffed",
+                "label": "Stuffed Crust",
+                "price": 4,
+                "priceBySize": {
+                  "sz-14": 5
+                }
+              }
+            ]
+          },
+          {
+            "id": "extras",
+            "label": "Extra toppings",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-tomato",
+                "label": "Tomato",
+                "price": 1.2
+              },
+              {
+                "id": "xt-onion",
+                "label": "Onion",
+                "price": 1.2
+              },
+              {
+                "id": "xt-mushroom",
+                "label": "Mushroom",
+                "price": 1.2
+              },
+              {
+                "id": "xt-pineapple",
+                "label": "Pineapple",
+                "price": 1.2
+              },
+              {
+                "id": "xt-sweetcorn",
+                "label": "Sweetcorn",
+                "price": 1.2
+              },
+              {
+                "id": "xt-black-olives",
+                "label": "Black Olives",
+                "price": 1.2
+              },
+              {
+                "id": "xt-jalapenos",
+                "label": "Jalapenos",
+                "price": 1.2
+              },
+              {
+                "id": "xt-garlic-butter",
+                "label": "Garlic Butter",
+                "price": 1.2
+              },
+              {
+                "id": "xt-ham",
+                "label": "Ham",
+                "price": 1.7
+              },
+              {
+                "id": "xt-salami",
+                "label": "Salami",
+                "price": 1.7
+              },
+              {
+                "id": "xt-pepperoni",
+                "label": "Pepperoni",
+                "price": 1.7
+              },
+              {
+                "id": "xt-prawns",
+                "label": "Prawns",
+                "price": 1.7
+              },
+              {
+                "id": "xt-tuna",
+                "label": "Tuna",
+                "price": 1.7
+              },
+              {
+                "id": "xt-doner-meat",
+                "label": "Doner Meat",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-beef",
+                "label": "Spicy Beef",
+                "price": 1.7
+              },
+              {
+                "id": "xt-chicken",
+                "label": "Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bacon",
+                "label": "Bacon",
+                "price": 1.7
+              },
+              {
+                "id": "xt-spicy-chicken",
+                "label": "Spicy Chicken",
+                "price": 1.7
+              },
+              {
+                "id": "xt-bolognese",
+                "label": "Bolognese",
+                "price": 1.7
+              }
+            ]
+          }
+        ]
       }
     ]
   },
