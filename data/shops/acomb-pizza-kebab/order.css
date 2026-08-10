@@ -1,52 +1,31 @@
-/* Acomb Pizza & Kebab — order page palette.
+/* Acomb Pizza & Kebab — order page contrast corrections.
  *
- * The ORDER page uses Big Bites' colours at the owner's request; the landing
- * page keeps Acomb's own dark red-on-black identity. That split is the reason
- * this lives here rather than in config.json: theme.* feeds BOTH pages, so
- * editing it would have repainted the bespoke landing page too. This file is
- * appended by scripts/build-shop.js to the end of the order page's own <style>
- * block, so a :root here overrides the one the template wrote, and nothing
- * reaches any other shop.
+ * No palette here any more. theme.background / theme.surface are the platform's
+ * light surfaces and are now set to cream in config.json, and theme.primary /
+ * theme.accent are already this shop's own red and gold, so the order page
+ * arrives cream-with-Acomb-brand on its own. What remains is the three places
+ * that pairing does not clear WCAG unaided, each measured on the built page.
  *
- * What this replaces: the previous version of this file was 25 lines of
- * contrast corrections, each fixing a measured WCAG failure caused by feeding
- * near-black theme values (#0a0a0a / #141414) into a template that treats
- * --cream/--paper as LIGHT surfaces while hardcoding --ink dark — prices at
- * 2.26:1, the hovered menu row at 1.01:1, and so on. Restoring light surfaces
- * removes the cause, so every one of those corrections is deleted rather than
- * carried over: on a cream page they would be wrong in the other direction.
+ * Appended by scripts/build-shop.js to the end of the order page's <style>,
+ * so none of it reaches any other shop.
  */
 
 :root {
-  /* Big Bites' theme values, verbatim from data/shops/food-station/config.json. */
-  --red:        #E32619;
-  --red-dark:   #C11F13;
-  --red-deep:   #A81409;
-  --yellow:     #F7C61A;
-  --yellow-deep:#D9A90A;
-  --cream:      #FBF3DE;
-  --paper:      #FFFDF7;
-
   /* The shared sheet's muted grey (#8a807c) is 3.8:1 on white — under AA for
-     body text, and it carries the empty-basket prompt among other things.
-     Big Bites warms and darkens it to 5.5:1; same palette, same problem, so
-     the same value. */
+     body text, and it carries the empty-basket prompt among others. Warmed and
+     darkened to 5.5:1. It is only ever used as an ink. */
   --grey: #6f6559;
 }
 
-/* Taking Big Bites' palette means inheriting the one place it does not work
-   unaided. The price sits in a --yellow chip, and --red on it measures 2.86:1
-   here (Big Bites measured 2.9 and fixed it the same way) — under the 4.5:1 a
-   price has to clear, and a price is the last thing on the page that should be
-   hard to read. Charcoal on the same chip is 11.6:1 and leaves the chip itself
-   untouched. Two classes because the item sheet uses its own. */
+/* The price sits in a --yellow chip, and this shop's red on this shop's gold is
+   2.26:1 — both are mid-tones, so they never separate. Charcoal on the same gold
+   is 8.09:1 and leaves the chip colour alone. Two selectors because the item
+   sheet uses its own class. */
 .item-row-price,
 .item-detail-price { color: #0C0C0C; }
 
-/* The delivery bar's sub-line is cream at 85% alpha on the red, which measures
-   3.39:1. Removing the alpha only reaches 4.24 — cream and this red simply
-   cannot clear 4.5 together, at any opacity. White does, at 4.61. This is the
-   line that tells a customer which postcodes are served, so it is worth the
-   step in tone. Big Bites has the same pairing and the same shortfall; fixing
-   it there is a separate change to its own order.css. */
+/* The delivery bar's sub-line is cream at 85% alpha on the brand red, which
+   lands at 3.39:1 — and removing the alpha only reaches 4.24, so cream and this
+   red cannot clear 4.5 together at any opacity. White does, at 5.47. This is
+   the line that tells a customer which postcodes are served. */
 .service-bar p { color: #fff; opacity: 1; }
