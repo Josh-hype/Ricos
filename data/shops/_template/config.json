@@ -33,7 +33,7 @@
     "collection": { "enabled": true },
     "delivery": {
       "enabled": true,
-      "_comment_mode": "Pick the delivery pricing model. 'outcode' = charge by postcode area (fill in allowedOutcodes + feeByOutcode below; this is Rico's model). 'radius' = charge by straight-line distance from the shop in bands (delete the outcode fields, add a radius block — see _comment_radius; this is Food Station's model). Distance lookups use postcodes.io (free, no key). See docs/ADDING_A_SHOP.md.",
+      "_comment_mode": "Pick the delivery pricing model. 'outcode' = charge by postcode area (fill in allowedOutcodes + feeByOutcode below; this is Rico's model). 'radius' = charge by straight-line distance from the shop in bands (delete the outcode fields, add a radius block — see _comment_radius; this is Food Station's model). 'zones' = charge by hand-drawn map polygons, each with its own fee — use this when the shop already runs an irregular delivery map that rings and postcode areas cannot express; see _comment_zones. Distance and polygon lookups both geocode via postcodes.io (free, no key). See docs/ADDING_A_SHOP.md.",
       "mode": "outcode",
       "minimumOrderPence": 1500,
       "_comment_areaDescription": "Used in delivery messages: 'we deliver {areaDescription} only'. Keep natural so the sentence reads well.",
@@ -46,6 +46,7 @@
       ],
       "_comment_feeByOutcode": "[outcode mode] Optional per-outcode delivery fee overrides in pence (key = postcode prefix). Outcodes not listed fall back to feePence. Leave empty to charge feePence everywhere.",
       "feeByOutcode": {},
+      "_comment_zones": "[zones mode] Set mode to 'zones', drop the outcode fields, and add: \"zones\": [ { \"name\": \"Town centre\", \"feePence\": 0, \"polygon\": [[lat,lng],[lat,lng],...] }, ... ]. Each polygon is a list of [latitude, longitude] corners; it does not need to repeat its first point. ORDER MATTERS — the FIRST zone containing the customer wins, so list the cheapest/innermost first, which is also how you resolve zones that overlap. A postcode in no zone is refused with a nudge to collect. Draw the shapes at geojson.io and hand over the export. Minimum order is still the single minimumOrderPence above; per-zone minimums are not supported yet.",
       "_comment_radius": "[radius mode] Set mode to 'radius', remove the three outcode fields above (keep minimumOrderPence + areaDescription), and add: \"radius\": { \"maxMiles\": 5, \"bands\": [ { \"maxMiles\": 1, \"feePence\": 100 }, { \"maxMiles\": 2, \"feePence\": 200 } ] }. Origin defaults to the shop's own postcode (override with radius.origin {lat,lng}). Bands checked low-to-high; beyond the largest maxMiles = no delivery."
     }
   },
