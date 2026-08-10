@@ -38,7 +38,7 @@
       "minimumOrderPence": 1500,
       "_comment_areaDescription": "Used in delivery messages: 'we deliver {areaDescription} only'. Keep natural so the sentence reads well.",
       "areaDescription": "in our delivery area around Acomb and York",
-      "_comment_zones": "Traced by the owner from the shop's previous provider's delivery map (_reference-src/untitled.geojson). FIRST match wins, so these are ordered cheapest first. Fees taken from that map: yellow free, blue and pink both £1.50, orange £3.00; £15 minimum on every zone.",
+      "_comment_zones": "Traced by the owner from the shop's previous provider's delivery map (_reference-src/untitled.geojson). FIRST match wins, so these are ordered cheapest first. Fees from that map: yellow free, blue and pink both £1.50, orange £3.00; £15 minimum everywhere. Boundaries checked by measuring distance from the nearest zone edge: York centre sits 65m outside, i.e. on the line and effectively covered. New Earswick's CENTRE is 1.05km outside because the trace reaches the village's southern edge, not the whole village — deliberate, so southern New Earswick postcodes are in and northern ones are not. Huntington (1.4km), Fulford (1.0km) and Heslington (1.9km) are clearly outside and are the far side of York from Acomb. Nudge the north-east polygon and re-export if the shop wants more of New Earswick.",
       "zones": [
         {
           "name": "Acomb & Poppleton",
