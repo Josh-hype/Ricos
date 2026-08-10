@@ -687,34 +687,62 @@
       nav.main a{padding:14px 0;border-bottom:1px solid var(--line);width:100%}
       nav.main a.on::after{display:none}
       .burger{display:block}
-      /* Phone: the landscape shot can't hold left-text without overlapping the
-         food, so stack — show the WHOLE image as a banner (its own 3:2 aspect,
-         no crop, no fade) and drop the heading onto the black page below it. */
-      .hero{display:block;min-height:0}
-      /* Match the asset's own aspect so the phone banner shows the WHOLE shot
-         with nothing cropped — now 3/2 again, since the asset changed back to
-         that shape. `contain` rather than `cover` belt-and-braces: at exactly
-         matching aspect they are identical, and if the asset is ever swapped
-         again this fails to letterbox on black (invisible here) instead of
-         silently cropping the food. */
-      .hero-media{position:relative;height:auto;aspect-ratio:1536/986;background-size:contain;background-position:center}
+      /* Phone composition, matched to Big Bites: kicker and headline run full
+         width at the top, then the supporting line and the badges sit in a left
+         column with the photograph filling the right and bleeding off the
+         screen, and the buttons and offer full width beneath. Replaces the old
+         full-width banner, which spent the whole first screen on the photo and
+         pushed the headline and buttons below the fold.
+
+         Big Bites gets there by dissolving .hero-copy onto the wrap's grid with
+         display:contents. Here .hero-media is a SIBLING of .wrap rather than a
+         child, so it can never be a grid item of .wrap — the grid has to be
+         .hero itself, with BOTH wrappers dissolved. The DOM is untouched (this
+         is a phone-only rule and desktop still uses .hero-media as an absolute
+         full-bleed layer), and the reading order is unchanged:
+         kicker → headline → line → badges → photo → buttons → offer. */
+      .hero{
+        display:grid;grid-template-columns:44% 1fr;align-items:start;
+        min-height:0;padding:150px 24px 28px;overflow-x:clip;
+      }
+      /* Dissolved so their children land on .hero's grid. Both lose their own
+         padding and max-width with it, which is why the padding above moved
+         onto .hero. */
+      .hero .wrap{display:contents}
+      .hero-copy{display:contents}
+      .hero .kicker{grid-column:1/-1;grid-row:1}
+      .hero h1{grid-column:1/-1;grid-row:2}
+      /* The <br>s are desktop line-breaking for a 560px column; in a 44% phone
+         column they compound with natural wrapping and produce a six-line
+         rag. Dropped so the text wraps to the column it's actually in. */
+      .hero .sub{grid-column:1;grid-row:3;margin-top:13px;font-size:.88rem;line-height:1.45}
+      .hero .sub br{display:none}
+      .hero-feats{grid-column:1;grid-row:4}
+      .hero .cta{grid-column:1/-1;grid-row:5;margin-top:26px}
+      .hero-offer{grid-column:1/-1;grid-row:6}
+      /* Fills whatever height the copy column comes to, as Big Bites' does, so
+         the hero is sized by its words rather than by a fixed image ratio.
+         auto 100% + right: the box is far narrower than the shot, so sizing to
+         its height and anchoring right frames the pizza, doner and oven and
+         clips only the dead black left. margin-right pulls it past .hero's
+         24px padding to the screen edge so it bleeds, and overflow-x:clip above
+         stops that bleed becoming horizontal scroll. */
+      .hero-media{
+        grid-column:2;grid-row:3/5;position:relative;inset:auto;
+        align-self:stretch;height:auto;min-height:100%;margin-right:-24px;
+        background-position:76% center;background-size:auto 100%;
+      }
       .hero-media::after{display:none}
-      /* 24px bottom, not 44: with 54px on top of the section below, the
-         hero→heading boundary measured 104.5px on a phone against 55px between
-         the cards and the offer panel. 24 brings it to 78 and puts the three
-         block boundaries within 12px of each other. */
-      .hero .wrap{padding:34px 24px 24px}
-      .hero-copy{max-width:none}
-      /* Full width on a phone — the copy column is no longer capped, and a
-         440px card floating in a 342px column would just wrap awkwardly. */
+      /* Full width on a phone — a 440px card in a 342px column would wrap. */
       .hero-offer{max-width:none;margin-top:22px}
       .hero .cta .btn{flex:1 1 auto;justify-content:center}
-      /* Badges: two per row on a phone rather than a cramped single line. */
-      .hero-feats{display:grid;grid-template-columns:1fr 1fr;gap:18px 14px;margin-top:32px;max-width:none;margin-left:0}
+      /* Single column now, not 2-up: the badges live in a 46% column beside the
+         photo, where two per row would leave ~75px each. */
+      .hero-feats{display:flex;flex-direction:column;gap:13px;margin-top:16px;max-width:none;margin-left:0}
       /* 2-up the heading + first sub line (17 + 2 + 20.5 = 39.5px) already
          matches the 40px ring, so the desktop centring offset isn't wanted. */
-      .hero-feat .ic{width:40px;height:40px;margin-top:0}
-      .hero-feat .ic svg{width:19px;height:19px}
+      .hero-feat .ic{width:32px;height:32px;margin-top:0;flex:0 0 auto}
+      .hero-feat .ic svg{width:16px;height:16px}
       /* In a 2x2 grid the divider reads as a stray line. */
       .hero-feat + .hero-feat::before{display:none}
       /* The desktop sizes exist only because four badges share 44% of a 1440
@@ -733,8 +761,11 @@
       /* The 84px desktop cap exists to reserve a gutter for the divider tick in
          a 145px column; 2-up there is no tick and the column is 164px. */
       .hero-feat > div{max-width:none}
-      .hero-feat b{font-size:.95rem}
-      .hero-feat span{font-size:.8rem}
+      /* Down from .95/.8: these now share a 44% column with the photo instead of
+         running 2-up at full width, and at the old sizes "FAST DELIVERY" and
+         "Premium Ingredients" each broke over two lines. */
+      .hero-feat b{font-size:.8rem;line-height:1.2}
+      .hero-feat span{font-size:.68rem;line-height:1.25}
       .sec-head h2.ruled{gap:12px}
       .sec-head h2.ruled::before,.sec-head h2.ruled::after{width:clamp(16px,6vw,40px)}
       /* The .hero + .sec override is desktop framing (it exists to match the
@@ -794,6 +825,15 @@
        400 rather than the 440 the wider type needed. */
     @media(max-width:400px){
       .sec-head h2.ruled::before,.sec-head h2.ruled::after{display:none}
+      /* Below 400 the copy column is ~137px, and after the 32px icon and its
+         gap the badge label has ~96px. "FAST DELIVERY" at .8rem measures ~95,
+         so it broke over two lines and threw the three badges out of step.
+         Trimming the label and the icon buys back enough for one line each. */
+      .hero-feat .ic{width:28px;height:28px}
+      .hero-feat .ic svg{width:14px;height:14px}
+      .hero-feat{gap:8px}
+      .hero-feat b{font-size:.72rem}
+      .hero-feat span{font-size:.62rem}
     }
   </style>
 </head>
@@ -846,7 +886,11 @@
     <div class="hero-copy">
       <p class="kicker">Fresh. Hot. Made for you.</p>
       <h1>Taste the<span class="hl">Difference</span></h1>
-      <p class="sub">Delicious pizzas. Juicy kebabs.<br />Made fresh with quality ingredients,<br />just for you.</p>
+      <!-- The spaces before the <br>s matter: the phone layout hides the breaks
+           so the text can wrap to its own column, and without them the words
+           either side would run together. Trailing whitespace before a line
+           break is not rendered, so desktop is unaffected. -->
+      <p class="sub">Delicious pizzas. Juicy kebabs. <br />Made fresh with quality ingredients, <br />just for you.</p>
       <div class="cta">
         <a class="btn btn-primary" href="/order">Order Now <span class="arrow">→</span></a>
         <a class="btn btn-ghost" href="/order">View Menu</a>
