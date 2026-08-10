@@ -1,0 +1,44 @@
+/* Acomb Pizza & Kebab — order page corrections for a DARK brand.
+ *
+ * The shared order page is written for the platform's light house style: it
+ * takes --cream/--paper from the shop's theme as LIGHT surfaces, while --ink
+ * (the text colour) is hardcoded dark. This is the first shop whose theme sets
+ * those to near-black (#0a0a0a / #141414), so anywhere the page paints "ink on
+ * paper" it was painting near-black on near-black.
+ *
+ * Measured before writing this: 22 text runs below WCAG AA on the built page,
+ * including every price at 2.26:1 and the hovered menu row at 1.01:1 — i.e.
+ * invisible. Each rule below fixes one measured failure; nothing here is
+ * decorative. (One reported failure was a false positive: label.sr-only is a
+ * screen-reader-only label and is meant to be invisible.)
+ *
+ * This is a per-shop file appended by scripts/build-shop.js, so none of it
+ * reaches any other shop.
+ */
+
+/* Menu row hover. The rows are white cards, but hover set the background to
+   --paper (#141414 here) while the item name stayed --ink (#181210): the name
+   vanished the moment you moused over it. */
+.item-row:hover { background: #f4f1ea; }
+.item-row:hover .item-row-main,
+.item-row:hover .item-row-main * { color: #181210; }
+
+/* Prices sat as --red on --accent — #cf1c20 on #c9a227, 2.26:1. The gold is
+   the brand's, so keep it and put dark ink on it instead (12.1:1). */
+.item-row-price,
+.item-detail-price { color: #17110a; }
+
+/* Header controls sit directly on the near-black page, so anything still
+   inheriting the dark --ink was invisible against it. */
+.back-link { color: #ececec; }
+.back-link:hover { color: #fff; }
+.mode-toggle button { color: #d8d8d8; }
+.mode-toggle button.active { color: #17110a; }
+/* The cart's own mode toggle is NOT on the dark page — it sits on the white
+   basket panel, so it needs the opposite treatment. Lumping the two together
+   fixed one and broke the other (1.43:1 grey on white). */
+.cart-mode-toggle .cart-mode-btn { color: #4a443c; }
+.cart-mode-toggle .cart-mode-btn.active { color: #17110a; }
+
+/* Empty-basket line was 3.85:1 on white. */
+.cart-empty p { color: #5f584f; }

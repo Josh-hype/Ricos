@@ -1,20 +1,707 @@
 [
   {
-    "id": "mains",
-    "name": "Mains",
-    "icon": "🍔",
+    "id": "pizza",
+    "name": "Pizza",
+    "icon": "🍕",
     "items": [
-      { "id": "main-1", "name": "First Item",  "price": 8.00, "desc": "Short description shown under the name on the menu page." },
-      { "id": "main-2", "name": "Second Item", "price": 9.50, "desc": "Another description.", "meal": { "label": "+ side & drink", "addPrice": 3.00 } }
+      {
+        "id": "pizza-margherita-pizza",
+        "name": "Margherita Pizza",
+        "price": 8.5,
+        "desc": "With cheese & tomato"
+      },
+      {
+        "id": "pizza-easy-one-pizza",
+        "name": "Easy One Pizza",
+        "price": 8.5,
+        "desc": "BBQ base, BBQ sauce & cheese"
+      },
+      {
+        "id": "pizza-al-funghi-pizza",
+        "name": "Al Funghi Pizza",
+        "price": 9.5,
+        "desc": "With mushrooms"
+      },
+      {
+        "id": "pizza-mr-cheese-pizza",
+        "name": "Mr Cheese Pizza",
+        "price": 9.5,
+        "desc": "With four cheeses"
+      },
+      {
+        "id": "pizza-vegetarian-pizza",
+        "name": "Vegetarian Pizza",
+        "price": 9.5,
+        "desc": "With onions, mushrooms, sweetcorn, pineapple, green pepper & black olives"
+      },
+      {
+        "id": "pizza-spicy-vegetarian-pizza",
+        "name": "Spicy Vegetarian Pizza",
+        "price": 9.5,
+        "desc": "With double onions, mushrooms, sweetcorn, pineapple, green peppers, jalapenos & chilli"
+      },
+      {
+        "id": "pizza-london-pizza",
+        "name": "London Pizza",
+        "price": 9.5,
+        "desc": "With chips & cheese"
+      },
+      {
+        "id": "pizza-prosciutto-funghi-pizza",
+        "name": "Prosciutto Funghi Pizza",
+        "price": 9.5,
+        "desc": "With ham, mushrooms & cheese"
+      },
+      {
+        "id": "pizza-prosciutto-pizza",
+        "name": "Prosciutto Pizza",
+        "price": 9.5,
+        "desc": "With ham & cheese"
+      },
+      {
+        "id": "pizza-hawaiian-pizza",
+        "name": "Hawaiian Pizza",
+        "price": 9.5,
+        "desc": "With ham, pineapple & cheese"
+      },
+      {
+        "id": "pizza-caribbean-pizza",
+        "name": "Caribbean Pizza",
+        "price": 9.5,
+        "desc": "With ham, pineapple & mushrooms"
+      },
+      {
+        "id": "pizza-four-seasons-pizza",
+        "name": "Four Seasons Pizza",
+        "price": 9.5,
+        "desc": "With mushrooms, onion, ham & green peppers"
+      },
+      {
+        "id": "pizza-tuna-ham-pizza",
+        "name": "Tuna Ham Pizza",
+        "price": 9.5,
+        "desc": "With tuna & ham"
+      },
+      {
+        "id": "pizza-tuna-and-sweetcorn-pizza",
+        "name": "Tuna & Sweetcorn Pizza",
+        "price": 9.5,
+        "desc": "With tuna & sweetcorn"
+      },
+      {
+        "id": "pizza-pepperoni-pizza",
+        "name": "Pepperoni Pizza",
+        "price": 9.5,
+        "desc": "With pepperoni"
+      },
+      {
+        "id": "pizza-pepperoni-chicken-pizza",
+        "name": "Pepperoni Chicken Pizza",
+        "price": 10.0,
+        "desc": "With pepperoni & chicken"
+      },
+      {
+        "id": "pizza-hot-shot-pizza",
+        "name": "Hot Shot Pizza",
+        "price": 9.5
+      },
+      {
+        "id": "pizza-americana-hot-pizza",
+        "name": "Americana Hot Pizza",
+        "price": 9.5,
+        "desc": "With salami, onion & jalapenos"
+      },
+      {
+        "id": "pizza-americana-pizza",
+        "name": "Americana Pizza",
+        "price": 9.5,
+        "desc": "Salami, onions, green peppers"
+      },
+      {
+        "id": "pizza-meat-feast-pizza",
+        "name": "Meat Feast Pizza",
+        "price": 10.0,
+        "desc": "With pepperoni, salami, ham & onions"
+      },
+      {
+        "id": "pizza-nice-n-spicy-pizza",
+        "name": "Nice 'n' Spicy Pizza",
+        "price": 10.0,
+        "desc": "With pepperoni, spicy beef, mushrooms, jalapenos & onions"
+      },
+      {
+        "id": "pizza-volkan-special-pizza",
+        "name": "Volkan Special Pizza",
+        "price": 10.0,
+        "desc": "BBQ base with pepperoni & doner"
+      },
+      {
+        "id": "pizza-bbq-porker-pizza",
+        "name": "BBQ Porker Pizza",
+        "price": 10.0,
+        "desc": "With pepperoni, ham, bacon & BBQ sauce"
+      },
+      {
+        "id": "pizza-chicken-and-bacon-pizza",
+        "name": "Chicken & Bacon Pizza",
+        "price": 10.0,
+        "desc": "With chicken & bacon"
+      },
+      {
+        "id": "pizza-doner-pizza",
+        "name": "Doner Pizza",
+        "price": 9.5,
+        "desc": "With doner meat, onions & mushrooms"
+      },
+      {
+        "id": "pizza-spicy-doner-pizza",
+        "name": "Spicy Doner Pizza",
+        "price": 9.5,
+        "desc": "With chilli sauce, doner meat, onions & jalapenos"
+      },
+      {
+        "id": "pizza-hot-lips-pizza",
+        "name": "Hot Lips Pizza",
+        "price": 10.0,
+        "desc": "With doner meat, spicy beef, pepperoni, red onion & jalapenos"
+      },
+      {
+        "id": "pizza-bolognese-pizza",
+        "name": "Bolognese Pizza",
+        "price": 9.5,
+        "desc": "With bolognese sauce & onions"
+      },
+      {
+        "id": "pizza-spicy-beef-pizza",
+        "name": "Spicy Beef Pizza",
+        "price": 9.5,
+        "desc": "With spicy beef, onions & jalapenos"
+      },
+      {
+        "id": "pizza-hot-stuff-pizza",
+        "name": "Hot Stuff Pizza",
+        "price": 10.0,
+        "desc": "With spicy chicken, spicy beef, garlic & jalapenos"
+      },
+      {
+        "id": "pizza-hot-and-spicy-pizza",
+        "name": "Hot & Spicy Pizza",
+        "price": 9.5,
+        "desc": "With bolognese sauce, onions & jalapenos"
+      },
+      {
+        "id": "pizza-vali-special-pizza",
+        "name": "Vali Special Pizza",
+        "price": 9.5,
+        "desc": "With chicken, bacon & pepperoni"
+      },
+      {
+        "id": "pizza-pollo-funghi-pizza",
+        "name": "Pollo Funghi Pizza",
+        "price": 9.5,
+        "desc": "With chicken & mushrooms"
+      },
+      {
+        "id": "pizza-chicken-and-sweetcorn-pizza",
+        "name": "Chicken & Sweetcorn Pizza",
+        "price": 9.5
+      },
+      {
+        "id": "pizza-bbq-chicken-and-bacon-pizza",
+        "name": "BBQ Chicken & Bacon Pizza",
+        "price": 10.0,
+        "desc": "BBQ sauce, chicken & bacon"
+      }
+    ]
+  },
+  {
+    "id": "calzones",
+    "name": "Calzones",
+    "icon": "🥟",
+    "items": [
+      {
+        "id": "calzones-calzone-vegetarian",
+        "name": "Calzone Vegetarian",
+        "price": 8.5,
+        "desc": "With onion, mushrooms, sweetcorn, pineapple, green peppers & black olives"
+      },
+      {
+        "id": "calzones-calzone-meat-feast",
+        "name": "Calzone Meat Feast",
+        "price": 10.0,
+        "desc": "With pepperoni, salami, ham, onions"
+      },
+      {
+        "id": "calzones-calzone-kiev",
+        "name": "Calzone Kiev",
+        "price": 9.5,
+        "desc": "With ham, chicken & garlic butter"
+      },
+      {
+        "id": "calzones-calzone-doner",
+        "name": "Calzone Doner",
+        "price": 9.5,
+        "desc": "With doner meat, mushrooms & onions"
+      }
+    ]
+  },
+  {
+    "id": "garlic-bread",
+    "name": "Garlic Breads",
+    "icon": "🧄",
+    "items": [
+      {
+        "id": "garlic-bread-garlic-bread",
+        "name": "Garlic Bread",
+        "price": 6.0
+      },
+      {
+        "id": "garlic-bread-garlic-bread-tomato",
+        "name": "Garlic Bread Tomato",
+        "price": 6.5
+      },
+      {
+        "id": "garlic-bread-garlic-bread-cheese",
+        "name": "Garlic Bread Cheese",
+        "price": 7.0
+      },
+      {
+        "id": "garlic-bread-garlic-bread-cheese-and-tomato",
+        "name": "Garlic Bread Cheese & Tomato",
+        "price": 8.0
+      },
+      {
+        "id": "garlic-bread-garlic-bread-cheese-and-mushrooms",
+        "name": "Garlic Bread Cheese & Mushrooms",
+        "price": 8.0
+      },
+      {
+        "id": "garlic-bread-garlic-bread-cheese-and-doner-meat",
+        "name": "Garlic Bread Cheese & Doner Meat",
+        "price": 9.0
+      },
+      {
+        "id": "garlic-bread-garlic-bread-cheese-and-bolognese",
+        "name": "Garlic Bread Cheese & Bolognese",
+        "price": 9.0
+      }
+    ]
+  },
+  {
+    "id": "chicken",
+    "name": "Chicken",
+    "icon": "🍗",
+    "items": [
+      {
+        "id": "chicken-chicken-nuggets-and-chips",
+        "name": "Chicken Nuggets & Chips",
+        "price": 7.0
+      },
+      {
+        "id": "chicken-chicken-nuggets",
+        "name": "Chicken Nuggets",
+        "price": 6.0
+      }
+    ]
+  },
+  {
+    "id": "pasta",
+    "name": "Pasta",
+    "icon": "🍝",
+    "items": [
+      {
+        "id": "pasta-spaghetti-bolognese",
+        "name": "Spaghetti Bolognese",
+        "price": 7.0
+      },
+      {
+        "id": "pasta-lasagne",
+        "name": "Lasagne",
+        "price": 7.0
+      }
+    ]
+  },
+  {
+    "id": "burgers",
+    "name": "Burgers",
+    "icon": "🍔",
+    "note": "All served with chips & salad",
+    "items": [
+      {
+        "id": "burgers-beef-burger",
+        "name": "Beef Burger",
+        "price": 6.0
+      },
+      {
+        "id": "burgers-cheese-burger",
+        "name": "Cheese Burger",
+        "price": 7.5
+      },
+      {
+        "id": "burgers-chilli-burger",
+        "name": "Chilli Burger",
+        "price": 7.5,
+        "desc": "With chilli sauce"
+      },
+      {
+        "id": "burgers-hawaiian-burger",
+        "name": "Hawaiian Burger",
+        "price": 7.5,
+        "desc": "With cheese & pineapple"
+      },
+      {
+        "id": "burgers-mushroom-burger",
+        "name": "Mushroom Burger",
+        "price": 7.5
+      },
+      {
+        "id": "burgers-garlic-burger",
+        "name": "Garlic Burger",
+        "price": 7.5
+      },
+      {
+        "id": "burgers-chicken-burger",
+        "name": "Chicken Burger",
+        "price": 7.5
+      },
+      {
+        "id": "burgers-veggie-burger",
+        "name": "Veggie Burger",
+        "price": 7.5
+      },
+      {
+        "id": "burgers-bacon-and-cheese-burger",
+        "name": "Bacon & Cheese Burger",
+        "price": 7.5
+      },
+      {
+        "id": "burgers-americana-burger",
+        "name": "Americana Burger",
+        "price": 7.5,
+        "desc": "With cheese & fried onions"
+      },
+      {
+        "id": "burgers-mexican-burger",
+        "name": "Mexican Burger",
+        "price": 7.5,
+        "desc": "With cheese & jalapenos"
+      },
+      {
+        "id": "burgers-bacon-and-chicken-burger",
+        "name": "Bacon & Chicken Burger",
+        "price": 7.5
+      },
+      {
+        "id": "burgers-special-burger",
+        "name": "Special Burger",
+        "price": 7.5,
+        "desc": "With cheese & doner"
+      },
+      {
+        "id": "burgers-best-of-3-burgers",
+        "name": "Best of 3 Burgers",
+        "price": 10.0,
+        "desc": "2 beef, 1 chicken, bacon & cheese"
+      },
+      {
+        "id": "burgers-chicken-fillet-burger",
+        "name": "Chicken Fillet Burger",
+        "price": 7.5
+      },
+      {
+        "id": "burgers-chicken-doner-burger",
+        "name": "Chicken Doner Burger",
+        "price": 7.5,
+        "desc": "Chicken doner & chips"
+      }
+    ]
+  },
+  {
+    "id": "kebabs",
+    "name": "Kebabs",
+    "icon": "🥙",
+    "note": "All served with a pitta bread, salad & separate sauce",
+    "items": [
+      {
+        "id": "kebabs-shish-kebab",
+        "name": "Shish Kebab",
+        "price": 14.0,
+        "desc": "Chunks of lamb marinated & cooked on a grill"
+      },
+      {
+        "id": "kebabs-doner-kebab",
+        "name": "Doner Kebab",
+        "price": 10.0,
+        "desc": "Minced lamb with herbs & spices, cooked on an upright spit"
+      },
+      {
+        "id": "kebabs-chicken-kebab",
+        "name": "Chicken Kebab",
+        "price": 11.0,
+        "desc": "Chunks of boneless chicken breast marinated & cooked on a grill"
+      },
+      {
+        "id": "kebabs-chicken-and-combo",
+        "name": "Chicken & Combo",
+        "price": 12.0,
+        "desc": "Combination of chicken & doner kebabs"
+      },
+      {
+        "id": "kebabs-shish-combo",
+        "name": "Shish Combo",
+        "price": 13.0,
+        "desc": "Combination of shish kebab & doner kebabs"
+      },
+      {
+        "id": "kebabs-house-special-kebab",
+        "name": "House Special Kebab",
+        "price": 20.0,
+        "desc": "A combination of chicken, doner & shish. Served with salad & 2 pitta breads (serves 2 people)"
+      },
+      {
+        "id": "kebabs-doner-meat-and-chips",
+        "name": "Doner Meat & Chips",
+        "price": 9.0
+      }
+    ]
+  },
+  {
+    "id": "wraps",
+    "name": "Wraps",
+    "icon": "🌯",
+    "note": "All served in a tortilla wrap with salad & sauce",
+    "items": [
+      {
+        "id": "wraps-doner-wrap",
+        "name": "Doner Wrap",
+        "price": 7.0
+      },
+      {
+        "id": "wraps-chicken-kebab-wrap",
+        "name": "Chicken Kebab Wrap",
+        "price": 8.5
+      },
+      {
+        "id": "wraps-chicken-and-doner-wrap",
+        "name": "Chicken & Doner Wrap",
+        "price": 8.5
+      },
+      {
+        "id": "wraps-fried-chicken-wrap",
+        "name": "Fried Chicken Wrap",
+        "price": 7.5,
+        "desc": "S.F. chicken, lettuce & mayo"
+      },
+      {
+        "id": "wraps-mixed-kebab-wrap",
+        "name": "Mixed Kebab Wrap",
+        "price": 9.0,
+        "desc": "Chicken, doner & shish"
+      },
+      {
+        "id": "wraps-chefs-special-wrap",
+        "name": "Chef's Special Wrap",
+        "price": 10.0,
+        "desc": "Chicken, doner, shish & jalapenos"
+      },
+      {
+        "id": "wraps-doner-and-chips-wrap",
+        "name": "Doner & Chips Wrap",
+        "price": 8.0
+      },
+      {
+        "id": "wraps-cheese-and-chips-wrap",
+        "name": "Cheese & Chips Wrap",
+        "price": 7.0
+      }
+    ]
+  },
+  {
+    "id": "parmesans",
+    "name": "Parmesans",
+    "icon": "🧀",
+    "note": "Chicken breast coated in breadcrumbs topped with tomato sauce & cheese, served with chips",
+    "items": [
+      {
+        "id": "parmesans-plain-parmesan",
+        "name": "Plain Parmesan",
+        "price": 11.0
+      },
+      {
+        "id": "parmesans-hot-shot-parmesan",
+        "name": "Hot Shot Parmesan",
+        "price": 12.0,
+        "desc": "With pepperoni & jalapenos"
+      },
+      {
+        "id": "parmesans-bacon-parmesan",
+        "name": "Bacon Parmesan",
+        "price": 12.0
+      },
+      {
+        "id": "parmesans-kiev-parmesan",
+        "name": "Kiev Parmesan",
+        "price": 12.0
+      },
+      {
+        "id": "parmesans-sweetcorn-parmesan",
+        "name": "Sweetcorn Parmesan",
+        "price": 12.0
+      },
+      {
+        "id": "parmesans-margherita-parmesan",
+        "name": "Margherita Parmesan",
+        "price": 12.0
+      },
+      {
+        "id": "parmesans-vegetarian-parmesan",
+        "name": "Vegetarian Parmesan",
+        "price": 12.0
+      },
+      {
+        "id": "parmesans-bbq-parmesan",
+        "name": "BBQ Parmesan",
+        "price": 12.0
+      }
     ]
   },
   {
     "id": "sides",
-    "name": "Sides",
+    "name": "Side Orders",
     "icon": "🍟",
     "items": [
-      { "id": "side-chips", "name": "Chips",   "price": 3.50, "desc": "Chunky cut, lightly salted." },
-      { "id": "side-slaw",  "name": "Coleslaw","price": 2.50, "desc": "Fresh, made daily." }
+      {
+        "id": "sides-chips",
+        "name": "Chips",
+        "price": 4.0
+      },
+      {
+        "id": "sides-spicy-potatoes",
+        "name": "Spicy Potatoes",
+        "price": 5.0
+      },
+      {
+        "id": "sides-chips-and-curry-sauce",
+        "name": "Chips & Curry Sauce",
+        "price": 5.0
+      },
+      {
+        "id": "sides-chips-cheese-and-gravy",
+        "name": "Chips, Cheese & Gravy",
+        "price": 6.0
+      },
+      {
+        "id": "sides-chips-and-cheese",
+        "name": "Chips & Cheese",
+        "price": 5.0
+      },
+      {
+        "id": "sides-chips-and-gravy",
+        "name": "Chips & Gravy",
+        "price": 5.0
+      },
+      {
+        "id": "sides-10-x-onion-rings",
+        "name": "10 x Onion Rings",
+        "price": 5.0
+      },
+      {
+        "id": "sides-onion-rings-and-chips",
+        "name": "Onion Rings & Chips",
+        "price": 8.0
+      },
+      {
+        "id": "sides-hash-browns",
+        "name": "Hash Browns",
+        "price": 4.5
+      },
+      {
+        "id": "sides-side-salad",
+        "name": "Side Salad",
+        "price": 3.5
+      },
+      {
+        "id": "sides-garlic-mushrooms",
+        "name": "Garlic Mushrooms",
+        "price": 5.0
+      },
+      {
+        "id": "sides-garlic-mushrooms-and-cheese",
+        "name": "Garlic Mushrooms & Cheese",
+        "price": 6.0
+      },
+      {
+        "id": "sides-doner-meat-in-tray",
+        "name": "Doner Meat in Tray",
+        "price": 7.0
+      },
+      {
+        "id": "sides-5-x-mozzarella-sticks",
+        "name": "5 x Mozzarella Sticks",
+        "price": 5.5
+      },
+      {
+        "id": "sides-mozzarella-sticks-5-and-chips",
+        "name": "Mozzarella Sticks (5) & Chips",
+        "price": 7.5
+      },
+      {
+        "id": "sides-chicken-wings-5-and-chips",
+        "name": "Chicken Wings (5) & Chips",
+        "price": 6.5
+      },
+      {
+        "id": "sides-4-x-chicken-strips",
+        "name": "4 x Chicken Strips",
+        "price": 6.0
+      },
+      {
+        "id": "sides-chicken-strips-4-and-chips",
+        "name": "Chicken Strips (4) & Chips",
+        "price": 7.5
+      },
+      {
+        "id": "sides-chicken-popcorn-and-chips",
+        "name": "Chicken Popcorn & Chips",
+        "price": 6.5
+      }
+    ]
+  },
+  {
+    "id": "sauces",
+    "name": "Sauces",
+    "icon": "🥫",
+    "items": [
+      {
+        "id": "sauces-pot-of-chilli-sauce",
+        "name": "Pot of Chilli Sauce",
+        "price": 1.4
+      },
+      {
+        "id": "sauces-pot-of-garlic-sauce",
+        "name": "Pot of Garlic Sauce",
+        "price": 1.4
+      },
+      {
+        "id": "sauces-pot-of-yoghurt",
+        "name": "Pot of Yoghurt",
+        "price": 1.4
+      },
+      {
+        "id": "sauces-pot-of-mayo",
+        "name": "Pot of Mayo",
+        "price": 1.4
+      },
+      {
+        "id": "sauces-pot-of-ketchup",
+        "name": "Pot of Ketchup",
+        "price": 1.4
+      },
+      {
+        "id": "sauces-pot-of-gravy",
+        "name": "Pot of Gravy",
+        "price": 1.4
+      }
     ]
   },
   {
@@ -22,8 +709,123 @@
     "name": "Drinks",
     "icon": "🥤",
     "items": [
-      { "id": "drink-coke",  "name": "Can of Coke",    "price": 1.90 },
-      { "id": "drink-water", "name": "Bottle of Water","price": 1.50 }
+      {
+        "id": "drinks-can-of-coke",
+        "name": "Can of Coke",
+        "price": 1.5
+      },
+      {
+        "id": "drinks-can-of-diet-coke",
+        "name": "Can of Diet Coke",
+        "price": 1.5
+      },
+      {
+        "id": "drinks-bottle-of-water",
+        "name": "Bottle of Water",
+        "price": 2.0
+      },
+      {
+        "id": "drinks-can-of-fanta",
+        "name": "Can of Fanta",
+        "price": 1.5
+      },
+      {
+        "id": "drinks-bottle-of-diet-coke",
+        "name": "Bottle of Diet Coke",
+        "price": 4.0
+      },
+      {
+        "id": "drinks-can-of-pepsi",
+        "name": "Can of Pepsi",
+        "price": 1.5
+      },
+      {
+        "id": "drinks-can-of-dr-pepper",
+        "name": "Can of Dr Pepper",
+        "price": 1.5
+      },
+      {
+        "id": "drinks-can-of-7up",
+        "name": "Can of 7Up",
+        "price": 1.5
+      }
+    ]
+  },
+  {
+    "id": "alcohol",
+    "name": "Alcohol",
+    "icon": "🍺",
+    "note": "Sold only together with food. Over 18s only — ID may be required on delivery or collection.",
+    "items": [
+      {
+        "id": "alcohol-can-of-stella",
+        "name": "Can of Stella",
+        "price": 2.5
+      },
+      {
+        "id": "alcohol-can-of-carling",
+        "name": "Can of Carling",
+        "price": 2.5
+      },
+      {
+        "id": "alcohol-can-of-fosters",
+        "name": "Can of Fosters",
+        "price": 2.5
+      },
+      {
+        "id": "alcohol-can-of-budweiser",
+        "name": "Can of Budweiser",
+        "price": 2.5
+      },
+      {
+        "id": "alcohol-can-of-carlsberg",
+        "name": "Can of Carlsberg",
+        "price": 2.5
+      },
+      {
+        "id": "alcohol-bottle-of-white-wine",
+        "name": "Bottle of White Wine",
+        "price": 9.0
+      }
+    ]
+  },
+  {
+    "id": "desserts",
+    "name": "Desserts",
+    "icon": "🍰",
+    "items": [
+      {
+        "id": "desserts-chocolate-fudge-cake",
+        "name": "Chocolate Fudge Cake",
+        "price": 5.0
+      },
+      {
+        "id": "desserts-chocolate-gateau",
+        "name": "Chocolate Gateau",
+        "price": 5.0
+      },
+      {
+        "id": "desserts-strawberry-cheesecake",
+        "name": "Strawberry Cheesecake",
+        "price": 5.0
+      }
+    ]
+  },
+  {
+    "id": "kids",
+    "name": "Kids Menu",
+    "icon": "🧒",
+    "items": [
+      {
+        "id": "kids-kids-nuggets-and-chips",
+        "name": "Kids Nuggets & Chips",
+        "price": 6.0
+      },
+      {
+        "id": "kids-kids-beef-burger-and-chips-plain",
+        "name": "Kids Beef Burger & Chips (Plain)",
+        "price": 6.0
+      }
     ]
   }
 ]
