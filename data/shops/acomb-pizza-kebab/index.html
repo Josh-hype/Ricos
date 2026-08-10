@@ -127,21 +127,27 @@
        ink inside its box, so a 110px box yields ~91px of mark. The header is
        position:absolute, so the taller badge overhangs the hero rather than
        reflowing anything. */
-    .brand-logo{display:block;height:110px;width:auto}
+    /* 165px = the reference's 110 up by half, at the owner's request. The
+       header is position:absolute so this overhangs further into the hero
+       rather than reflowing the nav; the hero copy starts low enough that it
+       still clears. */
+    .brand-logo{display:block;height:165px;width:auto}
     /* logo-mark.png carries ~11px of transparent padding at the 110px header
        size, so the visible disc floated 15px right and 11px high of the
        reference's (108-196 x / 30-118 y). Shifted visually only — position
-       offsets keep the flex row's geometry unchanged. The footer badge is a
+       offsets keep the flex row's geometry unchanged. The offsets are a
+       fraction of the badge, so they scale with it (x1.5 here) rather than
+       staying at the 110px values and under-correcting. The footer badge is a
        different size and is not covered by the reference, so it keeps its box. */
-    header.site .brand-logo{position:relative;left:-14px;top:9px}
+    header.site .brand-logo{position:relative;left:-21px;top:14px}
     footer.site .brand-logo{height:88px}
     /* Step down once the nav collapses so the badge doesn't crowd the burger.
        Both rules live here, before the ≤760px block, so the narrower query
        still wins on a phone. */
     /* The transparent-padding offset scales with the badge, so step it down
        with the height rather than leaving the desktop value to overshoot. */
-    @media(max-width:760px){ .brand-logo{height:78px} header.site .brand-logo{left:-10px;top:6px} }
-    @media(max-width:560px){ .brand-logo{height:70px} header.site .brand-logo{left:-9px;top:6px} }
+    @media(max-width:760px){ .brand-logo{height:117px} header.site .brand-logo{left:-15px;top:9px} }
+    @media(max-width:560px){ .brand-logo{height:105px} header.site .brand-logo{left:-14px;top:9px} }
     /* Reference nav: five links on a ~57px rhythm (link edges 497.6 / 596.8 /
        696.0 / 807.6 / 936.2, run ending at 1004), then a breathing gap before
        the CTA pill. At 45px the run ended 51px short at x=953 and the nav read
@@ -196,9 +202,19 @@
       position:relative;display:flex;align-items:center;
       min-height:clamp(560px,52vw,790px);background:#000;
     }
+    /* Capped, not a plain 100%. The band is content-driven once the copy is
+       taller than min-height, so anything added to the hero — the bigger badge,
+       the offer card — grows it, and with a straight `auto 100%` the food grew
+       with it: at a 1032px band the image is 1548 wide, which drags the pizza
+       crust left to x=522 and puts far more of the headline on lit crust. The
+       cap holds the food at roughly the size it renders today (864px at 1440,
+       900 above 1500) however tall the band gets.
+       Anchored BOTTOM rather than centre so the slack appears above the food,
+       where the asset is pure black and the nav sits, instead of being split
+       top and bottom and leaving a visible edge under the counter. */
     .hero-media{
       position:absolute;inset:0;
-      background:#000 url("/assets/final-hero.png") right center/auto 100% no-repeat;
+      background:#000 url("/assets/final-hero.png") right bottom/auto min(100%,60vw,900px) no-repeat;
     }
     /* Left-only vignette: guarantees text contrast on the dark-left even if the
        framing shifts, and is fully clear (alpha 0) across the food from 54% on.
@@ -239,7 +255,11 @@
        top at y=186 means moving padding-top by the SAME amount as the content
        change, not half of it — half the added padding is given back by the
        re-centring. */
-    .hero .wrap{position:relative;z-index:2;width:100%;padding-top:161px;padding-bottom:16px}
+    /* 206, up from 161: the badge went to 165px tall at the owner's request and
+       its visible artwork now ends at y≈158, which left the kicker's glyph top
+       at 163 — touching. This clears it by ~45px, the same gap the 110px badge
+       had. */
+    .hero .wrap{position:relative;z-index:2;width:100%;padding-top:206px;padding-bottom:16px}
     /* Capped so the copy stays in the dark-left zone and never overlaps the food
        (which starts ~42% across). min() keeps it clear at every width. */
     .hero-copy{max-width:min(560px,46%)}
@@ -317,9 +337,37 @@
        gone: the owner wants these aligned to the button, so the row simply
        starts on the same left edge as everything else in .hero-copy and is
        sized by its content rather than stretched across a fixed cap. */
+    /* Offer card — the Big Bites deal card's visual language (dark translucent
+       panel, red eyebrow, oversized red figure) moved to the left column,
+       because Acomb's art puts the doner and the oven exactly where Big Bites
+       has its black space. The whole card is the link, so it needs no button of
+       its own: the two CTAs sit directly above it and a third would just be
+       noise. Wording tracks promo.autoOnlineDiscount in config.json — change
+       one and change the other, or the page advertises a discount the server
+       will not apply. */
+    .hero-offer{
+      display:block;max-width:440px;margin-top:26px;
+      background:rgba(18,16,14,.94);border:2px solid var(--line);border-radius:16px;
+      padding:14px 18px 15px;transition:border-color .18s ease;
+    }
+    .hero-offer:hover{border-color:rgba(255,255,255,.24)}
+    .ho-eyebrow{
+      display:block;font-family:var(--label);font-weight:500;font-size:.82rem;
+      letter-spacing:1.5px;text-transform:uppercase;color:var(--red-text);
+    }
+    .ho-main{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-top:5px}
+    /* 2.1rem = 33.6px, so --red clears the 3:1 large-text bar; the small print
+       below uses --muted and the eyebrow --red-text for the same reason. */
+    .ho-main b{font-family:var(--display);font-weight:400;font-size:2.1rem;line-height:1;color:var(--red)}
+    .ho-main span{
+      font-family:var(--label);font-weight:500;font-size:1.15rem;
+      text-transform:uppercase;letter-spacing:.02em;color:#fff;
+    }
+    .ho-note{display:block;margin-top:7px;font-size:.83rem;line-height:1.45;color:var(--muted)}
+
     .hero-feats{
       display:flex;flex-wrap:wrap;gap:0 34px;
-      margin-top:52px;margin-left:0;max-width:520px;
+      margin-top:38px;margin-left:0;max-width:520px;
     }
     /* flex-start, not centre: in the reference all four headings share one cap
        band (measured 714.6-723.9 css on every badge) and only Quality's
@@ -618,6 +666,9 @@
          block boundaries within 12px of each other. */
       .hero .wrap{padding:34px 24px 24px}
       .hero-copy{max-width:none}
+      /* Full width on a phone — the copy column is no longer capped, and a
+         440px card floating in a 342px column would just wrap awkwardly. */
+      .hero-offer{max-width:none;margin-top:22px}
       .hero .cta .btn{flex:1 1 auto;justify-content:center}
       /* Badges: two per row on a phone rather than a cramped single line. */
       .hero-feats{display:grid;grid-template-columns:1fr 1fr;gap:18px 14px;margin-top:32px;max-width:none;margin-left:0}
@@ -761,6 +812,11 @@
         <a class="btn btn-primary" href="/order">Order Now <span class="arrow">→</span></a>
         <a class="btn btn-ghost" href="/order">View Menu</a>
       </div>
+      <a class="hero-offer" href="/order">
+        <span class="ho-eyebrow">Online offer</span>
+        <span class="ho-main"><b>10% off</b><span>every order over &pound;12</span></span>
+        <span class="ho-note">Collection or delivery &middot; applied automatically at checkout</span>
+      </a>
     </div>
     <div class="hero-feats">
       <div class="hero-feat">
