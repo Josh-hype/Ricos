@@ -16,15 +16,15 @@
     "email": "orders@acombpizzakebabhouse.co.uk",
     "domain": "acombpizzakebabhouse.co.uk"
   },
-  "_comment_theme": "Sampled from the owner's reference visual: near-black page (#0a0a0a), brand red around #cf1c20, gold from the logo badge. This is a DARK site — unlike every other shop on the platform, whose order page is cream. The design loop refines these against the measured palette.",
+  "_comment_theme": "Brand red and gold sampled from the owner's reference visual. background/surface are the PLATFORM's light surfaces and must stay light: order.html, thank-you.html, reset-password, privacy, terms, allergy-info, the staff manifest and the confirmation email all paint dark ink on them without checking. They were briefly set to this shop's near-black, which rendered every one of those dark-on-dark — invisible headings on the thank-you page and invisible body text in the confirmation email. The DARK landing page is bespoke (data/shops/acomb-pizza-kebab/index.html) and now hardcodes its own #0a0a0a / #141414 rather than borrowing these. chrome stays dark so the staff PWA's theme_color is unchanged.",
   "theme": {
     "primary": "#cf1c20",
     "primaryDark": "#a81317",
     "primaryDeep": "#7d0d10",
     "accent": "#c9a227",
     "accentDeep": "#9c7b12",
-    "background": "#0a0a0a",
-    "surface": "#141414",
+    "background": "#FBF3DE",
+    "surface": "#FFFDF7",
     "chrome": "#0a0a0a"
   },
   "fulfillment": {
