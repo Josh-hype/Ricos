@@ -136,10 +136,24 @@ npx wrangler pages secret put RESEND_FROM_EMAIL --project-name=ricos   # e.g. or
 
 ## 5. Twilio (SMS — only if marketing list is wanted)
 
-1. Sign up at https://twilio.com.
-2. **Phone Numbers → Buy a number** (pick a UK alphanumeric sender or a real number — UK SMS shortcodes are pricier).
-3. **Account → API keys & Tokens** → copy Account SID + Auth Token.
-4. Set on Cloudflare:
+There is **one Twilio account for the whole platform**. `TWILIO_ACCOUNT_SID`
+and `TWILIO_AUTH_TOKEN` are the *same values on every shop* — reuse them, don't
+open a second account. Only the From number is per shop.
+
+1. **Account → API keys & Tokens** → copy the Account SID + Auth Token.
+   The SID must start with **`AC`**. An API Key (`SK…`) looks similar and is
+   the wrong thing: it 401s *and never appears in Twilio's message logs*, so it
+   presents as "the site isn't calling Twilio at all". `sms-test.js` checks for
+   this by name because it has bitten us.
+2. **Phone Numbers → Buy a number** → United Kingdom, SMS-capable, `+447…`
+   mobile. **Buy a separate number per shop** (~£1/mo). Our SMS all carry links
+   (pay-by-link, password reset), UK carriers filter link-bearing SMS hard, and
+   a From number that doesn't match the brand is the pattern they penalise —
+   plus one shop getting blocked then can't take the others down with it.
+   Avoid an alphanumeric sender ID (`AcombPizza`): the UK requires
+   pre-registration now, and unregistered alphanumeric senders sending URLs get
+   filtered.
+3. Set on Cloudflare (Production **and** Preview):
 
 ```sh
 npx wrangler pages secret put TWILIO_ACCOUNT_SID --project-name=ricos
@@ -148,6 +162,16 @@ npx wrangler pages secret put TWILIO_FROM_NUMBER --project-name=ricos   # e.g. +
 ```
 
 You can defer this until after launch — the order flow works without Twilio.
+`sendSms` returns `{skipped:true}` when the secrets are absent, so nothing
+errors. What you lose meanwhile: **pay-by-link from the till** (staff fall back
+to "copy link", the order isn't stuck) and **password reset for customers who
+signed up with a mobile and no email** — those have no other route back in.
+
+To check it end to end, log into `/staff` and hit
+`/api/staff/sms-test?to=+447…`. It sends a real message and returns Twilio's
+HTTP status, error code and a plain-English diagnosis instead of failing
+silently. It reports only whether the secrets are present and well-formed,
+never their values.
 
 ## 6. Staff PIN
 

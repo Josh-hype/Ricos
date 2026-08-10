@@ -195,8 +195,15 @@ encrypted/secret variables (not plaintext):
   into Cloudflare as a **Secret**, never plaintext.
 - `RESEND_FROM_EMAIL` — e.g. `orders@<shop-domain>`
 - `RESEND_FROM_NAME` — e.g. shop's trading name
-- `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` — your
-  Twilio account (shared)
+- `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` — genuinely shared: one Twilio
+  account serves the platform, so these are identical on every shop. The SID
+  starts `AC`; an `SK…` API key 401s and never reaches Twilio's message log.
+- `TWILIO_FROM_NUMBER` — **per shop.** Buy this shop an SMS-capable UK `+447…`
+  in E.164. Our texts carry links, which UK carriers filter aggressively when
+  the sender doesn't match the brand, and a per-shop number keeps one shop's
+  deliverability problems off the others. All three are optional — unset means
+  `sendSms` skips, which costs pay-by-link and phone-only password resets but
+  nothing in the ordering flow.
 - `SESSION_SECRET` — a long random string; signs staff login sessions
 - `STAFF_PIN_HASH` — hash of the staff login PIN. Staff enter the PIN at
   `/staff`; store its hash here, never the raw PIN.

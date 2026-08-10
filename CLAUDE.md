@@ -235,7 +235,12 @@ Each project (`ricos`, the Food Station project, and any future shop):
     create a fresh "Sending access" key scoped to that shop's domain, so one
     leak doesn't take every site's email down. The domain must also be added
     and verified in Resend before that shop can send.
-  - SMS (Twilio): `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`
+  - SMS (Twilio): `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`.
+    One Twilio account platform-wide, so the SID and token are **the same on
+    every shop**; only the From number is per shop (buy a separate SMS-capable
+    `+447…` per shop). SID starts `AC` — an `SK…` API key 401s *and* logs
+    nothing, which reads as "Twilio isn't being called". All optional: unset ⇒
+    `sendSms` skips, costing pay-by-link and phone-only password resets.
   - Sessions/staff: `SESSION_SECRET`, `STAFF_PIN_HASH` (staff log in with a
     PIN; store its hash, never the raw PIN). Optional: `MANAGER_PIN_HASH` (a
     second PIN gating the financial views — Today/Z-report — and manager
