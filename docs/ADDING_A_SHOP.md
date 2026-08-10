@@ -196,14 +196,23 @@ encrypted/secret variables (not plaintext):
 - `RESEND_FROM_EMAIL` — e.g. `orders@<shop-domain>`
 - `RESEND_FROM_NAME` — e.g. shop's trading name
 - `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` — genuinely shared: one Twilio
-  account serves the platform, so these are identical on every shop. The SID
-  starts `AC`; an `SK…` API key 401s and never reaches Twilio's message log.
-- `TWILIO_FROM_NUMBER` — **per shop.** Buy this shop an SMS-capable UK `+447…`
-  in E.164. Our texts carry links, which UK carriers filter aggressively when
-  the sender doesn't match the brand, and a per-shop number keeps one shop's
-  deliverability problems off the others. All three are optional — unset means
-  `sendSms` skips, which costs pay-by-link and phone-only password resets but
-  nothing in the ordering flow.
+  account serves the platform, so these are identical on every shop. Use the
+  Account SID (starts `AC`) and the Primary auth token. Do **not** create a
+  Twilio API Key — the console recommends them generally, but the SID goes in
+  the request URL here, so an `SK…` key 401s and never reaches Twilio's
+  message log, which looks like the site never called Twilio at all.
+- `TWILIO_FROM_NUMBER` — **per shop, and badly named.** It holds an
+  **alphanumeric sender ID: the shop's name**, so texts show `AcombPizza`
+  rather than a strange number. Max 11 characters, letters/digits/spaces only
+  (no `&`), at least one letter. Nothing to buy in the console. It is
+  **one-way** — customers cannot reply, so never send anything that asks for
+  an answer. A Twilio-owned `+44…` number in E.164 also works if a shop needs
+  replies. The var keeps its name because renaming it would mean re-entering
+  the secret on every live Pages project at once.
+
+All three are optional — unset means `sendSms` returns `{skipped:true}`, which
+costs pay-by-link from the till and password resets for customers who signed up
+with a mobile and no email, but nothing in the ordering flow.
 - `SESSION_SECRET` — a long random string; signs staff login sessions
 - `STAFF_PIN_HASH` — hash of the staff login PIN. Staff enter the PIN at
   `/staff`; store its hash here, never the raw PIN.

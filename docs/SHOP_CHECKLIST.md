@@ -92,10 +92,13 @@ Add each as **encrypted** (the lock icon), not plaintext:
 - [ ] `RESEND_FROM_EMAIL` = `orders@<shop-domain>`
 - [ ] `RESEND_FROM_NAME` = shop's trading name
 - [ ] `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` — **same values as every
-      other shop** (one Twilio account platform-wide). SID starts `AC`, not
-      `SK`.
-- [ ] `TWILIO_FROM_NUMBER` — **buy this shop its own** SMS-capable `+447…`
-      (E.164, not `07…`). Optional: unset just disables SMS.
+      other shop** (one Twilio account platform-wide). Account SID + Primary
+      auth token; starts `AC`. Do not create an API Key (`SK…`) — it can't
+      work here.
+- [ ] `TWILIO_FROM_NUMBER` — despite the name, put **the shop's name** here as
+      an alphanumeric sender ID (max 11 chars, letters/digits/spaces, e.g.
+      `AcombPizza`). Nothing to buy. One-way — customers can't reply.
+      Optional: unset just disables SMS.
 - [ ] `SESSION_SECRET` — long random string; signs staff login sessions
 - [ ] `STAFF_PIN_HASH` — hash of the staff login PIN (staff enter the PIN
       at `/staff`; store its hash, not the raw PIN)

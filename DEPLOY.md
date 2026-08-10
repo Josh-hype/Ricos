@@ -140,25 +140,26 @@ There is **one Twilio account for the whole platform**. `TWILIO_ACCOUNT_SID`
 and `TWILIO_AUTH_TOKEN` are the *same values on every shop* — reuse them, don't
 open a second account. Only the From number is per shop.
 
-1. **Account → API keys & Tokens** → copy the Account SID + Auth Token.
-   The SID must start with **`AC`**. An API Key (`SK…`) looks similar and is
-   the wrong thing: it 401s *and never appears in Twilio's message logs*, so it
-   presents as "the site isn't calling Twilio at all". `sms-test.js` checks for
-   this by name because it has bitten us.
-2. **Phone Numbers → Buy a number** → United Kingdom, SMS-capable, `+447…`
-   mobile. **Buy a separate number per shop** (~£1/mo). Our SMS all carry links
-   (pay-by-link, password reset), UK carriers filter link-bearing SMS hard, and
-   a From number that doesn't match the brand is the pattern they penalise —
-   plus one shop getting blocked then can't take the others down with it.
-   Avoid an alphanumeric sender ID (`AcombPizza`): the UK requires
-   pre-registration now, and unregistered alphanumeric senders sending URLs get
-   filtered.
+1. **Account → API keys & Tokens** → copy the **Account SID** and the
+   **Primary auth token**. That pair is the whole credential — do NOT create a
+   Twilio API Key. The console recommends API keys in general, but this
+   integration puts the Account SID in the request URL as well as the auth
+   header (`functions/_lib/sms.js`), so an `SK…` key cannot work. It 401s *and
+   never appears in Twilio's message logs*, which presents as "the site isn't
+   calling Twilio at all".
+2. Pick the sender. **We use an alphanumeric sender ID — the shop's name, not
+   a phone number** — so texts arrive from `Ricos` or `AcombPizza` rather than
+   an unknown `+447…`. No number to rent. Rules: **max 11 characters**, letters,
+   digits and spaces only (no `&`), at least one letter. It is **one-way**:
+   customers cannot reply, so never send anything expecting an answer. Nothing
+   to buy or configure in the console — just put the name in the env var.
+   (A real Twilio number in E.164 also works if a shop ever needs replies.)
 3. Set on Cloudflare (Production **and** Preview):
 
 ```sh
 npx wrangler pages secret put TWILIO_ACCOUNT_SID --project-name=ricos
 npx wrangler pages secret put TWILIO_AUTH_TOKEN  --project-name=ricos
-npx wrangler pages secret put TWILIO_FROM_NUMBER --project-name=ricos   # e.g. +447xxxxxxxxx
+npx wrangler pages secret put TWILIO_FROM_NUMBER --project-name=ricos   # the SHOP NAME, e.g. Ricos — see below
 ```
 
 You can defer this until after launch — the order flow works without Twilio.
