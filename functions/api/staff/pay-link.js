@@ -92,7 +92,7 @@ export const onRequestPost = async ({ request, env }) => {
   const totals = computeTotals(
     { items: body.items, fulfillment, deliveryAddress: address ? { postcode: address.postcode } : undefined },
     config,
-    { suppressPromo: true, suppressServiceFee: true, allowCustom: true, allowPosOnly: true, deliveryFeeP: deliveryFeeP ?? undefined, menu: await resolveMenu(env) },
+    { suppressPromo: true, suppressServiceFee: true, allowCustom: true, allowPosOnly: true, allowCollectionOnly: true, deliveryFeeP: deliveryFeeP ?? undefined, menu: await resolveMenu(env) },
   );
   if (!totals.ok) return err(totals.reason, 400);
 

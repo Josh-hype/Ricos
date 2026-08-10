@@ -39,7 +39,8 @@
     "id": "deals",
     "name": "In-store deals",
     "items": [
-      { "id": "student", "name": "Student Deal", "priceP": 500, "posOnly": true }
+      { "id": "student", "name": "Student Deal", "priceP": 500, "posOnly": true },
+      { "id": "pickupdeal", "name": "Two Pizzas Deal", "priceP": 1499, "collectionOnly": true }
     ]
   }
 ]
