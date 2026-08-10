@@ -325,6 +325,9 @@
     .hero p.sub{
       margin:11px 0 0;font-size:clamp(1.05rem,1.4vw,1.4rem);color:#e9e9e9;line-height:1.5;
     }
+    /* Desktop shows the three-line version; the phone block below swaps them. */
+    .hero p.sub .on-desktop{display:inline}
+    .hero p.sub .on-phone{display:none}
     .hero .cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:25px}
     /* Feature badges pulled into the hero (the reference has them here, not in a
        separate strip): red ring icon + title + sub, in a row along the bottom. */
@@ -713,21 +716,62 @@
          silently cropping the food again. Full width also makes it the largest
          the image can be without cropping — at 430 that is 430x276, more area
          than the 215x465 column it replaces. */
-      .hero{display:block;min-height:0;padding:0;overflow-x:clip}
+      /* Built from the owner's ?edit=1 drag at 440. Target tops there were
+         kicker 122, headline 165, paragraph 269, photo 115 behind them, buttons
+         502, offer 643, badges 787, with the photo at 130% and nudged left.
+
+         So the copy sits ON the photo and the photo sits BETWEEN the paragraph
+         and the buttons. .hero-media is the first child in the DOM, so flex
+         `order` is what puts it there without touching the markup — the reading
+         order stays kicker → headline → line → photo → buttons → offer →
+         badges. .wrap and .hero-copy dissolve so their children are all flex
+         items of one column; they lose their padding with it, so the gutter
+         moves onto the items.
+
+         The offsets were px at one width; they are expressed in vw here so the
+         composition holds across phone sizes rather than being right only at
+         440. */
+      .hero{
+        display:flex;flex-direction:column;align-items:stretch;
+        min-height:0;padding:0 0 28px;overflow-x:clip;position:relative;
+      }
+      .hero .wrap{display:contents}
+      .hero-copy{display:contents}
+      .hero .kicker,.hero h1,.hero p.sub,
+      .hero .cta,.hero-offer,.hero-feats{
+        grid-column:auto;grid-row:auto;
+        margin-left:24px;margin-right:24px;position:relative;z-index:1;
+      }
+      /* The kicker→headline gap is the kicker's own 40px margin-bottom, not a
+         margin on the headline, so it is trimmed here rather than added to. */
+      /* align-self:flex-start or the kicker stretches to the full column: it is
+         display:inline-block, but a flex item under align-items:stretch ignores
+         that and fills the line. Its red underline is drawn to `right:12%` of
+         that box, so at full width the rule ran to x=369 and crossed the doner,
+         where red-on-meat measures 1.01:1. Shrink-wrapped, it ends with the
+         words. */
+      .hero .kicker{order:1;margin-top:122px;margin-bottom:27px;align-self:flex-start}
+      .hero h1{order:2;margin-top:0}
+      .hero p.sub{order:3}
+      .hero-media{order:4}
+      .hero .cta{order:5}
+      .hero-offer{order:6}
+      .hero-feats{order:7}
+      /* 130% of the viewport, bled 15vw each side, then the owner's extra
+         -6.7vw nudge left. The negative top margin pulls it up behind the copy;
+         z-index:0 against the copy's 1 keeps it there despite coming later in
+         the flex order. It bleeds only dead black off the left and a sliver of
+         the oven off the right — the pizza and the doner stay whole, which is
+         checked by measurement. */
       .hero-media{
-        position:relative;inset:auto;grid-column:auto;grid-row:auto;
-        height:auto;min-height:0;margin:0;
+        position:relative;inset:auto;grid-column:auto;grid-row:auto;z-index:0;
+        width:130vw;margin-left:-21.7vw;margin-right:0;
+        height:auto;min-height:0;margin-top:-59.5vw;
         aspect-ratio:1536/986;background-size:contain;background-position:center;
       }
       .hero-media::after{display:none}
-      /* Back out of the grid: .wrap and .hero-copy are real boxes again, and
-         every child returns to normal flow. */
-      .hero .wrap{display:block;padding:26px 24px 28px}
-      .hero-copy{display:block;max-width:none}
-      .hero .kicker,.hero h1,.hero p.sub,
-      .hero-feats,.hero .cta,.hero-offer{grid-column:auto;grid-row:auto}
-      /* The headline goes back to its full size — it was cut to 6.3vw only to
-         fit beside the photo, and there is no photo beside it now. */
+      /* The headline keeps its full size — it was only cut to fit beside the
+         photo in the two-column version, and it now has the width back. */
       .hero .kicker{font-size:1rem}
       .hero h1{font-size:clamp(2rem,9vw,2.8rem)}
       /* The <br>s are desktop line-breaking for a 560px column and read as a
@@ -736,14 +780,17 @@
          query adds no specificity, so the class-only form silently lost the
          font-size and left it at the desktop 16.8px. */
       .hero p.sub{margin-top:14px;font-size:.9rem;line-height:1.5}
-      .hero p.sub br{display:none}
+      .hero p.sub .on-desktop{display:none}
+      .hero p.sub .on-phone{display:inline}
       .hero .cta{margin-top:24px}
       /* Full width on a phone — a 440px card in a 342px column would wrap. */
       .hero-offer{max-width:none;margin-top:22px}
       .hero .cta .btn{flex:1 1 auto;justify-content:center}
       /* Two per row again: the badges have the full width back, so a single
          column would leave three-quarters of the line empty. */
-      .hero-feats{display:grid;grid-template-columns:1fr 1fr;gap:18px 14px;margin-top:26px;max-width:none;margin-left:0}
+      /* margin-left stays 24 — the wrap is dissolved, so the gutter lives on the
+         items and a 0 here would run the badges to the screen edge. */
+      .hero-feats{display:grid;grid-template-columns:1fr 1fr;gap:18px 14px;margin-top:26px;max-width:none;margin-left:24px}
       /* 2-up the heading + first sub line (17 + 2 + 20.5 = 39.5px) already
          matches the 40px ring, so the desktop centring offset isn't wanted. */
       .hero-feat .ic{width:40px;height:40px;margin-top:0;flex:0 0 auto}
@@ -898,7 +945,11 @@
            so the text can wrap to its own column, and without them the words
            either side would run together. Trailing whitespace before a line
            break is not rendered, so desktop is unaffected. -->
-      <p class="sub">Delicious pizzas. Juicy kebabs. <br />Made fresh with quality ingredients, <br />just for you.</p>
+      <!-- Two versions of the same sentence because the line breaks differ by
+           screen, and a break is content, not styling: CSS cannot move one. The
+           phone set is the owner's, five short lines; desktop keeps three across
+           its 560px column. Change the wording in BOTH or they drift. -->
+      <p class="sub"><span class="on-desktop">Delicious pizzas, juicy kebabs. <br />Made fresh with quality ingredients. <br />Just for you.</span><span class="on-phone">Delicious pizzas, juicy <br />kebabs. Made fresh <br />with quality <br />ingredients. <br />Just for you.</span></p>
       <div class="cta">
         <a class="btn btn-primary" href="/order">Order Now <span class="arrow">→</span></a>
         <a class="btn btn-ghost" href="/order">View Menu</a>
