@@ -10043,7 +10043,6 @@
         "id": "kb-chicken",
         "name": "Chicken Shawarma",
         "price": 8.5,
-        "desc": "Chargrilled chicken, salad, pitta, sauce.",
         "options": [
           {
             "id": "size",
