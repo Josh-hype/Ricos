@@ -1489,7 +1489,16 @@ const html = `<!doctype html>
 
   .sidesblk h3       { position: relative; left: 0.5mm;  top: 1.6mm; }
   .drinksblk .items  { position: relative; left: 0mm;    top: -1.3mm; }
-  .pizzablk .items   { position: relative; left: 3.4mm;  top: 2.6mm;  scale: 1.05; }
+  /* 1.05 was a hair taller than the slot between the dotted rule and the stuffed
+     crust bar, and scale works about the CENTRE — so the list grew ~24px each way
+     and the overrun at the top went under the rule, which then printed straight
+     through MARGHERITA. It hid from every check: transforms do not affect layout,
+     so the panel-fit test measured the unscaled box and saw nothing wrong, and the
+     collision test only looks for text under photos.
+     1.02 is the largest that clears both ends (8px off the rule, 23px off the
+     supplement bar; 1.03 leaves 4px at the top, too fine to print). Fixing it with
+     transform-origin instead just moves the whole overrun onto the bar below. */
+  .pizzablk .items   { position: relative; left: 3.4mm;  top: 2.6mm;  scale: 1.02; }
   .supp              { position: relative; top: 8.7mm; }
   .sidesblk .items   { position: relative; left: 12.9mm; top: 9mm;   scale: 1.2; }
   .saladblk h3       { position: relative; left: -1.3mm; top: 10.6mm; }
