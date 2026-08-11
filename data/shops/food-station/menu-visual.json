@@ -9753,7 +9753,8 @@
       {
         "id": "cal-meat",
         "name": "Meat Calzone",
-        "price": 12.5
+        "price": 12.5,
+        "desc": "Pepperoni, salami, ham, chorizo"
       },
       {
         "id": "cal-veg",
