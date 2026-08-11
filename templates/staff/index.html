@@ -516,6 +516,10 @@ button{cursor:pointer;border:0;background:none}
 .orow.st-out{border-left-color:var(--blue)}
 .orow.st-completed{border-left-color:var(--green)}
 .orow.st-cancelled{border-left-color:var(--muted-2)}
+/* Waiting on the customer to pay a texted link. Deliberately the quietest row on
+   the board: nothing for the kitchen to do until it turns paid, and a dashed edge
+   reads as provisional rather than as another job in the queue. */
+.orow.st-awaiting{border-left-style:dashed;border-left-color:var(--muted-2);background:#FBFCFE}
 .orow.done{background:#FBFCFE}
 .orow .r-id{min-width:0}
 .orow .r-ref{font-family:var(--mono);font-size:16px;font-weight:600;letter-spacing:-.02em;color:var(--ink);display:block}
@@ -2253,6 +2257,8 @@ const state = {
   authed: false,
   orders: [],
   seenIds: new Set(),
+  awaitingPayIds: new Set(), // link orders on the board we're still waiting on
+  justPaidIds: new Set(),    // link orders that turned paid on THIS poll
   soundOn: localStorage.getItem('ricos-sound') !== 'off',
   pollHandle: null,
   lastPollAt: 0,
@@ -2378,16 +2384,30 @@ function renderBoard() {
 }
 
 // The live "live" statuses — orders still on the board, not yet done/cancelled.
-const LIVE_STATUSES = ['pending_accept', 'accepted', 'ready', 'out_for_delivery'];
+// 'pending_payment' is here for pay-by-link orders only: the server (_lib/kv.js)
+// never sends an unpaid WEB checkout, so anything that arrives with this status
+// is a counter order waiting on the customer to tap the link.
+const LIVE_STATUSES = ['pending_payment', 'pending_accept', 'accepted', 'ready', 'out_for_delivery'];
+
+// Waiting on the customer to pay a link we texted them. Not yet the kitchen's
+// problem: it can't be accepted or completed, and it never joins the pending
+// queue that drives the new-order alarm.
+function isAwaitingLinkPayment(o) {
+  return !!(o && o.status === 'pending_payment');
+}
 
 // "Owes money" — the shop still needs to collect. Covers an in-store saved-unpaid
 // "pay later" order, an online cash-on-collection/delivery order ('cash_due' — e.g.
 // the driver collects the cash on delivery), and a split bill only part-collected.
 // These stay on Live, show "Pay now", and can't be completed until settled — staff
 // press Pay now to take the payment (e.g. cash handed back by the driver).
+// Also covers a pay-by-link order the customer hasn't paid yet. That matters
+// beyond the red pill: these now sit on the board, so without this completeAll
+// would sweep one into 'completed' and the money would never be collected.
 function isUnpaidOrder(o) {
   const s = o && o.payment && o.payment.state;
-  return !!(o && (s === 'unpaid' || s === 'part_paid' || s === 'cash_due' || o.paymentMethod === 'unpaid'));
+  return !!(o && (s === 'unpaid' || s === 'part_paid' || s === 'cash_due' || o.paymentMethod === 'unpaid'
+    || (s === 'awaiting' && o.payment.via === 'link')));
 }
 
 // Has the shop actually GOT the money? Only a settled payment counts as Paid.
@@ -2416,6 +2436,10 @@ function paymentStatusLine(o) {
   if (pm === 'cash_delivery') return 'NOT PAID - CASH ON DELIVERY';
   if (pm === 'cash_collection') return 'NOT PAID - CASH ON COLLECTION';
   if (pm === 'unpaid' || st === 'unpaid') return 'NOT PAID';
+  // The pay-by-link ticket prints when the link is SENT, not when it's paid, so
+  // it has to say which — otherwise a 'card' order reads as settled to whoever
+  // picks the ticket off the printer.
+  if (st === 'awaiting' && o && o.payment && o.payment.via === 'link') return 'NOT PAID - PAYMENT LINK SENT';
   if (orderPaid(o)) return (pm === 'card' || pm === 'counter_card') ? 'PAID BY CARD'
     : (pm === 'counter_cash') ? 'PAID BY CASH' : 'PAID';
   return 'NOT PAID';
@@ -2698,6 +2722,8 @@ $('#logoutBtn').addEventListener('click', () => {
   // sign in starts clean — stale seenIds would otherwise suppress their
   // new-order alarm, and stale perms/operator would leak across sessions.
   state.seenIds = new Set();
+  state.awaitingPayIds = new Set();
+  state.justPaidIds = new Set();
   state.orders = [];
   state.operator = null;
   state.operatorsEnabled = false;
@@ -3068,10 +3094,20 @@ function liveSignature(orders) {
 }
 
 function handleOrders(orders) {
+  // An order counts as "new" either the first time we ever see it in the queue,
+  // or when a link order we were already showing turns paid. The second rule is
+  // what makes payment announce itself: an unpaid link order sits on the board
+  // for minutes first, so its id is long since in seenIds and the first rule
+  // alone would let it slip in silently — which is exactly what used to happen
+  // on the till that sent the link, because sendPaymentLink pre-seeded the id.
   const newIds = orders
-    .filter(o => o.status === 'pending_accept' && !state.seenIds.has(o.id))
+    .filter(o => o.status === 'pending_accept'
+      && (!state.seenIds.has(o.id) || state.awaitingPayIds.has(o.id)))
     .map(o => o.id);
+  state.justPaidIds = new Set(newIds.filter(id => state.awaitingPayIds.has(id)));
   for (const o of orders) state.seenIds.add(o.id);
+  // Re-derive who we're still waiting on, so an order only announces once.
+  state.awaitingPayIds = new Set(orders.filter(isAwaitingLinkPayment).map(o => o.id));
 
   state.orders = orders;
   $('#liveCount').textContent = orders.length;
@@ -3144,7 +3180,10 @@ function updateChipCounts(list) {
   const arr = list || [];
   const counts = {
     all: arr.length,
-    unpaid: arr.filter(o => (o.payment && (o.payment.state === 'unpaid' || o.payment.state === 'part_paid')) || o.paymentMethod === 'unpaid').length,
+    // Same test as the chip's filter (orderMatchesFilter) — this was a stale
+    // inline copy that missed cash_due, so the badge could read 2 while tapping
+    // it showed 3 rows.
+    unpaid: arr.filter(isUnpaidOrder).length,
     instore: arr.filter(orderIsInstore).length,
     online: arr.filter(o => !orderIsInstore(o)).length,
   };
@@ -4217,7 +4256,7 @@ function renderRow(o, isNew) {
   if (isNew) cls.push('new');
   const am = agingMins(o);
   if (am !== null) { if (am < 0) cls.push('aging-over'); else if (am <= 5) cls.push('aging-soon'); }
-  const stClass = { pending_accept: 'st-pending', accepted: 'st-accepted', ready: 'st-ready', out_for_delivery: 'st-out', completed: 'st-completed', cancelled: 'st-cancelled' };
+  const stClass = { pending_payment: 'st-awaiting', pending_accept: 'st-pending', accepted: 'st-accepted', ready: 'st-ready', out_for_delivery: 'st-out', completed: 'st-completed', cancelled: 'st-cancelled' };
   if (stClass[o.status]) cls.push(stClass[o.status]);
   if (o.status === 'completed' || o.status === 'cancelled') cls.push('done');
 
@@ -4230,12 +4269,12 @@ function renderRow(o, isNew) {
   const paidLbl = payLabel(o);
   const paidCls = orderPaid(o) ? 'pd' : 'np';
 
-  const stLabel = { pending_accept: 'new', accepted: 'accepted', ready: 'ready', out_for_delivery: 'out', completed: 'completed', cancelled: 'cancelled' };
+  const stLabel = { pending_payment: 'awaiting payment', pending_accept: 'new', accepted: 'accepted', ready: 'ready', out_for_delivery: 'out', completed: 'completed', cancelled: 'cancelled' };
   const fulf = orderTypeLabel(o) + (tableLabel(o) ? ` · ${tableLabel(o)}` : '');
   let timeTxt = '';
   if (['accepted', 'ready', 'out_for_delivery'].includes(o.status) && am !== null) {
     timeTxt = am > 0 ? `${am} min` : (am === 0 ? 'now' : `${-am} min over`);
-  } else if (o.status === 'pending_accept') {
+  } else if (o.status === 'pending_accept' || o.status === 'pending_payment') {
     timeTxt = humanAgo(new Date(o.createdAt));
   } else {
     timeTxt = formatTime(o.createdAt);
@@ -4389,6 +4428,7 @@ function syncAlarm() {
 function renderAlarm(o, qlen) {
   $('#alarmRef').textContent = `#${o.id}`;
   $('#alarmQueue').textContent = qlen > 1 ? `${qlen} waiting` : 'new';
+  $('#alarmTitle').textContent = state.justPaidIds.has(o.id) ? '💷 Payment received' : '🔔 New order';
 
   // Use the shared label so the alarm agrees with the board and the printed ticket.
   // Safe for existing shops: only online / pay-link orders ever reach 'pending_accept'
@@ -4396,9 +4436,15 @@ function renderAlarm(o, qlen) {
   // still resolve to 'Collection' exactly as this line did before.
   const fulfillment = orderTypeLabel(o);
   const table = tableLabel(o);
-  const pay = orderPaid(o)
-    ? (o.paymentMethod === 'split' ? 'Paid — split (cash + card)' : 'Paid by card')
-    : 'NOT PAID';
+  // A pay-by-link order has been sat on the board unpaid, and its ticket already
+  // printed — so what's new here is the MONEY, not the order. Say that, or staff
+  // read it as a second order for food they've already started.
+  const justPaidLink = state.justPaidIds.has(o.id);
+  const pay = justPaidLink
+    ? 'CUSTOMER HAS PAID'
+    : orderPaid(o)
+      ? (o.paymentMethod === 'split' ? 'Paid — split (cash + card)' : 'Paid by card')
+      : 'NOT PAID';
   const sched = o.schedule && o.schedule !== 'asap' ? ` · for ${formatTime(o.schedule)}` : ' · ASAP';
   const addr = o.address
     ? `<div style="font-size:0.88rem;color:var(--muted);margin-top:4px">${escapeHtml(o.address.line1)}${o.address.line2 ? ', ' + escapeHtml(o.address.line2) : ''}, ${escapeHtml(o.address.postcode)}${o.address.notes ? `<br><em>${escapeHtml(o.address.notes)}</em>` : ''}</div>`
@@ -4562,7 +4608,12 @@ async function acceptOrder(id, opts) {
   // the line items); fall back to the accept response.
   try {
     const ord = (state.orders || []).find((o) => o.id === id) || data.order || data;
-    if (ord && ord.totals && state.printOnAccept) printTo('kitchen', ord);
+    // A pay-by-link ticket already printed when the link was sent, so accepting
+    // it must not spit a duplicate at the kitchen. Only skip when the send-time
+    // print actually ran — that used the printCounter gate, so if counter
+    // auto-print is off nothing printed then and this is the order's first ticket.
+    const linkTicketAlreadyPrinted = ord && ord.payment && ord.payment.via === 'link' && state.printCounter;
+    if (ord && ord.totals && state.printOnAccept && !linkTicketAlreadyPrinted) printTo('kitchen', ord);
   } catch (e) {}
   return data;
 }
@@ -6868,9 +6919,11 @@ async function payExistingCash(tenderedP) {
 }
 
 // Pay by link: create the order (status pending_payment) + a Stripe Checkout
-// session server-side, which texts the customer the pay URL. The order only
-// reaches the kitchen once they pay (the Stripe webhook promotes it), exactly
-// like a web card order — so there's nothing to print or count here yet.
+// session server-side, which texts the customer the pay URL. The order goes on
+// the board immediately as "awaiting payment" and the kitchen ticket prints now,
+// so the food is under way while the customer pays; the ticket says NOT PAID -
+// PAYMENT LINK SENT so nobody mistakes it for settled. Paying promotes it to the
+// kitchen queue and announces itself on the board (see handleOrders).
 async function sendPaymentLink() {
   const phoneRaw = ($('#payLinkPhone').value || '').trim();
   // Light UK-mobile sanity check; the server normalises + validates authoritatively.
@@ -6895,7 +6948,15 @@ async function sendPaymentLink() {
     if (!res.ok || !data.ok || !data.order) { alert(data.error || `Couldn't create the link (${res.status}).`); return; }
   } catch (e) { alert('Network error — try again.'); return; }
   finally { sale.submitting = false; updatePayConfirm(); }
-  state.seenIds.add(data.order.id);
+  // Deliberately NOT added to seenIds: the order is about to appear on the board
+  // unpaid, and handleOrders needs it to still count as new when it turns paid.
+  // Pre-seeding it here is what used to make payment land silently on the very
+  // till that sent the link.
+  // Same gate as a counter sale — a shop routing to a KDS instead of a printer,
+  // or with counter auto-print off, keeps that setting here too.
+  if (state.printOnAccept && state.printCounter) {
+    try { printTo('kitchen', data.order, null); } catch (e) {}
+  }
   showLinkSent(data.order, (data.order.customer && data.order.customer.phone) || phoneRaw, data.link, data.smsSent);
   poll();
 }

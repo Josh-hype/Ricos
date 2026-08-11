@@ -9,12 +9,15 @@
    self-serve web order) and the online 10% promo is suppressed too. With no service
    fee there's no platform application_fee, so the full amount settles to the venue.
 
-   The order is stored status='pending_payment' and reaches the kitchen only once
-   payment succeeds, exactly like a web card order: the Checkout Session's
-   PaymentIntent carries metadata.orderId, so the existing payment_intent.succeeded
-   webhook promotes it. It's recorded as paymentMethod 'card' (it IS a card
-   payment) so refunds / takings flow through the existing card logic unchanged;
-   `source` and payment.via flag that it came from a link. */
+   The order is stored status='pending_payment'. Unlike a web card order it shows
+   on the board straight away, marked "awaiting payment" — staff took it at the
+   counter, so they need to see it sitting there — and it drops off by itself when
+   the link expires if nobody pays (see isLiveUnpaidLinkOrder in _lib/kv.js).
+   Payment promotes it to the kitchen queue exactly like a web card order: the
+   Checkout Session's PaymentIntent carries metadata.orderId, so the existing
+   payment_intent.succeeded webhook promotes it. It's recorded as paymentMethod
+   'card' (it IS a card payment) so refunds / takings flow through the existing
+   card logic unchanged; `source` and payment.via flag that it came from a link. */
 
 import { resolveSession } from '../../_lib/auth.js';
 import { requirePermission } from '../../_lib/permissions.js';
@@ -113,7 +116,10 @@ export const onRequestPost = async ({ request, env }) => {
 
   // Hosted Stripe Checkout (Connect direct charge on the venue's account). The
   // PaymentIntent it creates carries metadata.orderId so the webhook promotes
-  // this order on payment. 2-hour window before the link expires.
+  // this order on payment. 2-hour window before the link expires — recorded on
+  // the order too, so the board can drop an unpaid one at expiry without asking
+  // Stripe (see isLiveUnpaidLinkOrder in _lib/kv.js).
+  const linkExpiresAtSec = Math.floor(Date.now() / 1000) + 2 * 60 * 60;
   let session;
   try {
     session = await createCheckoutSession({
@@ -125,7 +131,7 @@ export const onRequestPost = async ({ request, env }) => {
       applicationFeeP: totals.serviceFeePlatformP || 0,
       successUrl: `https://${domain}/thank-you?ref=${id}`,
       cancelUrl: `https://${domain}/`,
-      expiresAt: Math.floor(Date.now() / 1000) + 2 * 60 * 60,
+      expiresAt: linkExpiresAtSec,
     }, env);
   } catch (e) {
     console.error('createCheckoutSession failed', e);
@@ -156,6 +162,7 @@ export const onRequestPost = async ({ request, env }) => {
       via: 'link',
       connectedAccountId: acct,
       checkoutSessionId: session.id,
+      expiresAt: new Date(linkExpiresAtSec * 1000).toISOString(),
       link,
     },
     marketing: { email: false, sms: false },
