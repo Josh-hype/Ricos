@@ -9741,12 +9741,14 @@
       {
         "id": "cal-doner",
         "name": "Doner Calzone",
-        "price": 12.5
+        "price": 12.5,
+        "desc": "Onion, mushroom, doner"
       },
       {
         "id": "cal-kiev",
         "name": "Kiev Calzone",
-        "price": 12.5
+        "price": 12.5,
+        "desc": "Ham, fresh chilli, garlic, mozzarella cheese"
       },
       {
         "id": "cal-meat",
@@ -9756,12 +9758,14 @@
       {
         "id": "cal-veg",
         "name": "Veg Calzone",
-        "price": 12.5
+        "price": 12.5,
+        "desc": "Red onion, mushroom, peppers, sweetcorn, olives, cherry tomato"
       },
       {
         "id": "cal-hot",
         "name": "Hot Calzone",
         "price": 12.5,
+        "desc": "Onion, bolognese, fresh chilli",
         "spicyTag": true
       }
     ]
@@ -10763,6 +10767,7 @@
         "id": "parmo-bbq",
         "name": "BBQ Parmesan",
         "price": 12.0,
+        "desc": "BBQ sauce and cheese",
         "options": [
           {
             "id": "chips-choice",
@@ -10851,6 +10856,7 @@
         "id": "parmo-hot",
         "name": "Hot Parmesan",
         "price": 12.0,
+        "desc": "Pepperoni, fresh chilli",
         "spicyTag": true,
         "options": [
           {
@@ -10940,6 +10946,7 @@
         "id": "parmo-kiev",
         "name": "Kiev Parmesan",
         "price": 12.0,
+        "desc": "Chicken, ham, garlic",
         "options": [
           {
             "id": "chips-choice",
@@ -11028,6 +11035,7 @@
         "id": "parmo-doner",
         "name": "Doner Parmesan",
         "price": 12.0,
+        "desc": "Doner, cheese",
         "options": [
           {
             "id": "chips-choice",
