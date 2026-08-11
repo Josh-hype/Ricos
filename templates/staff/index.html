@@ -5536,10 +5536,6 @@ function openItemDetail(id) {
   if (!v || !canonical) return;
   const body = $('#itemBody');
   body.innerHTML = itemDetailHTML(v, canonical);
-  // Start every item at the top. The modal body is the scroll container and it
-  // is reused between items, so without this the next pizza opens still scrolled
-  // to wherever the last one was left — staff were scrolling back up each time.
-  body.scrollTop = 0;
   // Wire the live price recompute (selecting an option / meal updates it).
   const priceEl = body.querySelector('#itemDetailPrice');
   const mealInput = body.querySelector('.meal-toggle input');
@@ -5724,6 +5720,15 @@ function openItemDetail(id) {
     setTimeout(closeItemDetail, 450);
   });
   $('#itemOvl').classList.add('open');
+  // Start every item at the top. #itemBody is the scroll container and it is
+  // reused between items, so without this the next pizza opens still scrolled to
+  // wherever the last one was left, and staff scroll back up every time.
+  //
+  // This MUST come after .open. It was previously done right after the innerHTML
+  // assignment at the top of this function, which looked correct and did nothing:
+  // .ovl is display:none until .open is added, an element inside a display:none
+  // subtree has no scroll box, and the assignment is silently discarded.
+  body.scrollTop = 0;
 }
 function closeItemDetail() { $('#itemOvl').classList.remove('open'); }
 $('#itemClose').addEventListener('click', closeItemDetail);
