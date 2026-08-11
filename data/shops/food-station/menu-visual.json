@@ -10492,7 +10492,7 @@
         "id": "kb-combo",
         "name": "Combo Kebab",
         "price": 14.0,
-        "desc": "Combination of lamb doner and shawarma",
+        "desc": "Chicken shawarma and lamb doner",
         "options": [
           {
             "id": "salad-choice",
