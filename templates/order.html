@@ -2572,8 +2572,19 @@ function renderCart() {
 
 /* ---------- Modal helpers ---------- */
 function openModal(id) {
-  document.getElementById(id).classList.add('open');
+  const el = document.getElementById(id);
+  el.classList.add('open');
   document.body.style.overflow = 'hidden';
+  // Start every modal at the top. .modal-body is the scroll container and the
+  // element is reused between opens, so it keeps whatever position the last one
+  // was left at: scroll down to "Add to cart" on a pizza, add it, open the next
+  // item, and it appears already scrolled past its own photo and options.
+  //
+  // Order matters. .modal-overlay is display:none until .open, and an element
+  // inside a display:none subtree has no scroll box, so resetting before this
+  // point is silently discarded — which is exactly how the same fix on the till
+  // came to be present in the source and have no effect.
+  el.querySelectorAll('.modal-body').forEach((b) => { b.scrollTop = 0; });
 }
 function closeModal(id) {
   document.getElementById(id).classList.remove('open');
