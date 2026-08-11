@@ -279,7 +279,7 @@
         "id": "bbq-marg",
         "name": "BBQ Margherita",
         "price": 9.5,
-        "desc": "BBQ base, cheese, tomato",
+        "desc": "BBQ base, cheese",
         "options": [
           {
             "id": "size",
@@ -4345,7 +4345,7 @@
         "id": "kiev",
         "name": "Kiev",
         "price": 10.9,
-        "desc": "Ham, chilli, garlic, mozzarella cheese",
+        "desc": "Ham, chicken, garlic, mozzarella cheese",
         "options": [
           {
             "id": "size",
@@ -9748,7 +9748,7 @@
         "id": "cal-kiev",
         "name": "Kiev Calzone",
         "price": 12.5,
-        "desc": "Ham, fresh chilli, garlic, mozzarella cheese"
+        "desc": "Ham, chicken, garlic, mozzarella cheese"
       },
       {
         "id": "cal-meat",
@@ -11746,7 +11746,7 @@
         "id": "wr-combo",
         "name": "Combo Wrap",
         "price": 10.5,
-        "desc": "Chicken & doner.",
+        "desc": "Chicken shawarma and lamb doner.",
         "options": [
           {
             "id": "salad-choice",
