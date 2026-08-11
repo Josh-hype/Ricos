@@ -787,8 +787,11 @@ const html = `<!doctype html>
   /* Five sections against three elsewhere. The plaques are held at the
      reference's size (0.94x the roomy panels) and the 1.3mm that costs is
      taken out of the gaps between blocks instead — render.mjs reported a 5px
-     overrun here when it was not. */
-  .panel.tight .blk { margin-bottom: 1.8mm; }
+     overrun here when it was not.
+     Cut again, 1.8mm -> 0.5mm, when the owner gave descriptions for the calzones
+     and parmesans: eight new lines on a panel that had 26px spare. The gaps go
+     first because they are the one thing on the sheet nobody reads. */
+  .panel.tight .blk { margin-bottom: .5mm; }
   .panel.tight .blk h3 { font-size: 10mm; margin-bottom: 0; }
   .panel.tight .hrule { margin: .4mm 0 .9mm; }
   .panel.tight .items.dense li { padding: 0; font-size: 2.95mm; }
@@ -796,7 +799,7 @@ const html = `<!doctype html>
      on nearly every one of them where the reference carries almost none — so
      the panel keeps the reference's look at a slightly smaller size rather than
      dropping the descriptions. */
-  .panel.tight .items .n em { font-size: 2.55mm; }
+  .panel.tight .items .n em { font-size: 2.4mm; }
 
   /* ---- section blocks ---- */
   .blk { margin-bottom: 1.5mm; }
@@ -1001,17 +1004,21 @@ const html = `<!doctype html>
   /* Same treatment, same reason: Calzone and Parmesan are five-line lists that
      each carried a description line until the owner had them removed. Losing
      the descriptions halved both blocks and left them stranded above a band of
-     black in slots sized for the taller version. Set at 5.4mm with open leading
-     so each list fills its slot instead. Scoped to these two sections; the
-     panel-fit and collision checks in render.mjs are what bound how far this
-     can go.
+     black in slots sized for the taller version, so the type was opened up to
+     fill the slot instead. Scoped to these two sections; the panel-fit and
+     collision checks in render.mjs are what bound how far this can go.
+     The owner has since given descriptions for eight of the ten, which is the
+     condition this rule was compensating for — the blocks fill their slots on
+     their own again, so the compensation comes back off: 4.4 -> 4.0mm and the
+     row padding with it. Still well clear of the panel's 2.95mm default, so
+     both lists keep reading as the feature sections they are.
      Both blocks sit inside a tight panel, whose own dense-list rule has four
      classes to this one's three — so the shorter selector loses on specificity
      and silently renders at the tight 2.95mm. The panel classes are repeated
      below to outrank it. Salad above needs no such thing: its panel is not
      tight. */
   .panel.tight .calzblk .items.dense li,
-  .panel.tight .parmblk .items.dense li { font-size: 4.4mm; padding: .4mm 0; }
+  .panel.tight .parmblk .items.dense li { font-size: 4.0mm; padding: .1mm 0; }
   /* Reference stem/cap is ~0.15 — a Regular. This was set a full weight
      heavier, which is why the lists read as shouty next to it. */
   .items .n { font-weight: 500; text-transform: uppercase; letter-spacing: .005em; }
