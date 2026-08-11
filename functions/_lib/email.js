@@ -81,7 +81,12 @@ export function orderAcceptedEmail(order, config) {
     html: `
       <div style="font-family:'Helvetica Neue',Arial,sans-serif;max-width:560px;margin:0 auto;color:#181210;background:${c.surface};padding:24px;border-radius:16px">
         ${logoUrl ? `<div style="text-align:center;margin-bottom:12px">
-          <img src="${logoUrl}" alt="${tradingNameHtml}" width="120" height="120" style="border:0;display:inline-block" />
+          <!-- Width only. Mail clients honour width/height as used dimensions, so a
+               width AND height pair squashes any logo that is not square: this was
+               120x120, and Big Bites' 3:2 logo arrived squeezed to two thirds of its
+               width. The other three shops that send email (Rico's, Mega Chippy,
+               Acomb Pizza) have square logos and render identically either way. -->
+          <img src="${logoUrl}" alt="${tradingNameHtml}" width="120" style="border:0;display:inline-block;width:120px;height:auto" />
         </div>` : ''}
 
         <h1 style="font-size:1.6rem;text-align:center;margin:8px 0 4px;color:${c.primary}">Order confirmed</h1>
