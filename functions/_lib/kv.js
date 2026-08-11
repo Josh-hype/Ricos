@@ -107,6 +107,26 @@ const KITCHEN_VISIBLE_STATUSES = new Set([
   'out_for_delivery',   // driver out
 ]);
 
+/* A pay-by-link order the customer hasn't paid yet. These DO belong on the
+   board — staff took the order at the counter, so they need to see it sitting
+   there waiting, and the ticket has already printed. A web card order is also
+   stored 'pending_payment', but that one is just a checkout someone opened and
+   may never finish, so it must stay off the board: `payment.via === 'link'` is
+   what separates the two.
+
+   The link's Stripe Checkout session expires (2h, set in pay-link.js), and once
+   it has there is nothing left to pay — so the order drops off the board on its
+   own rather than silting up a busy night. Orders written before expiresAt was
+   recorded fall back to the same 2h measured from createdAt. */
+const LINK_EXPIRY_FALLBACK_MS = 2 * 60 * 60 * 1000;
+export function isLiveUnpaidLinkOrder(o) {
+  if (!o || o.status !== 'pending_payment' || o.payment?.via !== 'link') return false;
+  const expiresAt = o.payment?.expiresAt
+    ? Date.parse(o.payment.expiresAt)
+    : Date.parse(o.createdAt) + LINK_EXPIRY_FALLBACK_MS;
+  return !Number.isFinite(expiresAt) || Date.now() < expiresAt;
+}
+
 // List EVERY key under `orders:`, paging through the cursor. KV caps a page at
 // 1000, and a busy shop accumulates far more than that over time, so a single
 // page would silently drop orders whose random id sorts past the page — which
@@ -132,7 +152,10 @@ export async function listActiveOrders(env) {
   const active = [];
   for (const k of keys) {
     const status = k.metadata?.status;
-    if (status && KITCHEN_VISIBLE_STATUSES.has(status)) {
+    // 'pending_payment' has to pass this pre-filter to reach the body check
+    // below, because whether it belongs on the board depends on payment.via and
+    // the expiry — neither of which is in the key metadata.
+    if (status && (KITCHEN_VISIBLE_STATUSES.has(status) || status === 'pending_payment')) {
       const raw = await env.ORDERS_KV.get(k.name);
       if (raw) {
         try {
@@ -140,7 +163,7 @@ export async function listActiveOrders(env) {
           // Re-check the body status; the list metadata can briefly lag the
           // actual order doc and we don't want completed/cancelled orders to
           // leak onto Live in those windows.
-          if (KITCHEN_VISIBLE_STATUSES.has(o.status)) active.push(o);
+          if (KITCHEN_VISIBLE_STATUSES.has(o.status) || isLiveUnpaidLinkOrder(o)) active.push(o);
         } catch {}
       }
     }
