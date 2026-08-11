@@ -81,7 +81,7 @@
       "maxOrdersPerSlot": 0,
       "horizonDays": 2
     },
-    "lastOrderBeforeCloseMinutes": 30
+    "lastOrderBeforeCloseMinutes": 15
   },
 
   "_comment_promo": "Optional online discounts, both disabled by default — enable ONLY the one this shop actually runs. (1) autoOnlineDiscount: `percent`% off EVERY online order's subtotal, for everyone; shows in the cart, the SEO meta description and the terms page. (2) firstOrders: a signed-in customer gets `percent`% off their first `limit` orders — a welcome offer that rewards sign-ups. It's enforced server-side against the account (guests never qualify), only spends a redemption once the order is actually placed/paid, and takes precedence over autoOnlineDiscount (they don't stack). A matching banner shows on the landing page when it's on.",

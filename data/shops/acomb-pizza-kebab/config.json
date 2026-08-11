@@ -362,7 +362,7 @@
       "maxOrdersPerSlot": 0,
       "horizonDays": 2
     },
-    "lastOrderBeforeCloseMinutes": 30
+    "lastOrderBeforeCloseMinutes": 15
   },
   "_comment_promo": "Standing offer agreed with the owner: 10% off EVERY online order with a subtotal of £12 or more (not a first-order welcome offer). minSubtotalPence is tested on the SUBTOTAL, before service fee and delivery. firstOrders stays off — the two do not stack and firstOrders would take precedence.",
   "promo": {

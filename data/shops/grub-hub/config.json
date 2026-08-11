@@ -74,7 +74,7 @@
     "businessDayStartHour": 4,
     "asapMinPrepMinutes": 20,
     "scheduling": { "enabled": true, "slotMinutes": 15, "maxOrdersPerSlot": 0, "horizonDays": 2 },
-    "lastOrderBeforeCloseMinutes": 20,
+    "lastOrderBeforeCloseMinutes": 15,
     "itemNotes": true
   },
 
