@@ -714,19 +714,19 @@
       {
         "id": "kids-fish-dippers",
         "name": "Kids' Homemade Fish Dippers",
-        "price": 6.1,
+        "price": 6.9,
         "desc": "Served with chips, a lolly, a drink & an activity kit."
       },
       {
         "id": "kids-nuggets",
         "name": "Kids' Chicken Nuggets (4pcs)",
-        "price": 6.1,
+        "price": 6.9,
         "desc": "Served with chips, a lolly, a drink & an activity kit."
       },
       {
         "id": "kids-sausage",
         "name": "Kids' Sausage",
-        "price": 6.1,
+        "price": 6.9,
         "desc": "Served with chips, a lolly, a drink & an activity kit."
       }
     ]
