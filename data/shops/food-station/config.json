@@ -192,7 +192,8 @@
       "maxOrdersPerSlot": 0,
       "horizonDays": 2
     },
-    "lastOrderBeforeCloseMinutes": 15,
+    "_comment_lastOrder": "0 = take orders right up to the closing time on the clock. The shop asked for this deliberately (Aug 2026) — they would rather catch the last order than protect the last 15 minutes of the shift. Other shops keep a 15-minute buffer; this is per-shop, so raising it here affects nobody else.",
+    "lastOrderBeforeCloseMinutes": 0,
     "itemNotes": true
   },
   "promo": {
