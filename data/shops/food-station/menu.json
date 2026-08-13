@@ -8950,7 +8950,7 @@
       {
         "id": "kb-doner-meat",
         "name": "Tray Doner",
-        "priceP": 400,
+        "priceP": 600,
         "modifiers": [
           {
             "id": "no-sauce",
