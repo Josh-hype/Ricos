@@ -166,7 +166,25 @@
     }
   },
   "_comment_closures": "One-off emergency closures. Each \"YYYY-MM-DD\" (shop-local) takes online ordering OFFLINE for that whole day and shows a popup. Self-expires once the date passes. Empty means no closure in effect.",
-  "closures": {},
+  "_comment_closures_active": "HOLIDAY CLOSURE ACTIVE — the shop is away Mon 17 to Thu 20 Aug 2026 and reopens Fri 21. Deliberately FOUR DATED entries rather than a \"*\" wildcard: dated entries expire by themselves, so Friday comes back on sale on its own and nobody has to remember to push a change that morning. A \"*\" would have stayed closed until someone removed it. Nothing to clean up afterwards — a past date is ignored.",
+  "closures": {
+    "2026-08-17": {
+      "title": "Closed — we’re on holiday",
+      "message": "We’re away on holiday and back open on Friday 21 August. Thanks for your patience — see you when we’re back!"
+    },
+    "2026-08-18": {
+      "title": "Closed — we’re on holiday",
+      "message": "We’re away on holiday and back open on Friday 21 August. Thanks for your patience — see you when we’re back!"
+    },
+    "2026-08-19": {
+      "title": "Closed — we’re on holiday",
+      "message": "We’re away on holiday and back open on Friday 21 August. Thanks for your patience — see you when we’re back!"
+    },
+    "2026-08-20": {
+      "title": "Closed — we’re on holiday",
+      "message": "We’re away on holiday and back open on Friday 21 August. Thanks for your patience — see you when we’re back!"
+    }
+  },
   "ordering": {
     "timezone": "Europe/London",
     "businessDayStartHour": 4,
