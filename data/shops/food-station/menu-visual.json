@@ -13433,7 +13433,19 @@
         "id": "kd-popcorn",
         "name": "Kids Popcorn Chicken",
         "price": 6.0,
-        "desc": "Popcorn chicken, nuggets (5), chips, Fruit Shoot"
+        "desc": "Popcorn chicken (8), chips, Fruit Shoot"
+      },
+      {
+        "id": "kd-tenders",
+        "name": "Kids Chicken Tenders",
+        "price": 6.0,
+        "desc": "Tenders (3), chips, Fruit Shoot"
+      },
+      {
+        "id": "kd-nuggets",
+        "name": "Kids Chicken Nuggets",
+        "price": 6.0,
+        "desc": "Nuggets (5), chips, Fruit Shoot"
       },
       {
         "id": "kd-sunny",
