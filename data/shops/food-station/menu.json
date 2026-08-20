@@ -8774,7 +8774,7 @@
       },
       {
         "id": "gb-cheese-chilli",
-        "name": "Garlic Bread Cheese & Chilli",
+        "name": "Garlic Bread Cheese & Chicken",
         "priceP": 1090,
         "modifiers": [
           {
@@ -11692,7 +11692,7 @@
       },
       {
         "id": "sd-halloumi-fries",
-        "name": "Halloumi Fries",
+        "name": "Halloumi Fries & Chips",
         "priceP": 700,
         "modifiers": []
       }
@@ -11734,20 +11734,9 @@
       },
       {
         "id": "kd-sunny",
-        "name": "Kids Sunny",
+        "name": "Kids Margherita",
         "priceP": 600,
-        "modifiers": [
-          {
-            "id": "kd-sunny-sunny",
-            "label": "Sunny (4) & chips",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "kd-sunny-tenders",
-            "label": "Tenders (3) & chips",
-            "priceDeltaP": 0
-          }
-        ]
+        "modifiers": []
       }
     ]
   },
