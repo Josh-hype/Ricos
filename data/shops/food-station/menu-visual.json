@@ -9656,7 +9656,7 @@
       },
       {
         "id": "gb-cheese-chilli",
-        "name": "Garlic Bread Cheese & Chilli",
+        "name": "Garlic Bread Cheese & Chicken",
         "price": 10.9,
         "options": [
           {
@@ -13394,7 +13394,7 @@
       },
       {
         "id": "sd-halloumi-fries",
-        "name": "Halloumi Fries",
+        "name": "Halloumi Fries & Chips",
         "price": 7.0
       }
     ]
@@ -13433,32 +13433,13 @@
         "id": "kd-popcorn",
         "name": "Kids Popcorn Chicken",
         "price": 6.0,
-        "desc": "Popcorn chicken, nuggets (5), chips"
+        "desc": "Popcorn chicken, nuggets (5), chips, Fruit Shoot"
       },
       {
         "id": "kd-sunny",
-        "name": "Kids Sunny",
+        "name": "Kids Margherita",
         "price": 6.0,
-        "options": [
-          {
-            "id": "kids-choice",
-            "label": "Choose",
-            "select": "single",
-            "required": true,
-            "choices": [
-              {
-                "id": "kd-sunny-sunny",
-                "label": "Sunny (4) & chips",
-                "price": 0
-              },
-              {
-                "id": "kd-sunny-tenders",
-                "label": "Tenders (3) & chips",
-                "price": 0
-              }
-            ]
-          }
-        ]
+        "desc": "7\" pizza, chips, Fruit Shoot"
       }
     ]
   },
