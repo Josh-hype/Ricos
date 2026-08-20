@@ -11733,6 +11733,18 @@
         "modifiers": []
       },
       {
+        "id": "kd-tenders",
+        "name": "Kids Chicken Tenders",
+        "priceP": 600,
+        "modifiers": []
+      },
+      {
+        "id": "kd-nuggets",
+        "name": "Kids Chicken Nuggets",
+        "priceP": 600,
+        "modifiers": []
+      },
+      {
         "id": "kd-sunny",
         "name": "Kids Margherita",
         "priceP": 600,

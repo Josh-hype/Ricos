@@ -1138,7 +1138,11 @@ const html = `<!doctype html>
     background: #c10f0f; border-radius: 3mm; padding: 5mm;
     display: flex; align-items: center; gap: 4mm;
     position: relative;
-    min-height: 52mm;
+    /* 52mm -> 48mm when the kids list went from two items to four. At 52mm the
+       box floored at 197px and panel 1 — which has never had spare height — sat
+       exactly on its limit. This is now only a floor for a SHORT list; the four
+       rows are taller than it, so it does not bind today. */
+    min-height: 48mm;
     outline: .5mm dashed rgba(249,185,2,.85); outline-offset: -2.2mm;
   }
   /* With the artwork in place the box carries no frame of its own — the
@@ -1182,7 +1186,13 @@ const html = `<!doctype html>
     content: ''; position: absolute; top: -3mm; right: -3mm;
     width: 6mm; height: 6mm; border-radius: 50%; background: #c10f0f;
   }
-  .kidslist li { font-size: 4mm; line-height: 1.45; padding: 1mm 0; }
+  /* Was 4mm/1.45/1mm, set when this list held two items. Four items at that
+     size overran panel 1 by 57px. Every row still wraps to two lines — the
+     ticket is only ~255px wide, so no sane type size puts these strings on one
+     line — so the height came out of the leading and the row padding instead,
+     which costs the least legibility per pixel. Still the largest type in the
+     box, and larger than the price lists elsewhere on the sheet. */
+  .kidslist li { font-size: 3.6mm; line-height: 1.2; padding: .3mm 0; }
   .kidsticket .items .n { text-transform: none; }
   .kidsticket .items .n, .kidsticket .items .p { color: #111; font-weight: 600; }
   /* The reference runs a two-line entry with the leader and price on the LAST
