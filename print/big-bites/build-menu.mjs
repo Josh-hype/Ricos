@@ -582,9 +582,27 @@ const bands = del.radius.bands;
 bands.forEach((bd, i) => {
   if (bd.feePence !== (i + 1) * bands[0].feePence)
     throw new Error('delivery bands are no longer per-mile linear — rewrite the cover copy');
+  /* The fee check alone was not enough. It compares fees by INDEX, so stretching
+     the LAST band's reach — which is exactly what the shop did going to 6.25
+     miles on a £5 top band — sailed through it while making "£1 per mile up to
+     6.25 miles" a lie by £1.25. Every band except the last must therefore still
+     be its own 1-mile ring; the last is allowed to run further, and when it does
+     the copy below states a cap instead of a rate. */
+  if (i < bands.length - 1 && Number(bd.maxMiles) !== i + 1)
+    throw new Error(`delivery band ${i + 1} reaches ${bd.maxMiles} miles, not ${i + 1} — the "per mile" cover copy would be false`);
 });
 const maxMiles = del.radius.maxMiles;
 const perMile = bands[0].feePence / 100;
+const lastBand = bands[bands.length - 1];
+if (Number(lastBand.maxMiles) !== Number(maxMiles))
+  throw new Error(`radius.maxMiles (${maxMiles}) disagrees with the last band (${lastBand.maxMiles}) — the printed cutoff would be wrong`);
+/* Capped once the last band reaches beyond its own ring: the £/mile rate stops
+   applying before the edge of the delivery area. */
+const feeCapped = Number(lastBand.maxMiles) > bands.length;
+const capPounds = lastBand.feePence / 100;
+const deliveryLine = feeCapped
+  ? `Easingwold — £${perMile.toFixed(2)} per mile (rounded up), capped at £${capPounds.toFixed(2).replace(/\.00$/, '')}. Delivering up to ${maxMiles} miles.`
+  : `Easingwold — £${perMile.toFixed(2)} per mile (rounded up), up to ${maxMiles} miles.`;
 
 const icon = (kind) => {
   const disc = '<circle cx="12" cy="12" r="12" fill="#d61313"/>';
@@ -616,7 +634,7 @@ const cover = `
            deliberately NOT printed here — the owner's call, 2026-08-06. -->
       <p class="fine">
         Order on our website for collection or delivery.<br />
-        Easingwold — £${perMile.toFixed(2)} per mile (rounded up), up to ${maxMiles} miles.<br />
+        ${deliveryLine}<br />
         Minimum delivery order £${(del.minimumOrderPence / 100).toFixed(2).replace(/\.00$/, '')}.
       </p>
       <div class="strapline">${icon('clock')}<div class="strap">Opening Time</div></div>
@@ -1648,4 +1666,4 @@ const n = menu.reduce((a, c) => a + c.items.length, 0);
 console.log(`menu.html written — ${n} items across ${menu.length} categories`);
 console.log('photo dpi: ' + shotDpi.sort((a, b) => a.dpi - b.dpi)
   .map((s) => `${s.name} ${s.mm}mm=${s.dpi}`).join('  '));
-console.log(`phone ${cfg.business.phone} · min £${del.minimumOrderPence / 100} · £${perMile}/mile to ${maxMiles} miles`);
+console.log(`phone ${cfg.business.phone} · min £${del.minimumOrderPence / 100} · £${perMile}/mile${feeCapped ? ` capped at £${capPounds}` : ''} to ${maxMiles} miles`);

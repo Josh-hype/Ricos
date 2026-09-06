@@ -66,12 +66,12 @@
     },
     "delivery": {
       "enabled": true,
-      "_comment_mode": "Radius/distance delivery. The customer postcode is geocoded (postcodes.io, free, no key) and the straight-line distance from the shop selects a band fee. Origin defaults to the shop's own postcode (business.address.postcode); set radius.origin {lat,lng} to override. Matches the old site's £1 + £1/mile rings (1-mile bands, £1-£5, max 5 miles).",
+      "_comment_mode": "Radius/distance delivery. The customer postcode is geocoded (postcodes.io, free, no key) and the straight-line distance from the shop selects a band fee. Origin defaults to the shop's own postcode (business.address.postcode); set radius.origin {lat,lng} to override. Started as the old site's £1 + £1/mile rings (1-mile bands, £1-£5, max 5 miles); the shop extended the reach to 6.25 miles in Sept 2026 WITHOUT adding a sixth band, so the last band is a stretched £5 ring covering everything from 4 to 6.25 miles. That means the fee is no longer £1/mile the whole way out — it is £1/mile to 4 miles and then capped at £5, which the printed menu's cover copy now says (print/big-bites/build-menu.mjs guards it).",
       "mode": "radius",
       "minimumOrderPence": 1200,
-      "areaDescription": "within 5 miles of Easingwold",
+      "areaDescription": "within 6.25 miles of Easingwold",
       "radius": {
-        "maxMiles": 5,
+        "maxMiles": 6.25,
         "bands": [
           {
             "maxMiles": 1,
@@ -90,7 +90,7 @@
             "feePence": 400
           },
           {
-            "maxMiles": 5,
+            "maxMiles": 6.25,
             "feePence": 500
           }
         ]
