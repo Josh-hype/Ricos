@@ -4513,10 +4513,17 @@ $('#alarmAccept').addEventListener('click', async () => {
   const id = state.alarmId;
   if (!id) return;
   $('#alarmAccept').disabled = true;
+  // Where the operator was BEFORE the alarm interrupted them. An online order
+  // can land mid-counter-sale, and sending them to the board afterwards means
+  // walking back to a half-built ticket they did not choose to leave.
+  const wasMidSale = state.view === 'sale' && sale.cart.length > 0;
   try {
     await acceptOrder(id, state.alarmReadyAt ? { readyAt: state.alarmReadyAt } : { prepMinutes: state.alarmMin });
     state.alarmId = null;   // force the next pending order to render fresh
-    setView('live');        // land on the live board after accepting
+    // Land on the live board after accepting — unless that would abandon a sale
+    // in progress, in which case go back to it. No mode argument: initSaleView
+    // reads that as a resume and leaves the cart alone.
+    if (wasMidSale) setView('sale'); else setView('live');
     await poll();           // poll() -> syncAlarm() advances or closes
   } catch (e) {
     alert(e.message || 'Could not accept — try again.');
@@ -5059,23 +5066,38 @@ async function initSaleView(mode) {
   // till showing the old menu. (The server still recomputes the actual charge.)
   const stale = sale.ready && (Date.now() - (sale.loadedAt || 0) > SALE_MENU_TTL_MS);
   if ((!sale.ready || stale) && !sale.loading) await loadSaleData();
-  // Every tap of the Sale tab is a fresh sale: bin the in-progress cart and
-  // customer details, return to the mode picker. The "Change" button inside
-  // the menu stage offers the same reset with a confirm; this is the
-  // top-level "new sale" entry point.
-  sale.cart = [];
-  sale.customer = null;
-  sale.deliveryFeeP = 0;
-  sale.takenBy = null;
-  sale.table = null;
+  /* A `mode` means a mode button was pressed, which is the ONLY way to start a
+     sale — both entry points ask for a staff code and then pass one. Without a
+     mode we are RESUMING: put the half-built ticket back exactly as it was.
+
+     This used to reset unconditionally, on the reasoning that every entry into
+     Sale is a fresh sale. It isn't. Accepting an online order sends the till to
+     the board (see #alarmAccept), so a staff member interrupted halfway through
+     a counter order came back to Sale and found the cart binned — an order
+     they then had to take again from the top, mid-service, with the customer
+     stood there. Resuming is now the default and resetting is the deliberate
+     act, which is the safer way round: the worst case here is a stale ticket
+     the next mode button clears anyway. */
+  if (mode) {
+    sale.cart = [];
+    sale.customer = null;
+    sale.deliveryFeeP = 0;
+    sale.takenBy = null;
+    sale.table = null;
+  }
   renderSaleCats();
   renderSaleProducts();
   renderSaleTicket();
   // Mode buttons live on the board now. Show the picker as a safe baseline, then jump
   // straight into the chosen mode; if the staff-code prompt is cancelled, pickSaleMode
   // returns false and we bounce back to the orders board rather than stranding a blank screen.
-  setSaleStage('mode');
-  if (mode) { const ok = await pickSaleMode(mode); if (!ok) setView('live'); }
+  if (mode) {
+    setSaleStage('mode');
+    const ok = await pickSaleMode(mode); if (!ok) setView('live');
+  } else {
+    // Resume: back to whichever stage the sale was left at, not the picker.
+    setSaleStage(sale.stage || 'mode');
+  }
 }
 
 function setSaleStage(stage) {
