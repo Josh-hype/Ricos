@@ -160,14 +160,6 @@
             }
           },
           {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
             "id": "xt-ham",
             "label": "Ham",
             "priceDeltaP": 200,
@@ -400,14 +392,6 @@
           {
             "id": "xt-prawns",
             "label": "Prawns",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
             "priceDeltaP": 200,
             "priceDeltaPBySize": {
               "sz13": 250
@@ -652,14 +636,6 @@
             }
           },
           {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
             "id": "xt-ham",
             "label": "Ham",
             "priceDeltaP": 200,
@@ -892,14 +868,6 @@
           {
             "id": "xt-prawns",
             "label": "Prawns",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
             "priceDeltaP": 200,
             "priceDeltaPBySize": {
               "sz13": 250
@@ -1144,14 +1112,6 @@
             }
           },
           {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
             "id": "xt-ham",
             "label": "Ham",
             "priceDeltaP": 200,
@@ -1384,14 +1344,6 @@
           {
             "id": "xt-prawns",
             "label": "Prawns",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
             "priceDeltaP": 200,
             "priceDeltaPBySize": {
               "sz13": 250
@@ -1636,14 +1588,6 @@
             }
           },
           {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
             "id": "xt-ham",
             "label": "Ham",
             "priceDeltaP": 200,
@@ -1876,14 +1820,6 @@
           {
             "id": "xt-prawns",
             "label": "Prawns",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
             "priceDeltaP": 200,
             "priceDeltaPBySize": {
               "sz13": 250
@@ -2128,14 +2064,6 @@
             }
           },
           {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
             "id": "xt-ham",
             "label": "Ham",
             "priceDeltaP": 200,
@@ -2368,14 +2296,6 @@
           {
             "id": "xt-prawns",
             "label": "Prawns",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
             "priceDeltaP": 200,
             "priceDeltaPBySize": {
               "sz13": 250
@@ -2620,14 +2540,6 @@
             }
           },
           {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
             "id": "xt-ham",
             "label": "Ham",
             "priceDeltaP": 200,
@@ -2860,14 +2772,6 @@
           {
             "id": "xt-prawns",
             "label": "Prawns",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
             "priceDeltaP": 200,
             "priceDeltaPBySize": {
               "sz13": 250
@@ -3112,14 +3016,6 @@
             }
           },
           {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
             "id": "xt-ham",
             "label": "Ham",
             "priceDeltaP": 200,
@@ -3352,14 +3248,6 @@
           {
             "id": "xt-prawns",
             "label": "Prawns",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
             "priceDeltaP": 200,
             "priceDeltaPBySize": {
               "sz13": 250
@@ -3604,14 +3492,6 @@
             }
           },
           {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
             "id": "xt-ham",
             "label": "Ham",
             "priceDeltaP": 200,
@@ -3844,14 +3724,6 @@
           {
             "id": "xt-prawns",
             "label": "Prawns",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
             "priceDeltaP": 200,
             "priceDeltaPBySize": {
               "sz13": 250
@@ -4096,14 +3968,6 @@
             }
           },
           {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
             "id": "xt-ham",
             "label": "Ham",
             "priceDeltaP": 200,
@@ -4336,14 +4200,6 @@
           {
             "id": "xt-prawns",
             "label": "Prawns",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
             "priceDeltaP": 200,
             "priceDeltaPBySize": {
               "sz13": 250
@@ -4588,14 +4444,6 @@
             }
           },
           {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
             "id": "xt-ham",
             "label": "Ham",
             "priceDeltaP": 200,
@@ -4828,14 +4676,6 @@
           {
             "id": "xt-prawns",
             "label": "Prawns",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
             "priceDeltaP": 200,
             "priceDeltaPBySize": {
               "sz13": 250
@@ -5080,14 +4920,6 @@
             }
           },
           {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
             "id": "xt-ham",
             "label": "Ham",
             "priceDeltaP": 200,
@@ -5320,14 +5152,6 @@
           {
             "id": "xt-prawns",
             "label": "Prawns",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
             "priceDeltaP": 200,
             "priceDeltaPBySize": {
               "sz13": 250
@@ -5572,14 +5396,6 @@
             }
           },
           {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
             "id": "xt-ham",
             "label": "Ham",
             "priceDeltaP": 200,
@@ -5812,14 +5628,6 @@
           {
             "id": "xt-prawns",
             "label": "Prawns",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
             "priceDeltaP": 200,
             "priceDeltaPBySize": {
               "sz13": 250
@@ -6064,14 +5872,6 @@
             }
           },
           {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
             "id": "xt-ham",
             "label": "Ham",
             "priceDeltaP": 200,
@@ -6304,14 +6104,6 @@
           {
             "id": "xt-prawns",
             "label": "Prawns",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
             "priceDeltaP": 200,
             "priceDeltaPBySize": {
               "sz13": 250
@@ -6556,14 +6348,6 @@
             }
           },
           {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
             "id": "xt-ham",
             "label": "Ham",
             "priceDeltaP": 200,
@@ -6796,14 +6580,6 @@
           {
             "id": "xt-prawns",
             "label": "Prawns",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
             "priceDeltaP": 200,
             "priceDeltaPBySize": {
               "sz13": 250
@@ -7048,14 +6824,6 @@
             }
           },
           {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
             "id": "xt-ham",
             "label": "Ham",
             "priceDeltaP": 200,
@@ -7288,14 +7056,6 @@
           {
             "id": "xt-prawns",
             "label": "Prawns",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
             "priceDeltaP": 200,
             "priceDeltaPBySize": {
               "sz13": 250
@@ -7840,14 +7600,6 @@
             }
           },
           {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
             "id": "xt-ham",
             "label": "Ham",
             "priceDeltaP": 200,
@@ -8025,11 +7777,6 @@
             "priceDeltaP": 0
           },
           {
-            "id": "d1-xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 0
-          },
-          {
             "id": "d1-xt-ham",
             "label": "Ham",
             "priceDeltaP": 0
@@ -8157,11 +7904,6 @@
           {
             "id": "d2-xt-prawns",
             "label": "Prawns",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "d2-xt-anchovies",
-            "label": "Anchovies",
             "priceDeltaP": 0
           },
           {
@@ -8295,11 +8037,6 @@
             "priceDeltaP": 0
           },
           {
-            "id": "d3-xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 0
-          },
-          {
             "id": "d3-xt-ham",
             "label": "Ham",
             "priceDeltaP": 0
@@ -8427,11 +8164,6 @@
           {
             "id": "d4-xt-prawns",
             "label": "Prawns",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "d4-xt-anchovies",
-            "label": "Anchovies",
             "priceDeltaP": 0
           },
           {
@@ -8620,14 +8352,6 @@
           {
             "id": "xt-prawns",
             "label": "Prawns",
-            "priceDeltaP": 200,
-            "priceDeltaPBySize": {
-              "sz13": 250
-            }
-          },
-          {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
             "priceDeltaP": 200,
             "priceDeltaPBySize": {
               "sz13": 250
@@ -12129,11 +11853,6 @@
             "priceDeltaP": 200
           },
           {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 200
-          },
-          {
             "id": "xt-ham",
             "label": "Ham",
             "priceDeltaP": 200
@@ -12613,11 +12332,6 @@
             "priceDeltaP": 200
           },
           {
-            "id": "p1-xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 200
-          },
-          {
             "id": "p1-xt-ham",
             "label": "Ham",
             "priceDeltaP": 200
@@ -12905,11 +12619,6 @@
           {
             "id": "p2-xt-prawns",
             "label": "Prawns",
-            "priceDeltaP": 200
-          },
-          {
-            "id": "p2-xt-anchovies",
-            "label": "Anchovies",
             "priceDeltaP": 200
           },
           {
@@ -13220,11 +12929,6 @@
             "priceDeltaP": 200
           },
           {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 200
-          },
-          {
             "id": "xt-ham",
             "label": "Ham",
             "priceDeltaP": 200
@@ -13529,11 +13233,6 @@
           {
             "id": "xt-prawns",
             "label": "Prawns",
-            "priceDeltaP": 250
-          },
-          {
-            "id": "xt-anchovies",
-            "label": "Anchovies",
             "priceDeltaP": 250
           },
           {
@@ -13934,11 +13633,6 @@
             "priceDeltaP": 200
           },
           {
-            "id": "p1-xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 200
-          },
-          {
             "id": "p1-xt-ham",
             "label": "Ham",
             "priceDeltaP": 200
@@ -14229,11 +13923,6 @@
             "priceDeltaP": 200
           },
           {
-            "id": "p2-xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 200
-          },
-          {
             "id": "p2-xt-ham",
             "label": "Ham",
             "priceDeltaP": 200
@@ -14521,11 +14210,6 @@
           {
             "id": "p3-xt-prawns",
             "label": "Prawns",
-            "priceDeltaP": 200
-          },
-          {
-            "id": "p3-xt-anchovies",
-            "label": "Anchovies",
             "priceDeltaP": 200
           },
           {
@@ -14826,11 +14510,6 @@
             "priceDeltaP": 250
           },
           {
-            "id": "p1-xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 250
-          },
-          {
             "id": "p1-xt-ham",
             "label": "Ham",
             "priceDeltaP": 250
@@ -15121,11 +14800,6 @@
             "priceDeltaP": 250
           },
           {
-            "id": "p2-xt-anchovies",
-            "label": "Anchovies",
-            "priceDeltaP": 250
-          },
-          {
             "id": "p2-xt-ham",
             "label": "Ham",
             "priceDeltaP": 250
@@ -15413,11 +15087,6 @@
           {
             "id": "p3-xt-prawns",
             "label": "Prawns",
-            "priceDeltaP": 250
-          },
-          {
-            "id": "p3-xt-anchovies",
-            "label": "Anchovies",
             "priceDeltaP": 250
           },
           {
