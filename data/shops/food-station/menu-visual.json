@@ -184,14 +184,6 @@
                 }
               },
               {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
                 "id": "xt-ham",
                 "label": "Ham",
                 "price": 2.0,
@@ -449,14 +441,6 @@
               {
                 "id": "xt-prawns",
                 "label": "Prawns",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
                 "price": 2.0,
                 "priceBySize": {
                   "sz13": 2.5
@@ -726,14 +710,6 @@
                 }
               },
               {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
                 "id": "xt-ham",
                 "label": "Ham",
                 "price": 2.0,
@@ -991,14 +967,6 @@
               {
                 "id": "xt-prawns",
                 "label": "Prawns",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
                 "price": 2.0,
                 "priceBySize": {
                   "sz13": 2.5
@@ -1268,14 +1236,6 @@
                 }
               },
               {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
                 "id": "xt-ham",
                 "label": "Ham",
                 "price": 2.0,
@@ -1533,14 +1493,6 @@
               {
                 "id": "xt-prawns",
                 "label": "Prawns",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
                 "price": 2.0,
                 "priceBySize": {
                   "sz13": 2.5
@@ -1811,14 +1763,6 @@
                 }
               },
               {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
                 "id": "xt-ham",
                 "label": "Ham",
                 "price": 2.0,
@@ -2076,14 +2020,6 @@
               {
                 "id": "xt-prawns",
                 "label": "Prawns",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
                 "price": 2.0,
                 "priceBySize": {
                   "sz13": 2.5
@@ -2353,14 +2289,6 @@
                 }
               },
               {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
                 "id": "xt-ham",
                 "label": "Ham",
                 "price": 2.0,
@@ -2618,14 +2546,6 @@
               {
                 "id": "xt-prawns",
                 "label": "Prawns",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
                 "price": 2.0,
                 "priceBySize": {
                   "sz13": 2.5
@@ -2895,14 +2815,6 @@
                 }
               },
               {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
                 "id": "xt-ham",
                 "label": "Ham",
                 "price": 2.0,
@@ -3160,14 +3072,6 @@
               {
                 "id": "xt-prawns",
                 "label": "Prawns",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
                 "price": 2.0,
                 "priceBySize": {
                   "sz13": 2.5
@@ -3437,14 +3341,6 @@
                 }
               },
               {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
                 "id": "xt-ham",
                 "label": "Ham",
                 "price": 2.0,
@@ -3702,14 +3598,6 @@
               {
                 "id": "xt-prawns",
                 "label": "Prawns",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
                 "price": 2.0,
                 "priceBySize": {
                   "sz13": 2.5
@@ -3979,14 +3867,6 @@
                 }
               },
               {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
                 "id": "xt-ham",
                 "label": "Ham",
                 "price": 2.0,
@@ -4244,14 +4124,6 @@
               {
                 "id": "xt-prawns",
                 "label": "Prawns",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
                 "price": 2.0,
                 "priceBySize": {
                   "sz13": 2.5
@@ -4521,14 +4393,6 @@
                 }
               },
               {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
                 "id": "xt-ham",
                 "label": "Ham",
                 "price": 2.0,
@@ -4786,14 +4650,6 @@
               {
                 "id": "xt-prawns",
                 "label": "Prawns",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
                 "price": 2.0,
                 "priceBySize": {
                   "sz13": 2.5
@@ -5063,14 +4919,6 @@
                 }
               },
               {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
                 "id": "xt-ham",
                 "label": "Ham",
                 "price": 2.0,
@@ -5334,14 +5182,6 @@
                 }
               },
               {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
                 "id": "xt-ham",
                 "label": "Ham",
                 "price": 2.0,
@@ -5599,14 +5439,6 @@
               {
                 "id": "xt-prawns",
                 "label": "Prawns",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
                 "price": 2.0,
                 "priceBySize": {
                   "sz13": 2.5
@@ -5877,14 +5709,6 @@
                 }
               },
               {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
                 "id": "xt-ham",
                 "label": "Ham",
                 "price": 2.0,
@@ -6142,14 +5966,6 @@
               {
                 "id": "xt-prawns",
                 "label": "Prawns",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
                 "price": 2.0,
                 "priceBySize": {
                   "sz13": 2.5
@@ -6420,14 +6236,6 @@
                 }
               },
               {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
                 "id": "xt-ham",
                 "label": "Ham",
                 "price": 2.0,
@@ -6685,14 +6493,6 @@
               {
                 "id": "xt-prawns",
                 "label": "Prawns",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
                 "price": 2.0,
                 "priceBySize": {
                   "sz13": 2.5
@@ -6963,14 +6763,6 @@
                 }
               },
               {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
                 "id": "xt-ham",
                 "label": "Ham",
                 "price": 2.0,
@@ -7229,14 +7021,6 @@
               {
                 "id": "xt-prawns",
                 "label": "Prawns",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
                 "price": 2.0,
                 "priceBySize": {
                   "sz13": 2.5
@@ -7506,14 +7290,6 @@
                 }
               },
               {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
                 "id": "xt-ham",
                 "label": "Ham",
                 "price": 2.0,
@@ -7777,14 +7553,6 @@
                 }
               },
               {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
                 "id": "xt-ham",
                 "label": "Ham",
                 "price": 2.0,
@@ -8042,14 +7810,6 @@
               {
                 "id": "xt-prawns",
                 "label": "Prawns",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
                 "price": 2.0,
                 "priceBySize": {
                   "sz13": 2.5
@@ -8635,14 +8395,6 @@
                 }
               },
               {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
                 "id": "xt-ham",
                 "label": "Ham",
                 "price": 2.0,
@@ -8837,11 +8589,6 @@
                 "price": 0
               },
               {
-                "id": "d1-xt-anchovies",
-                "label": "Anchovies",
-                "price": 0
-              },
-              {
                 "id": "d1-xt-ham",
                 "label": "Ham",
                 "price": 0
@@ -8977,11 +8724,6 @@
               {
                 "id": "d2-xt-prawns",
                 "label": "Prawns",
-                "price": 0
-              },
-              {
-                "id": "d2-xt-anchovies",
-                "label": "Anchovies",
                 "price": 0
               },
               {
@@ -9123,11 +8865,6 @@
                 "price": 0
               },
               {
-                "id": "d3-xt-anchovies",
-                "label": "Anchovies",
-                "price": 0
-              },
-              {
                 "id": "d3-xt-ham",
                 "label": "Ham",
                 "price": 0
@@ -9263,11 +9000,6 @@
               {
                 "id": "d4-xt-prawns",
                 "label": "Prawns",
-                "price": 0
-              },
-              {
-                "id": "d4-xt-anchovies",
-                "label": "Anchovies",
                 "price": 0
               },
               {
@@ -9472,14 +9204,6 @@
               {
                 "id": "xt-prawns",
                 "label": "Prawns",
-                "price": 2.0,
-                "priceBySize": {
-                  "sz13": 2.5
-                }
-              },
-              {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
                 "price": 2.0,
                 "priceBySize": {
                   "sz13": 2.5
@@ -13865,11 +13589,6 @@
                 "price": 2.0
               },
               {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.0
-              },
-              {
                 "id": "xt-ham",
                 "label": "Ham",
                 "price": 2.0
@@ -14419,11 +14138,6 @@
                 "price": 2.0
               },
               {
-                "id": "p1-xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.0
-              },
-              {
                 "id": "p1-xt-ham",
                 "label": "Ham",
                 "price": 2.0
@@ -14735,11 +14449,6 @@
               {
                 "id": "p2-xt-prawns",
                 "label": "Prawns",
-                "price": 2.0
-              },
-              {
-                "id": "p2-xt-anchovies",
-                "label": "Anchovies",
                 "price": 2.0
               },
               {
@@ -15084,11 +14793,6 @@
                 "price": 2.0
               },
               {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.0
-              },
-              {
                 "id": "xt-ham",
                 "label": "Ham",
                 "price": 2.0
@@ -15426,11 +15130,6 @@
               {
                 "id": "xt-prawns",
                 "label": "Prawns",
-                "price": 2.5
-              },
-              {
-                "id": "xt-anchovies",
-                "label": "Anchovies",
                 "price": 2.5
               },
               {
@@ -15896,11 +15595,6 @@
                 "price": 2.0
               },
               {
-                "id": "p1-xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.0
-              },
-              {
                 "id": "p1-xt-ham",
                 "label": "Ham",
                 "price": 2.0
@@ -16215,11 +15909,6 @@
                 "price": 2.0
               },
               {
-                "id": "p2-xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.0
-              },
-              {
                 "id": "p2-xt-ham",
                 "label": "Ham",
                 "price": 2.0
@@ -16531,11 +16220,6 @@
               {
                 "id": "p3-xt-prawns",
                 "label": "Prawns",
-                "price": 2.0
-              },
-              {
-                "id": "p3-xt-anchovies",
-                "label": "Anchovies",
                 "price": 2.0
               },
               {
@@ -16861,11 +16545,6 @@
                 "price": 2.5
               },
               {
-                "id": "p1-xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.5
-              },
-              {
                 "id": "p1-xt-ham",
                 "label": "Ham",
                 "price": 2.5
@@ -17180,11 +16859,6 @@
                 "price": 2.5
               },
               {
-                "id": "p2-xt-anchovies",
-                "label": "Anchovies",
-                "price": 2.5
-              },
-              {
                 "id": "p2-xt-ham",
                 "label": "Ham",
                 "price": 2.5
@@ -17496,11 +17170,6 @@
               {
                 "id": "p3-xt-prawns",
                 "label": "Prawns",
-                "price": 2.5
-              },
-              {
-                "id": "p3-xt-anchovies",
-                "label": "Anchovies",
                 "price": 2.5
               },
               {
