@@ -7301,17 +7301,32 @@ function resetIdle() {
   // No auto sign-out: an idle till drops back to the Sale page (see onIdle) but
   // stays signed in, so staff are never bounced to the PIN screen mid-shift.
 }
+/* Is the operator part-way through taking a counter order? Anything past the
+   mode picker counts — the customer form and the table grid are as much "mid
+   order" as a ticket with items on it. */
+function saleInProgress() {
+  return state.view === 'sale' && (sale.cart.length > 0 || sale.stage !== 'mode');
+}
 function onIdle() {
   // Stay put while staff is mid-task in any modal (accepting an order,
   // refunding, taking payment, picking item options, entering a manager
   // PIN). Re-arm so we check again 90s after they close it.
   const modalOpen = $$('.ovl.open').length > 0;
   if (modalOpen) { resetIdle(); return; }
-  // Drop manager unlock so the next visitor has to re-prove themselves.
+  // Drop manager unlock so the next visitor has to re-prove themselves. This
+  // happens even mid-sale: a ticket being on screen is no reason to leave the
+  // financial views unlocked for whoever walks up next.
   if (state.managerUnlocked) {
     fetch('/api/staff/manager-logout', { method: 'POST', cache: 'no-store' }).catch(() => {});
     state.managerUnlocked = false;
   }
+  /* Never walk an operator off an order they are taking. 90s is nothing at a
+     counter — a customer reading the menu, a phone order, a question about
+     allergens — and the till used to snap back to the board mid-sentence.
+     Re-arm rather than stop, so the moment the sale is finished or cancelled
+     the timer behaves normally again. Everywhere else still reverts: the board
+     is only a neutral home when there is nothing in hand. */
+  if (saleInProgress()) { resetIdle(); return; }
   // After idle, drop back to the orders board — a neutral signed-in home.
   setView('live');
 }
