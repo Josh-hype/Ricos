@@ -110,7 +110,9 @@
     "externalCardMachine": true,
     "requireOrderPin": false,
     "ordersOnly": false,
-    "customerDetailsOptional": true
+    "customerDetailsOptional": true,
+    "_comment_customerLookup": "Phone orders remember the caller. On a counter order with a usable phone number, the customer's name and delivery address are saved to CUSTOMERS_KV — the same records the website's accounts use, keyed by the normalised number — and the till offers them back the next time that number is typed. Off everywhere else: /api/staff/customer-lookup 404s without this flag and counter-order.js stores nothing, so the other five shops are untouched. Turning it on means the shop is storing phone-order customers' addresses, which its privacy notice should cover (it already does for online accounts).",
+    "customerLookup": true
   },
   "hours": {
     "_comment": "24-hour format. Source: printed menu — Sun-Thu 4pm-10pm, Fri-Sat 4pm-11pm.",
