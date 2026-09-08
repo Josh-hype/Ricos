@@ -5,6 +5,8 @@
    board (it stays in KV + the audit log for the record). The default (no view)
    returns the live kitchen queue. */
 import { requireStaff } from '../../_lib/auth.js';
+import { getConfig } from '../../_lib/config.js';
+import { pollIntervalMs } from '../../_lib/hours.js';
 import { listActiveOrders, listOrdersBetween, resolveDayRange } from '../../_lib/kv.js';
 
 export const onRequestGet = async ({ request, env }) => {
@@ -17,5 +19,10 @@ export const onRequestGet = async ({ request, env }) => {
     return Response.json({ orders, from, to }, { headers: { 'Cache-Control': 'no-store' } });
   }
   const orders = await listActiveOrders(env);
-  return Response.json({ orders }, { headers: { 'Cache-Control': 'no-store' } });
+  // Tell the till how soon to come back. Quick while the shop trades, every half
+  // hour when it's shut — see pollIntervalMs. Sent with the board rather than
+  // configured on the device so a change to the shop's hours takes effect on the
+  // next poll, with no app update and nothing to keep in step.
+  return Response.json({ orders, pollMs: pollIntervalMs(getConfig()) },
+    { headers: { 'Cache-Control': 'no-store' } });
 };

@@ -2812,7 +2812,10 @@ function enterDashboard() {
     try { audio.chime(); } catch {}
   }
   poll();
-  state.pollHandle = setInterval(poll, 5000);
+  // Start quick; the first response carries the shop's real cadence and
+  // applyPollInterval re-arms this to match.
+  state.pollMs = 5000;
+  state.pollHandle = setInterval(poll, state.pollMs);
   resetIdle();
 }
 
@@ -3114,6 +3117,31 @@ applyShopBranding();
 if (KDS_ROLE && kdsToken) bootKds();
 
 /* ============================== Poll + render */
+/* The server decides how often we come back (see pollIntervalMs in _lib/hours.js):
+   quick while the shop trades, every half hour once it's shut, with an hour's
+   grace either side. Left at 5s round the clock, a till was making roughly 17,000
+   requests a day — 71% of them overnight when nothing could arrive — and each one
+   lists every order key the shop has ever written.
+
+   Two things this will not do:
+   - Go slow while anything is still live on the board. An order left unaccepted
+     after closing time must not sit there for half an hour before anyone is
+     nagged about it, so the board's own contents override the clock.
+   - Trust a nonsense value. Anything outside 5s..30min is ignored and the
+     current cadence kept, so a bad deploy can't quietly stop a till polling. */
+const POLL_MIN_MS = 5000;
+const POLL_MAX_MS = 30 * 60 * 1000;
+function applyPollInterval(ms) {
+  let next = Number(ms);
+  if (!Number.isFinite(next) || next < POLL_MIN_MS || next > POLL_MAX_MS) return;
+  // Anything on the board means staff still have work in hand — stay quick.
+  if ((state.orders || []).length) next = POLL_MIN_MS * 3;   // 15s
+  if (next === state.pollMs) return;
+  state.pollMs = next;
+  if (state.pollHandle) clearInterval(state.pollHandle);
+  state.pollHandle = setInterval(poll, next);
+}
+
 async function poll() {
   try {
     const res = await fetch('/api/staff/orders', { cache: 'no-store' });
@@ -3128,6 +3156,7 @@ async function poll() {
     state.pollTick = (state.pollTick || 0) + 1;
     $('#pulse').classList.remove('stale');
     handleOrders(data.orders || []);
+    applyPollInterval(data.pollMs);
     // Refresh the Summary figures periodically (~30s), not on every 5s poll —
     // it does a date-range scan, so we keep it off the live cadence.
     if (state.view === 'summary' && state.pollTick % 6 === 0) loadSummary(true);

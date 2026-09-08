@@ -32,6 +32,63 @@ function prevDay(name) {
   return DAY_ORDER[(i - 1 + 7) % 7];
 }
 
+function nextDay(name) {
+  const i = DAY_ORDER.indexOf(name);
+  return DAY_ORDER[(i + 1) % 7];
+}
+
+/* How often should a till ask for the order board?
+
+   The board is polled, and a till left switched on overnight was asking every
+   5 seconds through the small hours — about 71% of all polling happened while
+   the shops were shut and nothing could arrive. Each of those calls lists EVERY
+   key under `orders:` (paged at 1000, so it costs more as order history grows)
+   and KV bills lists at ten times the rate of reads, which is what put the
+   Cloudflare bill at $45 rather than single figures.
+
+   So: quick while the shop is trading, barely awake when it isn't. The grace
+   hour either side covers staff opening up early and cashing off late, and it
+   is measured from the REAL closing time, not the online cut-off — an order
+   placed a minute before last orders still has to reach the kitchen instantly.
+
+   Computed here rather than on the till because this file already handles the
+   awkward parts: the shop's timezone, and windows that cross midnight (Acomb
+   closes at "24:45"). The till just honours the number it is given.
+
+   Fails FAST, never slow. A missing or malformed hours block returns the quick
+   interval, because the cost of over-polling is pennies and the cost of a shop
+   not seeing an order is a customer waiting. */
+export const POLL_FAST_MS = 15000;            // trading
+export const POLL_SLOW_MS = 30 * 60 * 1000;   // shut
+const POLL_GRACE_MIN = 60;                    // either side of the published hours
+
+export function pollIntervalMs(config) {
+  try {
+    const tz = config?.ordering?.timezone;
+    const hours = config?.hours;
+    if (!tz || !hours) return POLL_FAST_MS;
+    const { dayName, minutesOfDay } = nowInTz(tz);
+    // Yesterday / today / tomorrow, each mapped onto "minutes from midnight
+    // today", so a window that crosses midnight and a grace hour that reaches
+    // back before it are both just ranges on one number line.
+    const days = [[prevDay(dayName), -1440], [dayName, 0], [nextDay(dayName), 1440]];
+    for (const [name, offset] of days) {
+      const conf = hours[name];
+      if (!conf || conf.closed || !Array.isArray(conf.windows)) continue;
+      for (const w of conf.windows) {
+        const open = hhmmToMin(w.open);
+        const close = hhmmToMin(w.close);
+        if (!Number.isFinite(open) || !Number.isFinite(close)) return POLL_FAST_MS;
+        if (minutesOfDay >= open + offset - POLL_GRACE_MIN &&
+            minutesOfDay <= close + offset + POLL_GRACE_MIN) return POLL_FAST_MS;
+      }
+    }
+    return POLL_SLOW_MS;
+  } catch {
+    return POLL_FAST_MS;
+  }
+}
+
 export function isOpenNow(config) {
   const tz = config.ordering.timezone;
   const { dayName, minutesOfDay } = nowInTz(tz);
