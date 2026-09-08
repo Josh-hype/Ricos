@@ -6,6 +6,29 @@
 // the customer when they're at it, and must not invent its own number.
 export const MAX_SAVED_ADDRESSES = 5;
 
+/* Normalise ANY UK phone number to the +44… form used as the CUSTOMERS_KV key.
+
+   Deliberately NOT normalisePhoneE164UK from sms.js. That one accepts mobiles
+   only, which is right where it lives — you cannot text a landline — but wrong
+   for recognising a caller: a good share of takeaway orders come from a landline,
+   and a caller-ID box reports them. Keying on the SMS rule would have quietly
+   remembered mobile customers and nobody else.
+
+   A UK national number is 0 followed by 9 or 10 digits, so both 07700 900123 and
+   01347 820820 are handled. For a mobile this returns exactly what
+   normalisePhoneE164UK returns, so a customer who signed up on the website and
+   one who phoned in land on the SAME record rather than two. A landline can
+   never collide with a website account, because signup rejects landlines. */
+export function normalisePhoneKey(raw) {
+  if (!raw) return null;
+  let d = String(raw).replace(/[^\d+]/g, '');
+  if (d.startsWith('+44')) d = '0' + d.slice(3);
+  else if (d.startsWith('0044')) d = '0' + d.slice(4);
+  else if (d.startsWith('44') && d.length >= 11) d = '0' + d.slice(2);
+  if (!/^0\d{9,10}$/.test(d)) return null;
+  return '+44' + d.slice(1);
+}
+
 export async function getCustomer(contact, env) {
   if (!env.CUSTOMERS_KV) return null;
   const raw = await env.CUSTOMERS_KV.get(`customer:${contact}`);

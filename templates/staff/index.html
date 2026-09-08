@@ -1233,6 +1233,17 @@ textarea.me-in{resize:vertical;font-family:inherit}
 }
 .field input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-tint)}
 .form-error{color:var(--red);font-size:13px;font-weight:600;min-height:18px;margin:-4px 0}
+/* "We know this number" panel above the address fields. Green rather than blue:
+   it is information the till is offering, not a field awaiting input. */
+.cf-known{gap:8px;padding:12px 14px;border-radius:12px;background:var(--green-tint,rgba(16,163,74,.09));border:1px solid var(--green,#10a34a)}
+.cf-known>span{font-size:13px;font-weight:700;color:var(--green,#10a34a)}
+.cf-addr{
+  display:block;width:100%;text-align:left;margin-top:6px;padding:10px 12px;
+  border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  color:var(--ink);font-size:14px;font-weight:600;font-family:var(--sans);cursor:pointer;
+}
+.cf-addr:hover{border-color:var(--green,#10a34a)}
+.cf-addr small{display:block;font-weight:500;color:var(--muted);margin-top:2px}
 .form-continue{
   height:54px;border-radius:14px;
   background:linear-gradient(135deg,#0A86FF,#0070F0 60%,#0058C4);color:#fff;
@@ -1656,6 +1667,12 @@ textarea.me-in{resize:vertical;font-family:inherit}
               <span id="cfPhoneLab">Phone</span>
               <input type="tel" id="cfPhone" required inputmode="tel" maxlength="30" />
             </label>
+            <!-- Filled by the customer lookup when the typed number is one we've
+                 served before. Hidden (and silent) for shops without the flag. -->
+            <div class="field cf-known" id="cfKnown" hidden>
+              <span id="cfKnownName"></span>
+              <div id="cfKnownAddrs"></div>
+            </div>
             <label class="field" id="cfL1Field" hidden>
               <span>Address line 1</span>
               <input type="text" id="cfL1" maxlength="120" />
@@ -5158,6 +5175,7 @@ async function pickSaleMode(mode) {
   $('#cfL2').value = '';
   $('#cfPc').value = '';
   $('#cfNotes').value = '';
+  hideKnownCustomer();   // a previous caller's details must not linger into a new order
   const isDelivery = mode === 'delivery';
   $('#cfL1Field').hidden = !isDelivery;
   $('#cfL2Field').hidden = !isDelivery;
@@ -5181,6 +5199,65 @@ $$('#saleStageMode .mode-card').forEach(b =>
 
 $('#saleTableBack').addEventListener('click', () => setSaleStage('mode'));
 $('#saleFormBack').addEventListener('click', () => setView('live'));
+
+/* ============================== Customer lookup (phone orders)
+   Type a number we've served before and the till offers the name and the
+   addresses that number has ordered to. Tapping one fills the form.
+
+   Deliberately unobtrusive: it only ever ADDS a suggestion. It never
+   auto-fills, never overwrites something staff have typed, and never blocks
+   the form — a lookup that fails leaves the panel hidden and staff carry on
+   typing exactly as before. The shop flag is read from the server config, so
+   for shops without it the fetch simply 404s and nothing appears. */
+let cfLookupSeq = 0;
+function hideKnownCustomer() {
+  const box = $('#cfKnown'); if (box) box.hidden = true;
+}
+function renderKnownCustomer(d) {
+  const box = $('#cfKnown'); if (!box) return;
+  if (!d || !d.found || (!d.name && !(d.addresses || []).length)) { box.hidden = true; return; }
+  $('#cfKnownName').textContent = d.name ? `Known customer — ${d.name}` : 'Ordered from here before';
+  const wrap = $('#cfKnownAddrs');
+  wrap.innerHTML = (d.addresses || []).slice(0, 3).map((a, i) =>
+    `<button type="button" class="cf-addr" data-addr="${i}">${escapeHtml(a.line1)}${a.line2 ? ', ' + escapeHtml(a.line2) : ''}
+       <small>${escapeHtml(a.postcode)}${a.notes ? ' · ' + escapeHtml(a.notes) : ''}</small></button>`).join('');
+  wrap.querySelectorAll('.cf-addr').forEach((b) => b.addEventListener('click', () => {
+    const a = d.addresses[Number(b.dataset.addr)];
+    if (!a) return;
+    // Fill the name too, but only if staff haven't typed one — theirs wins.
+    if (d.name && !$('#cfName').value.trim()) $('#cfName').value = d.name;
+    $('#cfL1').value = a.line1 || '';
+    $('#cfL2').value = a.line2 || '';
+    $('#cfPc').value = a.postcode || '';
+    $('#cfNotes').value = a.notes || '';
+    box.hidden = true;
+  }));
+  box.hidden = false;
+}
+async function lookupCustomerByPhone(raw) {
+  const phone = String(raw || '').trim();
+  if (phone.length < 7) { hideKnownCustomer(); return; }
+  const seq = ++cfLookupSeq;                     // ignore results that arrive out of order
+  try {
+    const res = await fetch('/api/staff/customer-lookup?phone=' + encodeURIComponent(phone), { cache: 'no-store' });
+    if (!res.ok) { if (seq === cfLookupSeq) hideKnownCustomer(); return; }   // 404 = feature off
+    const d = await res.json().catch(() => null);
+    if (seq === cfLookupSeq) renderKnownCustomer(d);
+  } catch { if (seq === cfLookupSeq) hideKnownCustomer(); }
+}
+{
+  const el = $('#cfPhone');
+  if (el) {
+    let t = null;
+    el.addEventListener('input', () => {
+      hideKnownCustomer();
+      clearTimeout(t);
+      // Debounced: staff type a number in one go, and a request per keystroke
+      // would be 11 lookups for one customer.
+      t = setTimeout(() => lookupCustomerByPhone(el.value), 400);
+    });
+  }
+}
 
 $('#saleForm').addEventListener('submit', async (e) => {
   e.preventDefault();

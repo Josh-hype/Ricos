@@ -22,6 +22,7 @@ import { findTable } from '../../_lib/tables.js';
 import { resolveMenu } from '../../_lib/menu-store.js';
 import { retrievePaymentIntent, capturePaymentIntent } from '../../_lib/stripe.js';
 import { putOrder, newOrderId, nextOrderNumber } from '../../_lib/kv.js';
+import { getCustomer, putCustomer, upsertAddress, newCustomerId, normalisePhoneKey } from '../../_lib/customer.js';
 
 // Verify a Terminal authorisation matches this sale, then capture it. Idempotent
 // and crash-safe: if a prior attempt already captured (status 'succeeded'), it
@@ -215,6 +216,7 @@ export const onRequestPost = async ({ request, env }) => {
   };
 
   await putOrder(order, env);
+  await rememberCounterCustomer({ name, phone: rawPhone, address }, env);
   await logAudit(env, {
     op: takenBy?.id || ctx.operator?.id || null,
     opName: takenBy?.name || ctx.operator?.name || sess?.name || null,
@@ -223,6 +225,52 @@ export const onRequestPost = async ({ request, env }) => {
   });
   return Response.json({ order });
 };
+
+/* Remember this customer so the next phone order can offer their details back
+   (see /api/staff/customer-lookup). Writes to the SAME CUSTOMERS_KV records the
+   website's accounts use, keyed by normalised phone, so ordering online and by
+   phone builds one address book rather than two.
+
+   Deliberate choices:
+   - BEST EFFORT. Wrapped so a KV hiccup can never fail a sale that has already
+     been taken and paid for. The customer's food matters; remembering them does
+     not.
+   - Only writes an EXISTING record's name if there wasn't one; a name typed at
+     a noisy counter shouldn't overwrite what the customer entered themselves.
+   - Never creates or touches auth fields, so a record created here is a contact
+     record, not an account. If that person later signs up on the website with
+     the same number, signup owns the record and their addresses are already there.
+   - Gated on the same pos.customerLookup flag as the lookup: a shop that hasn't
+     asked for this feature stores nothing. */
+async function rememberCounterCustomer({ name, phone, address }, env) {
+  try {
+    if (!getConfig().pos?.customerLookup) return;
+    if (!env.CUSTOMERS_KV) return;
+    const contact = normalisePhoneKey(phone || '');
+    if (!contact) return;                     // walk-in, or no usable number
+
+    let customer = await getCustomer(contact, env);
+    if (!customer) {
+      customer = {
+        id: newCustomerId(),
+        name: name || '',
+        contact,
+        contactType: 'phone',
+        email: null,
+        phone: contact,
+        createdAt: new Date().toISOString(),
+        source: 'counter',
+        addresses: [],
+      };
+    } else if (!customer.name && name) {
+      customer.name = name;
+    }
+    if (address && address.line1 && address.postcode) upsertAddress(customer, address);
+    await putCustomer(customer, env);
+  } catch (e) {
+    console.warn('counter customer save failed', e);
+  }
+}
 
 function err(error, status) {
   return new Response(JSON.stringify({ error }), {
