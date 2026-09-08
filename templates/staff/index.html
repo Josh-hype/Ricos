@@ -1244,6 +1244,28 @@ textarea.me-in{resize:vertical;font-family:inherit}
 }
 .cf-addr:hover{border-color:var(--green,#10a34a)}
 .cf-addr small{display:block;font-weight:500;color:var(--muted);margin-top:2px}
+/* ---- incoming-call bar ---- */
+.callbar{
+  position:fixed;left:12px;right:12px;bottom:12px;z-index:60;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px 14px;border-radius:14px;
+  background:var(--panel);border:2px solid var(--green,#10a34a);
+  box-shadow:0 12px 32px rgba(0,0,0,.28);
+}
+.cb-who{display:flex;align-items:center;gap:12px;min-width:0}
+.cb-ico{font-size:22px;flex:none}
+.cb-txt{min-width:0}
+.cb-txt b{display:block;font-size:19px;font-weight:800;letter-spacing:-.01em}
+.cb-txt span{display:block;font-size:13px;font-weight:600;color:var(--muted)}
+.cb-actions{display:flex;align-items:center;gap:8px;flex:none}
+.cb-go{
+  height:44px;padding:0 16px;border-radius:11px;border:0;cursor:pointer;
+  background:var(--green,#10a34a);color:#fff;font-size:14px;font-weight:800;font-family:var(--sans);
+}
+.cb-x{
+  height:44px;width:44px;border-radius:11px;cursor:pointer;
+  border:1px solid var(--line);background:transparent;color:var(--muted);font-size:16px;font-family:var(--sans);
+}
 .form-continue{
   height:54px;border-radius:14px;
   background:linear-gradient(135deg,#0A86FF,#0070F0 60%,#0058C4);color:#fff;
@@ -1768,6 +1790,23 @@ textarea.me-in{resize:vertical;font-family:inherit}
 </div>
 
 <!-- ============================== New-order alarm popup -->
+<!-- ============================== Incoming call
+     Raised by the caller-ID modem plugged into the till (app only — a browser
+     never fires the event, so this stays hidden on the web back office). A bar
+     rather than a modal on purpose: a ringing phone must not block whatever
+     staff are already doing, and it is dismissable. -->
+<div class="callbar" id="callBar" hidden role="status" aria-live="polite">
+  <div class="cb-who">
+    <span class="cb-ico" aria-hidden="true">📞</span>
+    <div class="cb-txt"><b id="cbNumber"></b><span id="cbName"></span></div>
+  </div>
+  <div class="cb-actions">
+    <button type="button" class="cb-go" data-callmode="collection">Collection</button>
+    <button type="button" class="cb-go" data-callmode="delivery">Delivery</button>
+    <button type="button" class="cb-x" id="cbDismiss" aria-label="Dismiss">✕</button>
+  </div>
+</div>
+
 <div class="ovl alarm" id="alarmOvl" role="alertdialog" aria-modal="true" aria-labelledby="alarmTitle">
   <div class="modal">
     <div class="alarm-head">
@@ -5176,6 +5215,14 @@ async function pickSaleMode(mode) {
   $('#cfPc').value = '';
   $('#cfNotes').value = '';
   hideKnownCustomer();   // a previous caller's details must not linger into a new order
+  // Started from the incoming-call bar: seed the number and look them up, so the
+  // form opens with the caller's saved addresses already offered. Consumed once,
+  // so the next sale started by hand begins blank.
+  if (sale.pendingCallerPhone) {
+    $('#cfPhone').value = sale.pendingCallerPhone;
+    lookupCustomerByPhone(sale.pendingCallerPhone);
+    sale.pendingCallerPhone = null;
+  }
   const isDelivery = mode === 'delivery';
   $('#cfL1Field').hidden = !isDelivery;
   $('#cfL2Field').hidden = !isDelivery;
@@ -5258,6 +5305,58 @@ async function lookupCustomerByPhone(raw) {
     });
   }
 }
+
+/* ============================== Incoming call (caller ID)
+   The caller-ID modem is plugged into this till's USB port; the native plugin
+   reads the number off it and fires `epos:callerid`. Nothing here is app-only
+   code — the browser simply never fires that event, so the web back office is
+   unaffected and this stays testable by dispatching the event by hand.
+
+   A BAR, not a modal: the phone ringing must not interrupt an order already
+   being taken, which is the mistake the online-order alarm used to make. */
+let callBarTimer = null;
+function hideCallBar() {
+  const el = $('#callBar'); if (el) el.hidden = true;
+  clearTimeout(callBarTimer);
+}
+async function showIncomingCall(rawNumber) {
+  const el = $('#callBar'); if (!el) return;
+  const number = String(rawNumber || '').trim();
+  if (!number) return;
+  sale.pendingCallerPhone = number;
+  $('#cbNumber').textContent = number;
+  $('#cbName').textContent = 'Incoming call';
+  el.hidden = false;
+  // Auto-dismiss: an unanswered call should not leave a stale bar over the till
+  // all afternoon. Long enough to still be there when staff put the phone down.
+  clearTimeout(callBarTimer);
+  callBarTimer = setTimeout(hideCallBar, 120000);
+  // Name the caller if we've served them before. Best-effort and non-blocking —
+  // the bar is already up and useful with just the number.
+  try {
+    const res = await fetch('/api/staff/customer-lookup?phone=' + encodeURIComponent(number), { cache: 'no-store' });
+    if (!res.ok) return;
+    const d = await res.json().catch(() => null);
+    if (!d || !d.found) return;
+    if (sale.pendingCallerPhone !== number) return;    // a newer call landed
+    const addr = (d.addresses || [])[0];
+    $('#cbName').textContent = [d.name, addr && addr.line1].filter(Boolean).join(' · ') || 'Ordered here before';
+  } catch { /* leave the number showing */ }
+}
+window.addEventListener('epos:callerid', (e) => {
+  showIncomingCall(e && e.detail && e.detail.number);
+});
+$$('#callBar .cb-go').forEach(b => b.addEventListener('click', async () => {
+  const mode = b.dataset.callmode;
+  const who = await askStaffCode();
+  if (!who) return;
+  sale.pendingTakenBy = who;
+  hideCallBar();
+  // pendingCallerPhone survives initSaleView's reset and is consumed by the
+  // customer form, which prefills it and runs the lookup.
+  setView('sale', mode);
+}));
+$('#cbDismiss').addEventListener('click', () => { sale.pendingCallerPhone = null; hideCallBar(); });
 
 $('#saleForm').addEventListener('submit', async (e) => {
   e.preventDefault();

@@ -226,6 +226,12 @@
       var p = eposPlugin(); if (p && p.collectCardPayment) return p.collectCardPayment(payload || {});
       return Promise.resolve({ ok: false, reason: 'not-in-app' });
     },
+    // Start listening to a caller-ID modem on the till's USB port. Safe to call
+    // on a till that has no modem — the plugin reports why and we stay quiet.
+    startCallerId: function () {
+      var p = eposPlugin(); if (p && p.startCallerId) return p.startCallerId();
+      return Promise.resolve({ ok: false, reason: 'not-in-app' });
+    },
     onSignOut: function () {
       TOKEN = '';
       var P = prefs();
@@ -233,6 +239,26 @@
       try { localStorage.removeItem('epos_token'); } catch (e) {}
     }
   };
+
+  /* Caller ID: the plugin pushes a number up when the modem sees a ring. It is
+     re-dispatched as a plain DOM event so the STAFF PAGE never has to know
+     Capacitor exists — the same page runs on Cloudflare in a browser, where this
+     event simply never fires. Wrapped because an older plugin (built before
+     startCallerId) exposes no such event and addListener would throw. */
+  function wireCallerId() {
+    var p = eposPlugin();
+    if (!p || !p.addListener) return;
+    try {
+      p.addListener('callerId', function (ev) {
+        var number = (ev && ev.number) || '';
+        if (!number) return;
+        try { window.dispatchEvent(new CustomEvent('epos:callerid', { detail: { number: number } })); } catch (e) {}
+      });
+      // Ask the plugin to open the port. Failure is normal and silent: most tills
+      // have no modem attached, and a shop that never buys one should see nothing.
+      if (p.startCallerId) p.startCallerId().catch(function () {});
+    } catch (e) { /* no caller-ID support in this build */ }
+  }
 
   function onReady(fn) {
     if (document.readyState === 'loading') window.addEventListener('DOMContentLoaded', fn);
@@ -261,6 +287,7 @@
         else console.log('[native] OTA updater not present (will be after next rebuild)');
       } catch (e) {}
       onReady(rewriteParserAssets);
+      onReady(wireCallerId);
       if (!BASE) { try { console.log('[native] no BASE on boot → showProvisioning'); } catch (e) {} showProvisioning(); } // first run → set up this till
     });
   } else {
