@@ -30,9 +30,22 @@ been detached from the Pages project and is free to be resold.
 - [ ] **Submit `acombmegachippy.uk` to Google Search Console** + the sitemap. The
       old agency sites (`acombmegachippy.com`, `acombmegachippyyork.co.uk`) are not
       ours and can't be redirected, so ranking is rebuilt via the Business Profile.
-- [ ] **Signed APK.** The Z93 currently runs a debug build, so updates are tied to
-      the one MacBook that produced it. Build once via *Generate Signed App Bundle
-      / APK*, keep `lumipos-release.jks` safe, and any machine can update the tills.
+- [ ] **Signed APK — needs a NEW keystore.** `~/Desktop/lumipos-release.jks` (29 Jul)
+      exists but **its password is lost**, and Android Studio no longer has it
+      cached, so nothing can be signed with that key again. Any till still running
+      a release-signed build therefore cannot be updated in place — it has to be
+      uninstalled and re-provisioned before a new APK will install.
+
+      The fleet is consequently on **debug signing**, i.e. `~/.android/debug.keystore`
+      on the one MacBook Air. A copy is at `~/Desktop/lumipos-debug-BACKUP.keystore`
+      (2026-09-09) — **that file is now the only thing keeping in-place updates
+      possible.** Lose it and every till needs an uninstall + re-provision.
+
+      The fix, as one planned sweep and not mid-service: generate a fresh release
+      keystore, store its password in a password manager, and move every till onto
+      it (each one an uninstall + install + re-provision, so do it shop by shop
+      while they're closed). Until then, keep the debug keystore backed up
+      somewhere off that laptop.
 
 ## Payments — split / part payment
 - [x] **Refund an in-person counter-card sale.** `refund.js` + `status.js` now
