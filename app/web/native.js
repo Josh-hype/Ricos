@@ -232,6 +232,13 @@
       var p = eposPlugin(); if (p && p.startCallerId) return p.startCallerId();
       return Promise.resolve({ ok: false, reason: 'not-in-app' });
     },
+    // Raw lines the modem has sent. The till has no remote console, so this is
+    // how a caller-ID problem gets diagnosed on site without a cable: run
+    // EPOSNative.getCallerIdLog() from the setup screen and read the answer.
+    getCallerIdLog: function () {
+      var p = eposPlugin(); if (p && p.getCallerIdLog) return p.getCallerIdLog();
+      return Promise.resolve({ ok: false, reason: 'not-in-app' });
+    },
     onSignOut: function () {
       TOKEN = '';
       var P = prefs();
@@ -254,9 +261,26 @@
         if (!number) return;
         try { window.dispatchEvent(new CustomEvent('epos:callerid', { detail: { number: number } })); } catch (e) {}
       });
-      // Ask the plugin to open the port. Failure is normal and silent: most tills
-      // have no modem attached, and a shop that never buys one should see nothing.
-      if (p.startCallerId) p.startCallerId().catch(function () {});
+      /* Open the port. Failure is normal and silent for the SHOP — most tills have
+         no modem and must not see an error — but the reason is logged, because
+         this shipped before the hardware could be tested and "no-cdc-device" vs
+         "permission-requested" vs "claim-failed" is the whole diagnosis.
+         `devices` lists everything attached, so even a total miss tells us what
+         the till can actually see. Android only prompts for USB permission once
+         it has been asked, so a first run that returns permission-requested is
+         expected: the user taps Allow and the retry below succeeds. */
+      if (p.startCallerId) {
+        p.startCallerId().then(function (r) {
+          try { console.log('[native] callerId ' + JSON.stringify(r)); } catch (e) {}
+          if (r && !r.ok && r.reason === 'permission-requested') {
+            setTimeout(function () {
+              p.startCallerId().then(function (r2) {
+                try { console.log('[native] callerId retry ' + JSON.stringify(r2)); } catch (e) {}
+              }).catch(function () {});
+            }, 6000);
+          }
+        }).catch(function () {});
+      }
     } catch (e) { /* no caller-ID support in this build */ }
   }
 
