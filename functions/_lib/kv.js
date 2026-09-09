@@ -143,12 +143,37 @@ async function listAllOrderKeys(env) {
   return keys;
 }
 
+/* How far back the live board reaches.
+
+   Every poll fetches the full body of every order still in a kitchen-visible
+   status, and until now nothing ever left that set. An order stuck in
+   `accepted` because nobody pressed complete stayed there permanently and was
+   re-read on every poll, of every till, all night, for ever. That is what put
+   KV reads at 48.87M in a fortnight — the larger half of the Cloudflare bill,
+   and a number that only grows as more orders are left open.
+
+   The window is derived from the scheduling horizon rather than fixed at a day,
+   because a customer can order today for collection two days out. That order is
+   created now and sits in pending_accept until the day itself, so a flat
+   24-hour bound would silently drop precisely the orders a kitchen must not
+   miss. horizonDays + 1 covers the horizon plus the day it is wanted on.
+
+   Nothing is deleted or cancelled. An order past the window simply stops being
+   re-read onto the LIVE board; it remains in KV, in the audit log, and in the
+   day's takings. */
+function activeWindowMs() {
+  const horizon = Number(getConfig().ordering?.scheduling?.horizonDays);
+  const days = Number.isFinite(horizon) && horizon > 0 ? horizon : 1;
+  return (days + 1) * 24 * 60 * 60 * 1000;
+}
+
 // Read straight from the per-order docs on each poll. We deliberately do NOT
 // cache this in a single hot key: KV edge-caches a frequently-read key for up
 // to 60s, which delayed new orders reaching the board. list() reflects fresh
 // writes far quicker, and on the paid plan the list cost is negligible.
 export async function listActiveOrders(env) {
   const keys = await listAllOrderKeys(env);
+  const cutoff = Date.now() - activeWindowMs();
   const active = [];
   for (const k of keys) {
     const status = k.metadata?.status;
@@ -156,6 +181,14 @@ export async function listActiveOrders(env) {
     // below, because whether it belongs on the board depends on payment.via and
     // the expiry — neither of which is in the key metadata.
     if (status && (KITCHEN_VISIBLE_STATUSES.has(status) || status === 'pending_payment')) {
+      /* Age-check the METADATA, before the body fetch — the entire saving is in
+         not paying a read for an order the board would not show anyway.
+
+         A missing or unparseable createdAt KEEPS the order. Failing open costs
+         one read; failing closed hides a live order from the kitchen, and those
+         are not the same size of mistake. */
+      const created = Date.parse(k.metadata?.createdAt);
+      if (Number.isFinite(created) && created < cutoff) continue;
       const raw = await env.ORDERS_KV.get(k.name);
       if (raw) {
         try {
