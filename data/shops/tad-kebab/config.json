@@ -7,14 +7,15 @@
     "legalName": "TODO_LEGAL_NAME",
     "companyNumber": "TODO_COMPANY_NUMBER",
     "address": {
-      "line1": "TODO_ADDRESS_LINE_1",
+      "line1": "4 Commercial Street",
       "city": "Tadcaster",
-      "postcode": "TODO_POSTCODE",
+      "postcode": "LS24 8AA",
       "country": "United Kingdom"
     },
     "phone": "TODO_PHONE",
     "email": "TODO_ORDERS_EMAIL",
-    "domain": "TODO_DOMAIN"
+    "domain": "tadkebab.uk",
+    "_comment_sourced": "address, postcode and hours were taken from public business listings, NOT from the owner. Confirm with the shop before launch. phone, email, legalName and companyNumber are still unknown."
   },
   "_comment_theme": "Brand colours. Defaults match Rico's red palette — change these to match the shop's branding.",
   "theme": {
@@ -61,8 +62,8 @@
       "closed": false,
       "windows": [
         {
-          "open": "12:00",
-          "close": "22:00"
+          "open": "17:00",
+          "close": "24:00"
         }
       ]
     },
@@ -70,8 +71,8 @@
       "closed": false,
       "windows": [
         {
-          "open": "12:00",
-          "close": "22:00"
+          "open": "17:00",
+          "close": "24:00"
         }
       ]
     },
@@ -79,8 +80,8 @@
       "closed": false,
       "windows": [
         {
-          "open": "12:00",
-          "close": "22:00"
+          "open": "17:00",
+          "close": "24:00"
         }
       ]
     },
@@ -88,8 +89,8 @@
       "closed": false,
       "windows": [
         {
-          "open": "12:00",
-          "close": "22:00"
+          "open": "17:00",
+          "close": "24:00"
         }
       ]
     },
@@ -97,8 +98,8 @@
       "closed": false,
       "windows": [
         {
-          "open": "12:00",
-          "close": "22:00"
+          "open": "17:00",
+          "close": "24:00"
         }
       ]
     },
@@ -106,8 +107,8 @@
       "closed": false,
       "windows": [
         {
-          "open": "12:00",
-          "close": "22:00"
+          "open": "17:00",
+          "close": "24:00"
         }
       ]
     },
@@ -115,8 +116,8 @@
       "closed": false,
       "windows": [
         {
-          "open": "12:00",
-          "close": "22:00"
+          "open": "17:00",
+          "close": "24:00"
         }
       ]
     }
