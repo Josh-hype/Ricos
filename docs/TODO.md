@@ -30,9 +30,32 @@ been detached from the Pages project and is free to be resold.
 - [ ] **Submit `acombmegachippy.uk` to Google Search Console** + the sitemap. The
       old agency sites (`acombmegachippy.com`, `acombmegachippyyork.co.uk`) are not
       ours and can't be redirected, so ranking is rebuilt via the Business Profile.
-- [ ] **Signed APK.** The Z93 currently runs a debug build, so updates are tied to
-      the one MacBook that produced it. Build once via *Generate Signed App Bundle
-      / APK*, keep `lumipos-release.jks` safe, and any machine can update the tills.
+- [ ] **Move the fleet onto the 2026 release keystore.** The signing key is now
+      `~/Desktop/lumipos-release-2026.jks`, alias `lumipos`, CN=Lumin Labs, created
+      2026-09-09 with its password in a password manager. Verify any APK before
+      taking it to a shop:
+
+      ```
+      export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
+      "$JAVA_HOME/bin/keytool" -printcert -jarfile <app-release.apk> | head -6
+      ```
+
+      It replaces two dead ends: `lumipos-release.jks` (29 Jul) whose password is
+      lost, so nothing can ever be signed with it again, and the MacBook's
+      `~/.android/debug.keystore` (copy at `~/Desktop/lumipos-debug-BACKUP.keystore`)
+      which tied updates to one laptop.
+
+      **Changing key means an uninstall.** A till cannot be updated in place across
+      different signing keys — it is uninstall, install, re-provision, PIN. So each
+      till moves over once, while its shop is closed, never mid-service. Big Bites
+      moved 2026-09-09 (the caller-ID build). Rico's, Acomb and One Sip are still on
+      their old keys and will each need the same treatment on their next native
+      rebuild — which is rare, since Capgo carries every web-layer change over the
+      air and only native code (printer, drawer, caller ID, card terminal) needs an
+      APK at all.
+
+      Keep the new keystore backed up somewhere off that laptop. Losing it puts us
+      straight back here.
 
 ## Payments — split / part payment
 - [x] **Refund an in-person counter-card sale.** `refund.js` + `status.js` now
