@@ -52,3 +52,44 @@ test('the template carries no Sitemap line — the build adds an absolute one', 
     'templates/robots.txt must not hard-code a Sitemap line — it would be relative, '
     + 'and per-shop domains mean only the build can write an absolute one');
 });
+
+/* The pre-launch flag, from the other direction.
+
+   `prelaunch: true` in a shop's config makes the build write a Disallow-all
+   robots.txt and a site-wide noindex header. That is right for a shop whose
+   Cloudflare project exists before its real menu does, and catastrophic for a
+   trading one: a live shop that silently acquired the flag would drop out of
+   Google, and recovering an index is far slower than losing it.
+
+   So the flag is asserted absent on every shop that takes real orders. This is
+   the test that would have to fail before a live site could be deindexed by a
+   stray config edit. */
+import { readdirSync } from 'node:fs';
+
+const LIVE_SLUGS = ['ricos', 'food-station', 'mega-chippy', 'acomb-pizza-kebab'];
+
+const shopConfig = (slug) =>
+  JSON.parse(readFileSync(new URL(`../data/shops/${slug}/config.json`, import.meta.url), 'utf8'));
+
+test('no live shop is marked prelaunch', () => {
+  for (const slug of LIVE_SLUGS) {
+    assert.notEqual(shopConfig(slug).prelaunch, true,
+      `${slug} is LIVE and takes real orders — prelaunch:true would deindex it. `
+      + 'If this shop really has closed, remove it from LIVE_SLUGS deliberately.');
+  }
+});
+
+test('every prelaunch shop is one we know is unlaunched', () => {
+  // The inverse guard: a shop carrying the flag should be a shop we expect to
+  // carry it. A slug appearing here that nobody recognises means either a live
+  // shop was flagged by mistake, or a launch happened and the flag outlived it.
+  const expected = new Set(['tad-kebab', 'grub-hub']);
+  const flagged = readdirSync(new URL('../data/shops/', import.meta.url))
+    .filter((s) => !s.startsWith('_'))
+    .filter((s) => { try { return shopConfig(s).prelaunch === true; } catch { return false; } });
+  for (const slug of flagged) {
+    assert.ok(expected.has(slug),
+      `${slug} carries prelaunch:true but is not in the expected set. Either it has `
+      + 'launched (remove the flag) or it was flagged by mistake (it is invisible to Google).');
+  }
+});

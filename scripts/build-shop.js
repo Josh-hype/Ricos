@@ -854,14 +854,34 @@ for (const [tplRel, outRelRaw] of templatedFiles) {
 // so this cannot be a committed static file.
 // _headers travels with robots.txt: same footgun, same fix. No per-shop tokens,
 // it is a straight copy — it just must not be committed under public/.
+/* A shop with `prelaunch: true` in its config is kept out of search entirely.
+   Needed because a Cloudflare project exists — and is crawlable — from the
+   moment it is created, while the shop's own menu and prices usually arrive
+   days later. Until then the site carries scaffold content under a real
+   business's name, address and JSON-LD schema, which is exactly the thing that
+   should not be indexed: wrong prices attributed to a real trading shop, and
+   they outlive the fix, because a deindex is slower than an index.
+
+   Deliberately opt-IN. A live shop that silently acquired this flag would be
+   deindexed, which is far worse than an unlaunched one being crawled, so the
+   default stays "index" and tests/indexability.test.mjs asserts the live slugs
+   never carry it. Remove the flag on launch day. */
+const prelaunch = config.prelaunch === true;
+
 {
   const src = path.join(repoRoot, 'templates', '_headers');
   if (!fs.existsSync(src)) {
     console.error('build-shop: required template missing: templates/_headers. Refusing to deploy without cache/robots headers.');
     process.exit(1);
   }
-  fs.copyFileSync(src, path.join(repoRoot, 'public', '_headers'));
-  console.log('build-shop: generated public/_headers');
+  let out = fs.readFileSync(src, 'utf8');
+  if (prelaunch) {
+    // Prepended, not substituted: the template's own rules (caching, /api/,
+    // /staff/) still apply, and an earlier /* block wins for X-Robots-Tag.
+    out = '/*\n  X-Robots-Tag: noindex, nofollow, noarchive\n\n' + out;
+  }
+  fs.writeFileSync(path.join(repoRoot, 'public', '_headers'), out);
+  console.log(`build-shop: generated public/_headers${prelaunch ? ' (PRE-LAUNCH: noindex)' : ''}`);
 }
 
 {
@@ -871,16 +891,33 @@ for (const [tplRel, outRelRaw] of templatedFiles) {
     process.exit(1);
   }
   const domain = config.business.domain || '';
-  let out = fs.readFileSync(src, 'utf8').trimEnd() + '\n';
-  if (domain) {
-    out += `\nSitemap: https://${domain}/sitemap.xml\n`;
+  let out;
+  if (prelaunch) {
+    // No Sitemap line: pointing crawlers at a sitemap for a site they are told
+    // not to crawl is a contradiction, and some crawlers honour the sitemap.
+    out = '# PRE-LAUNCH: this shop is not open yet. Remove "prelaunch" from the\n'
+        + '# shop\'s config.json on launch day to allow indexing.\n'
+        + 'User-agent: *\nDisallow: /\n';
   } else {
-    // A till-only venue has no public site to crawl; omitting the line is
-    // correct, and a relative one would be invalid anyway.
-    console.warn('build-shop: no business.domain — robots.txt written without a Sitemap line.');
+    out = fs.readFileSync(src, 'utf8').trimEnd() + '\n';
+    if (domain) {
+      out += `\nSitemap: https://${domain}/sitemap.xml\n`;
+    } else {
+      // A till-only venue has no public site to crawl; omitting the line is
+      // correct, and a relative one would be invalid anyway.
+      console.warn('build-shop: no business.domain — robots.txt written without a Sitemap line.');
+    }
   }
   fs.writeFileSync(path.join(repoRoot, 'public', 'robots.txt'), out);
-  console.log(`build-shop: generated public/robots.txt${domain ? ` (Sitemap: https://${domain}/sitemap.xml)` : ' (no Sitemap line)'}`);
+  console.log(prelaunch
+    ? 'build-shop: generated public/robots.txt (PRE-LAUNCH: Disallow all)'
+    : `build-shop: generated public/robots.txt${domain ? ` (Sitemap: https://${domain}/sitemap.xml)` : ' (no Sitemap line)'}`);
+}
+
+if (prelaunch) {
+  console.warn(`\n🚫 build-shop: "${slug}" is PRE-LAUNCH — robots.txt disallows everything and\n`
+    + '   every page sends X-Robots-Tag: noindex. Remove "prelaunch" from its\n'
+    + '   config.json on launch day, or the site will never appear in Google.\n');
 }
 
 console.log(`build-shop: active shop is "${slug}".`);

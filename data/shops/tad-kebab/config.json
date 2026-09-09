@@ -168,5 +168,7 @@
     "smsOptIn": true,
     "_comment_metaPixelId": "Meta (Facebook) Pixel ID from Events Manager (a numeric string). Set it to enable Facebook/Instagram ad conversion tracking: PageView on every customer page + Purchase on the thank-you page. Leave empty to keep the pixel off.",
     "metaPixelId": ""
-  }
+  },
+  "_comment_prelaunch": "Keeps the shop out of Google until its real menu and prices are in. REMOVE both this and \"prelaunch\" on launch day.",
+  "prelaunch": true
 }
