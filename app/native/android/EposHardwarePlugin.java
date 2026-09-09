@@ -23,6 +23,15 @@ import android.text.Layout;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.hardware.usb.UsbConstants;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbDeviceConnection;
+import android.hardware.usb.UsbEndpoint;
+import android.hardware.usb.UsbInterface;
+import android.hardware.usb.UsbManager;
 import org.json.JSONObject;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -377,4 +386,279 @@ public class EposHardwarePlugin extends Plugin {
     private static final byte[] DRAWER_KICK = new byte[]{ 0x1B, 0x70, 0x00, 0x19, (byte) 0xFA };
     private static final byte[] BOLD_ON = new byte[]{ 0x1B, 0x45, 0x01 };
     private static final byte[] BOLD_OFF = new byte[]{ 0x1B, 0x45, 0x00 };
+
+    /* ====================================================================
+       Caller ID — a USB modem in the till's own USB port.
+
+       Deliberately uses Android's own USB host API rather than a serial
+       library. A USB fax modem is a CDC-ACM device, which is the one class
+       you can talk to with nothing but bulk transfers, and adding a Gradle
+       dependency to a build that cannot be compiled or tested in the cloud
+       sandbox risks the worst failure available here: an APK that will not
+       build at all. Fewer moving parts wins.
+
+       Written before the hardware was tested, so it assumes as little as
+       possible:
+         - finds the modem by DEVICE CLASS, not by vendor/product id
+         - tries AT+VCID=1 and, if that is not accepted, AT#CID=1 — the two
+           commands in the wild for switching formatted caller ID on
+         - parses any "NMBR"-ish label, with or without spaces around the =
+         - and when it can't do any of that, startCallerId RETURNS what it
+           found: every attached device with its class and ids, plus the raw
+           lines the modem sent. A blind install still tells us exactly what
+           to change.
+       ==================================================================== */
+
+    private static final String ACTION_USB_PERMISSION = "uk.co.ricos.epos.USB_PERMISSION";
+    private UsbDeviceConnection cidConn = null;
+    private UsbInterface cidIface = null;
+    private Thread cidThread = null;
+    private volatile boolean cidRunning = false;
+    private int cidCtrlIface = 0;
+    private volatile boolean cidIsCdc = true;
+    // Last lines off the modem, kept so a failed install can still be diagnosed
+    // from the till without a cable or a laptop.
+    private final java.util.List<String> cidLog = new java.util.ArrayList<>();
+
+    private void cidNote(String line) {
+        synchronized (cidLog) {
+            cidLog.add(line);
+            while (cidLog.size() > 40) cidLog.remove(0);
+        }
+    }
+
+    /** Every attached USB device, so we can see what the till sees. */
+    private JSArray describeUsb(UsbManager mgr) {
+        JSArray arr = new JSArray();
+        try {
+            for (UsbDevice d : mgr.getDeviceList().values()) {
+                JSObject o = new JSObject();
+                o.put("name", d.getDeviceName());
+                o.put("vendorId", d.getVendorId());
+                o.put("productId", d.getProductId());
+                o.put("deviceClass", d.getDeviceClass());
+                JSArray ifaces = new JSArray();
+                for (int i = 0; i < d.getInterfaceCount(); i++) ifaces.put(d.getInterface(i).getInterfaceClass());
+                o.put("interfaceClasses", ifaces);
+                arr.put(o);
+            }
+        } catch (Throwable t) { /* reported as an empty list */ }
+        return arr;
+    }
+
+    /** A CDC device: interface class 2 (comm) or 10 (cdc-data). */
+    private static boolean isCdc(UsbDevice d) {
+        for (int i = 0; i < d.getInterfaceCount(); i++) {
+            int c = d.getInterface(i).getInterfaceClass();
+            if (c == UsbConstants.USB_CLASS_COMM || c == UsbConstants.USB_CLASS_CDC_DATA) return true;
+        }
+        return false;
+    }
+
+    /* USB-to-serial bridge chips. A dial-up modem dongle is normally plain CDC,
+       but some present a vendor-specific interface driven by one of these four
+       chips instead, and then matching on class alone finds nothing at all.
+       Their baud rate is set by chip-specific control transfers we do not send,
+       so this is a best effort — most idle at 9600, which is what caller ID
+       uses. If we end up on this path the log says so, and that tells us a
+       proper driver is needed rather than leaving us guessing. */
+    private static final int[] SERIAL_BRIDGE_VENDORS = {
+        0x0403, // FTDI
+        0x067B, // Prolific PL2303
+        0x10C4, // Silicon Labs CP210x
+        0x1A86, // QinHeng CH340 / CH341
+    };
+
+    private static boolean isSerialBridge(UsbDevice d) {
+        for (int v : SERIAL_BRIDGE_VENDORS) if (d.getVendorId() == v) return true;
+        return false;
+    }
+
+    @PluginMethod
+    public void startCallerId(PluginCall call) {
+        JSObject res = new JSObject();
+        try {
+            UsbManager mgr = (UsbManager) getContext().getSystemService(Context.USB_SERVICE);
+            if (mgr == null) { res.put("ok", false); res.put("reason", "no-usb-service"); call.resolve(res); return; }
+            res.put("devices", describeUsb(mgr));
+
+            if (cidRunning) { res.put("ok", true); res.put("already", true); call.resolve(res); return; }
+
+            // A real CDC modem is preferred; a bridge chip is only the fallback,
+            // so a till with (say) a USB-serial scale attached still picks the modem.
+            UsbDevice modem = null;
+            for (UsbDevice d : mgr.getDeviceList().values()) if (isCdc(d)) { modem = d; break; }
+            if (modem == null) for (UsbDevice d : mgr.getDeviceList().values()) if (isSerialBridge(d)) { modem = d; break; }
+            if (modem == null) { res.put("ok", false); res.put("reason", "no-serial-device"); call.resolve(res); return; }
+
+            final boolean cdc = isCdc(modem);
+            res.put("kind", cdc ? "cdc" : "serial-bridge");
+            res.put("vendorId", modem.getVendorId());
+            res.put("productId", modem.getProductId());
+
+            // Permission is per-device and per-install; without it openDevice
+            // returns null and nothing explains why, so ask and say so.
+            if (!mgr.hasPermission(modem)) {
+                PendingIntent pi = PendingIntent.getBroadcast(getContext(), 0,
+                        new Intent(ACTION_USB_PERMISSION),
+                        android.os.Build.VERSION.SDK_INT >= 31 ? PendingIntent.FLAG_MUTABLE : 0);
+                mgr.requestPermission(modem, pi);
+                res.put("ok", false); res.put("reason", "permission-requested");
+                call.resolve(res); return;   // the prompt is on screen; call again after
+            }
+
+            UsbInterface iface = null;
+            UsbEndpoint in = null, out = null;
+            for (int i = 0; i < modem.getInterfaceCount() && in == null; i++) {
+                UsbInterface f = modem.getInterface(i);
+                UsbEndpoint ci = null, co = null;
+                for (int e = 0; e < f.getEndpointCount(); e++) {
+                    UsbEndpoint ep = f.getEndpoint(e);
+                    if (ep.getType() != UsbConstants.USB_ENDPOINT_XFER_BULK) continue;
+                    if (ep.getDirection() == UsbConstants.USB_DIR_IN) ci = ep; else co = ep;
+                }
+                if (ci != null && co != null) { iface = f; in = ci; out = co; }
+            }
+            if (iface == null) { res.put("ok", false); res.put("reason", "no-bulk-endpoints"); call.resolve(res); return; }
+
+            UsbDeviceConnection conn = mgr.openDevice(modem);
+            if (conn == null) { res.put("ok", false); res.put("reason", "open-failed"); call.resolve(res); return; }
+            if (!conn.claimInterface(iface, true)) {
+                conn.close();
+                res.put("ok", false); res.put("reason", "claim-failed"); call.resolve(res); return;
+            }
+
+            // CDC control requests are addressed to the COMM interface, which is
+            // usually NOT the one carrying the bulk endpoints — send them to the
+            // data interface and the modem ignores them.
+            int ctrl = iface.getId();
+            for (int i = 0; i < modem.getInterfaceCount(); i++) {
+                if (modem.getInterface(i).getInterfaceClass() == UsbConstants.USB_CLASS_COMM) {
+                    ctrl = modem.getInterface(i).getId();
+                    break;
+                }
+            }
+            cidCtrlIface = ctrl;
+            cidIsCdc = cdc;
+
+            cidConn = conn; cidIface = iface; cidRunning = true;
+            final UsbEndpoint fin = in, fout = out;
+            cidThread = new Thread(() -> readModem(fin, fout));
+            cidThread.setDaemon(true);
+            cidThread.start();
+
+            res.put("ok", true);
+            call.resolve(res);
+        } catch (Throwable t) {
+            res.put("ok", false);
+            res.put("reason", "error: " + t.getMessage());
+            call.resolve(res);
+        }
+    }
+
+    /** The raw lines the modem has sent — for diagnosing an install with no cable. */
+    @PluginMethod
+    public void getCallerIdLog(PluginCall call) {
+        JSObject res = new JSObject();
+        JSArray arr = new JSArray();
+        synchronized (cidLog) { for (String s : cidLog) arr.put(s); }
+        res.put("ok", true);
+        res.put("running", cidRunning);
+        res.put("lines", arr);
+        call.resolve(res);
+    }
+
+    private void writeAt(UsbEndpoint out, String cmd) {
+        try {
+            byte[] b = (cmd + "\r").getBytes(java.nio.charset.StandardCharsets.US_ASCII);
+            cidConn.bulkTransfer(out, b, b.length, 1500);
+            cidNote(">> " + cmd);
+            Thread.sleep(300);
+        } catch (Throwable t) { /* logged by the reader when nothing comes back */ }
+    }
+
+    /* Standard CDC-ACM line setup, and the likeliest reason a modem would sit
+       there saying nothing. SET_LINE_CODING fixes the port at 9600 8N1 (what
+       caller ID runs at), and SET_CONTROL_LINE_STATE raises DTR and RTS, which
+       many chipsets read as "a host is actually listening" and will not
+       transmit without. Both are logged rather than treated as fatal: some
+       devices are perfectly happy without either, and a failure here is worth
+       seeing next to the modem's replies rather than in place of them. */
+    private void configureCdc() {
+        try {
+            byte[] coding = new byte[] {
+                (byte) 0x80, (byte) 0x25, 0x00, 0x00,  // 9600 baud, little-endian
+                0x00,                                  // 1 stop bit
+                0x00,                                  // no parity
+                0x08,                                  // 8 data bits
+            };
+            int rate = cidConn.controlTransfer(0x21, 0x20, 0, cidCtrlIface, coding, coding.length, 1500);
+            int lines = cidConn.controlTransfer(0x21, 0x22, 0x03, cidCtrlIface, null, 0, 1500);
+            cidNote("== cdc setup iface=" + cidCtrlIface + " line-coding=" + rate + " dtr/rts=" + lines);
+        } catch (Throwable t) {
+            cidNote("== cdc setup failed: " + t.getMessage());
+        }
+    }
+
+    private void readModem(UsbEndpoint in, UsbEndpoint out) {
+        if (cidIsCdc) configureCdc();
+        else cidNote("== serial-bridge: no line setup sent, assuming 9600 8N1");
+
+        // Enable formatted caller ID. Both spellings are sent because which one
+        // a modem accepts depends on its chipset, and an unsupported one is
+        // simply answered with ERROR — harmless.
+        writeAt(out, "ATZ");
+        writeAt(out, "ATI3");        // model string — lands in the log, names the modem
+        writeAt(out, "AT+VCID=1");
+        writeAt(out, "AT#CID=1");
+
+        byte[] buf = new byte[512];
+        StringBuilder line = new StringBuilder();
+        while (cidRunning) {
+            try {
+                int n = cidConn.bulkTransfer(in, buf, buf.length, 2000);
+                if (n <= 0) continue;
+                for (int i = 0; i < n; i++) {
+                    char c = (char) (buf[i] & 0xFF);
+                    if (c == '\n' || c == '\r') {
+                        String s = line.toString().trim();
+                        line.setLength(0);
+                        if (s.isEmpty()) continue;
+                        cidNote(s);
+                        String number = parseNumber(s);
+                        if (number != null) {
+                            JSObject ev = new JSObject();
+                            ev.put("number", number);
+                            notifyListeners("callerId", ev);
+                        }
+                    } else if (line.length() < 200) {
+                        line.append(c);
+                    }
+                }
+            } catch (Throwable t) {
+                cidNote("!! read error: " + t.getMessage());
+                break;
+            }
+        }
+    }
+
+    /* Formatted caller ID is a labelled line, but the label and the spacing vary:
+       "NMBR = 07700900123", "NMBR=07700900123", "NUMBER = ...", "CALLERID=...".
+       Match the label loosely and keep only the digits (plus a leading +), so a
+       trailing space or a stray character can't lose us the call. */
+    static String parseNumber(String s) {
+        String up = s.toUpperCase(java.util.Locale.UK);
+        if (!(up.startsWith("NMBR") || up.startsWith("NUMBER") || up.startsWith("CALLERID"))) return null;
+        int eq = s.indexOf('=');
+        if (eq < 0) return null;
+        String raw = s.substring(eq + 1).trim();
+        StringBuilder digits = new StringBuilder();
+        for (char c : raw.toCharArray()) {
+            if (Character.isDigit(c) || (c == '+' && digits.length() == 0)) digits.append(c);
+        }
+        String out = digits.toString();
+        // "P" (private) and "O" (out of area) arrive in this field too — they are
+        // not numbers and must not reach the till as one.
+        return out.length() >= 6 ? out : null;
+    }
 }

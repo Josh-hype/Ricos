@@ -135,8 +135,35 @@ if (!existsSync(appGradle)) {
   }
 }
 
+// 5) USB host feature ----------------------------------------------------------
+// Caller ID reads a USB modem in the till's own port. Declared required="false"
+// on purpose: most tills have no modem attached and must still install.
+const manifest = resolve(androidDir, 'app/src/main/AndroidManifest.xml');
+if (!existsSync(manifest)) {
+  console.error('✗ inject-native: AndroidManifest.xml not found.');
+  ok = false;
+} else {
+  let x = readFileSync(manifest, 'utf8');
+  if (x.includes('android.hardware.usb.host')) {
+    console.log('• inject-native: USB host feature already declared');
+  } else {
+    const m = x.match(/<manifest[^>]*>/);
+    if (!m) {
+      console.error('✗ inject-native: no <manifest> tag in AndroidManifest.xml.');
+      ok = false;
+    } else {
+      const at = m.index + m[0].length;
+      x = x.slice(0, at) +
+        `\n    <uses-feature android:name="android.hardware.usb.host" android:required="false" />` +
+        x.slice(at);
+      writeFileSync(manifest, x);
+      console.log('✓ inject-native: declared USB host feature (caller-ID modem)');
+    }
+  }
+}
+
 if (!ok) {
   console.error('✗ inject-native: FAILED — printer/drawer would be missing from the APK.');
   process.exit(1);
 }
-console.log('inject-native: done (printer + drawer wired).');
+console.log('inject-native: done (printer + drawer + USB host wired).');
