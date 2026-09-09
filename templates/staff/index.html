@@ -4975,7 +4975,7 @@ const sale = {
   ready: false,
   loading: false,
   menu: [],             // /api/menu — canonical priceP per item (pence) + modifiers
-  visual: [],           // /menu-visual.json — display-side: options, meal config, spicy flag, desc, images
+  visual: [],           // /api/menu-visual — display-side: options, meal config, spicy flag, desc, images
   byId: new Map(),      // item id -> canonical item (priceP / modifiers / mealAddP / mealChoose)
   byVisualId: new Map(),// item id -> visual item (name, desc, options, meal, spicy, image)
   config: null,         // /api/config — for delivery fee + serviceFeeP
@@ -5516,7 +5516,19 @@ async function loadSaleData() {
   try {
     const [menuRes, visualRes, configRes] = await Promise.all([
       fetch('/api/menu', { cache: 'no-store' }),
-      fetch('/menu-visual.json', { cache: 'no-store' }).catch(() => null),
+      /* Owner edits from the Back Office menu editor are stored in KV, and only
+         /api/menu-visual applies them — /menu-visual.json is the build-time
+         asset and cannot change without a redeploy. The till read that static
+         file, so a menu published from the back office went live on the website
+         while the till kept serving the old one: one shop, two menus, and the
+         mismatch visible only to whoever was stood at the counter. Note that
+         /api/menu (above) was already KV-aware, so prices moved while the item
+         list did not — the worse half of the bug, and the quiet one.
+         Falls back to the static asset exactly as the order page does, so a shop
+         that has never opened the editor behaves precisely as before. */
+      fetch('/api/menu-visual', { cache: 'no-store' })
+        .then(r => (r && r.ok) ? r : fetch('/menu-visual.json', { cache: 'no-store' }))
+        .catch(() => fetch('/menu-visual.json', { cache: 'no-store' }).catch(() => null)),
       fetch('/api/config', { cache: 'no-store' }).catch(() => null),
     ]);
     const menu = menuRes.ok ? await menuRes.json() : [];
