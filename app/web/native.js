@@ -263,7 +263,7 @@
       });
       /* Open the port. Failure is normal and silent for the SHOP — most tills have
          no modem and must not see an error — but the reason is logged, because
-         this shipped before the hardware could be tested and "no-cdc-device" vs
+         this shipped before the hardware could be tested and "no-serial-device" vs
          "permission-requested" vs "claim-failed" is the whole diagnosis.
          `devices` lists everything attached, so even a total miss tells us what
          the till can actually see. Android only prompts for USB permission once

@@ -414,6 +414,8 @@ public class EposHardwarePlugin extends Plugin {
     private UsbInterface cidIface = null;
     private Thread cidThread = null;
     private volatile boolean cidRunning = false;
+    private int cidCtrlIface = 0;
+    private volatile boolean cidIsCdc = true;
     // Last lines off the modem, kept so a failed install can still be diagnosed
     // from the till without a cable or a laptop.
     private final java.util.List<String> cidLog = new java.util.ArrayList<>();
@@ -445,11 +447,30 @@ public class EposHardwarePlugin extends Plugin {
     }
 
     /** A CDC device: interface class 2 (comm) or 10 (cdc-data). */
-    private static boolean looksLikeModem(UsbDevice d) {
+    private static boolean isCdc(UsbDevice d) {
         for (int i = 0; i < d.getInterfaceCount(); i++) {
             int c = d.getInterface(i).getInterfaceClass();
             if (c == UsbConstants.USB_CLASS_COMM || c == UsbConstants.USB_CLASS_CDC_DATA) return true;
         }
+        return false;
+    }
+
+    /* USB-to-serial bridge chips. A dial-up modem dongle is normally plain CDC,
+       but some present a vendor-specific interface driven by one of these four
+       chips instead, and then matching on class alone finds nothing at all.
+       Their baud rate is set by chip-specific control transfers we do not send,
+       so this is a best effort — most idle at 9600, which is what caller ID
+       uses. If we end up on this path the log says so, and that tells us a
+       proper driver is needed rather than leaving us guessing. */
+    private static final int[] SERIAL_BRIDGE_VENDORS = {
+        0x0403, // FTDI
+        0x067B, // Prolific PL2303
+        0x10C4, // Silicon Labs CP210x
+        0x1A86, // QinHeng CH340 / CH341
+    };
+
+    private static boolean isSerialBridge(UsbDevice d) {
+        for (int v : SERIAL_BRIDGE_VENDORS) if (d.getVendorId() == v) return true;
         return false;
     }
 
@@ -463,10 +484,15 @@ public class EposHardwarePlugin extends Plugin {
 
             if (cidRunning) { res.put("ok", true); res.put("already", true); call.resolve(res); return; }
 
+            // A real CDC modem is preferred; a bridge chip is only the fallback,
+            // so a till with (say) a USB-serial scale attached still picks the modem.
             UsbDevice modem = null;
-            for (UsbDevice d : mgr.getDeviceList().values()) if (looksLikeModem(d)) { modem = d; break; }
-            if (modem == null) { res.put("ok", false); res.put("reason", "no-cdc-device"); call.resolve(res); return; }
+            for (UsbDevice d : mgr.getDeviceList().values()) if (isCdc(d)) { modem = d; break; }
+            if (modem == null) for (UsbDevice d : mgr.getDeviceList().values()) if (isSerialBridge(d)) { modem = d; break; }
+            if (modem == null) { res.put("ok", false); res.put("reason", "no-serial-device"); call.resolve(res); return; }
 
+            final boolean cdc = isCdc(modem);
+            res.put("kind", cdc ? "cdc" : "serial-bridge");
             res.put("vendorId", modem.getVendorId());
             res.put("productId", modem.getProductId());
 
@@ -501,6 +527,19 @@ public class EposHardwarePlugin extends Plugin {
                 conn.close();
                 res.put("ok", false); res.put("reason", "claim-failed"); call.resolve(res); return;
             }
+
+            // CDC control requests are addressed to the COMM interface, which is
+            // usually NOT the one carrying the bulk endpoints — send them to the
+            // data interface and the modem ignores them.
+            int ctrl = iface.getId();
+            for (int i = 0; i < modem.getInterfaceCount(); i++) {
+                if (modem.getInterface(i).getInterfaceClass() == UsbConstants.USB_CLASS_COMM) {
+                    ctrl = modem.getInterface(i).getId();
+                    break;
+                }
+            }
+            cidCtrlIface = ctrl;
+            cidIsCdc = cdc;
 
             cidConn = conn; cidIface = iface; cidRunning = true;
             final UsbEndpoint fin = in, fout = out;
@@ -538,11 +577,38 @@ public class EposHardwarePlugin extends Plugin {
         } catch (Throwable t) { /* logged by the reader when nothing comes back */ }
     }
 
+    /* Standard CDC-ACM line setup, and the likeliest reason a modem would sit
+       there saying nothing. SET_LINE_CODING fixes the port at 9600 8N1 (what
+       caller ID runs at), and SET_CONTROL_LINE_STATE raises DTR and RTS, which
+       many chipsets read as "a host is actually listening" and will not
+       transmit without. Both are logged rather than treated as fatal: some
+       devices are perfectly happy without either, and a failure here is worth
+       seeing next to the modem's replies rather than in place of them. */
+    private void configureCdc() {
+        try {
+            byte[] coding = new byte[] {
+                (byte) 0x80, (byte) 0x25, 0x00, 0x00,  // 9600 baud, little-endian
+                0x00,                                  // 1 stop bit
+                0x00,                                  // no parity
+                0x08,                                  // 8 data bits
+            };
+            int rate = cidConn.controlTransfer(0x21, 0x20, 0, cidCtrlIface, coding, coding.length, 1500);
+            int lines = cidConn.controlTransfer(0x21, 0x22, 0x03, cidCtrlIface, null, 0, 1500);
+            cidNote("== cdc setup iface=" + cidCtrlIface + " line-coding=" + rate + " dtr/rts=" + lines);
+        } catch (Throwable t) {
+            cidNote("== cdc setup failed: " + t.getMessage());
+        }
+    }
+
     private void readModem(UsbEndpoint in, UsbEndpoint out) {
+        if (cidIsCdc) configureCdc();
+        else cidNote("== serial-bridge: no line setup sent, assuming 9600 8N1");
+
         // Enable formatted caller ID. Both spellings are sent because which one
         // a modem accepts depends on its chipset, and an unsupported one is
         // simply answered with ERROR — harmless.
         writeAt(out, "ATZ");
+        writeAt(out, "ATI3");        // model string — lands in the log, names the modem
         writeAt(out, "AT+VCID=1");
         writeAt(out, "AT#CID=1");
 
