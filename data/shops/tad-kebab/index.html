@@ -120,10 +120,10 @@
     /* ------------------------------------------------------------ hero --- */
     .hero { position: relative; padding: 34px 0 0; }
     .hero-grid {
-      display: grid; grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
-      gap: 44px; align-items: center;
+      display: grid; grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.06fr);
+      gap: 40px; align-items: center;
     }
-    .hero h1 { font-size: clamp(40px, 5.2vw, 68px); font-weight: 800; }
+    .hero h1 { font-size: clamp(34px, 4.4vw, 62px); font-weight: 800; }
     .hero h1 .in-town { color: var(--red); display: block; }
     .hero-copy { color: var(--ink-soft); font-size: 16px; margin: 20px 0 26px; max-width: 42ch; }
     .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
@@ -334,10 +334,10 @@
   <div class="wrap hero-grid">
     <div>
       <p class="eyebrow">{{shopCity}}’s favourite</p>
-      <h1>Freshly Made<br />Kebabs in <span class="in-town">{{shopCity}}</span></h1>
+      <h1>Stone baked Pizzas<br />Massive kebabs<br /><span class="in-town">In {{shopCity}}</span></h1>
       <p class="hero-copy">
         Juicy grilled meat. Fresh ingredients. Great taste.<br />
-        Order online for collection or delivery in {{shopCity}}.
+        Order online for collection or delivery in {{shopCity}} &amp; surrounding areas
       </p>
       <div class="hero-actions">
         <a class="btn btn-dark" href="/order.html">Order Now <span aria-hidden="true">→</span></a>
