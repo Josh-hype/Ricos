@@ -4486,8 +4486,21 @@ function lineItemsHtml(o) {
    demanding popup for the oldest one and repeat the chime until it's accepted
    or rejected; clearing one advances to the next automatically. */
 function pendingQueue() {
-  // listActiveOrders already returns oldest-first.
-  return state.orders.filter(o => o.status === 'pending_accept');
+  /* Oldest FIRST — deliberately the opposite of the board's own order.
+
+     listActiveOrders sorts newest-first because the kitchen wants the latest
+     ticket on the left, and state.orders is that array verbatim. The alarm
+     wants the reverse: the customer who has waited longest is the one to accept
+     next. This used to take state.orders' order as given, on a comment claiming
+     it arrived oldest-first, so with two orders waiting the popup offered the
+     NEWER one and the earlier customer sat behind it — and the 25-minute timer
+     started against the wrong ticket.
+
+     filter() already returns a fresh array, so sorting here cannot disturb the
+     board's newest-first display. */
+  return state.orders
+    .filter(o => o.status === 'pending_accept')
+    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 }
 
 function syncAlarm() {
