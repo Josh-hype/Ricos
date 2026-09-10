@@ -1,29 +1,2324 @@
 [
   {
-    "id": "mains",
-    "name": "Mains",
+    "id": "pizzas",
+    "name": "Stone Baked Pizzas",
+    "icon": "🍕",
+    "items": [
+      {
+        "id": "pizza-margherita-pizza",
+        "name": "Margherita Pizza",
+        "price": 10.0,
+        "desc": "Tomato and cheese base",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 1.0
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-quattro-formaggi-pizza",
+        "name": "Quattro Formaggi Pizza",
+        "price": 11.5,
+        "desc": "4 cheeses",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.4
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 5.9
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-al-funghi-pizza",
+        "name": "Al Funghi Pizza",
+        "price": 11.0,
+        "desc": "Mushrooms",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.5
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.4
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-vegetarian-pizza",
+        "name": "Vegetarian Pizza",
+        "price": 11.0,
+        "desc": "Onions, mushrooms, peppers, sweetcorn and fresh tomatoes",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.5
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.4
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-pollo-pizza",
+        "name": "Pollo Pizza",
+        "price": 11.0,
+        "desc": "Chicken and mushrooms",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.5
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.4
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-chicken-and-sweetcorn-pizza",
+        "name": "Chicken And Sweetcorn Pizza",
+        "price": 11.0,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.5
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.4
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-chicken-and-pineapple-pizza",
+        "name": "Chicken And Pineapple Pizza",
+        "price": 11.0,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.5
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.4
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-chicken-kiev-pizza",
+        "name": "Chicken Kiev Pizza",
+        "price": 11.0,
+        "desc": "Chicken, ham and garlic",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.5
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.4
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-spicy-chicken-pizza",
+        "name": "Spicy Chicken Pizza",
+        "price": 11.0,
+        "desc": "Chicken and jalapenoes",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.5
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.4
+              }
+            ]
+          }
+        ],
+        "spicyTag": true
+      },
+      {
+        "id": "pizza-bbq-chicken-pizza",
+        "name": "BBQ Chicken Pizza",
+        "price": 11.0,
+        "desc": "Chicken and bbq sauce",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.5
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.4
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-proscuitto-pizza",
+        "name": "Proscuitto Pizza",
+        "price": 11.0,
+        "desc": "Ham",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.5
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.4
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-proscuitto-funghi-pizza",
+        "name": "Proscuitto Funghi Pizza",
+        "price": 11.0,
+        "desc": "Ham and mushrooms",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.5
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.4
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-hawaiian-pizza",
+        "name": "Hawaiian Pizza",
+        "price": 11.0,
+        "desc": "Ham and pineapple",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.5
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.4
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-napoli-pizza",
+        "name": "Napoli Pizza",
+        "price": 11.5,
+        "desc": "Ham, mushrooms and pineapple",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.4
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 5.9
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-toscana-pizza",
+        "name": "Toscana Pizza",
+        "price": 11.9,
+        "desc": "Ham, mushrooms onions and peppers",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.6
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-pepperoni-pizza",
+        "name": "Pepperoni Pizza",
+        "price": 11.0,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.5
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.4
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-aldiavolo-pizza",
+        "name": "Aldiavolo Pizza",
+        "price": 11.9,
+        "desc": "Pepperoni, jalapeno, olives and onions",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.6
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-hot-and-spicy-pizza",
+        "name": "Hot And Spicy Pizza",
+        "price": 11.9,
+        "desc": "Pepperoni, chilli sauce, chicken, jalapeno and onions",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.6
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.0
+              }
+            ]
+          }
+        ],
+        "spicyTag": true
+      },
+      {
+        "id": "pizza-spicy-beef-pizza",
+        "name": "Spicy Beef Pizza",
+        "price": 11.0,
+        "desc": "Spicy beef and jalapenoes",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.5
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.4
+              }
+            ]
+          }
+        ],
+        "spicyTag": true
+      },
+      {
+        "id": "pizza-meat-feast-pizza",
+        "name": "Meat Feast Pizza",
+        "price": 11.9,
+        "desc": "Salami, pepperoni, ham and spicy beef",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.6
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-modena-pizza",
+        "name": "Modena Pizza",
+        "price": 9.9,
+        "desc": "Salami",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 1.0
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.6
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-romana-pizza",
+        "name": "Romana Pizza",
+        "price": 11.0,
+        "desc": "Smoked salami and peppers",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.5
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.4
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-al-pesto-pizza",
+        "name": "Al Pesto Pizza",
+        "price": 11.5,
+        "desc": "Pesto sauce, onions and capers",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 1.0
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.4
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-tuna-corn-pizza",
+        "name": "Tuna Corn Pizza",
+        "price": 11.9,
+        "desc": "Huna and sweetcorn",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.6
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-al-tonno-pizza",
+        "name": "Al Tonno Pizza",
+        "price": 11.9,
+        "desc": "Tuna, olives, onions and capers",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.6
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-pescatore-pizza",
+        "name": "Pescatore Pizza",
+        "price": 12.9,
+        "desc": "Prawns, cockles and musscls",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 1.0
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-napoletana-pizza",
+        "name": "Napoletana Pizza",
+        "price": 11.9,
+        "desc": "Anchovies, capers and olives",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.6
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-neptune-pizza",
+        "name": "Neptune Pizza",
+        "price": 11.9,
+        "desc": "Tuna, mushrooms, onions and peppers",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.6
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-sicilian-pizza",
+        "name": "Sicilian Pizza",
+        "price": 11.9,
+        "desc": "Bolognese, fresh tomatoes and peppers",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.6
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-bolognese-pizza",
+        "name": "Bolognese Pizza",
+        "price": 11.9,
+        "desc": "Bolognese, onions",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.6
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-mexican-pizza",
+        "name": "Mexican Pizza",
+        "price": 11.9,
+        "desc": "Bolognese, onions, chilli sauce and jalapenos",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.6
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-tadkebab-special-pizza",
+        "name": "Tadkebab Special Pizza",
+        "price": 11.9,
+        "desc": "Doner meat, onions and chilli sauce",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.6
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-donner-pepperoni-pizza",
+        "name": "Donner Pepperoni Pizza",
+        "price": 11.9,
+        "desc": "Doner meat and pepperoni",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.6
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-milano-pizza",
+        "name": "Milano pizza",
+        "price": 11.9,
+        "desc": "Doner Meat, ham and jalapeno",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.6
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-benji-pizza",
+        "name": "Benji Pizza",
+        "price": 11.9,
+        "desc": "Doner, bolognese, chicken and peppers",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.6
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-calcaria-pizza",
+        "name": "Calcaria Pizza",
+        "price": 11.9,
+        "desc": "Pepperoni, spicy beef, onion and jalapeno",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.6
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-fenton-pizza",
+        "name": "Fenton Pizza",
+        "price": 11.9,
+        "desc": "Salami, pepperoni, onion and jalapeno",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.6
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-boston-pizza",
+        "name": "Boston Pizza",
+        "price": 11.9,
+        "desc": "Al pesto sauce, onion, olives and pepperoni",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.6
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pizza-alfie-pizza",
+        "name": "Alfie Pizza",
+        "price": 11.9,
+        "desc": "Doner, spicy beef, mushrooms and jalapeno",
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-12-thin",
+                "label": "12\" Thin Base",
+                "price": 0.0
+              },
+              {
+                "id": "sz-12-deep",
+                "label": "12\" Deep Pan",
+                "price": 0.6
+              },
+              {
+                "id": "sz-16-giant",
+                "label": "16\" Giant",
+                "price": 6.0
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "note": "All pizzas come on a tomato and cheese base."
+  },
+  {
+    "id": "calzones",
+    "name": "Calzones",
+    "icon": "🥟",
+    "items": [
+      {
+        "id": "calzone-calzoni-kiev",
+        "name": "Calzoni Kiev",
+        "price": 11.4,
+        "desc": "Ham, Chicken, Garlic and Mushrooms"
+      },
+      {
+        "id": "calzone-calzoni-bolognese",
+        "name": "Calzoni bolognese",
+        "price": 11.4,
+        "desc": "Bolognese, Onions and Mushrooms"
+      },
+      {
+        "id": "calzone-calzoni-doner",
+        "name": "Calzoni Doner",
+        "price": 11.4,
+        "desc": "Doner Meat, Onions and Mushrooms"
+      },
+      {
+        "id": "calzone-calzoni-meat-feast",
+        "name": "Calzoni Meat Feast",
+        "price": 11.4,
+        "desc": "Salami, Ham, Spicy Beef, Pepperoni and Chicken"
+      },
+      {
+        "id": "calzone-calzoni-vegetarian",
+        "name": "Calzoni Vegetarian",
+        "price": 11.4,
+        "desc": "Mushroom, Onions, Sweetcorn and Peppers. Vegetarian"
+      }
+    ]
+  },
+  {
+    "id": "garlic-bread",
+    "name": "Garlic Bread",
+    "icon": "🧄",
+    "items": [
+      {
+        "id": "gb-garlic-bread",
+        "name": "Garlic Bread",
+        "price": 6.9,
+        "desc": "Vegetarian"
+      },
+      {
+        "id": "gb-garlic-bread-and-sauce",
+        "name": "Garlic Bread And Sauce",
+        "price": 7.4,
+        "desc": "Vegetarian"
+      },
+      {
+        "id": "gb-spicy-garlic-bread",
+        "name": "Spicy Garlic Bread",
+        "price": 7.4,
+        "desc": "Vegetarian",
+        "spicyTag": true
+      },
+      {
+        "id": "gb-garlic-bread-and-cheese",
+        "name": "Garlic Bread And Cheese",
+        "price": 8.9,
+        "desc": "Vegetarian"
+      },
+      {
+        "id": "gb-garlic-bread-mushrooms-and-cheese",
+        "name": "Garlic Bread Mushrooms And Cheese",
+        "price": 9.9,
+        "desc": "Vegetarian"
+      },
+      {
+        "id": "gb-garlic-bread-doner-and-cheese",
+        "name": "Garlic Bread Doner And Cheese",
+        "price": 11.0
+      },
+      {
+        "id": "gb-garlic-bread-bolognese-sauce-and-cheese",
+        "name": "Garlic Bread Bolognese Sauce And Cheese",
+        "price": 11.0
+      }
+    ]
+  },
+  {
+    "id": "kebabs",
+    "name": "Kebabs",
+    "icon": "🥙",
+    "items": [
+      {
+        "id": "kebab-chicken-kebab",
+        "name": "Chicken Kebab",
+        "price": 13.0,
+        "desc": "Cubes of Chicken cooked on a Griddle",
+        "options": [
+          {
+            "id": "salad",
+            "label": "Salad",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "sal-all",
+                "label": "All Salad",
+                "price": 0.0
+              },
+              {
+                "id": "sal-cucumber",
+                "label": "Cucumber",
+                "price": 0.0
+              },
+              {
+                "id": "sal-cabbage",
+                "label": "Cabbage",
+                "price": 0.0
+              },
+              {
+                "id": "sal-lettuce",
+                "label": "Lettuce",
+                "price": 0.0
+              },
+              {
+                "id": "sal-onion",
+                "label": "Onion",
+                "price": 0.0
+              },
+              {
+                "id": "sal-none",
+                "label": "No Salad",
+                "price": 0.0
+              }
+            ]
+          },
+          {
+            "id": "sauce",
+            "label": "Sauce",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "sau-chilli",
+                "label": "Chilli Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-garlic",
+                "label": "Garlic Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-none",
+                "label": "No Sauce",
+                "price": 0.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "kebab-donner-kebab",
+        "name": "Donner Kebab",
+        "price": 9.9,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-large",
+                "label": "Large",
+                "price": 0.0
+              },
+              {
+                "id": "sz-king",
+                "label": "King Size",
+                "price": 7.0
+              }
+            ]
+          },
+          {
+            "id": "salad",
+            "label": "Salad",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "sal-all",
+                "label": "All Salad",
+                "price": 0.0
+              },
+              {
+                "id": "sal-cucumber",
+                "label": "Cucumber",
+                "price": 0.0
+              },
+              {
+                "id": "sal-cabbage",
+                "label": "Cabbage",
+                "price": 0.0
+              },
+              {
+                "id": "sal-lettuce",
+                "label": "Lettuce",
+                "price": 0.0
+              },
+              {
+                "id": "sal-onion",
+                "label": "Onion",
+                "price": 0.0
+              },
+              {
+                "id": "sal-none",
+                "label": "No Salad",
+                "price": 0.0
+              }
+            ]
+          },
+          {
+            "id": "sauce",
+            "label": "Sauce",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "sau-bbq",
+                "label": "BBQ Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-chilli",
+                "label": "Chilli Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-peri",
+                "label": "Peri peri Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-garlic-mayo",
+                "label": "Garlic Mayo",
+                "price": 0.0
+              },
+              {
+                "id": "sau-sweet-chilli",
+                "label": "Sweet Chilli Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-mayo",
+                "label": "Mayonnaise",
+                "price": 0.0
+              },
+              {
+                "id": "sau-mint",
+                "label": "Mint Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-none",
+                "label": "No Sauce",
+                "price": 0.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "kebab-mixed-kebab-large",
+        "name": "Mixed Kebab Large",
+        "price": 24.9,
+        "desc": "Doner, Lamb, Chicken served with 2 chilli sauce & 2 garlic sauce (portion size for 2 people)",
+        "options": [
+          {
+            "id": "salad",
+            "label": "Salad",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "sal-all",
+                "label": "All Salad",
+                "price": 0.0
+              },
+              {
+                "id": "sal-cucumber",
+                "label": "Cucumber",
+                "price": 0.0
+              },
+              {
+                "id": "sal-cabbage",
+                "label": "Cabbage",
+                "price": 0.0
+              },
+              {
+                "id": "sal-lettuce",
+                "label": "Lettuce",
+                "price": 0.0
+              },
+              {
+                "id": "sal-onion",
+                "label": "Onion",
+                "price": 0.0
+              },
+              {
+                "id": "sal-none",
+                "label": "No Salad",
+                "price": 0.0
+              }
+            ]
+          },
+          {
+            "id": "sauce",
+            "label": "Sauce",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "sau-bbq",
+                "label": "BBQ Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-chilli",
+                "label": "Chilli Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-peri",
+                "label": "Peri peri Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-garlic-mayo",
+                "label": "Garlic Mayo",
+                "price": 0.0
+              },
+              {
+                "id": "sau-sweet-chilli",
+                "label": "Sweet Chilli Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-mayo",
+                "label": "Mayonnaise",
+                "price": 0.0
+              },
+              {
+                "id": "sau-mint",
+                "label": "Mint Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-none",
+                "label": "No Sauce",
+                "price": 0.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "kebab-chicken-combo",
+        "name": "Chicken Combo",
+        "price": 17.9,
+        "desc": "Doner, Lamb, Chicken served with 2 chilli sauce & 2 garlic sauce (portion size for 2 people)",
+        "options": [
+          {
+            "id": "salad",
+            "label": "Salad",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "sal-all",
+                "label": "All Salad",
+                "price": 0.0
+              },
+              {
+                "id": "sal-cucumber",
+                "label": "Cucumber",
+                "price": 0.0
+              },
+              {
+                "id": "sal-cabbage",
+                "label": "Cabbage",
+                "price": 0.0
+              },
+              {
+                "id": "sal-lettuce",
+                "label": "Lettuce",
+                "price": 0.0
+              },
+              {
+                "id": "sal-onion",
+                "label": "Onion",
+                "price": 0.0
+              },
+              {
+                "id": "sal-none",
+                "label": "No Salad",
+                "price": 0.0
+              }
+            ]
+          },
+          {
+            "id": "sauce",
+            "label": "Sauce",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "sau-bbq",
+                "label": "BBQ Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-chilli",
+                "label": "Chilli Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-peri",
+                "label": "Peri peri Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-garlic-mayo",
+                "label": "Garlic Mayo",
+                "price": 0.0
+              },
+              {
+                "id": "sau-sweet-chilli",
+                "label": "Sweet Chilli Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-mayo",
+                "label": "Mayonnaise",
+                "price": 0.0
+              },
+              {
+                "id": "sau-mint",
+                "label": "Mint Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-none",
+                "label": "No Sauce",
+                "price": 0.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "kebab-king-size-donner",
+        "name": "King Size Donner",
+        "price": 16.9,
+        "options": [
+          {
+            "id": "salad",
+            "label": "Salad",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "sal-all",
+                "label": "All Salad",
+                "price": 0.0
+              },
+              {
+                "id": "sal-cucumber",
+                "label": "Cucumber",
+                "price": 0.0
+              },
+              {
+                "id": "sal-cabbage",
+                "label": "Cabbage",
+                "price": 0.0
+              },
+              {
+                "id": "sal-lettuce",
+                "label": "Lettuce",
+                "price": 0.0
+              },
+              {
+                "id": "sal-onion",
+                "label": "Onion",
+                "price": 0.0
+              },
+              {
+                "id": "sal-none",
+                "label": "No Salad",
+                "price": 0.0
+              }
+            ]
+          },
+          {
+            "id": "sauce",
+            "label": "Sauce",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "sau-bbq",
+                "label": "BBQ Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-chilli",
+                "label": "Chilli Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-peri",
+                "label": "Peri peri Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-garlic-mayo",
+                "label": "Garlic Mayo",
+                "price": 0.0
+              },
+              {
+                "id": "sau-sweet-chilli",
+                "label": "Sweet Chilli Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-mayo",
+                "label": "Mayonnaise",
+                "price": 0.0
+              },
+              {
+                "id": "sau-mint",
+                "label": "Mint Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-none",
+                "label": "No Sauce",
+                "price": 0.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "kebab-doner-and-chips-large",
+        "name": "Doner And Chips Large",
+        "price": 11.4,
+        "options": [
+          {
+            "id": "salad",
+            "label": "Salad",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "sal-all",
+                "label": "All Salad",
+                "price": 0.0
+              },
+              {
+                "id": "sal-cucumber",
+                "label": "Cucumber",
+                "price": 0.0
+              },
+              {
+                "id": "sal-cabbage",
+                "label": "Cabbage",
+                "price": 0.0
+              },
+              {
+                "id": "sal-lettuce",
+                "label": "Lettuce",
+                "price": 0.0
+              },
+              {
+                "id": "sal-onion",
+                "label": "Onion",
+                "price": 0.0
+              },
+              {
+                "id": "sal-none",
+                "label": "No Salad",
+                "price": 0.0
+              }
+            ]
+          },
+          {
+            "id": "sauce",
+            "label": "Sauce",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "sau-bbq",
+                "label": "BBQ Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-chilli",
+                "label": "Chilli Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-peri",
+                "label": "Peri peri Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-garlic-mayo",
+                "label": "Garlic Mayo",
+                "price": 0.0
+              },
+              {
+                "id": "sau-sweet-chilli",
+                "label": "Sweet Chilli Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-mayo",
+                "label": "Mayonnaise",
+                "price": 0.0
+              },
+              {
+                "id": "sau-mint",
+                "label": "Mint Sauce",
+                "price": 0.0
+              },
+              {
+                "id": "sau-none",
+                "label": "No Sauce",
+                "price": 0.0
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "note": "Served in pitta with salad and sauce."
+  },
+  {
+    "id": "burgers",
+    "name": "Burgers",
     "icon": "🍔",
     "items": [
-      { "id": "main-1", "name": "First Item",  "price": 8.00, "desc": "Short description shown under the name on the menu page." },
-      { "id": "main-2", "name": "Second Item", "price": 9.50, "desc": "Another description.", "meal": { "label": "+ side & drink", "addPrice": 3.00 } }
+      {
+        "id": "burger-plain-burger",
+        "name": "Plain Burger",
+        "price": 7.4,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-quarter",
+                "label": "Quarter Pounder",
+                "price": 0.0
+              },
+              {
+                "id": "sz-half",
+                "label": "Half Pounder",
+                "price": 1.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "burger-cheese-burger",
+        "name": "Cheese Burger",
+        "price": 7.4,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-quarter",
+                "label": "Quarter Pounder",
+                "price": 0.0
+              },
+              {
+                "id": "sz-half",
+                "label": "Half Pounder",
+                "price": 1.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "burger-bolognese-burger",
+        "name": "Bolognese Burger",
+        "price": 8.4,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-quarter",
+                "label": "Quarter Pounder",
+                "price": 0.0
+              },
+              {
+                "id": "sz-half",
+                "label": "Half Pounder",
+                "price": 1.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "burger-hawaiian-burger",
+        "name": "Hawaiian Burger",
+        "price": 7.5,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-quarter",
+                "label": "Quarter Pounder",
+                "price": 0.0
+              },
+              {
+                "id": "sz-half",
+                "label": "Half Pounder",
+                "price": 1.4
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "burger-american-burger",
+        "name": "American Burger",
+        "price": 7.4,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-quarter",
+                "label": "Quarter Pounder",
+                "price": 0.0
+              },
+              {
+                "id": "sz-half",
+                "label": "Half Pounder",
+                "price": 1.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "burger-garlic-mushrooms-burger",
+        "name": "Garlic Mushrooms Burger",
+        "price": 7.5,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-quarter",
+                "label": "Quarter Pounder",
+                "price": 0.0
+              },
+              {
+                "id": "sz-half",
+                "label": "Half Pounder",
+                "price": 1.4
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "burger-barbecue-burger",
+        "name": "Barbecue Burger",
+        "price": 7.4,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-quarter",
+                "label": "Quarter Pounder",
+                "price": 0.0
+              },
+              {
+                "id": "sz-half",
+                "label": "Half Pounder",
+                "price": 1.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "burger-chicken-burger",
+        "name": "Chicken Burger",
+        "price": 7.4,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-quarter",
+                "label": "Quarter Pounder",
+                "price": 0.0
+              },
+              {
+                "id": "sz-half",
+                "label": "Half Pounder",
+                "price": 1.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "burger-vegetable-burger",
+        "name": "Vegetable Burger",
+        "price": 8.4,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-quarter",
+                "label": "Quarter Pounder",
+                "price": 0.0
+              },
+              {
+                "id": "sz-half",
+                "label": "Half Pounder",
+                "price": 1.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "burger-mexican-burger",
+        "name": "Mexican Burger",
+        "price": 7.9,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-quarter",
+                "label": "Quarter Pounder",
+                "price": 0.0
+              },
+              {
+                "id": "sz-half",
+                "label": "Half Pounder",
+                "price": 2.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "burger-doner-burger",
+        "name": "Doner Burger",
+        "price": 7.9,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-quarter",
+                "label": "Quarter Pounder",
+                "price": 0.0
+              },
+              {
+                "id": "sz-half",
+                "label": "Half Pounder",
+                "price": 2.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "burger-chef-special-burger",
+        "name": "Chef Special Burger",
+        "price": 8.5,
+        "options": [
+          {
+            "id": "size",
+            "label": "Size",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "sz-quarter",
+                "label": "Quarter Pounder",
+                "price": 0.0
+              },
+              {
+                "id": "sz-half",
+                "label": "Half Pounder",
+                "price": 1.4
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "note": "Served in a bun with fries and salad."
+  },
+  {
+    "id": "pasta",
+    "name": "Pasta",
+    "icon": "🍝",
+    "items": [
+      {
+        "id": "pasta-lasagne",
+        "name": "Lasagne",
+        "price": 10.0
+      }
     ]
   },
   {
     "id": "sides",
-    "name": "Sides",
+    "name": "Side Orders",
     "icon": "🍟",
     "items": [
-      { "id": "side-chips", "name": "Chips",   "price": 3.50, "desc": "Chunky cut, lightly salted." },
-      { "id": "side-slaw",  "name": "Coleslaw","price": 2.50, "desc": "Fresh, made daily." }
+      {
+        "id": "side-fries",
+        "name": "Fries",
+        "price": 3.5,
+        "desc": "Vegetarian"
+      },
+      {
+        "id": "side-fries-with-cheese",
+        "name": "Fries With Cheese",
+        "price": 5.5,
+        "desc": "Vegetarian"
+      },
+      {
+        "id": "side-onion-rings-10-pieces",
+        "name": "Onion Rings 10 Pieces",
+        "price": 4.5,
+        "desc": "Vegetarian"
+      },
+      {
+        "id": "side-hash-brown-5-pieces",
+        "name": "Hash Brown 5 Pieces",
+        "price": 6.0,
+        "desc": "Vegetarian"
+      },
+      {
+        "id": "side-chicken-nuggets-and-chips-10-pieces",
+        "name": "Chicken Nuggets And Chips 10 Pieces",
+        "price": 8.0,
+        "options": [
+          {
+            "id": "extras",
+            "label": "Extras",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-cheese-chips",
+                "label": "Cheese On Chips",
+                "price": 2.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "side-chicken-strips-and-chips-5-pieces",
+        "name": "Chicken Strips And Chips 5 Pieces",
+        "price": 9.9,
+        "options": [
+          {
+            "id": "extras",
+            "label": "Extras",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "xt-cheese-chips",
+                "label": "Cheese On Chips",
+                "price": 2.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "side-garlic-mushrooms",
+        "name": "Garlic Mushrooms",
+        "price": 6.0,
+        "desc": "Vegetarian"
+      },
+      {
+        "id": "side-garlic-mushrooms-in-cream-with-cheese",
+        "name": "Garlic Mushrooms In Cream With Cheese",
+        "price": 6.5,
+        "desc": "Vegetarian"
+      },
+      {
+        "id": "side-mixed-salad",
+        "name": "Mixed Salad",
+        "price": 5.0,
+        "desc": "Vegetarian"
+      },
+      {
+        "id": "side-salad-in-pitta",
+        "name": "Salad IN Pitta",
+        "price": 5.0,
+        "desc": "Vegetarian"
+      },
+      {
+        "id": "side-pitta-bread",
+        "name": "Pitta Bread",
+        "price": 1.0,
+        "desc": "Vegetarian"
+      },
+      {
+        "id": "side-chilli-sauce",
+        "name": "Chilli Sauce",
+        "price": 1.0,
+        "desc": "Vegetarian"
+      },
+      {
+        "id": "side-garlic-yoghurt",
+        "name": "Garlic Yoghurt",
+        "price": 1.0,
+        "desc": "Vegetarian"
+      },
+      {
+        "id": "side-natural-yoghurt",
+        "name": "Natural Yoghurt",
+        "price": 1.0,
+        "desc": "Vegetarian"
+      }
     ]
   },
   {
     "id": "drinks",
-    "name": "Drinks",
+    "name": "Soft Drinks",
     "icon": "🥤",
     "items": [
-      { "id": "drink-coke",  "name": "Can of Coke",    "price": 1.90 },
-      { "id": "drink-water", "name": "Bottle of Water","price": 1.50 }
+      {
+        "id": "drink-coca-cola-0-33l",
+        "name": "Coca-Cola 0.33L",
+        "price": 1.7,
+        "drink": true
+      },
+      {
+        "id": "drink-diet-coca-cola-0-33l",
+        "name": "Diet Coca-Cola 0.33L",
+        "price": 1.7,
+        "drink": true
+      }
     ]
   }
 ]

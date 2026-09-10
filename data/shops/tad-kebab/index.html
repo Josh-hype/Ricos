@@ -700,18 +700,18 @@
       <a class="more" href="/order.html">View Full Menu <span aria-hidden="true">→</span></a>
     </div>
 
-    <!-- TODO_MENU: these four dishes and their prices came from the design
-         mock, NOT from the shop. Replace every name, description and price
-         with the real menu before this site goes anywhere near a customer.
-         The authoritative prices live in menu.json (pence). -->
+    <!-- Real menu. Every name and price here comes from the shop's own menu
+         and is cross-checked against menu.json by scripts/_gen-tad-menu.py --
+         change a price there, not here. "From" marks an item whose price
+         depends on a size choice, so the figure shown is its cheapest. -->
     <div class="dishes">
       <article class="dish">
-        <!-- REPLACE: <img src="/assets/dish-doner.jpg" alt="Doner kebab" width="640" height="400" /> -->
+        <!-- REPLACE: <img src="/assets/dish-doner.jpg" alt="Donner kebab" width="640" height="400" /> -->
         <div class="ph">Dish photo · 16:10</div>
         <div class="dish-body">
-          <h3>Doner Kebab</h3>
-          <p>Tender, flavourful doner meat with fresh salad and sauce.</p>
-          <div class="price">£7.50</div>
+          <h3>Donner Kebab</h3>
+          <p>Served in pitta with salad and sauce. Large or king size.</p>
+          <div class="price">From £9.90</div>
         </div>
       </article>
       <article class="dish">
@@ -719,26 +719,26 @@
         <div class="ph">Dish photo · 16:10</div>
         <div class="dish-body">
           <h3>Chicken Kebab</h3>
-          <p>Grilled chicken with fresh salad and your choice of sauce.</p>
-          <div class="price">£7.50</div>
+          <p>Cubes of chicken cooked on a griddle, in pitta with salad and sauce.</p>
+          <div class="price">£13.00</div>
         </div>
       </article>
       <article class="dish">
-        <!-- REPLACE: <img src="/assets/dish-mixed.jpg" alt="Mixed kebab" width="640" height="400" /> -->
+        <!-- REPLACE: <img src="/assets/dish-margherita.jpg" alt="Margherita pizza" width="640" height="400" /> -->
         <div class="ph">Dish photo · 16:10</div>
         <div class="dish-body">
-          <h3>Mixed Kebab</h3>
-          <p>The best of both worlds. Doner &amp; chicken, fresh and tasty.</p>
-          <div class="price">£8.50</div>
+          <h3>Margherita Pizza</h3>
+          <p>Stone baked on a tomato and cheese base. 12&quot; or 16&quot; giant.</p>
+          <div class="price">From £10.00</div>
         </div>
       </article>
       <article class="dish">
-        <!-- REPLACE: <img src="/assets/dish-fries.jpg" alt="Loaded fries" width="640" height="400" /> -->
+        <!-- REPLACE: <img src="/assets/dish-meat-feast.jpg" alt="Meat feast pizza" width="640" height="400" /> -->
         <div class="ph">Dish photo · 16:10</div>
         <div class="dish-body">
-          <h3>Loaded Fries</h3>
-          <p>Crispy fries, doner meat, cheese and your choice of sauce.</p>
-          <div class="price">£6.50</div>
+          <h3>Meat Feast Pizza</h3>
+          <p>Salami, pepperoni, ham and spicy beef.</p>
+          <div class="price">From £11.90</div>
         </div>
       </article>
     </div>
@@ -746,31 +746,10 @@
 </section>
 </div><!-- /.top-scene -->
 
-<!-- ============================================================== deal === -->
-<div class="wrap">
-  <!-- TODO_MENU: offer and price are from the design mock. Confirm with the
-       shop, or delete this whole block, before launch. -->
-  <div class="deal">
-    <div class="deal-copy">
-      <p class="eyebrow">Special offer</p>
-      <h2>Kebab Meal Deal</h2>
-      <p>Any kebab + fries + drink</p>
-    </div>
-    <div class="deal-art">
-      <!-- REPLACE: <img src="/assets/deal.jpg" alt="Kebab, fries and a drink" width="800" height="400" /> -->
-      <div class="ph">Deal photo</div>
-    </div>
-    <div class="seal" aria-hidden="true"><span><small>Only</small><b>£9.99</b></span></div>
-    <p class="deal-hand">
-      Great food.<br />Better together.
-      <svg class="arrow-l" width="58" height="24" viewBox="0 0 58 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
-        <path d="M55 4C40 2 22 6 5 18" />
-        <path d="M12 12l-7 6 7 4" />
-      </svg>
-    </p>
-    <a class="btn btn-cream deal-cta" href="/order.html">Order Now <span aria-hidden="true">→</span></a>
-  </div>
-</div>
+<!-- The design mock carried a "Kebab Meal Deal, only £9.99" panel here. The
+     shop does not run that offer -- it is nowhere on their menu -- so it is
+     removed rather than advertised. Restore it from git history the day there
+     is a real deal to put in it. -->
 
 <!-- ============================================================= visit === -->
 <section id="contact" class="visit">
