@@ -55,25 +55,43 @@
        its ::before pseudo-element, so the page-wide photo backdrop was being
        covered by the very element it sits behind. */
     html { scroll-behavior: smooth; background: var(--bg); }
-    /* The photograph continues behind the WHOLE page, heavily blurred and
-       dimmed, not just the hero. In the reference the dish cards and their
-       heading sit on warm out-of-focus oven light; stopping the image at the
-       feature strip left everything below it flat brown, which was the single
-       biggest difference between the two. */
+    /* A picture continues behind the WHOLE page, not just the hero: in the
+       reference the dish cards and their heading sit on warm out-of-focus
+       light, and stopping the image at the feature strip left everything below
+       it flat brown. This used to be the hero's own oven photo blurred to 46px
+       and dimmed to a third, because it was the only picture we had. It is now
+       a purpose-shot dark kitchen — already out of focus above, with a lit
+       worktop along the bottom — so it needs a light touch instead: enough
+       blur to stop the worktop's grain competing with body text, and no
+       dimming beyond what the scrim below already does.
+
+       Fixed, so the worktop's line stays put on screen as the page scrolls,
+       which reads as a set rather than as parallax. */
     body::before {
       content: ''; position: fixed; inset: 0; z-index: -3;
-      background: url('/assets/hero-800.jpg') center 45% / cover no-repeat;
-      /* 0.34, not 0.78. Row-by-row luminance under the feature strip put the
-         reference's backdrop at ~20 and ours at ~48: the glow was reading as a
-         warm orange wash rather than as a nearly-dark room with a little oven
-         light left in it. This value only shows below the hero — inside the
-         hero the photo and its own gradient sit on top of it. */
-      filter: blur(46px) brightness(0.34) saturate(.8);
-      transform: scale(1.12);
+      background-image: url('/assets/background-1600.jpg');
+      background-image: image-set(url('/assets/background-1600.webp') type('image/webp'),
+                                  url('/assets/background-1600.jpg') type('image/jpeg'));
+      background-position: center 55%;
+      background-size: cover;
+      background-repeat: no-repeat;
+      /* scale() covers the transparent edge that blur() bleeds in from the
+         element's own bounds — 6px of blur needs far less of it than 46 did. */
+      filter: blur(7px) brightness(0.62);
+      transform: scale(1.06);
     }
+    /* The scrim is fixed too, so its stops line up with the picture's bands
+       whatever the viewport. It has to work hardest across the bottom third,
+       where the lit worktop falls: at full strength that band measured 37
+       against the reference's 25, and it put the red OUR FAVOURITES eyebrow on
+       warm orange, which is the one colour pairing on this page that does not
+       carry. Enough glow survives to see the worktop; not enough to compete
+       with type passing over it as the page scrolls. */
     body::after {
       content: ''; position: fixed; inset: 0; z-index: -3;
-      background: linear-gradient(to bottom, rgba(23,16,13,0.06), rgba(23,16,13,0.34));
+      background: linear-gradient(to bottom,
+                    rgba(23,16,13,.05) 0%, rgba(23,16,13,.12) 50%,
+                    rgba(23,16,13,.42) 72%, rgba(23,16,13,.55) 100%);
     }
     body {
       margin: 0;
@@ -383,8 +401,12 @@
       border-color: color-mix(in srgb, var(--surface) 26%, transparent);
       color: color-mix(in srgb, var(--surface) 70%, transparent);
     }
+    /* 41%, not 26%: the grid's first column ends at ~40% of the panel, so 26%
+       parked the seal in the middle of the copy column and it sat straight on
+       top of the "Kebab Meal Deal" heading. It belongs on the seam, half on the
+       photo, like a sticker. */
     .seal {
-      position: absolute; z-index: 3; left: 26%; top: 50%;
+      position: absolute; z-index: 3; left: 41%; top: 50%;
       transform: translate(-50%, -50%) rotate(-8deg);
       width: 104px; height: 104px; border-radius: 50%;
       background: var(--red); color: #fff; display: grid; place-items: center;
