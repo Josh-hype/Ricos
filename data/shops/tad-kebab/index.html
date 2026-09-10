@@ -268,8 +268,23 @@
       position: absolute; right: -5%; top: 108px; width: 66%;
       height: calc(100% - var(--strip-drop) - 108px);
       object-fit: cover; object-position: center top;
-      /* No mask. The photograph is used as it is, square edges and all; the
-         feathered left and bottom it used to carry are gone. */
+      /* Feathered on three edges, and the stops are measured off the reference
+         rather than picked. Reading across the reference at rows 250-450, its
+         photograph climbs out of the dark over roughly 60px (x 644 to 704) —
+         ours stepped up over 12 and read as a cut-out pasted on. Reading down
+         columns 1150-1500, the reference falls away over about 40px (y 645 to
+         684) where ours held full brightness and then stopped dead on the
+         feature strip's line. And across the top, the reference is near-black
+         at y 116-140 where ours was already at 30.
+
+         The vertical fades are one gradient, not two, so only two layers need
+         compositing. */
+      -webkit-mask-image: linear-gradient(to right, transparent 0 3.5%, #000 8%),
+                          linear-gradient(to bottom, transparent 0 7%, #000 15%, #000 93%, rgba(0,0,0,.55) 97.5%, transparent 100%);
+      -webkit-mask-composite: source-in;
+              mask-image: linear-gradient(to right, transparent 0 3.5%, #000 8%),
+                          linear-gradient(to bottom, transparent 0 7%, #000 15%, #000 93%, rgba(0,0,0,.55) 97.5%, transparent 100%);
+              mask-composite: intersect;
     }
     .hero-media::after {
       content: ''; position: absolute; inset: 0; z-index: 1;
