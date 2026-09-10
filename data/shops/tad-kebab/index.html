@@ -74,8 +74,8 @@
          that deep crops a 16:9 photograph to a smear. The last 340px are the
          bleed, at every size. */
       height: min(100%, 132vh);
-      -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 340px), transparent 100%);
-              mask-image: linear-gradient(to bottom, #000 calc(100% - 340px), transparent 100%);
+      -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 260px), transparent 100%);
+              mask-image: linear-gradient(to bottom, #000 calc(100% - 260px), transparent 100%);
       pointer-events: none;
     }
     /* A purpose-shot dark kitchen: already out of focus above, with a lit
@@ -86,10 +86,14 @@
       background-image: url('/assets/background-1600.jpg');
       background-image: image-set(url('/assets/background-1600.webp') type('image/webp'),
                                   url('/assets/background-1600.jpg') type('image/jpeg'));
-      background-position: center top;
+      /* left, not centre. Covering a box this tall crops ~550px off the
+         photograph's width, and centring it kept the dark middle and threw away
+         the lit worktop and the lamp — the band under the feature strip
+         measured 19 against the reference's 25. Anchored left it measures 24. */
+      background-position: left top;
       background-size: cover;
       background-repeat: no-repeat;
-      filter: blur(7px) brightness(0.62);
+      filter: blur(7px) brightness(0.95);
     }
     /* The scrim shares the box and the mask, so the two vanish together into
        the flat colour instead of the darkening outliving the picture. It works
@@ -100,7 +104,7 @@
     .top-scene::after {
       background: linear-gradient(to bottom,
                     rgba(23,16,13,.05) 0%, rgba(23,16,13,.12) 50%,
-                    rgba(23,16,13,.42) 72%, rgba(23,16,13,.55) 100%);
+                    rgba(23,16,13,.25) 76%, rgba(23,16,13,.34) 100%);
     }
     body {
       margin: 0;
@@ -261,9 +265,9 @@
        size, and far cheaper than the half-scale blow-up that cover across the
        WHOLE band used to cause. */
     .hero-media .sharp {
-      position: absolute; right: 0; top: 0; width: 60%;
-      height: calc(100% - var(--strip-drop));
-      object-fit: cover; object-position: center;
+      position: absolute; right: -5%; top: 108px; width: 66%;
+      height: calc(100% - var(--strip-drop) - 108px);
+      object-fit: cover; object-position: center top;
       /* No mask. The photograph is used as it is, square edges and all; the
          feathered left and bottom it used to carry are gone. */
     }
@@ -496,7 +500,6 @@
          not shrink with the viewport, so at 60% the photograph's left edge was
          landing within 2px of the end of "…delivery in Tadcaster &". */
       .hero { --strip-drop: 224px; }
-      .hero-media .sharp { width: 56%; }
       .features-card { grid-template-columns: repeat(2, 1fr); }
       .feat:nth-child(3) { border-left: 0; }
       .feat:nth-child(n+3) { border-top: 1px solid var(--hair); }
