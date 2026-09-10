@@ -170,5 +170,20 @@
     "metaPixelId": ""
   },
   "_comment_prelaunch": "Keeps the shop out of Google until its real menu and prices are in. REMOVE both this and \"prelaunch\" on launch day.",
-  "prelaunch": true
+  "prelaunch": true,
+  "seo": {
+    "cuisine": [
+      "Pizza",
+      "Kebab",
+      "Burgers"
+    ],
+    "priceRange": "££",
+    "addressRegion": "North Yorkshire",
+    "_comment_description": "The line Google shows under the result, written for a person. Leads with \"Tad Kebab Tadcaster\" because that adjacency is what a brand-name search matches on.",
+    "description": "Tad Kebab Tadcaster — stone baked pizzas and massive kebabs. Pizza, kebabs, burgers and more. Order online for collection or delivery in Tadcaster and surrounding areas.",
+    "_comment_ogImage": "The picture shown when the link is shared on WhatsApp, Facebook or in a text — for a local takeaway that is most of how it travels. Cropped to 1200x630 from the hero photograph; regenerate if the hero changes. A logo letterboxes into the card and looks like nothing.",
+    "ogImage": "assets/og-image.jpg",
+    "_comment_geo": "MISSING and must not be guessed. Look up the shop's own postcode at https://api.postcodes.io/postcodes/LS24%208AA and paste lat/lng here. It feeds the Restaurant schema and the delivery service-area circle. This session could not fetch it — the egress policy blocks postcodes.io — and an invented coordinate puts the shop in the wrong place on Google.",
+    "_comment_sameAs": "MISSING. The shop's own Instagram and Facebook URLs, which is how Google ties the site, the socials and the Google Business Profile together as one business. Ask the owner."
+  }
 }

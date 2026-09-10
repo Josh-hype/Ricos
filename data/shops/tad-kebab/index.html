@@ -141,18 +141,37 @@
     .proof-text { font-size: 12.5px; color: var(--ink-soft); }
 
     .hero-art { position: relative; }
-    /* 16:11 keeps the hero from collapsing before the photo exists. */
-    .hero-art .ph { aspect-ratio: 16 / 11; border-radius: 20px; }
+    /* The slot was drawn at 16:11; the photo is 1585x992, near enough 8:5 and
+       so wider than that. Cropping it to 16:11 would have taken the sides off
+       and lost the right-hand pizza, so the slot takes the photo's proportions
+       rather than the photo taking the slot's. 8/5 is within 0.14% of the file's
+       real ratio, which cover absorbs invisibly, and it keeps working if the
+       photo is later swapped for another roughly-widescreen one. */
+    .hero-art .ph,
+    .hero-art img { aspect-ratio: 8 / 5; border-radius: 20px; }
+    .hero-art picture { display: block; }
+    .hero-art img { width: 100%; height: auto; object-fit: cover; }
 
-    .scribble { font-family: var(--hand); color: var(--ink); line-height: 1.15; pointer-events: none; }
-    .scribble-1 {
-      position: absolute; top: -6px; left: -26px; z-index: 2;
-      font-size: 21px; transform: rotate(-6deg); text-align: center;
+    /* The annotations sit ON the photograph, and are positioned against .shot
+       (which wraps the image) rather than the grid cell — the cell is taller
+       than the photo, so cell-relative offsets landed them in the wrong place
+       and let them clip off the edge on a phone.
+
+       Cream with a shadow, not the design's dark ink. Dark ink only worked
+       against the pale placeholder: over the unlit oven arch the top note
+       vanished, and over the bright oven floor so did the bottom one. The
+       shadow carries cream across both the dark and the lit parts, which no
+       single flat colour does. */
+    .shot { position: relative; }
+    .scribble {
+      position: absolute; z-index: 2; margin: 0;
+      font-family: var(--hand); line-height: 1.15; pointer-events: none;
+      color: var(--surface);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, .7), 0 5px 18px rgba(0, 0, 0, .5);
     }
-    .scribble-2 {
-      position: absolute; right: 8px; bottom: -30px; z-index: 2;
-      font-size: 20px; text-align: center; transform: rotate(-4deg);
-    }
+    .scribble svg { filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .7)); }
+    .scribble-1 { top: 16px; left: 22px; font-size: 21px; transform: rotate(-6deg); text-align: center; }
+    .scribble-2 { bottom: 16px; right: 22px; font-size: 20px; text-align: center; transform: rotate(-4deg); }
     .scribble-2 .rule { display: block; margin-top: 2px; }
     .arrow { display: block; margin: 2px auto 0; }
 
@@ -281,8 +300,10 @@
       .burger { display: block; margin-left: auto; }
       .head-cta { display: none; }
       .hero-grid, .visit-grid { grid-template-columns: 1fr; }
-      .scribble-1 { left: auto; right: 10px; top: -14px; }
-      .scribble-2 { bottom: -26px; right: 0; }
+      /* Smaller and further in on a phone: the photo is ~390px wide there and
+         the notes overflowed its right edge at desktop size. */
+      .scribble-1 { top: 12px; left: 14px; font-size: 18px; }
+      .scribble-2 { bottom: 12px; right: 14px; font-size: 17px; }
       .deal { grid-template-columns: 1fr; }
       .deal .deal-hand { display: none; }
       .deal-copy { padding: 30px 24px 0; }
@@ -361,6 +382,7 @@
     </div>
 
     <div class="hero-art">
+      <div class="shot">
       <p class="scribble scribble-1">
         More than<br />just a kebab
         <svg class="arrow" width="46" height="30" viewBox="0 0 46 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
@@ -368,14 +390,23 @@
           <path d="M31 24l7 1 1-7" />
         </svg>
       </p>
-      <!-- REPLACE: <img src="/assets/hero.jpg" alt="A freshly made kebab" width="1200" height="825" /> -->
-      <div class="ph">Hero photo · 16:11</div>
+      <picture>
+        <source type="image/webp"
+                srcset="/assets/hero-800.webp 800w, /assets/hero.webp 1585w"
+                sizes="(max-width: 900px) 100vw, 52vw" />
+        <img src="/assets/hero.jpg"
+             srcset="/assets/hero-800.jpg 800w, /assets/hero.jpg 1585w"
+             sizes="(max-width: 900px) 100vw, 52vw"
+             width="1585" height="992" fetchpriority="high" decoding="async"
+             alt="Pizzas baking on the stone floor of a flame-fired oven" />
+      </picture>
       <p class="scribble scribble-2">
         Freshly made.<br />Locally loved.
-        <svg class="rule" width="92" height="8" viewBox="0 0 92 8" fill="none" stroke="{{themePrimary}}" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+        <svg class="rule" width="92" height="8" viewBox="0 0 92 8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
           <path d="M3 5c18-3 62-4 86 0" />
         </svg>
       </p>
+      </div>
     </div>
   </div>
 
