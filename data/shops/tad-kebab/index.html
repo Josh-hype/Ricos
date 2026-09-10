@@ -34,6 +34,9 @@
          goes muddy against near-black, so buttons and links take a warmer,
          brighter cut while the kit's red stays the brand of record. */
       --red-lift: color-mix(in srgb, var(--red) 82%, #FF7A45);
+      /* Small red TEXT needs to run brighter than the button fill or it goes
+         dull against near-black at 12-15px. */
+      --red-text: #FA4C28;
       /* A wash of the brand red, used behind icons and as the image-slot
          ground. Derived from --red rather than hard-coded so a palette change
          carries through instead of leaving peach circles behind. */
@@ -43,6 +46,7 @@
       --sans: 'DM Sans', system-ui, -apple-system, sans-serif;
       --hand: 'Caveat', cursive;
       --wrap: 1340px;
+      --head-h: 106px;
       --r: 16px;
     }
 
@@ -86,7 +90,7 @@
 
     .eyebrow {
       font-size: 12px; font-weight: 700; letter-spacing: .18em;
-      text-transform: uppercase; color: var(--red-lift); margin: 0 0 10px;
+      text-transform: uppercase; color: var(--red-text); margin: 0 0 10px;
     }
     h1, h2, h3 { font-family: var(--serif); margin: 0; line-height: 1.08; letter-spacing: -.01em; }
 
@@ -130,12 +134,12 @@
     .brand img { height: 52px; width: auto; }
     .nav { display: flex; gap: 30px; justify-content: center; }
     .nav a {
-      font-size: 15px; font-weight: 500; color: rgba(247, 239, 230, .78);
+      font-size: 15px; font-weight: 500; color: rgba(247, 239, 230, .95);
       padding-bottom: 4px; border-bottom: 2px solid transparent;
       transition: color .15s ease, border-color .15s ease;
     }
     .nav a:hover { color: var(--ink); }
-    .nav a.on { color: var(--red-lift); border-bottom-color: var(--red-lift); font-weight: 600; }
+    .nav a.on { color: var(--red-text); border-bottom-color: var(--red-text); font-weight: 600; }
     .head-cta { padding: 12px 22px; font-size: 14px; justify-self: end; }
     .burger { display: none; background: none; border: 0; padding: 8px; cursor: pointer; }
     .burger span { display: block; width: 22px; height: 2px; background: var(--ink); border-radius: 2px; }
@@ -153,7 +157,12 @@
        taller band lets the oven mouth and all three pizzas read. */
     .hero {
       position: relative; isolation: isolate; overflow: hidden;
-      padding: 0 0 34px; min-height: clamp(580px, 47vw, 720px);
+      /* Pulled up behind the sticky header so the photograph reaches y=0.
+         Sitting below it left a flat band across the top of the page and a
+         visible seam where the image began. */
+      margin-top: calc(-1 * var(--head-h));
+      padding: var(--head-h) 0 34px;
+      min-height: clamp(560px, 44vw, 660px);
       display: flex; flex-direction: column; justify-content: center;
     }
     /* Two layers of one photograph, because the reference mock is a composite:
@@ -184,10 +193,10 @@
            plant that is nowhere in our photograph. With one image the honest
            equivalent is to hold the left near-solid and let the oven emerge,
            which is also what makes the headline readable. */
-        linear-gradient(96deg, rgba(23,16,13,.94) 12%, rgba(23,16,13,.86) 30%, rgba(23,16,13,.5) 46%,
-                        rgba(23,16,13,.14) 62%, rgba(23,16,13,0) 74%),
-        linear-gradient(to bottom, rgba(23,16,13,.70) 0%, rgba(23,16,13,0) 20%,
-                        rgba(23,16,13,0) 52%, rgba(23,16,13,.86) 88%, var(--bg) 100%);
+        linear-gradient(96deg, rgba(23,16,13,.92) 10%, rgba(23,16,13,.72) 30%, rgba(23,16,13,.34) 46%,
+                        rgba(23,16,13,.06) 62%, rgba(23,16,13,0) 72%),
+        linear-gradient(to bottom, rgba(23,16,13,.52) 0%, rgba(23,16,13,0) 22%,
+                        rgba(23,16,13,0) 55%, rgba(23,16,13,.72) 90%, var(--bg) 100%);
     }
     .hero-inner { padding: 58px 0 30px; position: relative; z-index: 1; }
     /* 700px, not 620: at the widest breakpoint Playfair needs 639px to hold
@@ -205,13 +214,13 @@
     .proof { display: flex; align-items: center; gap: 12px; margin-top: 26px; }
     .faces { display: flex; }
     .faces span {
-      width: 34px; height: 34px; border-radius: 50%;
+      width: 40px; height: 40px; border-radius: 50%;
       background: var(--blush); border: 2.5px solid rgba(23,16,13,.9);
       margin-left: -10px; display: grid; place-items: center;
-      font-size: 13px; font-weight: 700; color: var(--ink);
+      font-size: 15px; font-weight: 700; color: var(--ink);
     }
     .faces span:first-child { margin-left: 0; }
-    .stars { color: var(--gold); font-size: 14px; letter-spacing: 1px; }
+    .stars { color: #FFE06D; font-size: 18px; letter-spacing: 1px; }
     .proof-text { font-size: 12.5px; color: rgba(247,239,230,.75); }
 
     /* The annotations sit ON the photograph, and are positioned against .shot
@@ -238,8 +247,8 @@
     /* Positioned against the hero band itself now the photo is its background.
        Kept to the right half, clear of the scrim that darkens the left for the
        copy — over there they would be sitting on near-black. */
-    .scribble-1 { top: 13%; left: 54%; font-size: 21px; transform: rotate(-6deg); text-align: center; }
-    .scribble-2 { bottom: 24%; right: 6%; font-size: 20px; text-align: center; transform: rotate(-4deg); }
+    .scribble-1 { top: 11%; left: 51%; font-size: 27px; transform: rotate(-6deg); text-align: center; }
+    .scribble-2 { bottom: 29%; right: 9%; font-size: 26px; text-align: center; transform: rotate(-4deg); }
     .scribble-2 .rule { display: block; margin-top: 2px; }
     .arrow { display: block; margin: 2px auto 0; }
 
@@ -254,21 +263,21 @@
       border-radius: var(--r);
       display: grid; grid-template-columns: repeat(4, 1fr);
     }
-    .feat { display: flex; align-items: center; gap: 14px; padding: 24px 26px; }
+    .feat { display: flex; align-items: center; gap: 22px; padding: 24px 32px; }
     .feat + .feat { border-left: 1px solid var(--panel-line); }
     .feat .ico {
       width: 46px; height: 46px; border-radius: 50%; background: var(--blush);
       display: grid; place-items: center; flex: 0 0 auto; color: var(--red-lift);
     }
     .feat b { display: block; font-size: 14.5px; font-weight: 700; }
-    .feat small { color: rgba(247,239,230,.62); font-size: 12.5px; }
+    .feat small { color: rgba(247,239,230,.84); font-size: 12.5px; }
 
     /* ---------------------------------------------------------- dishes --- */
     section { padding: 62px 0; }
     .sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 26px; }
     .sec-head h2 { font-size: clamp(28px, 3.4vw, 40px); font-weight: 800; }
     .more {
-      color: var(--red-lift); font-weight: 600; font-size: 14px;
+      color: var(--red-text); font-weight: 600; font-size: 15.5px;
       border-bottom: 1.5px solid currentColor; padding-bottom: 2px; white-space: nowrap;
     }
     .dishes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
@@ -354,7 +363,7 @@
     .foot-nav a:hover { color: var(--surface); }
     .socials { display: flex; gap: 12px; }
     .socials a {
-      width: 34px; height: 34px; border-radius: 50%;
+      width: 40px; height: 40px; border-radius: 50%;
       background: color-mix(in srgb, var(--surface) 10%, transparent);
       display: grid; place-items: center; color: var(--surface);
       transition: background .15s ease;
@@ -387,9 +396,9 @@
       .hero-media .sharp { width: 100%; -webkit-mask-image: none; mask-image: none; }
       .hero-media::after {
         background:
-          linear-gradient(to bottom, rgba(23,16,13,.80) 0%, rgba(23,16,13,.72) 40%,
-                          rgba(23,16,13,.86) 78%, var(--bg) 100%),
-          linear-gradient(to right, rgba(23,16,13,.55) 0%, rgba(23,16,13,.45) 100%);
+          linear-gradient(to bottom, rgba(23,16,13,.62) 0%, rgba(23,16,13,.55) 40%,
+                          rgba(23,16,13,.78) 82%, var(--bg) 100%),
+          linear-gradient(to right, rgba(23,16,13,.35) 0%, rgba(23,16,13,.28) 100%);
       }
       .visit-grid { grid-template-columns: 1fr; }
       /* Smaller and further in on a phone: the photo is ~390px wide there and
