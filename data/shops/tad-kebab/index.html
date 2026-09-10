@@ -28,7 +28,7 @@
       --bg-2: #1C1410;
       --ink: #F7EFE6;
       --ink-soft: #B3A499;
-      --panel: rgba(31, 22, 18, .74);
+      --panel: rgba(26, 18, 15, .88);
       --panel-line: rgba(247, 239, 230, .12);
       /* The brand red lifted for a dark ground. #D33A2C is mixed for cream and
          goes muddy against near-black, so buttons and links take a warmer,
@@ -51,10 +51,28 @@
     }
 
     *, *::before, *::after { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    /* Base colour lives on html, not body: body paints its own background OVER
+       its ::before pseudo-element, so the page-wide photo backdrop was being
+       covered by the very element it sits behind. */
+    html { scroll-behavior: smooth; background: var(--bg); }
+    /* The photograph continues behind the WHOLE page, heavily blurred and
+       dimmed, not just the hero. In the reference the dish cards and their
+       heading sit on warm out-of-focus oven light; stopping the image at the
+       feature strip left everything below it flat brown, which was the single
+       biggest difference between the two. */
+    body::before {
+      content: ''; position: fixed; inset: 0; z-index: -3;
+      background: url('/assets/hero-800.jpg') center 45% / cover no-repeat;
+      filter: blur(46px) brightness(0.78) saturate(.8);
+      transform: scale(1.12);
+    }
+    body::after {
+      content: ''; position: fixed; inset: 0; z-index: -3;
+      background: linear-gradient(to bottom, rgba(23,16,13,0.06), rgba(23,16,13,0.34));
+    }
     body {
       margin: 0;
-      background: var(--bg);
+      background: transparent;
       color: var(--ink);
       font-family: var(--sans);
       font-size: 16px;
@@ -173,20 +191,24 @@
        whole band and swallowing two of the three pizzas. */
     .hero-media { position: absolute; inset: 0; z-index: -2; overflow: hidden; }
     .hero-media img { max-width: none; border-radius: 0; aspect-ratio: auto; }
-    .hero-media .blur {
-      position: absolute; inset: 0; width: 100%; height: 100%;
-      object-fit: cover; object-position: 50% 55%;
-      filter: blur(34px) brightness(.38) saturate(.85);
-      transform: scale(1.15);
-    }
     .hero-media .sharp {
-      position: absolute; right: 0; top: 0; height: 100%; width: 62%;
+      position: absolute; right: 0; top: 0; height: 100%; width: 74%;
       object-fit: cover; object-position: 52% 54%;
-      -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 20%);
-              mask-image: linear-gradient(to right, transparent 0%, #000 20%);
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 20%),
+                          linear-gradient(to bottom, #000 62%, transparent 100%);
+      -webkit-mask-composite: source-in;
+              mask-image: linear-gradient(to right, transparent 0%, #000 20%),
+                          linear-gradient(to bottom, #000 62%, transparent 100%);
+              mask-composite: intersect;
     }
     .hero-media::after {
       content: ''; position: absolute; inset: 0; z-index: 1;
+      /* The left-hand darkening has to EASE OFF toward the hero's bottom edge.
+         Held at full strength it stopped dead where the hero ends, and the page
+         backdrop below started warm — a hard horizontal band right across the
+         page under the feature strip. */
+      -webkit-mask-image: linear-gradient(to bottom, #000 52%, transparent 100%);
+              mask-image: linear-gradient(to bottom, #000 52%, transparent 100%);
       background:
         /* The reference mock composites two pictures — a dark blurred room on the
            left, the oven on the right — which is why its left third carries a
@@ -195,8 +217,7 @@
            which is also what makes the headline readable. */
         linear-gradient(96deg, rgba(23,16,13,.92) 10%, rgba(23,16,13,.72) 30%, rgba(23,16,13,.34) 46%,
                         rgba(23,16,13,.06) 62%, rgba(23,16,13,0) 72%),
-        linear-gradient(to bottom, rgba(23,16,13,.52) 0%, rgba(23,16,13,0) 22%,
-                        rgba(23,16,13,0) 55%, rgba(23,16,13,.72) 90%, var(--bg) 100%);
+        linear-gradient(to bottom, rgba(23,16,13,.48) 0%, rgba(23,16,13,0) 22%, rgba(23,16,13,0) 100%);
     }
     .hero-inner { padding: 58px 0 30px; position: relative; z-index: 1; }
     /* 700px, not 620: at the widest breakpoint Playfair needs 639px to hold
@@ -206,7 +227,7 @@
        blocks Google Fonts and the page had been silently rendering in a
        substitute serif that is materially narrower. */
     .hero-text { max-width: 700px; }
-    .hero h1 { font-size: clamp(34px, 4.8vw, 74px); font-weight: 800; }
+    .hero h1 { font-size: clamp(34px, 4.5vw, 69px); font-weight: 800; }
     .hero h1 .in-town { color: var(--red-lift); display: block; }
     .hero-copy { color: rgba(247,239,230,.82); font-size: 16px; margin: 20px 0 26px; max-width: 44ch; }
     .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
@@ -282,7 +303,7 @@
     }
     .dishes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
     .dish {
-      background: var(--bg-2); border-radius: var(--r); overflow: hidden;
+      background: rgba(28,20,16,.72); backdrop-filter: blur(6px); border-radius: var(--r); overflow: hidden;
       border: 1px solid var(--panel-line);
       transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
     }
@@ -301,7 +322,7 @@
        right. Sat over the photo it looked like a mistake, and the handwriting
        landed on top of it. */
     .deal {
-      position: relative; background: var(--bg-2); color: var(--ink);
+      position: relative; background: rgba(28,20,16,.78); backdrop-filter: blur(6px); color: var(--ink);
       border: 1px solid var(--panel-line);
       border-radius: 20px; overflow: hidden;
       display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1fr) 208px;
@@ -343,7 +364,7 @@
     .visit-sub { color: rgba(247,239,230,.72); margin: 14px 0 0; font-size: 15px; max-width: 34ch; }
     .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
     .card {
-      background: var(--bg-2); border: 1px solid var(--panel-line); border-radius: var(--r);
+      background: rgba(28,20,16,.72); backdrop-filter: blur(6px); border: 1px solid var(--panel-line); border-radius: var(--r);
       padding: 20px; display: flex; gap: 13px; align-items: flex-start;
     }
     .card .ico {
@@ -356,7 +377,7 @@
     .card .note { font-size: 11.5px; opacity: .75; }
 
     /* ---------------------------------------------------------- footer --- */
-    .site-foot { background: var(--bg-2); color: rgba(247,239,230,.72); border-top: 1px solid var(--panel-line); }
+    .site-foot { background: rgba(23,16,13,.72); color: rgba(247,239,230,.72); border-top: 1px solid var(--panel-line); }
     .foot-in { display: flex; align-items: center; gap: 26px; padding: 26px 0; flex-wrap: wrap; justify-content: space-between; }
     .foot-in .brand img { height: 46px; }
     .foot-nav { display: flex; gap: 22px; font-size: 14px; }
@@ -460,15 +481,11 @@
 <div class="hero">
   <div class="hero-media" aria-hidden="true">
     <picture>
-      <source type="image/webp" srcset="/assets/hero-800.webp" />
-      <img class="blur" src="/assets/hero-800.jpg" width="800" height="501" decoding="async" alt="" />
-    </picture>
-    <picture>
       <source type="image/webp" srcset="/assets/hero-800.webp 800w, /assets/hero.webp 1585w"
-              sizes="62vw" />
+              sizes="74vw" />
       <img class="sharp" src="/assets/hero.jpg"
            srcset="/assets/hero-800.jpg 800w, /assets/hero.jpg 1585w"
-           sizes="62vw"
+           sizes="74vw"
            width="1585" height="992" fetchpriority="high" decoding="async" alt="" />
     </picture>
   </div>
