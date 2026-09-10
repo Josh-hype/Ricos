@@ -231,11 +231,21 @@
            plant that is nowhere in our photograph. With one image the honest
            equivalent is to hold the left near-solid and let the oven emerge,
            which is also what makes the headline readable. */
-        linear-gradient(96deg, rgba(23,16,13,.96) 22%, rgba(23,16,13,.84) 34%, rgba(23,16,13,.4) 46%,
+        /* 104deg, not 96. The tilt is the only lever that darkens the TOP left
+           without darkening the rest: above the headline the reference is
+           essentially black out to x~800, while from the headline down the two
+           already agree — so the stop percentages must stay where they are and
+           only the angle move. (Raising the alphas instead cost 7 luminance
+           across the whole left flank and was reverted.) */
+        linear-gradient(104deg, rgba(23,16,13,.96) 22%, rgba(23,16,13,.84) 34%, rgba(23,16,13,.4) 46%,
                         rgba(23,16,13,.08) 58%, rgba(23,16,13,0) 68%),
         linear-gradient(to bottom, rgba(23,16,13,.48) 0%, rgba(23,16,13,0) 22%, rgba(23,16,13,0) 100%);
     }
-    .hero-inner { padding: 30px 0 18px; position: relative; z-index: 1; }
+    /* 56px top / 4px on .features below, not 30 / 30: the headline's cap line
+       measured 26px above the reference's. The 26px moves from the bottom of
+       this block to the top of it so the feature strip, which already lines up,
+       does not move with it. */
+    .hero-inner { padding: 56px 0 18px; position: relative; z-index: 1; }
     /* 700px, not 620: at the widest breakpoint Playfair needs 639px to hold
        "Stone baked Pizzas" on one line, and the headline is three authored
        lines, not four. Measured with the real webfont — an earlier pass sized
@@ -295,7 +305,7 @@
     /* --------------------------------------------------------- features -- */
     /* Sits ON the hero photograph as a translucent panel rather than a white
        card below it, which is what makes it read as part of the shopfront. */
-    .features { margin-top: 30px; position: relative; z-index: 1; }
+    .features { margin-top: 4px; position: relative; z-index: 1; }
     .features-card {
       background: var(--panel);
       backdrop-filter: blur(14px);
@@ -433,7 +443,18 @@
          phone the copy runs the full width, so it was landing on the white-hot
          flames — cream text on a near-white background, genuinely unreadable.
          Here the whole band is darkened evenly instead. */
-      .hero-media .sharp { width: 100%; -webkit-mask-image: none; mask-image: none; }
+      /* The desktop offsets are measured against the reference's 1558px mock and
+         make no sense at 430px: -5% would crop the right edge off a photo that
+         is already only as wide as the screen, and 108px would drop it clear of
+         the header instead of tucking under it. */
+      .hero-media .sharp {
+        width: 100%; right: 0; top: 48px;
+        /* Only the LEFT fade goes: it would eat into copy that now runs the
+           full width. The bottom fade stays, or the photo ends on a hard
+           horizontal cut straight across the phone. */
+        -webkit-mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
+                mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
+      }
       .hero-media::after {
         background:
           linear-gradient(to bottom, rgba(23,16,13,.62) 0%, rgba(23,16,13,.55) 40%,
