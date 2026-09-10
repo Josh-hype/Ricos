@@ -118,7 +118,7 @@
     .burger span + span { margin-top: 5px; }
 
     /* ------------------------------------------------------------ hero --- */
-    .hero { position: relative; padding: 34px 0 0; }
+    .hero { position: relative; padding: 34px 0 0; overflow-x: clip; }
     .hero-grid {
       display: grid; grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.06fr);
       gap: 40px; align-items: center;
@@ -147,10 +147,31 @@
        rather than the photo taking the slot's. 8/5 is within 0.14% of the file's
        real ratio, which cover absorbs invisibly, and it keeps working if the
        photo is later swapped for another roughly-widescreen one. */
-    .hero-art .ph,
-    .hero-art img { aspect-ratio: 8 / 5; border-radius: 20px; }
+    .hero-art .ph { aspect-ratio: 8 / 5; border-radius: 20px; }
     .hero-art picture { display: block; }
-    .hero-art img { width: 100%; height: auto; object-fit: cover; }
+
+    /* The photo bleeds to the viewport edge and feathers into the cream, rather
+       than sitting in a rounded box. Both live shops do this — Big Bites masks
+       its burger shot, Rico's uses a cut-out with no frame — and a hard-edged
+       rectangle reads as a stock card dropped onto the page instead of part of
+       it. The supplied design ran the photo off the top-right corner too.
+
+       The left feather is 12%, not the 20% Big Bites uses: at 20% the fade
+       reached the near pizza and washed out the thing the picture is for. Big
+       Bites' own CSS carries the same warning about its burger. */
+    .hero-art img {
+      width: calc(100% + max(0px, (100vw - var(--wrap)) / 2) + 20px);
+      max-width: none;
+      height: auto;
+      aspect-ratio: 8 / 5;
+      object-fit: cover;
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 12%),
+                          linear-gradient(to bottom, transparent 0%, #000 10%, #000 86%, transparent 100%);
+      -webkit-mask-composite: source-in;
+              mask-image: linear-gradient(to right, transparent 0%, #000 12%),
+                          linear-gradient(to bottom, transparent 0%, #000 10%, #000 86%, transparent 100%);
+              mask-composite: intersect;
+    }
 
     /* The annotations sit ON the photograph, and are positioned against .shot
        (which wraps the image) rather than the grid cell — the cell is taller
@@ -170,8 +191,12 @@
       text-shadow: 0 1px 3px rgba(0, 0, 0, .7), 0 5px 18px rgba(0, 0, 0, .5);
     }
     .scribble svg { filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .7)); }
-    .scribble-1 { top: 16px; left: 22px; font-size: 21px; transform: rotate(-6deg); text-align: center; }
-    .scribble-2 { bottom: 16px; right: 22px; font-size: 20px; text-align: center; transform: rotate(-4deg); }
+    /* Positioned in PERCENTAGES, clear of the mask's fades. The left edge
+       feathers to transparent over the first 12% and the bottom over the last
+       14%, so a note pinned a fixed 16px from either edge sat where the photo
+       has already dissolved to cream — cream text on cream. */
+    .scribble-1 { top: 9%; left: 18%; font-size: 21px; transform: rotate(-6deg); text-align: center; }
+    .scribble-2 { bottom: 17%; right: 5%; font-size: 20px; text-align: center; transform: rotate(-4deg); }
     .scribble-2 .rule { display: block; margin-top: 2px; }
     .arrow { display: block; margin: 2px auto 0; }
 
@@ -302,8 +327,8 @@
       .hero-grid, .visit-grid { grid-template-columns: 1fr; }
       /* Smaller and further in on a phone: the photo is ~390px wide there and
          the notes overflowed its right edge at desktop size. */
-      .scribble-1 { top: 12px; left: 14px; font-size: 18px; }
-      .scribble-2 { bottom: 12px; right: 14px; font-size: 17px; }
+      .scribble-1 { top: 7%; left: 16%; font-size: 18px; }
+      .scribble-2 { bottom: 15%; right: 6%; font-size: 17px; }
       .deal { grid-template-columns: 1fr; }
       .deal .deal-hand { display: none; }
       .deal-copy { padding: 30px 24px 0; }
