@@ -119,7 +119,10 @@
 
     .btn {
       display: inline-flex; align-items: center; gap: 11px;
-      padding: 17px 31px; border-radius: 12px;
+      /* 14px, not 17: the hero's Order Now measured 60px tall against the
+         reference's 54. The horizontal 31px is right — 170px wide against
+         172. */
+      padding: 14px 31px; border-radius: 12px;
       font-family: var(--sans); font-weight: 700; font-size: 16px;
       border: 1.5px solid transparent; cursor: pointer;
       transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
@@ -155,7 +158,9 @@
        narrower button, which left it visibly off-axis. */
     .head-in { display: flex; align-items: center; gap: 24px; padding: 5px 0; }
     .brand img { height: 52px; width: auto; }
-    .nav { display: flex; gap: 30px; margin-inline: auto; }
+    /* 33px: word-to-word gaps measured 39px in the reference and 33 here,
+       leaving the nav 9px narrower about the same centre. */
+    .nav { display: flex; gap: 33px; margin-inline: auto; }
     .nav a {
       font-size: 15px; font-weight: 500; color: rgba(247, 239, 230, .95);
       padding-bottom: 4px; border-bottom: 2px solid transparent;
@@ -163,7 +168,10 @@
     }
     .nav a:hover { color: var(--ink); }
     .nav a.on { color: var(--red-text); border-bottom-color: var(--red-text); font-weight: 600; }
-    .head-cta { padding: 15px 29px; font-size: 15px; }
+    /* 34px, not 29: the header's Order Now measured 160px wide against the
+       reference's 170, at the same height and hard against the same right
+       edge — so the difference is all horizontal padding. */
+    .head-cta { padding: 15px 34px; font-size: 15px; }
     .burger { display: none; background: none; border: 0; padding: 8px; cursor: pointer; }
     .burger span { display: block; width: 22px; height: 2px; background: var(--ink); border-radius: 2px; }
     .burger span + span { margin-top: 5px; }
@@ -305,7 +313,13 @@
     /* --------------------------------------------------------- features -- */
     /* Sits ON the hero photograph as a translucent panel rather than a white
        card below it, which is what makes it read as part of the shopfront. */
-    .features { margin-top: 4px; position: relative; z-index: 1; }
+    /* 21px: the strip's top edge measured 661 here against the reference's
+       678, and its titles 15px high with it. (The 4px was left over from
+       moving 26px of .hero-inner's bottom padding to its top; that was one
+       correction too many.) The band's min-height absorbs part of any margin
+       added here, so this is 27px for 17px of travel — measure, do not
+       arithmetic. */
+    .features { margin-top: 27px; position: relative; z-index: 1; }
     .features-card {
       background: var(--panel);
       backdrop-filter: blur(14px);
@@ -323,7 +337,9 @@
     .feat small { color: rgba(247,239,230,.84); font-size: 12.5px; }
 
     /* ---------------------------------------------------------- dishes --- */
-    section { padding: 18px 0 62px; }
+    /* 11px, not 18: nudging the feature strip down to the reference's line
+       carried the Popular Dishes heading 7px past it. */
+    section { padding: 11px 0 62px; }
     .sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 26px; }
     .sec-head h2 { font-size: clamp(28px, 3.4vw, 40px); font-weight: 800; }
     .more {
