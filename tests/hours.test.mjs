@@ -73,3 +73,87 @@ test('isSlotValid accepts a listed slot and rejects a bogus one', () => {
   assert.equal(isSlotValid('2020-01-01T00:00:00.000Z', config), false);  // in the past
   assert.equal(isSlotValid('not-a-date', config), false);
 });
+
+/* The closure bug these lock down: listSlots used to test a day's closure
+   against the date of the day it was ITERATING, not the date each slot
+   actually falls on. A window running past midnight — Friday 09:00-25:00 in
+   this fixture — puts its last slots on Saturday, so closing Saturday left
+   them on offer while /api/order, which reads closures through activeClosure,
+   refused the order at checkout.
+
+   The test above only caught it on a Friday, which is why it passed for
+   months. These build themselves from whatever slots the config actually
+   offers, so they hold on any day and at any hour. The horizon is widened to
+   3 days for exactly that reason: with 2, a run just before local midnight
+   has only one shop-local date left in it and there is nothing to compare. */
+const localDate = (iso, tz) => new Intl.DateTimeFormat('en-CA',
+  { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(iso));
+
+/* 09:00 to 02:00 the NEXT day, every day. The close time has to be past 24:00
+   for this to test anything: lastOrderBeforeCloseMinutes takes 15 off the end,
+   so a window closing at 24:00 stops at 23:45 and never emits a slot on the
+   following date — which is the whole case under test. A first draft of these
+   used 24:00 and passed against the broken code. */
+const allHours = () => {
+  const w = { closed: false, windows: [{ open: '09:00', close: '26:00' }] };
+  return {
+    ...config,
+    ordering: { ...config.ordering, scheduling: { ...config.ordering.scheduling, horizonDays: 3 } },
+    hours: { sunday: w, monday: w, tuesday: w, wednesday: w, thursday: w, friday: w, saturday: w },
+    closures: {},
+  };
+};
+
+const byLocalDate = (slots, tz) => {
+  const m = new Map();
+  for (const s of slots) m.set(localDate(s, tz), [...(m.get(localDate(s, tz)) || []), s]);
+  return m;
+};
+
+test('closing a date removes exactly that date’s slots and no others', () => {
+  const tz = config.ordering.timezone;
+  const cfg = allHours();
+  const groups = byLocalDate(listSlots(cfg), tz);
+  assert.ok(groups.size >= 2, 'a 3-day horizon must span at least two shop-local dates');
+
+  for (const [date, slots] of groups) {
+    const after = listSlots({ ...cfg, closures: { [date]: { title: 'x', message: 'x' } } });
+    for (const s of slots) assert.ok(!after.includes(s), `closing ${date} must drop its ${s}`);
+    // A closure is one date, not a range: every other date is untouched.
+    for (const [other, otherSlots] of groups) {
+      if (other === date) continue;
+      for (const s of otherSlots) assert.ok(after.includes(s), `closing ${date} must not touch ${other}'s ${s}`);
+    }
+  }
+});
+
+test('a slot past midnight is judged by ITS date, not by the window’s day', () => {
+  /* The regression itself. The 00:00 slot on each date is generated while
+     iterating the PREVIOUS date's window, so under the old code closing its
+     own date left it on offer. */
+  const tz = config.ordering.timezone;
+  const cfg = allHours();
+  const groups = byLocalDate(listSlots(cfg), tz);
+  const dates = [...groups.keys()].sort();
+  const later = dates[dates.length - 1];
+
+  const earlierClosed = listSlots({ ...cfg, closures: { [dates[0]]: { title: 'x', message: 'x' } } });
+  for (const s of groups.get(later)) {
+    assert.ok(earlierClosed.includes(s), `${s} is on ${later}; closing ${dates[0]} must not drop it`);
+  }
+  const laterClosed = listSlots({ ...cfg, closures: { [later]: { title: 'x', message: 'x' } } });
+  for (const s of groups.get(later)) {
+    assert.ok(!laterClosed.includes(s), `${s} is on ${later}; closing ${later} must drop it`);
+  }
+});
+
+test('the indefinite "*" closure still offers nothing at all', () => {
+  assert.equal(listSlots({ ...allHours(), closures: { '*': { title: 'x', message: 'x' } } }).length, 0);
+});
+
+test('a dated closure alongside "*" still offers nothing', () => {
+  const tz = config.ordering.timezone;
+  const today = localDate(new Date().toISOString(), tz);
+  assert.equal(listSlots({ ...allHours(),
+    closures: { '*': { title: 'x', message: 'x' }, [today]: { title: 'y', message: 'y' } } }).length, 0);
+});
