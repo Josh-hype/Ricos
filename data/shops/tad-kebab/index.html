@@ -65,7 +65,13 @@
        follows the content: the dishes grid is one row on a desktop and four
        rows on a phone, and a fixed pixel height would land somewhere different
        in each. */
-    .top-scene { position: relative; }
+    /* overflow-x: clip, because the backdrop below is scaled 8% to hide the
+       transparent edge its blur bleeds in — and a scaled pseudo-element still
+       counts toward the scrollable area. Without this the document was 1498px
+       wide in a 1440px window and 421 in a 405px one: the whole page scrolled
+       sideways. clip rather than hidden so the vertical axis stays visible and
+       nothing becomes a scroll container. */
+    .top-scene { position: relative; overflow-x: clip; }
     .top-scene::before,
     .top-scene::after {
       content: ''; position: absolute; left: 0; right: 0; top: 0; z-index: -3;
@@ -559,16 +565,46 @@
          make no sense at 430px: -5% would crop the right edge off a photo that
          is already only as wide as the screen, and 108px would drop it clear of
          the header instead of tucking under it. */
-      /* A banner across the top, not a right-hand panel: the copy runs the
-         full width here, so there is no right-hand column to put it in. Back
-         to its own proportions, uncropped. */
-      .hero-media .sharp { width: 100%; right: 0; top: 48px; height: auto; }
-      .hero-media::after {
-        background:
-          linear-gradient(to bottom, rgba(23,16,13,.62) 0%, rgba(23,16,13,.55) 40%,
-                          rgba(23,16,13,.78) 82%, var(--bg) 100%),
-          linear-gradient(to right, rgba(23,16,13,.35) 0%, rgba(23,16,13,.28) 100%);
+      /* The photograph sits ABOVE the copy on a phone, not behind it. The band
+         is only ~400px wide there, so text over the picture meant scrimming the
+         picture down to near-black to keep the text legible — the photo was
+         paying for the copy, and neither ended up doing its job. Stacked, both
+         run at full strength.
+
+         That means the hero stops being a layered band and becomes ordinary
+         flow: picture, then copy, then the feature strip. It also stops being
+         tucked under the header, so the header sits on flat colour above it,
+         which is what the phone design shows. */
+      .hero {
+        margin-top: 0; padding: 0 0 30px;
+        min-height: 0; display: block; isolation: auto;
       }
+      .hero-media {
+        position: relative; inset: auto; z-index: 0;
+        height: 62vw; max-height: 430px;
+      }
+      .hero-media .sharp {
+        position: absolute; inset: 0;
+        width: 100%; height: 100%;
+        object-fit: cover; object-position: center;
+        /* Zoomed onto the oven. A band this shape only crops about 9% off the
+           width under object-fit alone, so the phone got the whole room with
+           the oven small in the corner — the design crops to the oven itself.
+           cover cannot zoom past "just fills", hence the scale; the origin
+           carries the crop right and slightly down, onto the pizzas. */
+        transform: scale(1.3); transform-origin: 62% 52%;
+        -webkit-mask-image: none; mask-image: none;
+      }
+      .hero-media::after {
+        /* The foot of the picture fades HERE, not on the image: the image is
+           transformed, and a mask on it would be scaled and shifted with it. */
+        background: linear-gradient(to bottom, rgba(23,16,13,0) 46%,
+                    rgba(23,16,13,.5) 80%, var(--bg) 100%);
+        -webkit-mask-image: none; mask-image: none;
+      }
+      .hero-inner { padding: 20px 0 0; }
+      .hero-text { max-width: none; }
+      .features { margin-top: 26px; }
       .visit-grid { grid-template-columns: 1fr; }
       /* Smaller and further in on a phone: the photo is ~390px wide there and
          the notes overflowed its right edge at desktop size. */
@@ -586,9 +622,35 @@
       .socials { margin-left: 0; }
     }
     @media (max-width: 560px) {
-      .features-card { grid-template-columns: 1fr; }
-      .feat + .feat { border-left: 0; border-top: 1px solid var(--hair); }
-      .dishes { grid-template-columns: 1fr; }
+      /* Full-width and stacked, phone only. Side by side at 400px the pair were
+         narrow enough that "View Menu" wrapped; at 800px full width would be a
+         780px button, which is why this is not in the block above. */
+      .hero-actions { flex-direction: column; align-items: stretch; }
+      .hero-actions .btn { width: 100%; justify-content: center; }
+
+      /* Four across, not stacked. Each promise is three or four words, so they
+         fit as narrow columns with the icon over the label, and the strip stays
+         one glanceable row instead of four rows of scrolling. */
+      .features-card { grid-template-columns: repeat(4, 1fr); }
+      .feat {
+        flex-direction: column; text-align: center;
+        gap: 9px; padding: 18px 6px;
+      }
+      .feat + .feat { border-left: 1px solid var(--panel-line); border-top: 0; }
+      .feat .ico { width: 38px; height: 38px; }
+      .feat .ico svg { width: 17px; height: 17px; }
+      .feat b { font-size: 12px; line-height: 1.25; }
+      .feat small { font-size: 10.5px; line-height: 1.3; }
+
+      /* Two up. One per row made each card a full-width slab and pushed the
+         fourth dish three screens down. */
+      .dishes { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      /* Name and price only at this size — the descriptions doubled each card's
+         height for text nobody reads on a tile that small. They are still on
+         the menu page, where the decision is actually made. */
+      .dish-body p { display: none; }
+      .dish-body { padding: 12px 14px 14px; }
+      .dish-body h3 { font-size: 15px; }
       section { padding: 46px 0; }
     }
     @media (prefers-reduced-motion: reduce) {
