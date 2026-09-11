@@ -83,9 +83,9 @@
        to 46px, which was all we had before, and needs a far lighter touch —
        just enough blur to keep the worktop's grain off body text. */
     .top-scene::before {
-      background-image: url('/assets/background-1600.jpg');
-      background-image: image-set(url('/assets/background-1600.webp') type('image/webp'),
-                                  url('/assets/background-1600.jpg') type('image/jpeg'));
+      background-image: url('/assets/hero-1672.jpg');
+      background-image: image-set(url('/assets/hero-1672.webp') type('image/webp'),
+                                  url('/assets/hero-1672.jpg') type('image/jpeg'));
       /* left, not centre. Covering a box this tall crops ~550px off the
          photograph's width, and centring it kept the dark middle and threw away
          the lit worktop and the lamp — the band under the feature strip
@@ -93,7 +93,7 @@
       background-position: left top;
       background-size: cover;
       background-repeat: no-repeat;
-      filter: blur(7px) brightness(0.95);
+      filter: blur(7px) brightness(0.63);
     }
     /* The scrim shares the box and the mask, so the two vanish together into
        the flat colour instead of the darkening outliving the picture. It works
@@ -265,8 +265,15 @@
        size, and far cheaper than the half-scale blow-up that cover across the
        WHOLE band used to cause. */
     .hero-media .sharp {
-      position: absolute; right: -5%; top: 108px; width: 66%;
-      height: calc(100% - var(--strip-drop) - 108px);
+      /* Full width, not a right-hand panel. This photograph is the composite
+         the design was made from -- a dark room with a plant on the left, the
+         oven on the right -- so the copy has somewhere dark to sit inside the
+         picture itself, and the band no longer needs a scrim faking one. */
+      /* 20px down from the band's top edge: cross-correlating this render
+         against the reference puts the two at the same scale (1.00) with the
+         reference's content sitting 20px lower. */
+      position: absolute; inset: 20px 0 var(--strip-drop) 0; width: 100%;
+      height: calc(100% - var(--strip-drop) - 20px);
       object-fit: cover; object-position: center top;
       /* Feathered on three edges, and the stops are measured off the reference
          rather than picked. Reading across the reference at rows 250-450, its
@@ -279,12 +286,14 @@
 
          The vertical fades are one gradient, not two, so only two layers need
          compositing. */
-      -webkit-mask-image: linear-gradient(to right, transparent 0 3.5%, #000 8%),
-                          linear-gradient(to bottom, transparent 0 7%, #000 15%, #000 93%, rgba(0,0,0,.55) 97.5%, transparent 100%);
-      -webkit-mask-composite: source-in;
-              mask-image: linear-gradient(to right, transparent 0 3.5%, #000 8%),
-                          linear-gradient(to bottom, transparent 0 7%, #000 15%, #000 93%, rgba(0,0,0,.55) 97.5%, transparent 100%);
-              mask-composite: intersect;
+      /* Vertical fades only. The left feather went with the right-hand panel:
+         the photograph is full-bleed now, so its left edge IS the page edge and
+         there is no seam there to soften. The bottom fade still has to land the
+         picture onto the feature strip's line, and it is deliberately not
+         linear -- a straight ramp undershot the reference by 12 luminance
+         through the middle of the fall. */
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0 3%, #000 9%, #000 93%, rgba(0,0,0,.55) 97.5%, transparent 100%);
+              mask-image: linear-gradient(to bottom, transparent 0 3%, #000 9%, #000 93%, rgba(0,0,0,.55) 97.5%, transparent 100%);
     }
     .hero-media::after {
       content: ''; position: absolute; inset: 0; z-index: 1;
@@ -308,7 +317,8 @@
            across the whole left flank and was reverted.) */
         linear-gradient(104deg, rgba(23,16,13,.96) 22%, rgba(23,16,13,.84) 34%, rgba(23,16,13,.4) 46%,
                         rgba(23,16,13,.08) 58%, rgba(23,16,13,0) 68%),
-        linear-gradient(to bottom, rgba(23,16,13,.48) 0%, rgba(23,16,13,0) 22%, rgba(23,16,13,0) 100%);
+        linear-gradient(to bottom, rgba(23,16,13,.48) 0%, rgba(23,16,13,0) 22%, rgba(23,16,13,0) 100%),
+        linear-gradient(rgba(23,16,13,.05), rgba(23,16,13,.05));
     }
     /* 56px top / 4px on .features below, not 30 / 30: the headline's cap line
        measured 26px above the reference's. The 26px moves from the bottom of
@@ -609,12 +619,12 @@
 <div class="hero">
   <div class="hero-media" aria-hidden="true">
     <picture>
-      <source type="image/webp" srcset="/assets/hero-800.webp 800w, /assets/hero.webp 1585w"
-              sizes="74vw" />
-      <img class="sharp" src="/assets/hero.jpg"
-           srcset="/assets/hero-800.jpg 800w, /assets/hero.jpg 1585w"
-           sizes="74vw"
-           width="1585" height="992" fetchpriority="high" decoding="async" alt="" />
+      <source type="image/webp" srcset="/assets/hero-900.webp 900w, /assets/hero-1672.webp 1672w"
+              sizes="100vw" />
+      <img class="sharp" src="/assets/hero-1672.jpg"
+           srcset="/assets/hero-900.jpg 900w, /assets/hero-1672.jpg 1672w"
+           sizes="100vw"
+           width="1672" height="941" fetchpriority="high" decoding="async" alt="" />
     </picture>
   </div>
 
