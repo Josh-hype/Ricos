@@ -137,6 +137,10 @@
     a { color: inherit; text-decoration: none; }
 
     .wrap { width: min(100% - 40px, var(--wrap)); margin-inline: auto; }
+    /* The phone design runs a 25px gutter, not 20: its buttons span 51 to 757
+       of 809 design pixels. Only the phone — the desktop reference measures 20
+       and is already matched. */
+    @media (max-width: 560px) { .wrap { width: min(100% - 50px, var(--wrap)); } }
 
     /* Image slots. Deliberately visible rather than a blank gap: an empty box
        reads as a broken layout, a labelled one reads as a decision. Swap each
@@ -576,35 +580,56 @@
          tucked under the header, so the header sits on flat colour above it,
          which is what the phone design shows. */
       .hero {
-        margin-top: 0; padding: 0 0 30px;
+        /* Tucked back under the header. In the design the photograph starts at
+           y=0 and the logo and Order Now sit ON it — measured, the picture's
+           top-left corner is 46 design pixels down, which is inside the header,
+           not below it. The header is 89px tall here and occupies flow, so the
+           negative margin is exactly that. */
+        /* No bottom padding: the feature strip is the hero's last child and
+           the design puts the OUR FAVOURITES line 17px under it, not 47. */
+        margin-top: -89px; padding: 0;
         min-height: 0; display: block; isolation: auto;
       }
       .hero-media {
-        position: relative; inset: auto; z-index: 0;
-        height: 62vw; max-height: 430px;
+        /* Absolute, not in flow: in the design the copy STARTS inside the
+           picture's faded tail — its eyebrow sits at y=330 while the picture
+           runs to 350 — so the two have to overlap, and .hero-inner's top
+           padding is what puts the copy at 330. */
+        position: absolute; inset: 0 0 auto 0; z-index: 0;
+        /* 86.5vw: the design's picture runs from the very top of the page to
+           where the eyebrow starts, reaching y=350 at 405px wide. Capped so a
+           tablet in this range does not get a 700px band. */
+        height: 86.5vw; max-height: 470px;
       }
+      /* Placed, not guessed. Cross-correlating a photo-only patch of the phone
+         design against the source file (corr 0.95) puts its copy of the picture
+         at 0.92 of the file's own size with its top-left corner at -676, +46 in
+         the design's own pixels — so the phone sees the RIGHT 53% of the
+         photograph, the oven alone, with none of the dark room the desktop
+         shows. Halved to CSS pixels and expressed against the container: 190%
+         wide, -83.5% across, 5.7vw down. object-fit plays no part here; these
+         numbers ARE the frame. */
       .hero-media .sharp {
-        position: absolute; inset: 0;
-        width: 100%; height: 100%;
-        object-fit: cover; object-position: center;
-        /* Zoomed onto the oven. A band this shape only crops about 9% off the
-           width under object-fit alone, so the phone got the whole room with
-           the oven small in the corner — the design crops to the oven itself.
-           cover cannot zoom past "just fills", hence the scale; the origin
-           carries the crop right and slightly down, onto the pizzas. */
-        transform: scale(1.15); transform-origin: 57% 50%;
-        -webkit-mask-image: none; mask-image: none;
+        position: absolute; inset: auto;
+        top: 5.7vw; left: -83.5%;
+        width: 190%; height: auto;
+        transform: none;
+        /* The foot of the picture dissolves into the copy rather than ending:
+           in the design it is gone by 76% of its own height. */
+        -webkit-mask-image: linear-gradient(to bottom, #000 71%, transparent 76%);
+                mask-image: linear-gradient(to bottom, #000 71%, transparent 76%);
       }
       .hero-media::after {
         /* The foot of the picture fades HERE, not on the image: the image is
            transformed, and a mask on it would be scaled and shifted with it. */
-        background: linear-gradient(to bottom, rgba(23,16,13,0) 64%,
-                    rgba(23,16,13,.34) 86%, var(--bg) 100%);
+        background: linear-gradient(to bottom, rgba(23,16,13,0) 72%, var(--bg) 100%);
         -webkit-mask-image: none; mask-image: none;
       }
-      .hero-inner { padding: 20px 0 0; }
+      /* 77.3vw = 313px at 405 wide, which puts the headline's cap line on the
+         design's, at 348.5. */
+      .hero-inner { padding: 77.3vw 0 0; position: relative; z-index: 1; }
       .hero-text { max-width: none; }
-      .features { margin-top: 26px; }
+      .features { margin-top: 4px; }
       .visit-grid { grid-template-columns: 1fr; }
       /* Smaller and further in on a phone: the photo is ~390px wide there and
          the notes overflowed its right edge at desktop size. */
@@ -622,6 +647,20 @@
       .socials { margin-left: 0; }
     }
     @media (max-width: 560px) {
+      /* Type: the design's headline is 1.20x ours by measured width (its
+         "Stone baked Pizzas" spans 703 design pixels to our 580) and fills the
+         column exactly; its body copy is 0.81x ours, on a 20px line pitch to
+         our 28.8. Both in vw so they hold their proportion on a smaller phone. */
+      .hero h1 { font-size: 10.1vw; line-height: 0.99; }
+      .hero-copy { font-size: 3.25vw; line-height: 1.52; margin: 6px 0 4px; }
+      /* The design's buttons are 37px tall with 10px between them. 37 is below
+         the 44px minimum touch target both Apple and Google publish, on the one
+         control the whole page exists to get tapped, so they are 44 here — 7px
+         off the design, deliberately. Everything else about them matches. */
+      .hero-actions { gap: 10px; }
+      .hero-actions .btn { min-height: 44px; padding-top: 9px; padding-bottom: 9px; }
+      .proof { margin-top: 12px; }
+
       /* Full-width and stacked, phone only. Side by side at 400px the pair were
          narrow enough that "View Menu" wrapped; at 800px full width would be a
          780px button, which is why this is not in the block above. */
@@ -632,15 +671,17 @@
          fit as narrow columns with the icon over the label, and the strip stays
          one glanceable row instead of four rows of scrolling. */
       .features-card { grid-template-columns: repeat(4, 1fr); }
+      /* The design's strip is 120px tall; ours was 165. Every number below is
+         trimmed toward that rather than one of them being halved. */
       .feat {
         flex-direction: column; text-align: center;
-        gap: 9px; padding: 18px 6px;
+        gap: 5px; padding: 7px 4px;
       }
       .feat + .feat { border-left: 1px solid var(--panel-line); border-top: 0; }
-      .feat .ico { width: 38px; height: 38px; }
-      .feat .ico svg { width: 17px; height: 17px; }
-      .feat b { font-size: 12px; line-height: 1.25; }
-      .feat small { font-size: 10.5px; line-height: 1.3; }
+      .feat .ico { width: 28px; height: 28px; }
+      .feat .ico svg { width: 14px; height: 14px; }
+      .feat b { font-size: 11px; line-height: 1.25; }
+      .feat small { font-size: 9.5px; line-height: 1.2; }
 
       /* Two up. One per row made each card a full-width slab and pushed the
          fourth dish three screens down. */
@@ -651,7 +692,11 @@
       .dish-body p { display: none; }
       .dish-body { padding: 12px 14px 14px; }
       .dish-body h3 { font-size: 15px; }
-      section { padding: 46px 0; }
+      /* 20px, not 46: in the design only 17px separates the feature strip from
+         the OUR FAVOURITES line. */
+      section { padding: 12px 0 46px; }
+      .sec-head { margin-bottom: 14px; }
+      .sec-head .eyebrow { margin-bottom: 4px; }
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
