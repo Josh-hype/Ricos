@@ -1,26 +1,1718 @@
 [
   {
-    "id": "mains",
-    "name": "Mains",
+    "id": "pizzas",
+    "name": "Stone Baked Pizzas",
     "items": [
-      { "id": "main-1", "name": "First Item",  "priceP": 800 },
-      { "id": "main-2", "name": "Second Item", "priceP": 950, "mealAddP": 300 }
+      {
+        "id": "pizza-margherita-pizza",
+        "name": "Margherita Pizza",
+        "priceP": 1000,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 600
+          }
+        ]
+      },
+      {
+        "id": "pizza-quattro-formaggi-pizza",
+        "name": "Quattro Formaggi Pizza",
+        "priceP": 1150,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 40
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 590
+          }
+        ]
+      },
+      {
+        "id": "pizza-al-funghi-pizza",
+        "name": "Al Funghi Pizza",
+        "priceP": 1100,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 50
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 640
+          }
+        ]
+      },
+      {
+        "id": "pizza-vegetarian-pizza",
+        "name": "Vegetarian Pizza",
+        "priceP": 1100,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 50
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 640
+          }
+        ]
+      },
+      {
+        "id": "pizza-pollo-pizza",
+        "name": "Pollo Pizza",
+        "priceP": 1100,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 50
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 640
+          }
+        ]
+      },
+      {
+        "id": "pizza-chicken-and-sweetcorn-pizza",
+        "name": "Chicken And Sweetcorn Pizza",
+        "priceP": 1100,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 50
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 640
+          }
+        ]
+      },
+      {
+        "id": "pizza-chicken-and-pineapple-pizza",
+        "name": "Chicken And Pineapple Pizza",
+        "priceP": 1100,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 50
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 640
+          }
+        ]
+      },
+      {
+        "id": "pizza-chicken-kiev-pizza",
+        "name": "Chicken Kiev Pizza",
+        "priceP": 1100,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 50
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 640
+          }
+        ]
+      },
+      {
+        "id": "pizza-spicy-chicken-pizza",
+        "name": "Spicy Chicken Pizza",
+        "priceP": 1100,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 50
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 640
+          }
+        ]
+      },
+      {
+        "id": "pizza-bbq-chicken-pizza",
+        "name": "BBQ Chicken Pizza",
+        "priceP": 1100,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 50
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 640
+          }
+        ]
+      },
+      {
+        "id": "pizza-proscuitto-pizza",
+        "name": "Proscuitto Pizza",
+        "priceP": 1100,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 50
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 640
+          }
+        ]
+      },
+      {
+        "id": "pizza-proscuitto-funghi-pizza",
+        "name": "Proscuitto Funghi Pizza",
+        "priceP": 1100,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 50
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 640
+          }
+        ]
+      },
+      {
+        "id": "pizza-hawaiian-pizza",
+        "name": "Hawaiian Pizza",
+        "priceP": 1100,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 50
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 640
+          }
+        ]
+      },
+      {
+        "id": "pizza-napoli-pizza",
+        "name": "Napoli Pizza",
+        "priceP": 1150,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 40
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 590
+          }
+        ]
+      },
+      {
+        "id": "pizza-toscana-pizza",
+        "name": "Toscana Pizza",
+        "priceP": 1190,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 60
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 600
+          }
+        ]
+      },
+      {
+        "id": "pizza-pepperoni-pizza",
+        "name": "Pepperoni Pizza",
+        "priceP": 1100,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 50
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 640
+          }
+        ]
+      },
+      {
+        "id": "pizza-aldiavolo-pizza",
+        "name": "Aldiavolo Pizza",
+        "priceP": 1190,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 60
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 600
+          }
+        ]
+      },
+      {
+        "id": "pizza-hot-and-spicy-pizza",
+        "name": "Hot And Spicy Pizza",
+        "priceP": 1190,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 60
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 600
+          }
+        ]
+      },
+      {
+        "id": "pizza-spicy-beef-pizza",
+        "name": "Spicy Beef Pizza",
+        "priceP": 1100,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 50
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 640
+          }
+        ]
+      },
+      {
+        "id": "pizza-meat-feast-pizza",
+        "name": "Meat Feast Pizza",
+        "priceP": 1190,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 60
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 600
+          }
+        ]
+      },
+      {
+        "id": "pizza-modena-pizza",
+        "name": "Modena Pizza",
+        "priceP": 990,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 660
+          }
+        ]
+      },
+      {
+        "id": "pizza-romana-pizza",
+        "name": "Romana Pizza",
+        "priceP": 1100,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 50
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 640
+          }
+        ]
+      },
+      {
+        "id": "pizza-al-pesto-pizza",
+        "name": "Al Pesto Pizza",
+        "priceP": 1150,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 640
+          }
+        ]
+      },
+      {
+        "id": "pizza-tuna-corn-pizza",
+        "name": "Tuna Corn Pizza",
+        "priceP": 1190,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 60
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 600
+          }
+        ]
+      },
+      {
+        "id": "pizza-al-tonno-pizza",
+        "name": "Al Tonno Pizza",
+        "priceP": 1190,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 60
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 600
+          }
+        ]
+      },
+      {
+        "id": "pizza-pescatore-pizza",
+        "name": "Pescatore Pizza",
+        "priceP": 1290,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 100
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 600
+          }
+        ]
+      },
+      {
+        "id": "pizza-napoletana-pizza",
+        "name": "Napoletana Pizza",
+        "priceP": 1190,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 60
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 600
+          }
+        ]
+      },
+      {
+        "id": "pizza-neptune-pizza",
+        "name": "Neptune Pizza",
+        "priceP": 1190,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 60
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 600
+          }
+        ]
+      },
+      {
+        "id": "pizza-sicilian-pizza",
+        "name": "Sicilian Pizza",
+        "priceP": 1190,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 60
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 600
+          }
+        ]
+      },
+      {
+        "id": "pizza-bolognese-pizza",
+        "name": "Bolognese Pizza",
+        "priceP": 1190,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 60
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 600
+          }
+        ]
+      },
+      {
+        "id": "pizza-mexican-pizza",
+        "name": "Mexican Pizza",
+        "priceP": 1190,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 60
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 600
+          }
+        ]
+      },
+      {
+        "id": "pizza-tadkebab-special-pizza",
+        "name": "Tadkebab Special Pizza",
+        "priceP": 1190,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 60
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 600
+          }
+        ]
+      },
+      {
+        "id": "pizza-donner-pepperoni-pizza",
+        "name": "Donner Pepperoni Pizza",
+        "priceP": 1190,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 60
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 600
+          }
+        ]
+      },
+      {
+        "id": "pizza-milano-pizza",
+        "name": "Milano pizza",
+        "priceP": 1190,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 60
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 600
+          }
+        ]
+      },
+      {
+        "id": "pizza-benji-pizza",
+        "name": "Benji Pizza",
+        "priceP": 1190,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 60
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 600
+          }
+        ]
+      },
+      {
+        "id": "pizza-calcaria-pizza",
+        "name": "Calcaria Pizza",
+        "priceP": 1190,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 60
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 600
+          }
+        ]
+      },
+      {
+        "id": "pizza-fenton-pizza",
+        "name": "Fenton Pizza",
+        "priceP": 1190,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 60
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 600
+          }
+        ]
+      },
+      {
+        "id": "pizza-boston-pizza",
+        "name": "Boston Pizza",
+        "priceP": 1190,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 60
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 600
+          }
+        ]
+      },
+      {
+        "id": "pizza-alfie-pizza",
+        "name": "Alfie Pizza",
+        "priceP": 1190,
+        "modifiers": [
+          {
+            "id": "sz-12-thin",
+            "label": "12\" Thin Base",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-12-deep",
+            "label": "12\" Deep Pan",
+            "priceDeltaP": 60
+          },
+          {
+            "id": "sz-16-giant",
+            "label": "16\" Giant",
+            "priceDeltaP": 600
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "calzones",
+    "name": "Calzones",
+    "items": [
+      {
+        "id": "calzone-calzoni-kiev",
+        "name": "Calzoni Kiev",
+        "priceP": 1140
+      },
+      {
+        "id": "calzone-calzoni-bolognese",
+        "name": "Calzoni bolognese",
+        "priceP": 1140
+      },
+      {
+        "id": "calzone-calzoni-doner",
+        "name": "Calzoni Doner",
+        "priceP": 1140
+      },
+      {
+        "id": "calzone-calzoni-meat-feast",
+        "name": "Calzoni Meat Feast",
+        "priceP": 1140
+      },
+      {
+        "id": "calzone-calzoni-vegetarian",
+        "name": "Calzoni Vegetarian",
+        "priceP": 1140
+      }
+    ]
+  },
+  {
+    "id": "garlic-bread",
+    "name": "Garlic Bread",
+    "items": [
+      {
+        "id": "gb-garlic-bread",
+        "name": "Garlic Bread",
+        "priceP": 690
+      },
+      {
+        "id": "gb-garlic-bread-and-sauce",
+        "name": "Garlic Bread And Sauce",
+        "priceP": 740
+      },
+      {
+        "id": "gb-spicy-garlic-bread",
+        "name": "Spicy Garlic Bread",
+        "priceP": 740
+      },
+      {
+        "id": "gb-garlic-bread-and-cheese",
+        "name": "Garlic Bread And Cheese",
+        "priceP": 890
+      },
+      {
+        "id": "gb-garlic-bread-mushrooms-and-cheese",
+        "name": "Garlic Bread Mushrooms And Cheese",
+        "priceP": 990
+      },
+      {
+        "id": "gb-garlic-bread-doner-and-cheese",
+        "name": "Garlic Bread Doner And Cheese",
+        "priceP": 1100
+      },
+      {
+        "id": "gb-garlic-bread-bolognese-sauce-and-cheese",
+        "name": "Garlic Bread Bolognese Sauce And Cheese",
+        "priceP": 1100
+      }
+    ]
+  },
+  {
+    "id": "kebabs",
+    "name": "Kebabs",
+    "items": [
+      {
+        "id": "kebab-chicken-kebab",
+        "name": "Chicken Kebab",
+        "priceP": 1300,
+        "modifiers": [
+          {
+            "id": "sal-all",
+            "label": "All Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-cucumber",
+            "label": "Cucumber",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-cabbage",
+            "label": "Cabbage",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-lettuce",
+            "label": "Lettuce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-onion",
+            "label": "Onion",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-none",
+            "label": "No Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-chilli",
+            "label": "Chilli Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-garlic",
+            "label": "Garlic Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-none",
+            "label": "No Sauce",
+            "priceDeltaP": 0
+          }
+        ]
+      },
+      {
+        "id": "kebab-donner-kebab",
+        "name": "Donner Kebab",
+        "priceP": 990,
+        "modifiers": [
+          {
+            "id": "sz-large",
+            "label": "Large",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-king",
+            "label": "King Size",
+            "priceDeltaP": 700
+          },
+          {
+            "id": "sal-all",
+            "label": "All Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-cucumber",
+            "label": "Cucumber",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-cabbage",
+            "label": "Cabbage",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-lettuce",
+            "label": "Lettuce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-onion",
+            "label": "Onion",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-none",
+            "label": "No Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-bbq",
+            "label": "BBQ Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-chilli",
+            "label": "Chilli Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-peri",
+            "label": "Peri peri Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-garlic-mayo",
+            "label": "Garlic Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-sweet-chilli",
+            "label": "Sweet Chilli Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-mayo",
+            "label": "Mayonnaise",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-mint",
+            "label": "Mint Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-none",
+            "label": "No Sauce",
+            "priceDeltaP": 0
+          }
+        ]
+      },
+      {
+        "id": "kebab-mixed-kebab-large",
+        "name": "Mixed Kebab Large",
+        "priceP": 2490,
+        "modifiers": [
+          {
+            "id": "sal-all",
+            "label": "All Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-cucumber",
+            "label": "Cucumber",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-cabbage",
+            "label": "Cabbage",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-lettuce",
+            "label": "Lettuce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-onion",
+            "label": "Onion",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-none",
+            "label": "No Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-bbq",
+            "label": "BBQ Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-chilli",
+            "label": "Chilli Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-peri",
+            "label": "Peri peri Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-garlic-mayo",
+            "label": "Garlic Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-sweet-chilli",
+            "label": "Sweet Chilli Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-mayo",
+            "label": "Mayonnaise",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-mint",
+            "label": "Mint Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-none",
+            "label": "No Sauce",
+            "priceDeltaP": 0
+          }
+        ]
+      },
+      {
+        "id": "kebab-chicken-combo",
+        "name": "Chicken Combo",
+        "priceP": 1790,
+        "modifiers": [
+          {
+            "id": "sal-all",
+            "label": "All Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-cucumber",
+            "label": "Cucumber",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-cabbage",
+            "label": "Cabbage",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-lettuce",
+            "label": "Lettuce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-onion",
+            "label": "Onion",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-none",
+            "label": "No Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-bbq",
+            "label": "BBQ Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-chilli",
+            "label": "Chilli Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-peri",
+            "label": "Peri peri Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-garlic-mayo",
+            "label": "Garlic Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-sweet-chilli",
+            "label": "Sweet Chilli Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-mayo",
+            "label": "Mayonnaise",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-mint",
+            "label": "Mint Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-none",
+            "label": "No Sauce",
+            "priceDeltaP": 0
+          }
+        ]
+      },
+      {
+        "id": "kebab-king-size-donner",
+        "name": "King Size Donner",
+        "priceP": 1690,
+        "modifiers": [
+          {
+            "id": "sal-all",
+            "label": "All Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-cucumber",
+            "label": "Cucumber",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-cabbage",
+            "label": "Cabbage",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-lettuce",
+            "label": "Lettuce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-onion",
+            "label": "Onion",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-none",
+            "label": "No Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-bbq",
+            "label": "BBQ Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-chilli",
+            "label": "Chilli Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-peri",
+            "label": "Peri peri Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-garlic-mayo",
+            "label": "Garlic Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-sweet-chilli",
+            "label": "Sweet Chilli Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-mayo",
+            "label": "Mayonnaise",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-mint",
+            "label": "Mint Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-none",
+            "label": "No Sauce",
+            "priceDeltaP": 0
+          }
+        ]
+      },
+      {
+        "id": "kebab-doner-and-chips-large",
+        "name": "Doner And Chips Large",
+        "priceP": 1140,
+        "modifiers": [
+          {
+            "id": "sal-all",
+            "label": "All Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-cucumber",
+            "label": "Cucumber",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-cabbage",
+            "label": "Cabbage",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-lettuce",
+            "label": "Lettuce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-onion",
+            "label": "Onion",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sal-none",
+            "label": "No Salad",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-bbq",
+            "label": "BBQ Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-chilli",
+            "label": "Chilli Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-peri",
+            "label": "Peri peri Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-garlic-mayo",
+            "label": "Garlic Mayo",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-sweet-chilli",
+            "label": "Sweet Chilli Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-mayo",
+            "label": "Mayonnaise",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-mint",
+            "label": "Mint Sauce",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sau-none",
+            "label": "No Sauce",
+            "priceDeltaP": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "burgers",
+    "name": "Burgers",
+    "items": [
+      {
+        "id": "burger-plain-burger",
+        "name": "Plain Burger",
+        "priceP": 740,
+        "modifiers": [
+          {
+            "id": "sz-quarter",
+            "label": "Quarter Pounder",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-half",
+            "label": "Half Pounder",
+            "priceDeltaP": 100
+          }
+        ]
+      },
+      {
+        "id": "burger-cheese-burger",
+        "name": "Cheese Burger",
+        "priceP": 740,
+        "modifiers": [
+          {
+            "id": "sz-quarter",
+            "label": "Quarter Pounder",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-half",
+            "label": "Half Pounder",
+            "priceDeltaP": 100
+          }
+        ]
+      },
+      {
+        "id": "burger-bolognese-burger",
+        "name": "Bolognese Burger",
+        "priceP": 840,
+        "modifiers": [
+          {
+            "id": "sz-quarter",
+            "label": "Quarter Pounder",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-half",
+            "label": "Half Pounder",
+            "priceDeltaP": 150
+          }
+        ]
+      },
+      {
+        "id": "burger-hawaiian-burger",
+        "name": "Hawaiian Burger",
+        "priceP": 750,
+        "modifiers": [
+          {
+            "id": "sz-quarter",
+            "label": "Quarter Pounder",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-half",
+            "label": "Half Pounder",
+            "priceDeltaP": 140
+          }
+        ]
+      },
+      {
+        "id": "burger-american-burger",
+        "name": "American Burger",
+        "priceP": 740,
+        "modifiers": [
+          {
+            "id": "sz-quarter",
+            "label": "Quarter Pounder",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-half",
+            "label": "Half Pounder",
+            "priceDeltaP": 100
+          }
+        ]
+      },
+      {
+        "id": "burger-garlic-mushrooms-burger",
+        "name": "Garlic Mushrooms Burger",
+        "priceP": 750,
+        "modifiers": [
+          {
+            "id": "sz-quarter",
+            "label": "Quarter Pounder",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-half",
+            "label": "Half Pounder",
+            "priceDeltaP": 140
+          }
+        ]
+      },
+      {
+        "id": "burger-barbecue-burger",
+        "name": "Barbecue Burger",
+        "priceP": 740,
+        "modifiers": [
+          {
+            "id": "sz-quarter",
+            "label": "Quarter Pounder",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-half",
+            "label": "Half Pounder",
+            "priceDeltaP": 100
+          }
+        ]
+      },
+      {
+        "id": "burger-chicken-burger",
+        "name": "Chicken Burger",
+        "priceP": 740,
+        "modifiers": [
+          {
+            "id": "sz-quarter",
+            "label": "Quarter Pounder",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-half",
+            "label": "Half Pounder",
+            "priceDeltaP": 100
+          }
+        ]
+      },
+      {
+        "id": "burger-vegetable-burger",
+        "name": "Vegetable Burger",
+        "priceP": 840,
+        "modifiers": [
+          {
+            "id": "sz-quarter",
+            "label": "Quarter Pounder",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-half",
+            "label": "Half Pounder",
+            "priceDeltaP": 150
+          }
+        ]
+      },
+      {
+        "id": "burger-mexican-burger",
+        "name": "Mexican Burger",
+        "priceP": 790,
+        "modifiers": [
+          {
+            "id": "sz-quarter",
+            "label": "Quarter Pounder",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-half",
+            "label": "Half Pounder",
+            "priceDeltaP": 200
+          }
+        ]
+      },
+      {
+        "id": "burger-doner-burger",
+        "name": "Doner Burger",
+        "priceP": 790,
+        "modifiers": [
+          {
+            "id": "sz-quarter",
+            "label": "Quarter Pounder",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-half",
+            "label": "Half Pounder",
+            "priceDeltaP": 200
+          }
+        ]
+      },
+      {
+        "id": "burger-chef-special-burger",
+        "name": "Chef Special Burger",
+        "priceP": 850,
+        "modifiers": [
+          {
+            "id": "sz-quarter",
+            "label": "Quarter Pounder",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "sz-half",
+            "label": "Half Pounder",
+            "priceDeltaP": 140
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "pasta",
+    "name": "Pasta",
+    "items": [
+      {
+        "id": "pasta-lasagne",
+        "name": "Lasagne",
+        "priceP": 1000
+      }
     ]
   },
   {
     "id": "sides",
-    "name": "Sides",
+    "name": "Side Orders",
     "items": [
-      { "id": "side-chips", "name": "Chips",  "priceP": 350 },
-      { "id": "side-slaw",  "name": "Coleslaw","priceP": 250 }
+      {
+        "id": "side-fries",
+        "name": "Fries",
+        "priceP": 350
+      },
+      {
+        "id": "side-fries-with-cheese",
+        "name": "Fries With Cheese",
+        "priceP": 550
+      },
+      {
+        "id": "side-onion-rings-10-pieces",
+        "name": "Onion Rings 10 Pieces",
+        "priceP": 450
+      },
+      {
+        "id": "side-hash-brown-5-pieces",
+        "name": "Hash Brown 5 Pieces",
+        "priceP": 600
+      },
+      {
+        "id": "side-chicken-nuggets-and-chips-10-pieces",
+        "name": "Chicken Nuggets And Chips 10 Pieces",
+        "priceP": 800,
+        "modifiers": [
+          {
+            "id": "xt-cheese-chips",
+            "label": "Cheese On Chips",
+            "priceDeltaP": 200
+          }
+        ]
+      },
+      {
+        "id": "side-chicken-strips-and-chips-5-pieces",
+        "name": "Chicken Strips And Chips 5 Pieces",
+        "priceP": 990,
+        "modifiers": [
+          {
+            "id": "xt-cheese-chips",
+            "label": "Cheese On Chips",
+            "priceDeltaP": 200
+          }
+        ]
+      },
+      {
+        "id": "side-garlic-mushrooms",
+        "name": "Garlic Mushrooms",
+        "priceP": 600
+      },
+      {
+        "id": "side-garlic-mushrooms-in-cream-with-cheese",
+        "name": "Garlic Mushrooms In Cream With Cheese",
+        "priceP": 650
+      },
+      {
+        "id": "side-mixed-salad",
+        "name": "Mixed Salad",
+        "priceP": 500
+      },
+      {
+        "id": "side-salad-in-pitta",
+        "name": "Salad IN Pitta",
+        "priceP": 500
+      },
+      {
+        "id": "side-pitta-bread",
+        "name": "Pitta Bread",
+        "priceP": 100
+      },
+      {
+        "id": "side-chilli-sauce",
+        "name": "Chilli Sauce",
+        "priceP": 100
+      },
+      {
+        "id": "side-garlic-yoghurt",
+        "name": "Garlic Yoghurt",
+        "priceP": 100
+      },
+      {
+        "id": "side-natural-yoghurt",
+        "name": "Natural Yoghurt",
+        "priceP": 100
+      }
     ]
   },
   {
     "id": "drinks",
-    "name": "Drinks",
+    "name": "Soft Drinks",
     "items": [
-      { "id": "drink-coke",  "name": "Can of Coke", "priceP": 190 },
-      { "id": "drink-water", "name": "Bottle of Water", "priceP": 150 }
+      {
+        "id": "drink-coca-cola-0-33l",
+        "name": "Coca-Cola 0.33L",
+        "priceP": 170
+      },
+      {
+        "id": "drink-diet-coca-cola-0-33l",
+        "name": "Diet Coca-Cola 0.33L",
+        "priceP": 170
+      }
     ]
   }
 ]

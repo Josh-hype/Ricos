@@ -25,7 +25,8 @@
               "count": 2
             }
           ]
-        }
+        },
+        "noPromo": true
       },
       {
         "id": "special-offer",
@@ -48,7 +49,8 @@
               "count": 2
             }
           ]
-        }
+        },
+        "noPromo": true
       },
       {
         "id": "family-special-1",
@@ -84,7 +86,8 @@
               "count": 3
             }
           ]
-        }
+        },
+        "noPromo": true
       },
       {
         "id": "family-special-2",
@@ -107,7 +110,8 @@
               "count": 3
             }
           ]
-        }
+        },
+        "noPromo": true
       },
       {
         "id": "big-mega-box",
@@ -130,7 +134,8 @@
               "count": 3
             }
           ]
-        }
+        },
+        "noPromo": true
       }
     ]
   },

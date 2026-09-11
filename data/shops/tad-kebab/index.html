@@ -55,25 +55,74 @@
        its ::before pseudo-element, so the page-wide photo backdrop was being
        covered by the very element it sits behind. */
     html { scroll-behavior: smooth; background: var(--bg); }
-    /* The photograph continues behind the WHOLE page, heavily blurred and
-       dimmed, not just the hero. In the reference the dish cards and their
-       heading sit on warm out-of-focus oven light; stopping the image at the
-       feature strip left everything below it flat brown, which was the single
-       biggest difference between the two. */
-    body::before {
-      content: ''; position: fixed; inset: 0; z-index: -3;
-      background: url('/assets/hero-800.jpg') center 45% / cover no-repeat;
-      /* 0.34, not 0.78. Row-by-row luminance under the feature strip put the
-         reference's backdrop at ~20 and ours at ~48: the glow was reading as a
-         warm orange wash rather than as a nearly-dark room with a little oven
-         light left in it. This value only shows below the hero — inside the
-         hero the photo and its own gradient sit on top of it. */
-      filter: blur(46px) brightness(0.34) saturate(.8);
-      transform: scale(1.12);
+    /* The photograph backs the TOP OF THE PAGE — the hero and the Popular
+       Dishes section — and then bleeds out to the flat page colour for
+       everything below. It is anchored to the document, not to the viewport,
+       so where it stops is a place on the page rather than a place on the
+       screen that each section slides through in turn as you scroll.
+
+       It wraps those two blocks rather than living on <body> so the fade
+       follows the content: the dishes grid is one row on a desktop and four
+       rows on a phone, and a fixed pixel height would land somewhere different
+       in each. */
+    /* overflow-x: clip, because the backdrop below is scaled 8% to hide the
+       transparent edge its blur bleeds in — and a scaled pseudo-element still
+       counts toward the scrollable area. Without this the document was 1498px
+       wide in a 1440px window and 421 in a 405px one: the whole page scrolled
+       sideways. clip rather than hidden so the vertical axis stays visible and
+       nothing becomes a scroll container. */
+    .top-scene { position: relative; overflow-x: clip; }
+    .top-scene::before,
+    .top-scene::after {
+      content: ''; position: absolute; left: 0; right: 0; top: 0; z-index: -3;
+      /* Down to the end of the dishes, but never more than about a screen and
+         a third: on a phone that section is 1,500px tall on its own, and a box
+         that deep crops a 16:9 photograph to a smear. The last 340px are the
+         bleed, at every size. */
+      height: min(100%, 132vh);
+      -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 260px), transparent 100%);
+              mask-image: linear-gradient(to bottom, #000 calc(100% - 260px), transparent 100%);
+      pointer-events: none;
     }
-    body::after {
-      content: ''; position: fixed; inset: 0; z-index: -3;
-      background: linear-gradient(to bottom, rgba(23,16,13,0.06), rgba(23,16,13,0.34));
+    /* A purpose-shot dark kitchen: already out of focus above, with a lit
+       worktop along the bottom. It replaced the hero's own oven photo blurred
+       to 46px, which was all we had before, and needs a far lighter touch —
+       just enough blur to keep the worktop's grain off body text. */
+    .top-scene::before {
+      background-image: url('/assets/hero-1672.jpg');
+      background-image: image-set(url('/assets/hero-1672.webp') type('image/webp'),
+                                  url('/assets/hero-1672.jpg') type('image/jpeg'));
+      background-position: left top;
+      background-size: cover;
+      background-repeat: no-repeat;
+      /* 42px of blur, not 7. The file this now points at is the SHARP hero
+         photograph, not the soft one it replaced, and at 7px the oven read as
+         an oven: the band right of the strip measured 33 against the
+         reference's 20, with the flames recognisable behind the dish cards.
+         The reference's backdrop is a flat wash — its left and right halves
+         sit within 2 of each other, ours were 12 apart — so the picture has to
+         be destroyed properly rather than merely dimmed. scale() covers the
+         transparent edge blur() bleeds in at this radius. */
+      filter: blur(42px) brightness(0.78);
+      transform: scale(1.08);
+    }
+    /* The scrim shares the box and the mask, so the two vanish together into
+       the flat colour instead of the darkening outliving the picture. It works
+       hardest across the bottom third, where the lit worktop falls: at full
+       strength that band measured 37 against the reference's 25, and it put
+       the red OUR FAVOURITES eyebrow on warm orange — the one colour pairing
+       on this page that does not carry. */
+    .top-scene::after {
+      background:
+        /* Across, as well as down. Blurring the oven to a wash still left the
+           wash lopsided: below the feature strip the reference's left and right
+           halves sit within 2 of each other, ours were 18 apart, because the
+           only bright thing in the photograph is on the right. */
+        linear-gradient(to right, rgba(23,16,13,0) 26%,
+                        rgba(23,16,13,.42) 60%, rgba(23,16,13,.86) 100%),
+        linear-gradient(to bottom,
+                    rgba(23,16,13,.05) 0%, rgba(23,16,13,.12) 50%,
+                    rgba(23,16,13,.25) 76%, rgba(23,16,13,.34) 100%);
     }
     body {
       margin: 0;
@@ -88,6 +137,10 @@
     a { color: inherit; text-decoration: none; }
 
     .wrap { width: min(100% - 40px, var(--wrap)); margin-inline: auto; }
+    /* The phone design runs a 25px gutter, not 20: its buttons span 51 to 757
+       of 809 design pixels. Only the phone — the desktop reference measures 20
+       and is already matched. */
+    @media (max-width: 560px) { .wrap { width: min(100% - 50px, var(--wrap)); } }
 
     /* Image slots. Deliberately visible rather than a blank gap: an empty box
        reads as a broken layout, a labelled one reads as a decision. Swap each
@@ -191,6 +244,10 @@
       /* Pulled up behind the sticky header so the photograph reaches y=0.
          Sitting below it left a flat band across the top of the page and a
          visible seam where the image began. */
+      /* How far the feature strip's top line sits above the band's bottom
+         edge — measured, and it changes when the strip rewraps. The photograph
+         stops there. */
+      --strip-drop: 128px;
       margin-top: calc(-1 * var(--head-h));
       padding: var(--head-h) 0 34px;
       min-height: clamp(500px, 40vw, 596px);
@@ -216,14 +273,49 @@
        natural-aspect box gives width 66%, right -5% (it bleeds off the page
        edge) and top 108px — which then predicts all four measured landmarks to
        within 9px. Change these together or not at all. */
+    /* A plain rectangle now the feathering is gone, so its edges have to be
+       PLACED rather than hidden, and placed in a way that survives a change of
+       width. It fills the right-hand column of the band, from the very top of
+       the page down to the feature strip's top line.
+
+       Sizing it by its own proportions instead was tried and does not hold:
+       the photo's height then follows the viewport's width while the band's
+       height follows how many lines the copy wraps to, so a rectangle flush
+       with the strip at 1558px left a 140px dark gap above it at 1024px. Hence
+       an explicit height and object-fit, which crops about a fifth off the
+       photo's width — the price of a rectangle that lands correctly at every
+       size, and far cheaper than the half-scale blow-up that cover across the
+       WHOLE band used to cause. */
     .hero-media .sharp {
-      position: absolute; right: -5%; top: 108px; width: 66%; height: auto;
-      -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 11%),
-                          linear-gradient(to bottom, #000 84%, transparent 100%);
-      -webkit-mask-composite: source-in;
-              mask-image: linear-gradient(to right, transparent 0%, #000 11%),
-                          linear-gradient(to bottom, #000 84%, transparent 100%);
-              mask-composite: intersect;
+      /* Full width, not a right-hand panel. This photograph is the composite
+         the design was made from -- a dark room with a plant on the left, the
+         oven on the right -- so the copy has somewhere dark to sit inside the
+         picture itself, and the band no longer needs a scrim faking one. */
+      /* 20px down from the band's top edge: cross-correlating this render
+         against the reference puts the two at the same scale (1.00) with the
+         reference's content sitting 20px lower. */
+      position: absolute; inset: 20px 0 var(--strip-drop) 0; width: 100%;
+      height: calc(100% - var(--strip-drop) - 20px);
+      object-fit: cover; object-position: center top;
+      /* Feathered on three edges, and the stops are measured off the reference
+         rather than picked. Reading across the reference at rows 250-450, its
+         photograph climbs out of the dark over roughly 60px (x 644 to 704) —
+         ours stepped up over 12 and read as a cut-out pasted on. Reading down
+         columns 1150-1500, the reference falls away over about 40px (y 645 to
+         684) where ours held full brightness and then stopped dead on the
+         feature strip's line. And across the top, the reference is near-black
+         at y 116-140 where ours was already at 30.
+
+         The vertical fades are one gradient, not two, so only two layers need
+         compositing. */
+      /* Vertical fades only. The left feather went with the right-hand panel:
+         the photograph is full-bleed now, so its left edge IS the page edge and
+         there is no seam there to soften. The bottom fade still has to land the
+         picture onto the feature strip's line, and it is deliberately not
+         linear -- a straight ramp undershot the reference by 12 luminance
+         through the middle of the fall. */
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0 3%, #000 9%, #000 93%, rgba(0,0,0,.55) 97.5%, transparent 100%);
+              mask-image: linear-gradient(to bottom, transparent 0 3%, #000 9%, #000 93%, rgba(0,0,0,.55) 97.5%, transparent 100%);
     }
     .hero-media::after {
       content: ''; position: absolute; inset: 0; z-index: 1;
@@ -247,7 +339,8 @@
            across the whole left flank and was reverted.) */
         linear-gradient(104deg, rgba(23,16,13,.96) 22%, rgba(23,16,13,.84) 34%, rgba(23,16,13,.4) 46%,
                         rgba(23,16,13,.08) 58%, rgba(23,16,13,0) 68%),
-        linear-gradient(to bottom, rgba(23,16,13,.48) 0%, rgba(23,16,13,0) 22%, rgba(23,16,13,0) 100%);
+        linear-gradient(to bottom, rgba(23,16,13,.48) 0%, rgba(23,16,13,0) 22%, rgba(23,16,13,0) 100%),
+        linear-gradient(rgba(23,16,13,.05), rgba(23,16,13,.05));
     }
     /* 56px top / 4px on .features below, not 30 / 30: the headline's cap line
        measured 26px above the reference's. The 26px moves from the bottom of
@@ -306,7 +399,11 @@
        photo was re-scaled: each is ~65px (8% of the band) lower in the
        reference than it was here. */
     .scribble-1 { top: 19%; left: 51%; font-size: 27px; transform: rotate(-6deg); text-align: center; }
-    .scribble-2 { bottom: 22.5%; right: 9%; font-size: 26px; text-align: center; transform: rotate(-4deg); }
+    /* Pinned off the photograph's own bottom edge, not the band's: the band
+       grows as the copy rewraps but the photograph stops at the feature strip,
+       and a percentage of the band left this note straddling the edge at
+       1024px — half on the picture, half on the dark below it. */
+    .scribble-2 { bottom: calc(var(--strip-drop) + 38px); right: 9%; font-size: 26px; text-align: center; transform: rotate(-4deg); }
     .scribble-2 .rule { display: block; margin-top: 2px; }
     .arrow { display: block; margin: 2px auto 0; }
 
@@ -383,8 +480,12 @@
       border-color: color-mix(in srgb, var(--surface) 26%, transparent);
       color: color-mix(in srgb, var(--surface) 70%, transparent);
     }
+    /* 41%, not 26%: the grid's first column ends at ~40% of the panel, so 26%
+       parked the seal in the middle of the copy column and it sat straight on
+       top of the "Kebab Meal Deal" heading. It belongs on the seam, half on the
+       photo, like a sticker. */
     .seal {
-      position: absolute; z-index: 3; left: 26%; top: 50%;
+      position: absolute; z-index: 3; left: 41%; top: 50%;
       transform: translate(-50%, -50%) rotate(-8deg);
       width: 104px; height: 104px; border-radius: 50%;
       background: var(--red); color: #fff; display: grid; place-items: center;
@@ -441,6 +542,11 @@
 
     /* ------------------------------------------------------ responsive --- */
     @media (max-width: 1080px) {
+      /* The strip rewraps to two rows here, so it stands 224px off the band's
+         bottom instead of 128. The panel also narrows: the copy column does
+         not shrink with the viewport, so at 60% the photograph's left edge was
+         landing within 2px of the end of "…delivery in Tadcaster &". */
+      .hero { --strip-drop: 224px; }
       .features-card { grid-template-columns: repeat(2, 1fr); }
       .feat:nth-child(3) { border-left: 0; }
       .feat:nth-child(n+3) { border-top: 1px solid var(--hair); }
@@ -463,20 +569,85 @@
          make no sense at 430px: -5% would crop the right edge off a photo that
          is already only as wide as the screen, and 108px would drop it clear of
          the header instead of tucking under it. */
+      /* The photograph sits ABOVE the copy on a phone, not behind it. The band
+         is only ~400px wide there, so text over the picture meant scrimming the
+         picture down to near-black to keep the text legible — the photo was
+         paying for the copy, and neither ended up doing its job. Stacked, both
+         run at full strength.
+
+         That means the hero stops being a layered band and becomes ordinary
+         flow: picture, then copy, then the feature strip. It also stops being
+         tucked under the header, so the header sits on flat colour above it,
+         which is what the phone design shows. */
+      /* The logo lockup is smaller on a phone. Measured against the mock its
+         mark is 33px tall to our 52, and the strapline under it runs at a 7px
+         line pitch to our 11 — our block came out 70px tall against its 49. */
+      .brand img { height: 33px; }
+      .tagline { font-size: 5.5px; line-height: 1.2; margin: 2px 0 0 3px; }
+      /* The header's height is PINNED here and the hero's negative margin is
+         derived from the same variable. They were two independent numbers a
+         moment ago, and shrinking the logo silently pulled the photograph 24px
+         above the top of the page. */
+      :root { --head-h: 65px; }
+      /* On .site-head, not .head-in: the header carries a 1px transparent
+         bottom border that becomes visible when it sticks, and with border-box
+         only the outer element's height accounts for it. Pinning the inner one
+         left the header 56px against a 65px assumption. */
+      .site-head { height: var(--head-h); }
+      .head-in { height: 100%; }
+
+      .hero {
+        /* Tucked back under the header. In the design the photograph starts at
+           y=0 and the logo and Order Now sit ON it — measured, the picture's
+           top-left corner is 46 design pixels down, which is inside the header,
+           not below it. The header is 89px tall here and occupies flow, so the
+           negative margin is exactly that. */
+        /* No bottom padding: the feature strip is the hero's last child and
+           the design puts the OUR FAVOURITES line 17px under it, not 47. */
+        margin-top: calc(-1 * var(--head-h)); padding: 0;
+        min-height: 0; display: block; isolation: auto;
+      }
+      .hero-media {
+        /* Absolute, not in flow: in the design the copy STARTS inside the
+           picture's faded tail — its eyebrow sits at y=330 while the picture
+           runs to 350 — so the two have to overlap, and .hero-inner's top
+           padding is what puts the copy at 330. */
+        position: absolute; inset: 0 0 auto 0; z-index: 0;
+        /* 86.5vw: the design's picture runs from the very top of the page to
+           where the eyebrow starts, reaching y=350 at 405px wide. Capped so a
+           tablet in this range does not get a 700px band. */
+        height: 86.5vw; max-height: 470px;
+      }
+      /* Placed, not guessed. Cross-correlating a photo-only patch of the phone
+         design against the source file (corr 0.95) puts its copy of the picture
+         at 0.92 of the file's own size with its top-left corner at -676, +46 in
+         the design's own pixels — so the phone sees the RIGHT 53% of the
+         photograph, the oven alone, with none of the dark room the desktop
+         shows. Halved to CSS pixels and expressed against the container: 190%
+         wide, -83.5% across, 5.7vw down. object-fit plays no part here; these
+         numbers ARE the frame. */
       .hero-media .sharp {
-        width: 100%; right: 0; top: 48px;
-        /* Only the LEFT fade goes: it would eat into copy that now runs the
-           full width. The bottom fade stays, or the photo ends on a hard
-           horizontal cut straight across the phone. */
-        -webkit-mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
-                mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
+        position: absolute; inset: auto;
+        top: 0; left: -83.5%;
+        width: 190%; height: auto;
+        transform: none;
+        /* The foot of the picture dissolves into the copy rather than ending:
+           in the design it is gone by 76% of its own height. */
+        -webkit-mask-image: linear-gradient(to bottom, #000 52%, rgba(0,0,0,.6) 74%, transparent 92%);
+                mask-image: linear-gradient(to bottom, #000 52%, rgba(0,0,0,.6) 74%, transparent 92%);
       }
       .hero-media::after {
-        background:
-          linear-gradient(to bottom, rgba(23,16,13,.62) 0%, rgba(23,16,13,.55) 40%,
-                          rgba(23,16,13,.78) 82%, var(--bg) 100%),
-          linear-gradient(to right, rgba(23,16,13,.35) 0%, rgba(23,16,13,.28) 100%);
+        /* The foot of the picture fades HERE, not on the image: the image is
+           transformed, and a mask on it would be scaled and shifted with it. */
+        background: linear-gradient(to bottom, rgba(23,16,13,0) 50%,
+                    rgba(23,16,13,.45) 78%, var(--bg) 97%);
+        -webkit-mask-image: none; mask-image: none;
       }
+      /* 77.3vw = 313px at 405 wide, which puts the headline's cap line on the
+         design's, at 348.5. */
+      .hero-inner { padding: 77.3vw 0 0; position: relative; z-index: 1; }
+      .hero-text { max-width: none; }
+      .features { margin-top: 4px; }
       .visit-grid { grid-template-columns: 1fr; }
       /* Smaller and further in on a phone: the photo is ~390px wide there and
          the notes overflowed its right edge at desktop size. */
@@ -494,10 +665,70 @@
       .socials { margin-left: 0; }
     }
     @media (max-width: 560px) {
-      .features-card { grid-template-columns: 1fr; }
-      .feat + .feat { border-left: 0; border-top: 1px solid var(--hair); }
-      .dishes { grid-template-columns: 1fr; }
-      section { padding: 46px 0; }
+      /* Type: the design's headline is 1.20x ours by measured width (its
+         "Stone baked Pizzas" spans 703 design pixels to our 580) and fills the
+         column exactly; its body copy is 0.81x ours, on a 20px line pitch to
+         our 28.8. Both in vw so they hold their proportion on a smaller phone. */
+      .hero h1 { font-size: 10.1vw; line-height: 0.99; }
+      .hero-copy { font-size: 3.25vw; line-height: 1.52; margin: 6px 0 4px; }
+      /* The design's buttons are 37px tall with 10px between them. 37 is below
+         the 44px minimum touch target both Apple and Google publish, on the one
+         control the whole page exists to get tapped, so they are 44 here — 7px
+         off the design, deliberately. Everything else about them matches. */
+      .hero-actions { gap: 10px; }
+      .hero-actions .btn { min-height: 44px; padding-top: 9px; padding-bottom: 9px; }
+      /* The whole proof row is smaller on a phone. Measured against the mock,
+         its avatars are 21px across to our 34.5 — nearly half again — and its
+         strapline runs at about 9px to our 12.5. */
+      .proof { margin-top: 12px; gap: 9px; }
+      .faces span {
+        width: 21px; height: 21px; font-size: 9px;
+        border-width: 1.5px; margin-left: -5px;
+      }
+      .stars { font-size: 11px; letter-spacing: .5px; }
+      .proof-text { font-size: 9px; }
+      /* The header's pill: 108px wide and 36 tall in the mock against our 122
+         and 41.5. Width matched through the type; the height stays a little
+         over the mock's, because 36px is under the 44px touch target and this
+         is still an order button. */
+      .head-cta { padding: 9px 13px; font-size: 12px; }
+
+      /* Full-width and stacked, phone only. Side by side at 400px the pair were
+         narrow enough that "View Menu" wrapped; at 800px full width would be a
+         780px button, which is why this is not in the block above. */
+      .hero-actions { flex-direction: column; align-items: stretch; }
+      .hero-actions .btn { width: 100%; justify-content: center; }
+
+      /* Four across, not stacked. Each promise is three or four words, so they
+         fit as narrow columns with the icon over the label, and the strip stays
+         one glanceable row instead of four rows of scrolling. */
+      .features-card { grid-template-columns: repeat(4, 1fr); }
+      /* The design's strip is 120px tall; ours was 165. Every number below is
+         trimmed toward that rather than one of them being halved. */
+      .feat {
+        flex-direction: column; text-align: center;
+        gap: 5px; padding: 7px 4px;
+      }
+      .feat + .feat { border-left: 1px solid var(--panel-line); border-top: 0; }
+      .feat .ico { width: 28px; height: 28px; }
+      .feat .ico svg { width: 14px; height: 14px; }
+      .feat b { font-size: 11px; line-height: 1.25; }
+      .feat small { font-size: 9.5px; line-height: 1.2; }
+
+      /* Two up. One per row made each card a full-width slab and pushed the
+         fourth dish three screens down. */
+      .dishes { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      /* Name and price only at this size — the descriptions doubled each card's
+         height for text nobody reads on a tile that small. They are still on
+         the menu page, where the decision is actually made. */
+      .dish-body p { display: none; }
+      .dish-body { padding: 12px 14px 14px; }
+      .dish-body h3 { font-size: 15px; }
+      /* 20px, not 46: in the design only 17px separates the feature strip from
+         the OUR FAVOURITES line. */
+      section { padding: 12px 0 46px; }
+      .sec-head { margin-bottom: 14px; }
+      .sec-head .eyebrow { margin-bottom: 4px; }
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
@@ -534,15 +765,17 @@
 
 <!-- ============================================================== hero === -->
 <main id="top">
+<!-- The photographic backdrop covers this wrapper and nothing below it. -->
+<div class="top-scene">
 <div class="hero">
   <div class="hero-media" aria-hidden="true">
     <picture>
-      <source type="image/webp" srcset="/assets/hero-800.webp 800w, /assets/hero.webp 1585w"
-              sizes="74vw" />
-      <img class="sharp" src="/assets/hero.jpg"
-           srcset="/assets/hero-800.jpg 800w, /assets/hero.jpg 1585w"
-           sizes="74vw"
-           width="1585" height="992" fetchpriority="high" decoding="async" alt="" />
+      <source type="image/webp" srcset="/assets/hero-900.webp 900w, /assets/hero-1672.webp 1672w"
+              sizes="100vw" />
+      <img class="sharp" src="/assets/hero-1672.jpg"
+           srcset="/assets/hero-900.jpg 900w, /assets/hero-1672.jpg 1672w"
+           sizes="100vw"
+           width="1672" height="941" fetchpriority="high" decoding="async" alt="" />
     </picture>
   </div>
 
@@ -563,7 +796,7 @@
   <div class="wrap hero-inner">
     <div class="hero-text">
       <p class="eyebrow">{{shopCity}}’s favourite</p>
-      <h1>Stone baked Pizzas<br />Massive kebabs<br /><span class="in-town">In {{shopCity}}</span></h1>
+      <h1>Stone baked Pizzas<br />Tasty kebabs<br /><span class="in-town">In {{shopCity}}</span></h1>
       <!-- The photograph is the hero's background and carries alt="", so the
            page still has to say in text what it shows. -->
       <p class="hero-copy">
@@ -643,18 +876,18 @@
       <a class="more" href="/order.html">View Full Menu <span aria-hidden="true">→</span></a>
     </div>
 
-    <!-- TODO_MENU: these four dishes and their prices came from the design
-         mock, NOT from the shop. Replace every name, description and price
-         with the real menu before this site goes anywhere near a customer.
-         The authoritative prices live in menu.json (pence). -->
+    <!-- Real menu. Every name and price here comes from the shop's own menu
+         and is cross-checked against menu.json by scripts/_gen-tad-menu.py --
+         change a price there, not here. "From" marks an item whose price
+         depends on a size choice, so the figure shown is its cheapest. -->
     <div class="dishes">
       <article class="dish">
-        <!-- REPLACE: <img src="/assets/dish-doner.jpg" alt="Doner kebab" width="640" height="400" /> -->
+        <!-- REPLACE: <img src="/assets/dish-doner.jpg" alt="Donner kebab" width="640" height="400" /> -->
         <div class="ph">Dish photo · 16:10</div>
         <div class="dish-body">
-          <h3>Doner Kebab</h3>
-          <p>Tender, flavourful doner meat with fresh salad and sauce.</p>
-          <div class="price">£7.50</div>
+          <h3>Donner Kebab</h3>
+          <p>Served in pitta with salad and sauce. Large or king size.</p>
+          <div class="price">From £9.90</div>
         </div>
       </article>
       <article class="dish">
@@ -662,57 +895,37 @@
         <div class="ph">Dish photo · 16:10</div>
         <div class="dish-body">
           <h3>Chicken Kebab</h3>
-          <p>Grilled chicken with fresh salad and your choice of sauce.</p>
-          <div class="price">£7.50</div>
+          <p>Cubes of chicken cooked on a griddle, in pitta with salad and sauce.</p>
+          <div class="price">£13.00</div>
         </div>
       </article>
       <article class="dish">
-        <!-- REPLACE: <img src="/assets/dish-mixed.jpg" alt="Mixed kebab" width="640" height="400" /> -->
+        <!-- REPLACE: <img src="/assets/dish-margherita.jpg" alt="Margherita pizza" width="640" height="400" /> -->
         <div class="ph">Dish photo · 16:10</div>
         <div class="dish-body">
-          <h3>Mixed Kebab</h3>
-          <p>The best of both worlds. Doner &amp; chicken, fresh and tasty.</p>
-          <div class="price">£8.50</div>
+          <h3>Margherita Pizza</h3>
+          <p>Stone baked on a tomato and cheese base. 12&quot; or 16&quot; giant.</p>
+          <div class="price">From £10.00</div>
         </div>
       </article>
       <article class="dish">
-        <!-- REPLACE: <img src="/assets/dish-fries.jpg" alt="Loaded fries" width="640" height="400" /> -->
+        <!-- REPLACE: <img src="/assets/dish-meat-feast.jpg" alt="Meat feast pizza" width="640" height="400" /> -->
         <div class="ph">Dish photo · 16:10</div>
         <div class="dish-body">
-          <h3>Loaded Fries</h3>
-          <p>Crispy fries, doner meat, cheese and your choice of sauce.</p>
-          <div class="price">£6.50</div>
+          <h3>Meat Feast Pizza</h3>
+          <p>Salami, pepperoni, ham and spicy beef.</p>
+          <div class="price">From £11.90</div>
         </div>
       </article>
     </div>
   </div>
 </section>
+</div><!-- /.top-scene -->
 
-<!-- ============================================================== deal === -->
-<div class="wrap">
-  <!-- TODO_MENU: offer and price are from the design mock. Confirm with the
-       shop, or delete this whole block, before launch. -->
-  <div class="deal">
-    <div class="deal-copy">
-      <p class="eyebrow">Special offer</p>
-      <h2>Kebab Meal Deal</h2>
-      <p>Any kebab + fries + drink</p>
-    </div>
-    <div class="deal-art">
-      <!-- REPLACE: <img src="/assets/deal.jpg" alt="Kebab, fries and a drink" width="800" height="400" /> -->
-      <div class="ph">Deal photo</div>
-    </div>
-    <div class="seal" aria-hidden="true"><span><small>Only</small><b>£9.99</b></span></div>
-    <p class="deal-hand">
-      Great food.<br />Better together.
-      <svg class="arrow-l" width="58" height="24" viewBox="0 0 58 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
-        <path d="M55 4C40 2 22 6 5 18" />
-        <path d="M12 12l-7 6 7 4" />
-      </svg>
-    </p>
-    <a class="btn btn-cream deal-cta" href="/order.html">Order Now <span aria-hidden="true">→</span></a>
-  </div>
-</div>
+<!-- The design mock carried a "Kebab Meal Deal, only £9.99" panel here. The
+     shop does not run that offer -- it is nowhere on their menu -- so it is
+     removed rather than advertised. Restore it from git history the day there
+     is a real deal to put in it. -->
 
 <!-- ============================================================= visit === -->
 <section id="contact" class="visit">

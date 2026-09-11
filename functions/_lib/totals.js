@@ -13,6 +13,9 @@ export function computeTotals(input, config, opts = {}) {
   const itemsById = indexMenu(menu);
   const lines = [];
   let subtotalP = 0;
+  // The part of the subtotal a percentage promo may be taken on — everything
+  // except items flagged noPromo. See where it is accumulated below.
+  let promoBaseP = 0;
   // Derived up here as well as below, because collection-only items have to be
   // rejected inside the line loop, before the totals section that used to be the
   // first place this was needed.
@@ -116,6 +119,12 @@ export function computeTotals(input, config, opts = {}) {
 
     const lineTotalP = lineP * qty;
     subtotalP += lineTotalP;
+    // A percentage promo applies to this line unless the item is flagged out of
+    // it. Meal deals are the case that matters: the shop has already discounted
+    // them by bundling, and taking another 15% off a "2 fish, 2 chips, 2 drinks
+    // for £X" offer sells it below what the parts cost. The flag is per item and
+    // off by default, so a shop that hasn't set it is charged exactly as before.
+    if (!item.noPromo) promoBaseP += lineTotalP;
 
     lines.push({
       id: item.id,
@@ -160,21 +169,30 @@ export function computeTotals(input, config, opts = {}) {
   //     a £11.50 basket qualified once delivery was added, which reads as a bug
   //     from either side of the counter. Absent ⇒ no threshold, exactly the
   //     previous behaviour, so every other shop is untouched.
+  //
+  // Either way the percentage is taken on promoBaseP, not the subtotal: items
+  // flagged noPromo (meal deals) are already discounted by being bundles, and
+  // stacking a welcome offer on top sells them under cost. The minimum-spend
+  // gate below still reads the FULL subtotal — it is the number the customer
+  // sees against the menu, and a basket that looks like it qualifies must
+  // qualify.
   let discountP = 0;
   let discountLabel = null;
   if (opts.firstOrderDiscount && !opts.suppressPromo) {
     const pct = Math.max(0, Math.min(100, Number(opts.firstOrderDiscount.percent) || 0));
-    discountP = Math.min(subtotalP, Math.round(subtotalP * (pct / 100)));
+    discountP = Math.min(promoBaseP, Math.round(promoBaseP * (pct / 100)));
     discountLabel = opts.firstOrderDiscount.label || `${pct}% off`;
   } else if (config.promo?.autoOnlineDiscount?.enabled && !opts.suppressPromo) {
     const auto = config.promo.autoOnlineDiscount;
     const minP = Math.max(0, Math.round(Number(auto.minSubtotalPence) || 0));
     if (subtotalP >= minP) {
       const pct = Math.max(0, Math.min(100, Number(auto.percent) || 0));
-      discountP = Math.min(subtotalP, Math.round(subtotalP * (pct / 100)));
+      discountP = Math.min(promoBaseP, Math.round(promoBaseP * (pct / 100)));
       discountLabel = auto.label;
     }
   }
+  // A basket of nothing but deals earns no discount, so don't label one.
+  if (discountP <= 0) discountLabel = null;
 
   // Delivery fee. /api/order resolves it via resolveDelivery (outcode OR
   // radius mode) and passes it in opts.deliveryFeeP. Fall back to the outcode

@@ -80,6 +80,14 @@ function validateMenus(menu, visual) {
     if (!!vi.collectionOnly !== !!mi.collectionOnly) {
       errors.push(`"${id}" collectionOnly: menu-visual ${!!vi.collectionOnly} != menu.json ${!!mi.collectionOnly} (the page and the server would disagree about whether it can be delivered)`);
     }
+    // noPromo keeps an item out of any percentage promo (meal deals, which are
+    // already discounted by being bundles). Same failure shape as
+    // collectionOnly: the cart preview reads menu-visual and computeTotals
+    // reads menu.json, so if they disagree the customer is quoted a discount
+    // the server then withholds — the price goes UP at checkout.
+    if (!!vi.noPromo !== !!mi.noPromo) {
+      errors.push(`"${id}" noPromo: menu-visual ${!!vi.noPromo} != menu.json ${!!mi.noPromo} (the cart would quote a discount the server withholds, or vice versa)`);
+    }
     const mods = new Map((mi.modifiers || []).map(x => [x.id, x]));
     const used = new Set();
     for (const opt of vi.options || []) {
@@ -358,8 +366,22 @@ const config = JSON.parse(fs.readFileSync(path.join(activeDir, 'config.json'), '
     warns.push(`stripe.connectedAccountId is a placeholder ("${acct}") — CARD PAYMENTS WILL FAIL.`);
   }
   const biz = config.business || {};
-  for (const [k, v] of Object.entries({ legalName: biz.legalName, companyNumber: biz.companyNumber, email: biz.email, domain: biz.domain })) {
-    if (typeof v === 'string' && /TODO|REPLACE/i.test(v)) warns.push(`business.${k} is still a placeholder ("${v}").`);
+  // phone was missing from this list, and it is the one that matters most: it
+  // substitutes into {{shopPhone}} / {{shopPhoneTel}}, so an unfilled value is
+  // not merely absent — a customer reads the word TODO_PHONE where the number
+  // should be, and taps a tel: link to it. Found on Tad Kebab, where every
+  // other placeholder warned in the deploy log and the only visible one did
+  // not. email is the same (it renders as {{shopEmail}}); legalName,
+  // companyNumber and domain are print-nothing-if-unset.
+  const RENDERED = new Set(['phone', 'email']);
+  for (const [k, v] of Object.entries({
+    legalName: biz.legalName, companyNumber: biz.companyNumber,
+    phone: biz.phone, email: biz.email, domain: biz.domain,
+  })) {
+    if (typeof v === 'string' && /TODO|REPLACE/i.test(v)) {
+      warns.push(`business.${k} is still a placeholder ("${v}").`
+        + (RENDERED.has(k) ? ' — THIS ONE IS PRINTED ON THE PAGE.' : ''));
+    }
   }
   // A hospitality shop with no usable tables ships a till whose Eat in button
   // dead-ends ("No tables are set up for this shop yet.") — staff can't take a
