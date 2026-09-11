@@ -579,6 +579,23 @@
          flow: picture, then copy, then the feature strip. It also stops being
          tucked under the header, so the header sits on flat colour above it,
          which is what the phone design shows. */
+      /* The logo lockup is smaller on a phone. Measured against the mock its
+         mark is 33px tall to our 52, and the strapline under it runs at a 7px
+         line pitch to our 11 — our block came out 70px tall against its 49. */
+      .brand img { height: 33px; }
+      .tagline { font-size: 5.5px; line-height: 1.2; margin: 2px 0 0 3px; }
+      /* The header's height is PINNED here and the hero's negative margin is
+         derived from the same variable. They were two independent numbers a
+         moment ago, and shrinking the logo silently pulled the photograph 24px
+         above the top of the page. */
+      :root { --head-h: 65px; }
+      /* On .site-head, not .head-in: the header carries a 1px transparent
+         bottom border that becomes visible when it sticks, and with border-box
+         only the outer element's height accounts for it. Pinning the inner one
+         left the header 56px against a 65px assumption. */
+      .site-head { height: var(--head-h); }
+      .head-in { height: 100%; }
+
       .hero {
         /* Tucked back under the header. In the design the photograph starts at
            y=0 and the logo and Order Now sit ON it — measured, the picture's
@@ -587,7 +604,7 @@
            negative margin is exactly that. */
         /* No bottom padding: the feature strip is the hero's last child and
            the design puts the OUR FAVOURITES line 17px under it, not 47. */
-        margin-top: -89px; padding: 0;
+        margin-top: calc(-1 * var(--head-h)); padding: 0;
         min-height: 0; display: block; isolation: auto;
       }
       .hero-media {
