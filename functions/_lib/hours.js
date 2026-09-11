@@ -123,6 +123,15 @@ export function listSlots(config) {
   const horizon = config.ordering.scheduling.horizonDays;
   const lead = config.ordering.asapMinPrepMinutes;
   const lastBuffer = config.ordering.lastOrderBeforeCloseMinutes || 0;
+  /* Closures are calendar dates in the SHOP's timezone, and activeClosure —
+     which /api/order enforces — reads them that way. A window running past
+     midnight puts its last slots on the NEXT shop-local date: Friday
+     09:00-25:00 offers 00:00 and 00:45 on Saturday. Keyed off the day being
+     iterated, closing Saturday left those two on offer and /api/order then
+     refused the order at checkout, which is the worst place to find out.
+     So each SLOT is tested against its own date, below. */
+  const closures = (config.closures && typeof config.closures === 'object') ? config.closures : null;
+  const ymdOf = new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' });
 
   const out = [];
   const baseUtc = new Date();
@@ -133,11 +142,9 @@ export function listSlots(config) {
       Thu:'thursday', Fri:'friday', Sat:'saturday' })[weekdayShort];
     const conf = config.hours[dayKey];
     if (!conf || conf.closed || !Array.isArray(conf.windows)) continue;
-    // Skip a whole day that has a one-off closure — no slots should be offered
-    // for a day the shop has taken offline (matches activeClosure's keys,
-    // including the indefinite "*" closure).
-    const ymd = new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(day);
-    if (config.closures && (config.closures[ymd] || config.closures['*'])) continue;
+    // The indefinite closure takes the whole day; a dated one is applied per
+    // slot below, because a slot's date is not always this day's.
+    if (closures && closures['*']) continue;
     for (const w of conf.windows) {
       const start = hhmmToMin(w.open);
       const end = hhmmToMin(w.close) - lastBuffer;
@@ -146,6 +153,7 @@ export function listSlots(config) {
         const slot = buildLocalIso(day, m, tz);
         if (!slot) continue;
         if (slot.getTime() < Date.now() + lead * 60000) continue;
+        if (closures && closures[ymdOf.format(slot)]) continue;
         const iso = slot.toISOString();
         if (!out.includes(iso)) out.push(iso);
       }
