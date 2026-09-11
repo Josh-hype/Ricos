@@ -80,6 +80,14 @@ function validateMenus(menu, visual) {
     if (!!vi.collectionOnly !== !!mi.collectionOnly) {
       errors.push(`"${id}" collectionOnly: menu-visual ${!!vi.collectionOnly} != menu.json ${!!mi.collectionOnly} (the page and the server would disagree about whether it can be delivered)`);
     }
+    // noPromo keeps an item out of any percentage promo (meal deals, which are
+    // already discounted by being bundles). Same failure shape as
+    // collectionOnly: the cart preview reads menu-visual and computeTotals
+    // reads menu.json, so if they disagree the customer is quoted a discount
+    // the server then withholds — the price goes UP at checkout.
+    if (!!vi.noPromo !== !!mi.noPromo) {
+      errors.push(`"${id}" noPromo: menu-visual ${!!vi.noPromo} != menu.json ${!!mi.noPromo} (the cart would quote a discount the server withholds, or vice versa)`);
+    }
     const mods = new Map((mi.modifiers || []).map(x => [x.id, x]));
     const used = new Set();
     for (const opt of vi.options || []) {

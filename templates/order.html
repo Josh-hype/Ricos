@@ -2459,13 +2459,21 @@ function cartTotals() {
   // Compute in integer pence (mirroring the server's computeTotals) so the
   // displayed total can't drift a penny from what Stripe is charged via
   // floating-point pound arithmetic. Returns pounds for display.
-  const subP = state.cart.reduce((s, l) => s + Math.round((Number(l.price) || 0) * 100) * (Number(l.qty) || 0), 0);
+  const lineP = (l) => Math.round((Number(l.price) || 0) * 100) * (Number(l.qty) || 0);
+  const subP = state.cart.reduce((s, l) => s + lineP(l), 0);
+  // The base a percentage promo is taken on, mirroring totals.js: everything
+  // except items flagged noPromo. Meal deals are already discounted by being
+  // bundles. This HAS to match the server — quoting a discount here that
+  // /api/order then withholds means the price goes UP at the last step, which
+  // is the direction that loses the order.
+  const promoBaseP = state.cart.reduce((s, l) => s + (findItem(l.itemId)?.noPromo ? 0 : lineP(l)), 0);
   const disc = activeDiscount(subP);
-  const discountP = Math.round(subP * (disc.pct / 100));
+  const discountP = Math.min(promoBaseP, Math.round(promoBaseP * (disc.pct / 100)));
   const deliveryP = Math.round(deliveryFeeGBP() * 100);
   const serviceP = state.cart.length > 0 ? Math.round(serviceFeeGBP() * 100) : 0;
   const totalP = Math.max(0, subP - discountP + deliveryP + serviceP);
-  return { sub: subP / 100, discount: discountP / 100, delivery: deliveryP / 100, serviceFee: serviceP / 100, total: totalP / 100, discountLabel: disc.label };
+  return { sub: subP / 100, discount: discountP / 100, delivery: deliveryP / 100, serviceFee: serviceP / 100, total: totalP / 100,
+           discountLabel: discountP > 0 ? disc.label : null };
 }
 
 function cartLineHTML(line) {

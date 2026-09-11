@@ -19,7 +19,8 @@
             "label": "Drink",
             "count": 2
           }
-        ]
+        ],
+        "noPromo": true
       },
       {
         "id": "special-offer",
@@ -37,7 +38,8 @@
             "label": "Drink",
             "count": 2
           }
-        ]
+        ],
+        "noPromo": true
       },
       {
         "id": "family-special-1",
@@ -68,7 +70,8 @@
             "label": "Drink",
             "count": 3
           }
-        ]
+        ],
+        "noPromo": true
       },
       {
         "id": "family-special-2",
@@ -86,7 +89,8 @@
             "label": "Drink",
             "count": 3
           }
-        ]
+        ],
+        "noPromo": true
       },
       {
         "id": "big-mega-box",
@@ -104,7 +108,8 @@
             "label": "Drink",
             "count": 3
           }
-        ]
+        ],
+        "noPromo": true
       }
     ]
   },

@@ -199,6 +199,15 @@ at the counter). Open tabs / pay-at-the-end is deliberately *not* built yet.
 - The choice `id` links the two. `functions/_lib/totals.js` sums modifier
   prices server-side — it decides what the customer is actually charged.
 - Item IDs in `menu.json` and `menu-visual.json` **must match exactly**.
+- **`noPromo: true`** holds an item out of every percentage promo (the
+  first-orders welcome offer and `autoOnlineDiscount` alike) — for meal deals,
+  which the shop has already discounted by bundling, so taking another 15% off
+  sells them under what the parts cost. The percentage is then taken on the
+  rest of the basket only; a deals-only basket gets no discount and no label.
+  Set it in **both** files — the cart preview reads `menu-visual.json` and
+  `computeTotals` reads `menu.json`, so a mismatch quotes a discount the server
+  withholds. `build-shop.js` fails the build if the two disagree. Mega Chippy's
+  five `specials` carry it; no other shop's pricing moves.
 
 ---
 
