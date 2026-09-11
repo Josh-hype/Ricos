@@ -676,7 +676,21 @@
          off the design, deliberately. Everything else about them matches. */
       .hero-actions { gap: 10px; }
       .hero-actions .btn { min-height: 44px; padding-top: 9px; padding-bottom: 9px; }
-      .proof { margin-top: 12px; }
+      /* The whole proof row is smaller on a phone. Measured against the mock,
+         its avatars are 21px across to our 34.5 — nearly half again — and its
+         strapline runs at about 9px to our 12.5. */
+      .proof { margin-top: 12px; gap: 9px; }
+      .faces span {
+        width: 21px; height: 21px; font-size: 9px;
+        border-width: 1.5px; margin-left: -5px;
+      }
+      .stars { font-size: 11px; letter-spacing: .5px; }
+      .proof-text { font-size: 9px; }
+      /* The header's pill: 108px wide and 36 tall in the mock against our 122
+         and 41.5. Width matched through the type; the height stays a little
+         over the mock's, because 36px is under the 44px touch target and this
+         is still an order button. */
+      .head-cta { padding: 9px 13px; font-size: 12px; }
 
       /* Full-width and stacked, phone only. Side by side at 400px the pair were
          narrow enough that "View Menu" wrapped; at 800px full width would be a
