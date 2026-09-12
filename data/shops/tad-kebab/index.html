@@ -633,14 +633,23 @@
         transform: none;
         /* The foot of the picture dissolves into the copy rather than ending:
            in the design it is gone by 76% of its own height. */
-        -webkit-mask-image: linear-gradient(to bottom, #000 52%, rgba(0,0,0,.6) 74%, transparent 92%);
-                mask-image: linear-gradient(to bottom, #000 52%, rgba(0,0,0,.6) 74%, transparent 92%);
+        /* Gone by 70% of the image's own height, which lands just above the
+           eyebrow and well above "Stone baked Pizzas".
+
+           The hard line this replaces was not the fade at all: .hero-media is
+           350px tall and the image runs to 433, so overflow:hidden cut the
+           picture off at 81% while the fade still had 11% to run. Clipping a
+           half-faded image leaves exactly the straight edge that was showing.
+           Finishing the fade before the clip is what removes it. */
+        -webkit-mask-image: linear-gradient(to bottom, #000 50%, rgba(0,0,0,.5) 62%, transparent 70%);
+                mask-image: linear-gradient(to bottom, #000 50%, rgba(0,0,0,.5) 62%, transparent 70%);
       }
       .hero-media::after {
         /* The foot of the picture fades HERE, not on the image: the image is
            transformed, and a mask on it would be scaled and shifted with it. */
-        background: linear-gradient(to bottom, rgba(23,16,13,0) 50%,
-                    rgba(23,16,13,.45) 78%, var(--bg) 97%);
+        /* Nothing: the image's own mask does the whole bleed now, and a scrim
+           on top of it only risks banding where the two disagree. */
+        background: none;
         -webkit-mask-image: none; mask-image: none;
       }
       /* 77.3vw = 313px at 405 wide, which puts the headline's cap line on the
