@@ -98,3 +98,115 @@ test('zones: realistic York shape — Acomb in, Huntington out', () => {
   assert.equal(pointInRing(53.949, -1.105, acombish), true,  'Acomb is inside');
   assert.equal(pointInRing(53.995, -1.050, acombish), false, 'Huntington is outside');
 });
+
+/* Fee carve-outs: polygons that re-price an area SMALLER than an outcode,
+   without touching anything else. Mega Chippy needed one pocket of York dearer
+   than the rest of its outcode, and an outcode cannot express a part of itself.
+
+   The property that matters most is what a carve-out canNOT do. It sets a fee
+   and nothing else: the allow-list and the distance cap still decide whether
+   the shop delivers at all, so a badly drawn polygon can overcharge but it can
+   never open a street the shop doesn't serve, nor close one it does. Those two
+   are tested explicitly below.
+
+   Geocoding is stubbed at fetch. functions/_lib/geocode.js caches per isolate,
+   so every test uses its own postcode. */
+const COORDS = {
+  YO242AA: { lat: 53.9510, lng: -1.1190 },   // inside the carve-out
+  YO243BB: { lat: 53.9600, lng: -1.1300 },   // same outcode, outside it
+  YO264CC: { lat: 54.0500, lng: -1.1200 },   // inside the far polygon, ~7 miles out
+  LS15DD:  { lat: 53.9510, lng: -1.1190 },   // inside the carve-out, outcode not served
+};
+
+const withGeocode = async (fn) => {
+  const real = globalThis.fetch;
+  globalThis.fetch = async (url) => {
+    const pc = String(url).split('/').pop();
+    const c = COORDS[pc];
+    if (!c) return { ok: false };
+    return { ok: true, json: async () => ({ status: 200, result: { latitude: c.lat, longitude: c.lng } }) };
+  };
+  try { return await fn(); } finally { globalThis.fetch = real; }
+};
+
+const CARVE = {
+  name: 'Test pocket',
+  feePence: 350,
+  polygon: [[53.9505, -1.1205], [53.9505, -1.1175], [53.9520, -1.1175], [53.9520, -1.1205]],
+};
+const FAR = {
+  name: 'Far pocket',
+  feePence: 350,
+  polygon: [[54.045, -1.125], [54.045, -1.115], [54.055, -1.115], [54.055, -1.125]],
+};
+const carveCfg = (zones) => cfg({
+  mode: 'outcode',
+  feePence: 600,
+  feeByOutcode: { YO24: 200, YO26: 250 },
+  allowedOutcodes: ['YO24', 'YO26'],
+  areaDescription: 'in York',
+  maxMiles: 4,
+  roadFactor: 1.3,
+  origin: { lat: 53.95, lng: -1.12 },
+  ...(zones ? { feeOverrideZones: zones } : {}),
+});
+
+test('a postcode inside a carve-out is charged the carve-out fee', async () => {
+  await withGeocode(async () => {
+    const r = await resolveDelivery('YO24 2AA', carveCfg([CARVE]));
+    assert.equal(r.ok, true);
+    assert.equal(r.feePence, 350, 'the carve-out overrides the outcode’s 200');
+    assert.equal(r.zoneName, 'Test pocket');
+  });
+});
+
+test('the rest of the same outcode is untouched', async () => {
+  await withGeocode(async () => {
+    const r = await resolveDelivery('YO24 3BB', carveCfg([CARVE]));
+    assert.equal(r.ok, true);
+    assert.equal(r.feePence, 200, 'outside the polygon the outcode price stands');
+    assert.equal(r.zoneName, undefined);
+  });
+});
+
+test('a carve-out cannot open an outcode the shop does not serve', async () => {
+  await withGeocode(async () => {
+    const r = await resolveDelivery('LS1 5DD', carveCfg([CARVE]));
+    assert.equal(r.ok, false, 'the allow-list still decides, not the polygon');
+  });
+});
+
+test('a carve-out cannot beat the distance cap', async () => {
+  await withGeocode(async () => {
+    const r = await resolveDelivery('YO26 4CC', carveCfg([FAR]));
+    assert.equal(r.ok, false, 'still outside the delivery radius');
+    assert.equal(r.suggestCollection, true);
+  });
+});
+
+test('with no carve-outs configured nothing changes', async () => {
+  await withGeocode(async () => {
+    const r = await resolveDelivery('YO24 2AA', carveCfg(null));
+    assert.equal(r.ok, true);
+    assert.equal(r.feePence, 200);
+  });
+});
+
+test('a malformed carve-out is ignored, not treated as free', async () => {
+  await withGeocode(async () => {
+    const bad = [{ name: 'no fee', polygon: CARVE.polygon }, { name: 'no polygon', feePence: 100 }];
+    const r = await resolveDelivery('YO24 2AA', carveCfg(bad));
+    assert.equal(r.ok, true);
+    assert.equal(r.feePence, 200, 'falls back to the outcode price');
+  });
+});
+
+test('if geocoding is down the outcode price still applies and delivery still works', async () => {
+  const real = globalThis.fetch;
+  globalThis.fetch = async () => ({ ok: false });
+  try {
+    const r = await resolveDelivery('YO24 7ZZ', carveCfg([CARVE]));
+    assert.equal(r.ok, true, 'fail open — the allow-list is the primary gate');
+    assert.equal(r.feePence, 200);
+  } finally { globalThis.fetch = real; }
+});
