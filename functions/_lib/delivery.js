@@ -8,6 +8,14 @@
      radius.roadFactor (e.g. 1.3) scales it up to approximate real driving
      distance, since a road route is rarely a straight line. Beyond the largest
      band = no delivery.
+   Outcode mode also takes feeOverrideZones: polygons that change the FEE for
+   an area smaller than an outcode, leaving everything else alone. Mega Chippy
+   needed one pocket of York dearer than the rest of its outcode, and an
+   outcode cannot express a part of itself. Deliberately fee-only — the
+   allow-list and the distance cap still decide whether delivery happens at
+   all, so a carve-out can never open an area the shop does not serve, nor
+   close one it does.
+
    - "zones": arbitrary map polygons, each with its own fee. The customer
      postcode is geocoded and tested against each polygon in order; the first
      one that contains it sets the fee, and no match means no delivery.
@@ -140,7 +148,14 @@ export async function resolveDelivery(rawPostcode, config) {
   const v = validateDeliveryPostcode(rawPostcode, d.allowedOutcodes, d.areaDescription, d.blockedPrefixes);
   if (!v.ok) return v;
   const override = d.feeByOutcode?.[v.outcode];
-  const feePence = Number.isFinite(override) ? override : d.feePence;
+  let feePence = Number.isFinite(override) ? override : d.feePence;
+
+  /* Fee carve-outs smaller than an outcode. Only meaningful once the postcode
+     is geocoded, which happens just below for the distance cap, so the match
+     is applied there rather than here. */
+  const carveOuts = (d.feeOverrideZones || []).filter(
+    (z) => Array.isArray(z.polygon) && z.polygon.length >= 3 && Number.isFinite(Number(z.feePence)),
+  );
 
   // Optional hard distance cap ON TOP of outcode pricing. Some outcodes sprawl
   // well past the delivery radius (e.g. YO26 reaches 6–7 miles), so even a priced,
@@ -163,7 +178,17 @@ export async function resolveDelivery(rawPostcode, config) {
           suggestCollection: true,
         };
       }
-      return { ok: true, postcode: v.postcode, feePence, distanceMiles: Math.round(miles * 10) / 10 };
+      // Inside the area and priced by outcode — now let a carve-out re-price it.
+      // First match wins, as in zones mode.
+      const hit = carveOuts.find((z) => pointInRing(dest.lat, dest.lng, z.polygon));
+      if (hit) feePence = Number(hit.feePence);
+      return {
+        ok: true,
+        postcode: v.postcode,
+        feePence,
+        distanceMiles: Math.round(miles * 10) / 10,
+        ...(hit ? { zoneName: hit.name || undefined } : {}),
+      };
     }
   }
 
