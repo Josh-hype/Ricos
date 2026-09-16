@@ -104,7 +104,10 @@
     .hero {
       position: relative; isolation: isolate;
       display: flex; flex-direction: column; justify-content: center;
-      min-height: 100svh; padding: 150px 8vw 120px; overflow: hidden;
+      /* NOT 100svh. At full viewport height the feature strip sits entirely
+         below the fold, and the reference deliberately shows it peeking under
+         the photograph. The cap stops it becoming absurd on a tall monitor. */
+      min-height: min(86svh, 900px); padding: 136px 8vw 104px; overflow: hidden;
       background: var(--green-dark); color: var(--cream);
     }
     .hero-bg { position: absolute; inset: 0; z-index: -2; display: block; }
@@ -126,14 +129,14 @@
           rgb(16 45 37 / 60%) 44%, rgb(16 45 37 / 20%) 66%,
           rgb(16 45 37 / 3%)  100%);
     }
-    .hero-inner { max-width: 600px; }
+    .hero-inner { max-width: min(46vw, 700px); }
     .eyebrow {
       margin: 0 0 22px; color: var(--gold-pale);
       font-size: 10px; font-weight: 650; letter-spacing: .24em; text-transform: uppercase;
     }
     h1 {
       margin: 0; font-family: var(--serif);
-      font-size: clamp(50px, 5.1vw, 84px); font-weight: 400;
+      font-size: clamp(50px, 5.4vw, 100px); font-weight: 400;
       letter-spacing: -.05em; line-height: .95;
     }
     /* "Great food · Good company · All day" — the gold strapline under the H1. */
@@ -144,7 +147,7 @@
     }
     .hero-strap i { font-style: normal; opacity: .6; }
     .hero-intro {
-      max-width: 470px; margin: 22px 0 0;
+      max-width: 480px; margin: 22px 0 0;
       color: rgb(255 249 235 / 84%); font-family: var(--serif);
       font-size: clamp(16px, 1.15vw, 19px); line-height: 1.6;
     }
