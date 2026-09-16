@@ -83,7 +83,8 @@ and where each subsystem is documented — is in **`docs/PRODUCTS.md`**.
 | `data/_active/` | **Generated.** The active shop's `config.json` + `menu.json`, written by the build; imported by the API. Gitignored. |
 | `templates/` | **Shared** HTML/manifest templates with `{{token}}` placeholders. |
 | `functions/` | **Shared** Cloudflare Pages Functions (the backend API). |
-| `scripts/build-shop.js` | The build: resolves `SHOP_SLUG`, copies the shop's files, substitutes tokens, validates menu invariants. |
+| `scripts/build-shop.js` | The build: resolves `SHOP_SLUG`, copies the shop's files, substitutes tokens, validates menu invariants. **The only file in `scripts/`** — see `tools/`. |
+| `tools/` | Hand-run tooling the build never reads: the menu/brand generators, `gen-shop-secrets.mjs`, `watch-paths.mjs`, `setup-billing.mjs`. Kept out of `scripts/` because every Pages project watches `scripts/`, so a generator edit there queued a build on all eight. `tools/` is excluded everywhere. **Put new hand-run scripts here.** |
 | `public/` | **Generated** site output (gitignored) — *except* the three static files below. |
 | `templates/admin/` | **Shared** UI for the Lumin Labs owner console (a separate Pages project, built with `PLATFORM_BUILD=1`, not a `SHOP_SLUG`). |
 | `data/platform/registry.json` | Platform-level shop registry (revenue reporting / owner console). |
@@ -231,10 +232,19 @@ Each project (`ricos`, the Food Station project, and any future shop):
     `NPM_FLAGS` = `--omit=dev` (v2 silently ignores NPM_FLAGS — discovered on
     the one-sip project, 2026-07-18).
 - **Build watch paths** (Settings → Builds & deployments): Include `*`, Exclude
-  every OTHER shop's folder (`data/shops/<other-slug>/*`, one per shop). Without
-  this, a one-shop change rebuilds **every** project. Each project excludes every
-  shop except its own; shared-code changes still rebuild all. **Adding a new shop?
-  Add its `data/shops/<slug>/*` to every existing project's Exclude paths too.**
+  every OTHER shop's folder (`data/shops/<other-slug>/*`, one per shop), plus the
+  directories the build never reads: `data/shops/_template/*`, `tests/*`,
+  `test/*`, `docs/*`, `app/*`, `print/*`, `tools/*`, `.github/*`, `*.md`.
+  Without this, a one-shop change rebuilds **every** project. Each project
+  excludes every shop except its own; genuine shared-code changes still rebuild
+  all. **Don't write these by hand — run `node tools/watch-paths.mjs`**, which
+  prints the complete list per project from `data/shops/`. **Adding a new shop?
+  Re-run it and re-paste every project's list, not just the new one's.**
+
+  `scripts/*` and `public/*` are the two that must stay watched:
+  `scripts/build-shop.js` **is** the build, and `public/_headers` /
+  `public/_redirects` are committed and served as-is. That is exactly why
+  hand-run tooling lives in `tools/` and not `scripts/`.
 - **KV namespaces** (create per shop, bind by these names):
   `ORDERS_KV`, `CUSTOMERS_KV`, `MARKETING_KV`, `SLOTS_KV`, `STAFF_LOGIN_KV`
 - **Secrets** (encrypted env vars — names the code actually reads):
@@ -320,7 +330,7 @@ console.log("");
 '
 ```
 
-(`scripts/gen-shop-secrets.mjs` is the same thing if you already have the repo
+(`tools/gen-shop-secrets.mjs` is the same thing if you already have the repo
 open, and also emits `TILL_SETUP_PASSWORD` and a `STAFF_PATH` suggestion.)
 
 **Do NOT hand someone an `openssl dgst -hmac` line with the password on it.**

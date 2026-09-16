@@ -14,7 +14,7 @@ simply has none, and the shop's own spellings are kept verbatim — "Proscuitto"
 names the shop and its customers use, and silently correcting a trading menu is
 not this script's call.
 
-Run: python3 scripts/_gen-tad-menu.py
+Run: python3 tools/_gen-tad-menu.py
 """
 import json, re, pathlib
 

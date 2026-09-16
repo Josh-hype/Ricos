@@ -21,7 +21,7 @@ and a one-time Direct Debit mandate link.
 | **LumiWEB Weekly** (website only) | **£19** | – | – | ✓ |
 | **Total**           |          | **£35**| **£19**      | **£19** |
 
-Amounts live in `scripts/setup-billing.mjs` (`CATALOGUE`, in pence) — the source
+Amounts live in `tools/setup-billing.mjs` (`CATALOGUE`, in pence) — the source
 of truth. Rico's is billed as three itemised Prices; **Big Bites is on a single
 agreed all-in £19/wk LumiPOS Price** (`lumipos_food_station_weekly`), so it isn't
 the software+hardware breakdown.
@@ -49,15 +49,15 @@ Run from the repo root with the platform secret key.
 mandate page: sort code `20-00-00`, account `55779911`.
 
 ```sh
-STRIPE_SECRET_KEY=sk_test_xxx node scripts/setup-billing.mjs
+STRIPE_SECRET_KEY=sk_test_xxx node tools/setup-billing.mjs
 ```
 
 **Then go live:**
 
 ```sh
-STRIPE_SECRET_KEY=sk_live_xxx node scripts/setup-billing.mjs
+STRIPE_SECRET_KEY=sk_live_xxx node tools/setup-billing.mjs
 # or one shop at a time:
-STRIPE_SECRET_KEY=sk_live_xxx node scripts/setup-billing.mjs food-station
+STRIPE_SECRET_KEY=sk_live_xxx node tools/setup-billing.mjs food-station
 ```
 
 The script is **idempotent**:

@@ -148,6 +148,6 @@ week free, due to complete w/c 20 Jul 2026.
 | Build/sign the APK | `app/README.md` |
 | Native printer plugin details | `app/native/android/README.md` |
 | OTA pipeline (Capgo + the GitHub Action) | `docs/SESSION_HANDOFF.md`, `docs/PHASE3_LIVE_UPDATE.md` |
-| Charging a shop | `docs/BILLING.md`, `scripts/setup-billing.mjs` |
+| Charging a shop | `docs/BILLING.md`, `tools/setup-billing.mjs` |
 | Adding a shop | `docs/ADDING_A_SHOP.md`, `docs/SHOP_CHECKLIST.md` |
 | Card terminal (Phase 3) | `docs/PHASE3_TERMINAL.md` |

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate Leaf's menu.json + menu-visual.json from ONE table.
 
-Run:  python3 scripts/_gen-leaf-menu.py
+Run:  python3 tools/_gen-leaf-menu.py
 
 Why a generator and not two hand-edited files: the two files carry the same
 prices in different units — menu.json in pence (the server charges from it),

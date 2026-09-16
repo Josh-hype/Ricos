@@ -17,7 +17,7 @@
      up (sk_test_... for test mode, sk_live_... for live).
 
    Usage:
-     STRIPE_SECRET_KEY=sk_test_xxx node scripts/register-wallet-domain.mjs [slug] [domain]
+     STRIPE_SECRET_KEY=sk_test_xxx node tools/register-wallet-domain.mjs [slug] [domain]
 
    slug defaults to "ricos"; domain defaults to the shop's
    business.domain from its config.json. The connected account id is read

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build Leaf's brand assets from the shop's real logo artwork.
 
-Run:  python3 scripts/_gen-leaf-brand.py
+Run:  python3 tools/_gen-leaf-brand.py
 
 Input:  data/shops/leaf-cafe/_source/logo-master.png  (owner-supplied, 2170x725 RGBA,
         gold wordmark on transparency — "THE LEAF / CAFÉ & BISTRO")

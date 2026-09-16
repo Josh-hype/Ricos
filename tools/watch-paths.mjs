@@ -1,7 +1,7 @@
 /* Print the Cloudflare Pages "Build watch paths" for every shop project.
 
-   Run:  node scripts/watch-paths.mjs
-         node scripts/watch-paths.mjs leaf-cafe     (just one project)
+   Run:  node tools/watch-paths.mjs
+         node tools/watch-paths.mjs leaf-cafe     (just one project)
 
    Why this exists: each Pages project should rebuild ONLY when something it
    actually serves changes. Without exclusions a one-shop edit rebuilds every
@@ -39,7 +39,13 @@ const shops = readdirSync(shopsDir)
    hand on the food-station project, which is how they came to light.
 
    NOT excludable, however tempting: scripts/* (build-shop.js IS the build) and
-   public/* (gitignored except _headers and _redirects, which are served as-is). */
+   public/* (gitignored except _headers and _redirects, which are served as-is).
+
+   That scripts/* rule is WHY this file lives in tools/ rather than scripts/.
+   scripts/ is watched by every project, so while the hand-run tooling sat in
+   there, editing a generator — a file the build never reads — queued eight
+   builds. scripts/ now holds build-shop.js and nothing else, so a build there
+   always means a real build change. Put new hand-run tooling in tools/. */
 const NEVER_BUILT = [
   'data/shops/_template/*',
   'tests/*',

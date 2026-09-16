@@ -1,7 +1,7 @@
 /* Generate a shop's session secret, till setup password and PIN hashes.
 
    Run on YOUR machine (not in a shared session — it prints secrets):
-     node scripts/gen-shop-secrets.mjs
+     node tools/gen-shop-secrets.mjs
 
    Why a script: STAFF_PIN_HASH and MANAGER_PIN_HASH are not plain SHA-256 of
    the PIN. They are HMAC-SHA256 of the PIN **keyed by SESSION_SECRET** (see

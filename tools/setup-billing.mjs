@@ -24,8 +24,8 @@
          sk_live_… to bill for real.
 
    Usage:
-     STRIPE_SECRET_KEY=sk_test_xxx node scripts/setup-billing.mjs
-     STRIPE_SECRET_KEY=sk_test_xxx node scripts/setup-billing.mjs ricos   # one shop
+     STRIPE_SECRET_KEY=sk_test_xxx node tools/setup-billing.mjs
+     STRIPE_SECRET_KEY=sk_test_xxx node tools/setup-billing.mjs ricos   # one shop
 
    Amounts are in PENCE and are the source of truth for what each shop pays. */
 
