@@ -230,10 +230,9 @@
       font-family: var(--serif); font-size: 13px; font-style: italic;
     }
 
-    /* ---------- photo slot — the "inside" shot is still being reshot ----------
-       Holds the EXACT box its <picture> held, so nothing below it shifts and
-       restoring the artwork is a markup swap. The .inside-photo picture/img
-       rules are deliberately KEPT for that. */
+    /* ---------- photo slot ----------
+       Stands in for the four menu-card photographs until they exist. Dropping
+       the artwork in is a swap of this div for a <picture>. */
     .photo-slot {
       display: block; width: 100%; height: 100%;
       background:
@@ -246,7 +245,7 @@
       margin: 0 0 25px; color: var(--gold-deep);
       font-size: 9px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase;
     }
-    .manifesto h2, .inside-copy h2, .visit h2, .order-band h2 {
+    .manifesto h2, .visit h2, .order-band h2 {
       margin: 0; font-family: var(--serif);
       font-size: clamp(48px, 6vw, 92px); font-weight: 400;
       letter-spacing: -.052em; line-height: .96;
@@ -273,12 +272,8 @@
     }
 
     /* ---------- menus — the reference's dark band of four photo cards ------- */
-    .menus { padding: 100px 6vw 110px; background: var(--green); color: var(--cream); }
-    .menus-kicker {
-      margin: 0 0 16px; color: var(--gold-pale);
-      font-size: 9px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase;
-    }
-    .menus-head { display: flex; align-items: center; gap: 28px; margin: 0 0 42px; }
+    .menus { padding: 40px 6vw 48px; background: var(--green); color: var(--cream); }
+    .menus-head { display: flex; align-items: center; gap: 28px; margin: 0 0 30px; }
     .menus-head h2 {
       margin: 0; font-family: var(--serif); font-weight: 400;
       font-size: clamp(40px, 4.2vw, 70px); letter-spacing: -.04em; line-height: 1;
@@ -324,40 +319,6 @@
     .menu-card:hover .menu-card-go {
       background: var(--gold); border-color: var(--gold); color: var(--green-dark);
     }
-
-    /* ---------- inside ---------- */
-    .inside {
-      display: grid; grid-template-columns: 54% 46%;
-      min-height: 800px; background: var(--surface); color: var(--ink);
-    }
-    .inside-photo { position: relative; min-height: 800px; overflow: hidden; background: #CDBB9B; }
-    .inside-photo > picture { display: block; width: 100%; height: 100%; }
-    .inside-photo img {
-      display: block; width: 100%; height: 100%;
-      object-fit: cover; object-position: 45% center;
-      filter: saturate(.84) contrast(.98) brightness(.95);
-    }
-    .photo-index {
-      position: absolute; left: 22px; bottom: 20px; padding: 9px 12px;
-      background: rgb(255 249 235 / 88%); color: var(--green);
-      font-size: 8px; font-weight: 650; letter-spacing: .14em; text-transform: uppercase;
-    }
-    .inside-copy { display: flex; flex-direction: column; justify-content: center; padding: 110px 7vw; }
-    .inside-lead {
-      max-width: 480px; margin: 34px 0 48px; color: var(--ink-muted);
-      font-family: var(--serif); font-size: 18px; line-height: 1.55;
-    }
-    .inside-points { border-top: 1px solid rgb(22 58 48 / 20%); }
-    .inside-points > div {
-      display: grid; grid-template-columns: 42px 1fr; gap: 18px;
-      padding: 17px 0; border-bottom: 1px solid rgb(22 58 48 / 20%);
-    }
-    .inside-points span {
-      padding-top: 3px; color: var(--gold-deep);
-      font-size: 8px; font-weight: 700; letter-spacing: .14em;
-    }
-    .inside-points p { max-width: 420px; margin: 0; color: var(--ink-muted); font-size: 13px; line-height: 1.6; }
-    .dark-link { align-self: flex-start; margin-top: 34px; border-color: rgb(22 58 48 / 40%); }
 
     /* ---------- quote ---------- */
     .quote-band {
@@ -467,9 +428,6 @@
       .menu-grid { grid-template-columns: repeat(2, 1fr); }
       .menus-head { flex-wrap: wrap; gap: 18px; }
       .menus-rule { display: none; }
-      .inside { grid-template-columns: 1fr; }
-      .inside-photo { min-height: 680px; }
-      .inside-copy { padding: 95px 8vw; }
       .visit { grid-template-columns: 1fr; padding: 105px 8vw; }
       footer { grid-template-columns: 1fr; text-align: center; }
       footer > img, footer > p { justify-self: center; }
@@ -490,16 +448,14 @@
       .features > div:not(:last-child) { border-bottom: 1px solid rgb(22 58 48 / 14%); }
       .features > div { padding: 34px 26px; }
       .manifesto { padding: 86px 7vw; }
-      .manifesto h2, .inside-copy h2, .visit h2, .order-band h2 { font-size: 48px; }
+      .manifesto h2, .visit h2, .order-band h2 { font-size: 48px; }
       .manifesto-copy { grid-template-columns: 1fr; gap: 25px; margin-top: 42px; }
-      .menus { padding: 80px 6vw 84px; }
+      .menus { padding: 34px 6vw 40px; }
       .menu-grid { gap: 14px; }
       .menu-card-body { left: 16px; right: 54px; bottom: 15px; }
       .menu-card-body h3 { font-size: 11px; }
       .menu-card-body p { font-size: 12px; }
       .menu-card-go { right: 13px; bottom: 15px; width: 28px; height: 28px; }
-      .inside-photo { min-height: 520px; }
-      .inside-copy { padding: 82px 7vw; }
       .quote-band { padding: 95px 7vw 88px; }
       .visit-details { grid-template-columns: 1fr; gap: 50px; }
       .visit-details address, .visit-details > div > p:not(.detail-label) { min-height: 0; }
@@ -591,7 +547,6 @@
   </section>
 
   <section class="menus" id="menus">
-    <p class="menus-kicker">Explore</p>
     <div class="menus-head">
       <h2>Our Menus</h2>
       <span class="menus-rule" aria-hidden="true"></span>
@@ -639,27 +594,6 @@
       </p>
     </div>
     <span class="manifesto-mark" aria-hidden="true">L</span>
-  </section>
-
-  <section class="inside" id="experience">
-    <div class="inside-photo">
-      <div class="photo-slot"></div>
-      <span class="photo-index">02 / Inside {{shopShortName}}</span>
-    </div>
-    <div class="inside-copy">
-      <p class="section-kicker">The real Leaf</p>
-      <h2>Small room.<br />Big-hearted.</h2>
-      <p class="inside-lead">
-        Warm wood, brick, hanging lights and the hum of the coffee machine.
-        It’s relaxed, familiar and unmistakably local.
-      </p>
-      <div class="inside-points">
-        <div><span>01</span><p>Friendly counter service and a comfortable table when you want to settle in.</p></div>
-        <div><span>02</span><p>A straightforward space that lets the food and conversation do the talking.</p></div>
-        <div><span>03</span><p>Right on Acomb Road, for quick coffees and slower catch-ups alike.</p></div>
-      </div>
-      <a class="text-link dark-link" href="#visit">Find your way here <span aria-hidden="true">→</span></a>
-    </div>
   </section>
 
   <section class="quote-band" aria-label="{{shopShortName}} philosophy">
