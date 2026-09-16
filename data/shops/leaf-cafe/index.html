@@ -245,30 +245,10 @@
       margin: 0 0 25px; color: var(--gold-deep);
       font-size: 9px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase;
     }
-    .manifesto h2, .order-band h2 {
+    .order-band h2 {
       margin: 0; font-family: var(--serif);
       font-size: clamp(48px, 6vw, 92px); font-weight: 400;
       letter-spacing: -.052em; line-height: .96;
-    }
-
-    /* ---------- manifesto ---------- */
-    .manifesto {
-      position: relative; overflow: hidden;
-      padding: 140px 10vw 128px; background: var(--ivory); color: var(--ink);
-    }
-    .manifesto-copy {
-      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6vw;
-      width: min(690px, 70%); margin: 58px 0 0 auto;
-      padding-top: 25px; border-top: 1px solid var(--rule);
-    }
-    .manifesto-copy p {
-      margin: 0; color: var(--ink-muted); font-family: var(--serif);
-      font-size: 17px; line-height: 1.58;
-    }
-    .manifesto-mark {
-      position: absolute; right: -2vw; bottom: -10vw;
-      color: rgb(22 58 48 / 4%); font-family: var(--serif);
-      font-size: 38vw; line-height: 1;
     }
 
     /* ---------- menus — the reference's dark band of four photo cards ------- */
@@ -436,8 +416,6 @@
       .features > div + div { border-left: 0; }
       .features > div:nth-child(even) { border-left: 1px solid rgb(22 58 48 / 14%); }
       .features > div:nth-child(-n+2) { border-bottom: 1px solid rgb(22 58 48 / 14%); }
-      .manifesto { padding: 100px 7vw; }
-      .manifesto-copy { width: 100%; }
       .menu-grid { grid-template-columns: repeat(2, 1fr); }
       .menus-head { flex-wrap: wrap; gap: 18px; }
       .menus-rule { display: none; }
@@ -460,9 +438,7 @@
       .features > div:nth-child(even) { border-left: 0; }
       .features > div:not(:last-child) { border-bottom: 1px solid rgb(22 58 48 / 14%); }
       .features > div { padding: 34px 26px; }
-      .manifesto { padding: 86px 7vw; }
-      .manifesto h2, .order-band h2 { font-size: 48px; }
-      .manifesto-copy { grid-template-columns: 1fr; gap: 25px; margin-top: 42px; }
+      .order-band h2 { font-size: 48px; }
       .menus { padding: 34px 6vw 40px; }
       .menu-grid { gap: 14px; }
       .menu-card-body { left: 16px; right: 54px; bottom: 15px; }
@@ -488,7 +464,6 @@
       <img src="/logo.png" alt="{{shopName}}" width="1000" height="333" />
     </a>
     <nav class="desktop-nav" aria-label="Primary navigation">
-      <a href="#story">Our place</a>
       <a href="#menus">Menus</a>
       <a href="#hours">Opening hours</a>
       <a href="#visit">Find us</a>
@@ -591,22 +566,6 @@
         <span class="menu-card-go" aria-hidden="true">→</span>
       </a>
     </div>
-  </section>
-
-  <section class="manifesto" id="story">
-    <p class="section-kicker">Acomb’s independent café &amp; bistro</p>
-    <h2>A place that feels<br />like it’s always been yours.</h2>
-    <div class="manifesto-copy">
-      <p>
-        {{shopShortName}} is the easy answer to “where shall we go?” A friendly room for
-        first coffees, catch-up lunches and evenings that unfold at their own pace.
-      </p>
-      <p>
-        The setting is simple, the welcome is genuine and the focus stays where
-        it should: on food you want to eat and people you want to share it with.
-      </p>
-    </div>
-    <span class="manifesto-mark" aria-hidden="true">L</span>
   </section>
 
   <section class="quote-band" aria-label="{{shopShortName}} philosophy">
