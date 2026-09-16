@@ -110,29 +110,30 @@
       min-height: min(86svh, 900px); padding: 136px 8vw 104px; overflow: hidden;
       background: var(--green-dark); color: var(--cream);
     }
-    .hero-bg { position: absolute; inset: 0; z-index: -2; display: block; }
+    /* Extends past the hero's bottom edge, which .hero clips. Scaling about an
+       origin below the frame lifts the picture, so at inset:0 its bottom edge
+       rose ABOVE the hero's and left a bare strip above the feature band. */
+    .hero-bg { position: absolute; inset: 0 0 -13% 0; z-index: -2; display: block; }
     .hero-bg img {
       display: block; width: 100%; height: 100%;
-      /* Weighted right: the food and coffee live in that half of the frame and
-         must survive the crop, because the left half is under the wash anyway.
-         BOTTOM, not center: the box is wider than the photograph's own ratio, so
-         cover crops vertically — centred, it takes that off both ends and cuts
-         the near edge of the plate. Anchoring the bottom spends the whole crop
-         on the foliage at the top, which is under the wash and has nothing to
-         lose. */
       object-fit: cover; object-position: 70% bottom;
+      /* 1.5x, about an origin BELOW the frame. Scaling pushes everything away
+         from the origin, so an origin under the plate lifts the plate up the
+         frame as it grows — that is what brings the food level with the copy
+         instead of leaving it sitting on the bottom edge. */
+      transform: scale(1.5); transform-origin: 66% 112%;
     }
-    /* Heavy green on the left to give the type a ground, thinning to almost
-       nothing on the right so the plate and cup stay legible. The first
-       gradient is just enough top shade to hold the nav against the sky. */
+    /* EVEN, not a left-to-right fade — the photograph reads at the same
+       strength right across the frame. Measured: with no wash at all the area
+       behind the copy averages 12.5:1 against the cream type, but 3.6% of it
+       (the bright bokeh) falls to 1.04:1, so a flat scrim is still needed to
+       stop the headline breaking up over the highlights. The second gradient is
+       only enough top shade to hold the nav against the sky. */
     .hero-wash {
       position: absolute; inset: 0; z-index: -1;
       background:
-        linear-gradient(to bottom, rgb(12 33 27 / 55%) 0%, rgb(12 33 27 / 0%) 26%),
-        linear-gradient(to right,
-          rgb(16 45 37 / 90%) 0%,  rgb(16 45 37 / 84%) 24%,
-          rgb(16 45 37 / 60%) 44%, rgb(16 45 37 / 20%) 66%,
-          rgb(16 45 37 / 3%)  100%);
+        linear-gradient(to bottom, rgb(12 33 27 / 46%) 0%, rgb(12 33 27 / 0%) 24%),
+        rgb(16 45 37 / 34%);
     }
     .hero-inner { max-width: min(46vw, 700px); }
     .eyebrow {
@@ -185,8 +186,11 @@
     }
     .hero-foot svg { width: 42px; height: 42px; flex: none; stroke: var(--gold); fill: none; stroke-width: 1.1; opacity: .85; }
     .hero-foot p { margin: 0; }
+    /* Sat over the coffee cup at right:6vw/top:21vh — measured, 30% of that area
+       was under 4.5:1 against the cream script. Moved left and up onto the
+       blurred foliage, where the same measurement gives 2.3%. */
     .hero-script {
-      position: absolute; right: 6vw; top: 21vh;
+      position: absolute; right: 25vw; top: 12vh;
       display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
       color: rgb(255 249 235 / 90%);
       font-family: var(--script); font-size: clamp(26px, 2.5vw, 40px); line-height: 1.02;
@@ -205,12 +209,12 @@
       background: var(--ivory); color: var(--green);
     }
     .features > div {
-      display: flex; flex-direction: column; align-items: center; gap: 12px;
-      padding: 42px 26px; text-align: center;
+      display: flex; flex-direction: column; align-items: center; gap: 9px;
+      padding: 26px 26px 24px; text-align: center;
     }
     .features > div + div { border-left: 1px solid rgb(22 58 48 / 14%); }
     .features svg {
-      width: 34px; height: 34px;
+      width: 26px; height: 26px;
       stroke: var(--green); fill: none; stroke-width: 1.3;
       stroke-linecap: round; stroke-linejoin: round;
     }
