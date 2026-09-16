@@ -1,9 +1,11 @@
 {
   "_comment": "Leaf Café & Bistro — Acomb Road, York. Landing page ported from the supplied design handoff (leaf-cafe-bistro-build-kit). The shop is PRE-LAUNCH: see the prelaunch flag at the bottom, and the UNCONFIRMED list below.",
 
-  "_comment_unconfirmed": "STILL NEEDED FROM THE OWNER before this can go live: (1) postcode for 124A Acomb Road — needed for the address, delivery geocoding and seo.geo; (2) phone and orders email — both PRINT on the page, so the build warns about them by name; (3) the real opening hours (the ones below are a placeholder shaped around 'breakfast, lunch, bistro evenings' and are almost certainly wrong); (4) legal name + company number; (5) the Stripe Connect acct_ id; (6) the booking URL the design's 'Book online' button points at; (7) whether Leaf wants online ordering at all, or only this brochure page — see _comment_ordering_question.",
+  "_comment_unconfirmed": "STILL NEEDED FROM THE OWNER before this can go live: (1) postcode for 124A Acomb Road — needed for the address and seo.geo; (2) phone and orders email — both PRINT on the page, so the build warns about them by name; (3) the real opening hours (the ones below are a placeholder shaped around 'breakfast, lunch, bistro evenings' and are almost certainly wrong); (4) legal name + company number; (5) the Stripe Connect acct_ id; (6) the real menu — see _comment_menu.",
 
-  "_comment_ordering_question": "The supplied design has NO online ordering: its calls to action are 'Book a table' and 'View menu', which is a restaurant shape, not a takeaway shape. The menu.json / menu-visual.json in this folder are therefore a minimal placeholder that exists only so the build passes — they are NOT Leaf's menu and must not be shown to a customer. Decide with the owner whether Leaf is (a) brochure + table booking only, in which case the order page should be switched off and the menu files stay stubs, or (b) a café that also takes collection orders, in which case the real menu needs typing up.",
+  "_comment_ordering": "DECIDED: Leaf is ONLINE ORDERS ONLY — collection, no table booking. The supplied design was a booking shape ('Book a table', 'View menu' links that went nowhere); the landing page has been reworked so every call to action lands on /order.",
+
+  "_comment_menu": "menu.json / menu-visual.json are still STUBS. The design handoff shipped no dish list — its menu section is typographic by design (Breakfast / Lunch / Bistro, no items, no prices). They must be replaced with Leaf's real menu before the shop can take an order, and the two files must agree item-for-item or the build fails.",
 
   "business": {
     "tradingName": "Leaf Café & Bistro",

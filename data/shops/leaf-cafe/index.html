@@ -89,7 +89,7 @@
     }
     .desktop-nav a { transition: color .2s ease; }
     .desktop-nav a:hover { color: var(--gold-pale); }
-    .book-nav {
+    .order-nav {
       justify-self: end; display: inline-flex; align-items: center; gap: 14px;
       padding: 13px 0 9px; border-bottom: 1px solid var(--gold-pale);
       color: var(--gold-pale);
@@ -164,7 +164,7 @@
       margin: 0 0 25px; color: var(--gold-deep);
       font-size: 9px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase;
     }
-    .manifesto h2, .section-heading h2, .inside-copy h2, .visit h2, .booking h2 {
+    .manifesto h2, .section-heading h2, .inside-copy h2, .visit h2, .order-band h2 {
       margin: 0; font-family: var(--serif);
       font-size: clamp(48px, 6vw, 92px); font-weight: 400;
       letter-spacing: -.052em; line-height: .96;
@@ -314,14 +314,14 @@
       font-size: 8px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
     }
 
-    /* ---------- booking ---------- */
-    .booking { padding: 142px 7vw 135px; background: var(--green); color: var(--cream); text-align: center; }
-    .booking .section-kicker { color: var(--gold-pale); }
-    .booking > p:not(.section-kicker) {
+    /* ---------- order call to action ---------- */
+    .order-band { padding: 142px 7vw 135px; background: var(--green); color: var(--cream); text-align: center; }
+    .order-band .section-kicker { color: var(--gold-pale); }
+    .order-band > p:not(.section-kicker) {
       max-width: 410px; margin: 28px auto 0; color: rgb(255 249 235 / 72%);
       font-family: var(--serif); font-size: 17px;
     }
-    .booking-actions { display: flex; justify-content: center; align-items: center; gap: 32px; margin-top: 43px; }
+    .order-actions { display: flex; justify-content: center; align-items: center; gap: 32px; margin-top: 43px; }
 
     /* ---------- footer ---------- */
     footer {
@@ -329,7 +329,10 @@
       padding: 42px 5vw; border-top: 1px solid rgb(255 249 235 / 13%);
       background: var(--green-deep); color: rgb(255 249 235 / 62%);
     }
-    footer > img { width: 150px; }
+    /* height:auto is load-bearing — the <img> carries width/height attributes to
+       reserve layout space, and without it the 333px attribute height survives
+       the 150px CSS width and the wordmark renders stretched tall. */
+    footer > img { width: 150px; height: auto; }
     .footer-links {
       display: flex; gap: 30px;
       font-size: 8px; font-weight: 650; letter-spacing: .14em; text-transform: uppercase;
@@ -373,7 +376,7 @@
     }
 
     @media (max-width: 620px) {
-      .book-nav { font-size: 8px; gap: 7px; }
+      .order-nav { font-size: 8px; gap: 7px; }
       .hero-copy { min-height: 570px; }
       h1 { font-size: clamp(51px, 15vw, 70px); }
       .hero-actions { align-items: flex-start; flex-direction: column; gap: 15px; }
@@ -381,7 +384,7 @@
       .hero-caption { height: 110px; padding: 0 22px; }
       .hero-media > picture { height: calc(100% - 110px); }
       .manifesto { padding: 86px 7vw; }
-      .manifesto h2, .section-heading h2, .inside-copy h2, .visit h2, .booking h2 { font-size: 48px; }
+      .manifesto h2, .section-heading h2, .inside-copy h2, .visit h2, .order-band h2 { font-size: 48px; }
       .manifesto-copy { grid-template-columns: 1fr; gap: 25px; margin-top: 42px; }
       .menus { padding: 88px 6vw 58px; }
       .menu-card { padding: 28px 4vw 34px; }
@@ -391,8 +394,8 @@
       .quote-band { padding: 95px 7vw 88px; }
       .visit-details { grid-template-columns: 1fr; gap: 50px; }
       .visit-details address, .visit-details > div > p:not(.detail-label) { min-height: 0; }
-      .booking { padding: 100px 7vw 95px; }
-      .booking-actions { align-items: center; flex-direction: column; gap: 18px; }
+      .order-band { padding: 100px 7vw 95px; }
+      .order-actions { align-items: center; flex-direction: column; gap: 18px; }
       .footer-links { flex-wrap: wrap; justify-content: center; }
     }
   </style>
@@ -403,7 +406,7 @@
 
 <main class="site-shell">
   <p class="announcement">
-    <span>A neighbourhood table, from morning coffee to evening supper</span>
+    <span>Order online for collection · morning coffee to evening supper</span>
     <a href="#visit">{{shopAddressLine1}} · {{shopCity}}</a>
   </p>
 
@@ -417,9 +420,7 @@
       <a href="#hours">Opening hours</a>
       <a href="#visit">Find us</a>
     </nav>
-    <!-- TODO(owner): #book is an on-page section, not a booking system. Point
-         this at Leaf's real booking URL when we have it. -->
-    <a class="book-nav" href="#book">Book a table <span aria-hidden="true">↗</span></a>
+    <a class="order-nav" href="/order">Order online <span aria-hidden="true">↗</span></a>
   </header>
 
   <section class="hero" id="home">
@@ -428,13 +429,13 @@
       <h1>Local flavour.<br />Proper welcome.</h1>
       <p class="hero-intro">
         Breakfasts worth getting up for, relaxed lunches and comforting
-        evening plates—served in the heart of the neighbourhood.
+        evening plates—made fresh on Acomb Road and ready when you are.
       </p>
       <div class="hero-actions">
-        <a class="button button-gold" href="#book">Reserve your table</a>
+        <a class="button button-gold" href="/order">Order online</a>
         <a class="text-link" href="#menus">See what’s cooking <span aria-hidden="true">→</span></a>
       </div>
-      <a class="open-note" href="#hours"><span>Planning a visit?</span> Check today’s hours</a>
+      <a class="open-note" href="#hours"><span>Planning ahead?</span> Check today’s hours</a>
     </div>
 
     <div class="hero-media">
@@ -479,8 +480,6 @@
       </p>
     </div>
 
-    <!-- TODO(owner): each "View menu" points at #book because there is no menu
-         page yet. When the real menu exists, these become /order (or a PDF). -->
     <div class="menu-grid">
       <article class="menu-card">
         <div class="menu-meta"><span>01</span><span>Morning</span></div>
@@ -488,7 +487,7 @@
         <p>Proper coffee, generous breakfasts and a reason to linger over the paper.</p>
         <div class="menu-foot">
           <span>From opening</span>
-          <a href="#book" aria-label="Ask about the breakfast menu">View menu <span aria-hidden="true">↗</span></a>
+          <a href="/order" aria-label="Order from the breakfast menu">Order now <span aria-hidden="true">↗</span></a>
         </div>
       </article>
       <article class="menu-card">
@@ -497,7 +496,7 @@
         <p>Familiar favourites, freshly prepared and served without the fuss.</p>
         <div class="menu-foot">
           <span>Into the afternoon</span>
-          <a href="#book" aria-label="Ask about the lunch menu">View menu <span aria-hidden="true">↗</span></a>
+          <a href="/order" aria-label="Order from the lunch menu">Order now <span aria-hidden="true">↗</span></a>
         </div>
       </article>
       <article class="menu-card">
@@ -506,11 +505,11 @@
         <p>Relaxed plates, something good to drink and nowhere else you need to be.</p>
         <div class="menu-foot">
           <span>Selected evenings</span>
-          <a href="#book" aria-label="Ask about the bistro menu">View menu <span aria-hidden="true">↗</span></a>
+          <a href="/order" aria-label="Order from the bistro menu">Order now <span aria-hidden="true">↗</span></a>
         </div>
       </article>
     </div>
-    <p class="menu-note">Menu details shown are concept copy and can be replaced with the current {{shopShortName}} menu.</p>
+    <p class="menu-note">Every order is made fresh to order · Collection from {{shopAddressLine1}}</p>
   </section>
 
   <section class="inside" id="experience">
@@ -549,7 +548,7 @@
   <section class="visit" id="visit">
     <div class="visit-heading">
       <p class="section-kicker">Come and see us</p>
-      <h2>Your table’s<br />just down the road.</h2>
+      <h2>Your next meal’s<br />just down the road.</h2>
     </div>
     <div class="visit-details">
       <div>
@@ -561,24 +560,22 @@
       <div id="hours">
         <p class="detail-label">Opening hours</p>
         <p>Breakfast · Lunch · Bistro evenings</p>
-        <a class="detail-link" href="#book">Check today’s hours →</a>
+        <a class="detail-link" href="/order">Order for collection →</a>
       </div>
       <div>
         <p class="detail-label">Good to know</p>
-        <p>Walk-ins are welcome.<br />Booking is best for evenings.</p>
+        <p>Order online for collection.<br />Walk-ins always welcome.</p>
       </div>
     </div>
   </section>
 
-  <section class="booking" id="book">
-    <p class="section-kicker">Make a plan</p>
-    <h2>Let’s get a table<br />in the diary.</h2>
-    <p>Choose a time that suits and we’ll save you a seat.</p>
-    <!-- TODO(owner): "Book online" needs Leaf's real booking URL, and "Contact
-         the café" needs the phone or email once business.phone / .email are set. -->
-    <div class="booking-actions">
-      <a class="button button-gold" href="#visit">Book online</a>
-      <a class="text-link" href="#visit">Contact the café <span aria-hidden="true">→</span></a>
+  <section class="order-band" id="order">
+    <p class="section-kicker">Order online</p>
+    <h2>Good food,<br />ready when you are.</h2>
+    <p>Order ahead, pick a time that suits, and collect it hot from Acomb Road.</p>
+    <div class="order-actions">
+      <a class="button button-gold" href="/order">Start your order</a>
+      <a class="text-link" href="#menus">See the menu <span aria-hidden="true">→</span></a>
     </div>
   </section>
 
@@ -587,7 +584,7 @@
     <div class="footer-links">
       <a href="#menus">Menus</a>
       <a href="#visit">Visit</a>
-      <a href="#book">Book</a>
+      <a href="/order">Order</a>
       <a href="#home">Back to top ↑</a>
     </div>
     <p>{{shopName}} · {{shopAddressLine1}}, {{shopCity}}</p>
