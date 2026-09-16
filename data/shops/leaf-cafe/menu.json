@@ -1,9 +1,603 @@
 [
   {
-    "id": "placeholder",
-    "name": "Menu to be confirmed",
+    "id": "breakfast",
+    "name": "Breakfast",
     "items": [
-      { "id": "placeholder-item", "name": "Menu to be confirmed", "priceP": 0 }
+      {
+        "id": "bf-mini",
+        "name": "Mini English Breakfast",
+        "priceP": 1150
+      },
+      {
+        "id": "bf-full",
+        "name": "Full English Breakfast",
+        "priceP": 1350
+      },
+      {
+        "id": "bf-veggie",
+        "name": "Veggie Breakfast",
+        "priceP": 1050
+      }
+    ]
+  },
+  {
+    "id": "hot-sandwiches",
+    "name": "Hot Sandwiches",
+    "items": [
+      {
+        "id": "hs-bacon",
+        "name": "Bacon Sandwich",
+        "priceP": 600
+      },
+      {
+        "id": "hs-sausage",
+        "name": "Sausage Sandwich",
+        "priceP": 600
+      },
+      {
+        "id": "hs-bacon-saus",
+        "name": "Bacon & Sausage Sandwich",
+        "priceP": 700
+      },
+      {
+        "id": "hs-blt",
+        "name": "BLT Sandwich",
+        "priceP": 700
+      },
+      {
+        "id": "hs-bacon-egg",
+        "name": "Bacon & Egg Sandwich",
+        "priceP": 700
+      },
+      {
+        "id": "hs-bse",
+        "name": "Bacon, Sausage & Egg Sandwich",
+        "priceP": 800
+      },
+      {
+        "id": "hs-special",
+        "name": "Leaf Special Sandwich",
+        "priceP": 950
+      },
+      {
+        "id": "hs-spam",
+        "name": "Spam Sandwich",
+        "priceP": 700
+      }
+    ]
+  },
+  {
+    "id": "cold-sandwiches",
+    "name": "Cold Sandwiches",
+    "items": [
+      {
+        "id": "cs-tuna",
+        "name": "Tuna Mayo",
+        "priceP": 600
+      },
+      {
+        "id": "cs-chicken",
+        "name": "Chicken Mayo",
+        "priceP": 600
+      },
+      {
+        "id": "cs-ham",
+        "name": "Ham & Cheese",
+        "priceP": 600
+      }
+    ]
+  },
+  {
+    "id": "toasties",
+    "name": "Toasties",
+    "items": [
+      {
+        "id": "to-cheese",
+        "name": "Cheese Toastie",
+        "priceP": 450
+      },
+      {
+        "id": "to-ham-cheese",
+        "name": "Ham & Cheese Toastie",
+        "priceP": 550
+      },
+      {
+        "id": "to-cheese-onion",
+        "name": "Cheese & Onion Toastie",
+        "priceP": 550
+      },
+      {
+        "id": "to-bacon",
+        "name": "Bacon Toastie",
+        "priceP": 550
+      },
+      {
+        "id": "to-sausage",
+        "name": "Sausage Toastie",
+        "priceP": 550
+      },
+      {
+        "id": "to-bacon-saus",
+        "name": "Bacon & Sausage Toastie",
+        "priceP": 550
+      },
+      {
+        "id": "to-beans",
+        "name": "Beans on Toast",
+        "priceP": 500
+      },
+      {
+        "id": "to-buttered",
+        "name": "Buttered Toast",
+        "priceP": 100
+      }
+    ]
+  },
+  {
+    "id": "paninis",
+    "name": "Paninis",
+    "items": [
+      {
+        "id": "pa-ham-cheese",
+        "name": "Ham & Cheese",
+        "priceP": 800
+      },
+      {
+        "id": "pa-tuna-cheese",
+        "name": "Tuna Mayo & Cheese",
+        "priceP": 850
+      },
+      {
+        "id": "pa-ham-pep",
+        "name": "Ham & Pepperoni",
+        "priceP": 850
+      },
+      {
+        "id": "pa-halloumi",
+        "name": "Halloumi & Tomato",
+        "priceP": 850
+      },
+      {
+        "id": "pa-tmp",
+        "name": "Tomato, Mozzarella & Pesto",
+        "priceP": 850
+      },
+      {
+        "id": "pa-chicken",
+        "name": "Chicken Mayo",
+        "priceP": 850
+      },
+      {
+        "id": "pa-cheese-onion",
+        "name": "Cheese & Onion",
+        "priceP": 800
+      }
+    ]
+  },
+  {
+    "id": "wraps",
+    "name": "Wraps",
+    "items": [
+      {
+        "id": "wr-chicken",
+        "name": "Grilled Chicken",
+        "priceP": 850
+      },
+      {
+        "id": "wr-lamb",
+        "name": "Grilled Lamb",
+        "priceP": 950
+      },
+      {
+        "id": "wr-mixed",
+        "name": "Grilled Mixed",
+        "priceP": 1000
+      },
+      {
+        "id": "wr-chick-strip",
+        "name": "Chicken Strip",
+        "priceP": 850
+      },
+      {
+        "id": "wr-bacon-saus",
+        "name": "Bacon & Sausage",
+        "priceP": 850
+      },
+      {
+        "id": "wr-chips-cheese",
+        "name": "Chips & Cheese",
+        "priceP": 700
+      }
+    ]
+  },
+  {
+    "id": "melts",
+    "name": "Melts",
+    "items": [
+      {
+        "id": "me-chicken",
+        "name": "Grilled Chicken",
+        "priceP": 850
+      },
+      {
+        "id": "me-lamb",
+        "name": "Grilled Lamb",
+        "priceP": 950
+      },
+      {
+        "id": "me-halloumi",
+        "name": "Halloumi",
+        "priceP": 850
+      },
+      {
+        "id": "me-mix",
+        "name": "Grilled Mix",
+        "priceP": 1000
+      }
+    ]
+  },
+  {
+    "id": "burgers",
+    "name": "Burgers",
+    "items": [
+      {
+        "id": "bu-beef",
+        "name": "1/4 lb Beef Burger",
+        "priceP": 550,
+        "modifiers": [
+          {
+            "id": "extra-meat",
+            "label": "Extra Beef or Chicken",
+            "priceDeltaP": 200
+          }
+        ]
+      },
+      {
+        "id": "bu-chicken",
+        "name": "1/4 lb Chicken Burger",
+        "priceP": 550,
+        "modifiers": [
+          {
+            "id": "extra-meat",
+            "label": "Extra Beef or Chicken",
+            "priceDeltaP": 200
+          }
+        ]
+      },
+      {
+        "id": "bu-special",
+        "name": "Leaf Special Burger",
+        "priceP": 850,
+        "modifiers": [
+          {
+            "id": "extra-meat",
+            "label": "Extra Beef or Chicken",
+            "priceDeltaP": 200
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "omelettes",
+    "name": "Omelettes",
+    "items": [
+      {
+        "id": "om-mushroom",
+        "name": "Mushroom",
+        "priceP": 900
+      },
+      {
+        "id": "om-ham",
+        "name": "Ham & Cheese",
+        "priceP": 950
+      },
+      {
+        "id": "om-spinach",
+        "name": "Spinach",
+        "priceP": 900
+      },
+      {
+        "id": "om-special",
+        "name": "Leaf Special",
+        "priceP": 1050
+      }
+    ]
+  },
+  {
+    "id": "pizzas",
+    "name": "Pizzas",
+    "items": [
+      {
+        "id": "pz-margherita",
+        "name": "Margherita",
+        "priceP": 1100
+      },
+      {
+        "id": "pz-pepperoni",
+        "name": "Pepperoni",
+        "priceP": 1200
+      },
+      {
+        "id": "pz-meat-feast",
+        "name": "Meat Feast",
+        "priceP": 1350
+      }
+    ]
+  },
+  {
+    "id": "calzones",
+    "name": "Calzones",
+    "items": [
+      {
+        "id": "cz-pepperoni",
+        "name": "Pepperoni",
+        "priceP": 1200
+      },
+      {
+        "id": "cz-chick-spin",
+        "name": "Chicken, Spinach & Feta",
+        "priceP": 1300
+      },
+      {
+        "id": "cz-meat-feast",
+        "name": "Meat Feast",
+        "priceP": 1350
+      }
+    ]
+  },
+  {
+    "id": "jackets",
+    "name": "Jacket Potatoes",
+    "items": [
+      {
+        "id": "jp-cheese-beans",
+        "name": "Cheese or Beans",
+        "priceP": 800
+      },
+      {
+        "id": "jp-tuna",
+        "name": "Tuna Mayo",
+        "priceP": 900
+      },
+      {
+        "id": "jp-chicken",
+        "name": "Chicken Mayo",
+        "priceP": 950
+      }
+    ]
+  },
+  {
+    "id": "salads",
+    "name": "Salads",
+    "items": [
+      {
+        "id": "sa-tuna",
+        "name": "Tuna",
+        "priceP": 900
+      },
+      {
+        "id": "sa-chicken",
+        "name": "Chicken",
+        "priceP": 950
+      },
+      {
+        "id": "sa-halloumi",
+        "name": "Halloumi",
+        "priceP": 850
+      }
+    ]
+  },
+  {
+    "id": "soup",
+    "name": "Soup of the Day",
+    "items": [
+      {
+        "id": "so-red-lentil",
+        "name": "Red Lentil Soup",
+        "priceP": 600
+      }
+    ]
+  },
+  {
+    "id": "garlic-bread",
+    "name": "Garlic Bread",
+    "items": [
+      {
+        "id": "gb-cheese",
+        "name": "Garlic Bread with Cheese",
+        "priceP": 600
+      }
+    ]
+  },
+  {
+    "id": "sides",
+    "name": "Sides",
+    "items": [
+      {
+        "id": "si-chips",
+        "name": "Chips",
+        "priceP": 400
+      },
+      {
+        "id": "si-hash",
+        "name": "Hash Browns (6 pcs)",
+        "priceP": 600
+      },
+      {
+        "id": "si-strips",
+        "name": "Chicken Strips (6 pcs)",
+        "priceP": 600
+      },
+      {
+        "id": "si-nuggets",
+        "name": "Chicken Nuggets (10 pcs)",
+        "priceP": 600
+      },
+      {
+        "id": "si-tzatziki",
+        "name": "Homemade Tzatziki",
+        "priceP": 250
+      }
+    ]
+  },
+  {
+    "id": "kids",
+    "name": "Little Leaf Kids' Meals",
+    "items": [
+      {
+        "id": "ki-nuggets",
+        "name": "8 Chicken Nuggets",
+        "priceP": 600
+      },
+      {
+        "id": "ki-strips",
+        "name": "5 Chicken Strips",
+        "priceP": 600
+      },
+      {
+        "id": "ki-hash",
+        "name": "5 Hash Browns",
+        "priceP": 600
+      }
+    ]
+  },
+  {
+    "id": "desserts",
+    "name": "Desserts",
+    "items": [
+      {
+        "id": "de-fudge",
+        "name": "Fudge Cake",
+        "priceP": 550
+      },
+      {
+        "id": "de-cheesecake",
+        "name": "Cheesecake",
+        "priceP": 550
+      },
+      {
+        "id": "de-tiramisu",
+        "name": "Tiramisu",
+        "priceP": 550
+      },
+      {
+        "id": "de-choc-muffin",
+        "name": "Double Chocolate Muffin",
+        "priceP": 200
+      },
+      {
+        "id": "de-butter-muffin",
+        "name": "Black Buttery Muffin",
+        "priceP": 200
+      }
+    ]
+  },
+  {
+    "id": "hot-drinks",
+    "name": "Hot Drinks",
+    "items": [
+      {
+        "id": "hd-americano",
+        "name": "Americano",
+        "priceP": 300
+      },
+      {
+        "id": "hd-espresso",
+        "name": "Espresso",
+        "priceP": 250
+      },
+      {
+        "id": "hd-cappuccino",
+        "name": "Cappuccino",
+        "priceP": 300
+      },
+      {
+        "id": "hd-latte",
+        "name": "Latte",
+        "priceP": 300
+      },
+      {
+        "id": "hd-flat-white",
+        "name": "Flat White",
+        "priceP": 300
+      },
+      {
+        "id": "hd-macchiato",
+        "name": "Macchiato",
+        "priceP": 300
+      },
+      {
+        "id": "hd-mocha",
+        "name": "Mocha",
+        "priceP": 300
+      },
+      {
+        "id": "hd-hot-choc",
+        "name": "Hot Chocolate",
+        "priceP": 300
+      },
+      {
+        "id": "hd-caramel",
+        "name": "Caramel Latte",
+        "priceP": 300
+      },
+      {
+        "id": "hd-tea",
+        "name": "Tea Selection",
+        "priceP": 250
+      }
+    ]
+  },
+  {
+    "id": "soft-drinks",
+    "name": "Soft Drinks",
+    "items": [
+      {
+        "id": "sd-water",
+        "name": "Water",
+        "priceP": 150
+      },
+      {
+        "id": "sd-fruit",
+        "name": "Fruit Juice",
+        "priceP": 150
+      },
+      {
+        "id": "sd-coke",
+        "name": "Coca-Cola",
+        "priceP": 250
+      },
+      {
+        "id": "sd-diet-coke",
+        "name": "Diet Coke",
+        "priceP": 250
+      },
+      {
+        "id": "sd-7up",
+        "name": "7UP",
+        "priceP": 250
+      },
+      {
+        "id": "sd-tango",
+        "name": "Tango",
+        "priceP": 250
+      },
+      {
+        "id": "sd-orange",
+        "name": "Orange Juice",
+        "priceP": 250
+      },
+      {
+        "id": "sd-apple",
+        "name": "Apple Juice",
+        "priceP": 250
+      },
+      {
+        "id": "sd-cranberry",
+        "name": "Cranberry Juice",
+        "priceP": 250
+      }
     ]
   }
 ]
