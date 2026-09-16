@@ -41,6 +41,7 @@ const hmacHex = (value, key) => createHmac('sha256', key).update(value).digest('
 const slug = (await ask('Shop slug (e.g. leaf-cafe): ')) || 'shop';
 const staffPin = await ask('Staff PIN (digits, what staff type at /staff): ');
 const mgrPin = await ask('Manager PIN (DIFFERENT — gates takings + refunds): ');
+const webPass = await ask('Back-office password (optional, Enter to skip): ');
 
 rl.close();
 
@@ -63,7 +64,17 @@ console.log(`\n${'='.repeat(64)}\n  ${slug} — paste as ENCRYPTED vars, Product
 console.log(`SESSION_SECRET\n  ${sessionSecret}\n`);
 console.log(`STAFF_PIN_HASH\n  ${hmacHex(staffPin, sessionSecret)}\n`);
 console.log(`MANAGER_PIN_HASH\n  ${hmacHex(mgrPin, sessionSecret)}\n`);
+if (webPass) {
+  // Same keyed construction as the PINs — checkStaffPassword() runs the password
+  // through the very same verifyPinHash(). Needs STAFF_USERNAME set alongside it
+  // or the whole username/password login stays dormant.
+  console.log(`STAFF_PASSWORD_HASH\n  ${hmacHex(webPass, sessionSecret)}\n`);
+  console.log(`STAFF_USERNAME\n  <set this yourself — the login name for the above>\n`);
+}
 console.log(`TILL_SETUP_PASSWORD\n  ${tillPassword}\n`);
+// Build-time, not runtime: it moves the back office off the guessable /staff.
+// Must differ per shop or the obscurity buys nothing.
+console.log(`STAFF_PATH\n  ${slug.split('-')[0]}${randomBytes(3).toString('hex')}   (or pick your own memorable word)\n`);
 console.log('-'.repeat(64));
 console.log('These three belong together. If you regenerate SESSION_SECRET you MUST');
 console.log('regenerate both PIN hashes from it, or nobody can log in to the till.');
