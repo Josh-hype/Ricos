@@ -110,18 +110,15 @@
       min-height: min(86svh, 900px); padding: 136px 8vw 104px; overflow: hidden;
       background: var(--green-dark); color: var(--cream);
     }
-    /* Extends past the hero's bottom edge, which .hero clips. Scaling about an
-       origin below the frame lifts the picture, so at inset:0 its bottom edge
-       rose ABOVE the hero's and left a bare strip above the feature band. */
-    .hero-bg { position: absolute; inset: 0 0 -13% 0; z-index: -2; display: block; }
+    .hero-bg { position: absolute; inset: 0; z-index: -2; display: block; }
     .hero-bg img {
       display: block; width: 100%; height: 100%;
+      /* Weighted right: the food and coffee live in that half of the frame.
+         BOTTOM, not center: the box is wider than the photograph's own ratio, so
+         cover crops vertically — centred, it takes that off both ends and cuts
+         the near edge of the plate. Anchoring the bottom spends the whole crop
+         on the foliage at the top, which has nothing to lose. */
       object-fit: cover; object-position: 70% bottom;
-      /* 1.5x, about an origin BELOW the frame. Scaling pushes everything away
-         from the origin, so an origin under the plate lifts the plate up the
-         frame as it grows — that is what brings the food level with the copy
-         instead of leaving it sitting on the bottom edge. */
-      transform: scale(1.5); transform-origin: 66% 112%;
     }
     /* EVEN, not a left-to-right fade — the photograph reads at the same
        strength right across the frame. Measured: with no wash at all the area
