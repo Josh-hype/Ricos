@@ -1,0 +1,861 @@
+[
+  {
+    "id": "breakfast",
+    "name": "Breakfast",
+    "icon": "🍳",
+    "items": [
+      {
+        "id": "bf-mini",
+        "name": "Mini English Breakfast",
+        "price": 11.5,
+        "desc": "2 Bacon, 2 Sausages, 2 Hash Browns, 2 Eggs, 2 Grilled Tomatoes, Mushrooms, Baked Beans, 2 Slices of Toast. Served with a hot drink.",
+        "options": [
+          {
+            "id": "hot-drink",
+            "label": "Your hot drink",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "bfd-americano",
+                "label": "Americano",
+                "price": 0
+              },
+              {
+                "id": "bfd-espresso",
+                "label": "Espresso",
+                "price": 0
+              },
+              {
+                "id": "bfd-cappuccino",
+                "label": "Cappuccino",
+                "price": 0
+              },
+              {
+                "id": "bfd-latte",
+                "label": "Latte",
+                "price": 0
+              },
+              {
+                "id": "bfd-flat-white",
+                "label": "Flat White",
+                "price": 0
+              },
+              {
+                "id": "bfd-macchiato",
+                "label": "Macchiato",
+                "price": 0
+              },
+              {
+                "id": "bfd-mocha",
+                "label": "Mocha",
+                "price": 0
+              },
+              {
+                "id": "bfd-hot-choc",
+                "label": "Hot Chocolate",
+                "price": 0
+              },
+              {
+                "id": "bfd-caramel",
+                "label": "Caramel Latte",
+                "price": 0
+              },
+              {
+                "id": "bfd-tea",
+                "label": "Tea Selection",
+                "price": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bf-full",
+        "name": "Full English Breakfast",
+        "price": 13.5,
+        "desc": "3 Bacon, 3 Sausages, 2 Hash Browns, 2 Eggs, 2 Grilled Tomatoes, Mushrooms, Baked Beans, 2 Slices of Toast. Served with a hot drink.",
+        "options": [
+          {
+            "id": "hot-drink",
+            "label": "Your hot drink",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "bfd-americano",
+                "label": "Americano",
+                "price": 0
+              },
+              {
+                "id": "bfd-espresso",
+                "label": "Espresso",
+                "price": 0
+              },
+              {
+                "id": "bfd-cappuccino",
+                "label": "Cappuccino",
+                "price": 0
+              },
+              {
+                "id": "bfd-latte",
+                "label": "Latte",
+                "price": 0
+              },
+              {
+                "id": "bfd-flat-white",
+                "label": "Flat White",
+                "price": 0
+              },
+              {
+                "id": "bfd-macchiato",
+                "label": "Macchiato",
+                "price": 0
+              },
+              {
+                "id": "bfd-mocha",
+                "label": "Mocha",
+                "price": 0
+              },
+              {
+                "id": "bfd-hot-choc",
+                "label": "Hot Chocolate",
+                "price": 0
+              },
+              {
+                "id": "bfd-caramel",
+                "label": "Caramel Latte",
+                "price": 0
+              },
+              {
+                "id": "bfd-tea",
+                "label": "Tea Selection",
+                "price": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bf-veggie",
+        "name": "Veggie Breakfast",
+        "price": 10.5,
+        "desc": "Spinach Omelette, 2 Hash Browns, Baked Beans, Grilled Tomato, Mushrooms. Served with a hot drink.",
+        "options": [
+          {
+            "id": "hot-drink",
+            "label": "Your hot drink",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "bfd-americano",
+                "label": "Americano",
+                "price": 0
+              },
+              {
+                "id": "bfd-espresso",
+                "label": "Espresso",
+                "price": 0
+              },
+              {
+                "id": "bfd-cappuccino",
+                "label": "Cappuccino",
+                "price": 0
+              },
+              {
+                "id": "bfd-latte",
+                "label": "Latte",
+                "price": 0
+              },
+              {
+                "id": "bfd-flat-white",
+                "label": "Flat White",
+                "price": 0
+              },
+              {
+                "id": "bfd-macchiato",
+                "label": "Macchiato",
+                "price": 0
+              },
+              {
+                "id": "bfd-mocha",
+                "label": "Mocha",
+                "price": 0
+              },
+              {
+                "id": "bfd-hot-choc",
+                "label": "Hot Chocolate",
+                "price": 0
+              },
+              {
+                "id": "bfd-caramel",
+                "label": "Caramel Latte",
+                "price": 0
+              },
+              {
+                "id": "bfd-tea",
+                "label": "Tea Selection",
+                "price": 0
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "hot-sandwiches",
+    "name": "Hot Sandwiches",
+    "icon": "🥪",
+    "items": [
+      {
+        "id": "hs-bacon",
+        "name": "Bacon Sandwich",
+        "price": 6.0
+      },
+      {
+        "id": "hs-sausage",
+        "name": "Sausage Sandwich",
+        "price": 6.0
+      },
+      {
+        "id": "hs-bacon-saus",
+        "name": "Bacon & Sausage Sandwich",
+        "price": 7.0
+      },
+      {
+        "id": "hs-blt",
+        "name": "BLT Sandwich",
+        "price": 7.0
+      },
+      {
+        "id": "hs-bacon-egg",
+        "name": "Bacon & Egg Sandwich",
+        "price": 7.0
+      },
+      {
+        "id": "hs-bse",
+        "name": "Bacon, Sausage & Egg Sandwich",
+        "price": 8.0
+      },
+      {
+        "id": "hs-special",
+        "name": "Leaf Special Sandwich",
+        "price": 9.5,
+        "desc": "Bacon, Sausage, Ham, Spam"
+      },
+      {
+        "id": "hs-spam",
+        "name": "Spam Sandwich",
+        "price": 7.0
+      }
+    ]
+  },
+  {
+    "id": "cold-sandwiches",
+    "name": "Cold Sandwiches",
+    "icon": "🥬",
+    "items": [
+      {
+        "id": "cs-tuna",
+        "name": "Tuna Mayo",
+        "price": 6.0
+      },
+      {
+        "id": "cs-chicken",
+        "name": "Chicken Mayo",
+        "price": 6.0
+      },
+      {
+        "id": "cs-ham",
+        "name": "Ham & Cheese",
+        "price": 6.0
+      }
+    ]
+  },
+  {
+    "id": "toasties",
+    "name": "Toasties",
+    "icon": "🧀",
+    "items": [
+      {
+        "id": "to-cheese",
+        "name": "Cheese Toastie",
+        "price": 4.5
+      },
+      {
+        "id": "to-ham-cheese",
+        "name": "Ham & Cheese Toastie",
+        "price": 5.5
+      },
+      {
+        "id": "to-cheese-onion",
+        "name": "Cheese & Onion Toastie",
+        "price": 5.5
+      },
+      {
+        "id": "to-bacon",
+        "name": "Bacon Toastie",
+        "price": 5.5
+      },
+      {
+        "id": "to-sausage",
+        "name": "Sausage Toastie",
+        "price": 5.5
+      },
+      {
+        "id": "to-bacon-saus",
+        "name": "Bacon & Sausage Toastie",
+        "price": 5.5
+      },
+      {
+        "id": "to-beans",
+        "name": "Beans on Toast",
+        "price": 5.0
+      },
+      {
+        "id": "to-buttered",
+        "name": "Buttered Toast",
+        "price": 1.0
+      }
+    ]
+  },
+  {
+    "id": "paninis",
+    "name": "Paninis",
+    "icon": "🥖",
+    "items": [
+      {
+        "id": "pa-ham-cheese",
+        "name": "Ham & Cheese",
+        "price": 8.0,
+        "desc": "Served with chips & homemade tzatziki dip."
+      },
+      {
+        "id": "pa-tuna-cheese",
+        "name": "Tuna Mayo & Cheese",
+        "price": 8.5,
+        "desc": "Served with chips & homemade tzatziki dip."
+      },
+      {
+        "id": "pa-ham-pep",
+        "name": "Ham & Pepperoni",
+        "price": 8.5,
+        "desc": "Served with chips & homemade tzatziki dip."
+      },
+      {
+        "id": "pa-halloumi",
+        "name": "Halloumi & Tomato",
+        "price": 8.5,
+        "desc": "Served with chips & homemade tzatziki dip."
+      },
+      {
+        "id": "pa-tmp",
+        "name": "Tomato, Mozzarella & Pesto",
+        "price": 8.5,
+        "desc": "Served with chips & homemade tzatziki dip."
+      },
+      {
+        "id": "pa-chicken",
+        "name": "Chicken Mayo",
+        "price": 8.5,
+        "desc": "Served with chips & homemade tzatziki dip."
+      },
+      {
+        "id": "pa-cheese-onion",
+        "name": "Cheese & Onion",
+        "price": 8.0,
+        "desc": "Served with chips & homemade tzatziki dip."
+      }
+    ]
+  },
+  {
+    "id": "wraps",
+    "name": "Wraps",
+    "icon": "🌯",
+    "items": [
+      {
+        "id": "wr-chicken",
+        "name": "Grilled Chicken",
+        "price": 8.5,
+        "desc": "Served with chips & homemade tzatziki dip."
+      },
+      {
+        "id": "wr-lamb",
+        "name": "Grilled Lamb",
+        "price": 9.5,
+        "desc": "Served with chips & homemade tzatziki dip."
+      },
+      {
+        "id": "wr-mixed",
+        "name": "Grilled Mixed",
+        "price": 10.0,
+        "desc": "Served with chips & homemade tzatziki dip."
+      },
+      {
+        "id": "wr-chick-strip",
+        "name": "Chicken Strip",
+        "price": 8.5,
+        "desc": "Served with chips & homemade tzatziki dip."
+      },
+      {
+        "id": "wr-bacon-saus",
+        "name": "Bacon & Sausage",
+        "price": 8.5,
+        "desc": "Served with chips & homemade tzatziki dip."
+      },
+      {
+        "id": "wr-chips-cheese",
+        "name": "Chips & Cheese",
+        "price": 7.0,
+        "desc": "Served with chips & homemade tzatziki dip."
+      }
+    ]
+  },
+  {
+    "id": "melts",
+    "name": "Melts",
+    "icon": "🫓",
+    "items": [
+      {
+        "id": "me-chicken",
+        "name": "Grilled Chicken",
+        "price": 8.5,
+        "desc": "Served with chips, salad & homemade tzatziki."
+      },
+      {
+        "id": "me-lamb",
+        "name": "Grilled Lamb",
+        "price": 9.5,
+        "desc": "Served with chips, salad & homemade tzatziki."
+      },
+      {
+        "id": "me-halloumi",
+        "name": "Halloumi",
+        "price": 8.5,
+        "desc": "Served with chips, salad & homemade tzatziki."
+      },
+      {
+        "id": "me-mix",
+        "name": "Grilled Mix",
+        "price": 10.0,
+        "desc": "Lamb & Chicken. Served with chips, salad & homemade tzatziki."
+      }
+    ]
+  },
+  {
+    "id": "burgers",
+    "name": "Burgers",
+    "icon": "🍔",
+    "items": [
+      {
+        "id": "bu-beef",
+        "name": "1/4 lb Beef Burger",
+        "price": 5.5,
+        "desc": "Served with chips.",
+        "options": [
+          {
+            "id": "extras",
+            "label": "Extras",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "extra-meat",
+                "label": "Extra Beef or Chicken",
+                "price": 2.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bu-chicken",
+        "name": "1/4 lb Chicken Burger",
+        "price": 5.5,
+        "desc": "Served with chips.",
+        "options": [
+          {
+            "id": "extras",
+            "label": "Extras",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "extra-meat",
+                "label": "Extra Beef or Chicken",
+                "price": 2.0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bu-special",
+        "name": "Leaf Special Burger",
+        "price": 8.5,
+        "desc": "Double Beef, Double Bacon, Pepperoni (Lettuce, Tomato, Red Onion & Sauce on request). Served with chips.",
+        "options": [
+          {
+            "id": "extras",
+            "label": "Extras",
+            "select": "multi",
+            "required": false,
+            "choices": [
+              {
+                "id": "extra-meat",
+                "label": "Extra Beef or Chicken",
+                "price": 2.0
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "omelettes",
+    "name": "Omelettes",
+    "icon": "🥚",
+    "items": [
+      {
+        "id": "om-mushroom",
+        "name": "Mushroom",
+        "price": 9.0
+      },
+      {
+        "id": "om-ham",
+        "name": "Ham & Cheese",
+        "price": 9.5
+      },
+      {
+        "id": "om-spinach",
+        "name": "Spinach",
+        "price": 9.0
+      },
+      {
+        "id": "om-special",
+        "name": "Leaf Special",
+        "price": 10.5,
+        "desc": "Ham, Chicken, Cheese, Red Onion"
+      }
+    ]
+  },
+  {
+    "id": "pizzas",
+    "name": "Pizzas",
+    "icon": "🍕",
+    "items": [
+      {
+        "id": "pz-margherita",
+        "name": "Margherita",
+        "price": 11.0
+      },
+      {
+        "id": "pz-pepperoni",
+        "name": "Pepperoni",
+        "price": 12.0
+      },
+      {
+        "id": "pz-meat-feast",
+        "name": "Meat Feast",
+        "price": 13.5,
+        "desc": "Salami, Pepperoni, Ham, Red Onion"
+      }
+    ]
+  },
+  {
+    "id": "calzones",
+    "name": "Calzones",
+    "icon": "🥟",
+    "items": [
+      {
+        "id": "cz-pepperoni",
+        "name": "Pepperoni",
+        "price": 12.0
+      },
+      {
+        "id": "cz-chick-spin",
+        "name": "Chicken, Spinach & Feta",
+        "price": 13.0
+      },
+      {
+        "id": "cz-meat-feast",
+        "name": "Meat Feast",
+        "price": 13.5,
+        "desc": "Salami, Pepperoni, Ham, Red Onion"
+      }
+    ]
+  },
+  {
+    "id": "jackets",
+    "name": "Jacket Potatoes",
+    "icon": "🥔",
+    "items": [
+      {
+        "id": "jp-cheese-beans",
+        "name": "Cheese or Beans",
+        "price": 8.0,
+        "desc": "Served with salad."
+      },
+      {
+        "id": "jp-tuna",
+        "name": "Tuna Mayo",
+        "price": 9.0,
+        "desc": "Served with salad."
+      },
+      {
+        "id": "jp-chicken",
+        "name": "Chicken Mayo",
+        "price": 9.5,
+        "desc": "Served with salad."
+      }
+    ]
+  },
+  {
+    "id": "salads",
+    "name": "Salads",
+    "icon": "🥗",
+    "items": [
+      {
+        "id": "sa-tuna",
+        "name": "Tuna",
+        "price": 9.0
+      },
+      {
+        "id": "sa-chicken",
+        "name": "Chicken",
+        "price": 9.5
+      },
+      {
+        "id": "sa-halloumi",
+        "name": "Halloumi",
+        "price": 8.5
+      }
+    ]
+  },
+  {
+    "id": "soup",
+    "name": "Soup of the Day",
+    "icon": "🍲",
+    "items": [
+      {
+        "id": "so-red-lentil",
+        "name": "Red Lentil Soup",
+        "price": 6.0,
+        "desc": "Freshly made every day. Served with freshly baked stone-baked bread."
+      }
+    ]
+  },
+  {
+    "id": "garlic-bread",
+    "name": "Garlic Bread",
+    "icon": "🧄",
+    "items": [
+      {
+        "id": "gb-cheese",
+        "name": "Garlic Bread with Cheese",
+        "price": 6.0
+      }
+    ]
+  },
+  {
+    "id": "sides",
+    "name": "Sides",
+    "icon": "🍟",
+    "items": [
+      {
+        "id": "si-chips",
+        "name": "Chips",
+        "price": 4.0
+      },
+      {
+        "id": "si-hash",
+        "name": "Hash Browns (6 pcs)",
+        "price": 6.0
+      },
+      {
+        "id": "si-strips",
+        "name": "Chicken Strips (6 pcs)",
+        "price": 6.0
+      },
+      {
+        "id": "si-nuggets",
+        "name": "Chicken Nuggets (10 pcs)",
+        "price": 6.0
+      },
+      {
+        "id": "si-tzatziki",
+        "name": "Homemade Tzatziki",
+        "price": 2.5
+      }
+    ]
+  },
+  {
+    "id": "kids",
+    "name": "Little Leaf Kids' Meals",
+    "icon": "🧒",
+    "items": [
+      {
+        "id": "ki-nuggets",
+        "name": "8 Chicken Nuggets",
+        "price": 6.0,
+        "desc": "Served with chips & fruit juice."
+      },
+      {
+        "id": "ki-strips",
+        "name": "5 Chicken Strips",
+        "price": 6.0,
+        "desc": "Served with chips & fruit juice."
+      },
+      {
+        "id": "ki-hash",
+        "name": "5 Hash Browns",
+        "price": 6.0,
+        "desc": "Served with chips & fruit juice."
+      }
+    ]
+  },
+  {
+    "id": "desserts",
+    "name": "Desserts",
+    "icon": "🍰",
+    "items": [
+      {
+        "id": "de-fudge",
+        "name": "Fudge Cake",
+        "price": 5.5
+      },
+      {
+        "id": "de-cheesecake",
+        "name": "Cheesecake",
+        "price": 5.5
+      },
+      {
+        "id": "de-tiramisu",
+        "name": "Tiramisu",
+        "price": 5.5
+      },
+      {
+        "id": "de-choc-muffin",
+        "name": "Double Chocolate Muffin",
+        "price": 2.0
+      },
+      {
+        "id": "de-butter-muffin",
+        "name": "Black Buttery Muffin",
+        "price": 2.0
+      }
+    ]
+  },
+  {
+    "id": "hot-drinks",
+    "name": "Hot Drinks",
+    "icon": "☕",
+    "items": [
+      {
+        "id": "hd-americano",
+        "name": "Americano",
+        "price": 3.0
+      },
+      {
+        "id": "hd-espresso",
+        "name": "Espresso",
+        "price": 2.5
+      },
+      {
+        "id": "hd-cappuccino",
+        "name": "Cappuccino",
+        "price": 3.0
+      },
+      {
+        "id": "hd-latte",
+        "name": "Latte",
+        "price": 3.0
+      },
+      {
+        "id": "hd-flat-white",
+        "name": "Flat White",
+        "price": 3.0
+      },
+      {
+        "id": "hd-macchiato",
+        "name": "Macchiato",
+        "price": 3.0
+      },
+      {
+        "id": "hd-mocha",
+        "name": "Mocha",
+        "price": 3.0
+      },
+      {
+        "id": "hd-hot-choc",
+        "name": "Hot Chocolate",
+        "price": 3.0
+      },
+      {
+        "id": "hd-caramel",
+        "name": "Caramel Latte",
+        "price": 3.0
+      },
+      {
+        "id": "hd-tea",
+        "name": "Tea Selection",
+        "price": 2.5
+      }
+    ]
+  },
+  {
+    "id": "soft-drinks",
+    "name": "Soft Drinks",
+    "icon": "🥤",
+    "items": [
+      {
+        "id": "sd-water",
+        "name": "Water",
+        "price": 1.5
+      },
+      {
+        "id": "sd-fruit",
+        "name": "Fruit Juice",
+        "price": 1.5
+      },
+      {
+        "id": "sd-coke",
+        "name": "Coca-Cola",
+        "price": 2.5
+      },
+      {
+        "id": "sd-diet-coke",
+        "name": "Diet Coke",
+        "price": 2.5
+      },
+      {
+        "id": "sd-7up",
+        "name": "7UP",
+        "price": 2.5
+      },
+      {
+        "id": "sd-tango",
+        "name": "Tango",
+        "price": 2.5
+      },
+      {
+        "id": "sd-orange",
+        "name": "Orange Juice",
+        "price": 2.5
+      },
+      {
+        "id": "sd-apple",
+        "name": "Apple Juice",
+        "price": 2.5
+      },
+      {
+        "id": "sd-cranberry",
+        "name": "Cranberry Juice",
+        "price": 2.5
+      }
+    ]
+  }
+]

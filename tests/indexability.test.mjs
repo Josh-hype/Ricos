@@ -83,7 +83,7 @@ test('every prelaunch shop is one we know is unlaunched', () => {
   // The inverse guard: a shop carrying the flag should be a shop we expect to
   // carry it. A slug appearing here that nobody recognises means either a live
   // shop was flagged by mistake, or a launch happened and the flag outlived it.
-  const expected = new Set(['tad-kebab', 'grub-hub']);
+  const expected = new Set(['tad-kebab', 'grub-hub', 'leaf-cafe']);
   const flagged = readdirSync(new URL('../data/shops/', import.meta.url))
     .filter((s) => !s.startsWith('_'))
     .filter((s) => { try { return shopConfig(s).prelaunch === true; } catch { return false; } });
