@@ -284,6 +284,73 @@ past deployment — one-click **Rollback** if a deploy breaks a site.
 
 ---
 
+## Generating a shop's secrets — use THIS, nothing else
+
+`SESSION_SECRET`, `STAFF_PIN_HASH`, `MANAGER_PIN_HASH` and `STAFF_PASSWORD_HASH`
+are **one set**. The three hashes are HMAC-SHA256 of their PIN/password **keyed
+by `SESSION_SECRET`** (`functions/_lib/auth.js`), so the secret must exist first
+and changing it silently invalidates all three — staff just can't log in, with
+nothing in any log to say why.
+
+Generate all four together. Paste this whole block into a terminal — no repo, no
+checkout, no path to find:
+
+```bash
+node -e '
+const rl=require("readline").createInterface({input:process.stdin,terminal:false});
+const lines=rl[Symbol.asyncIterator]();
+const ask=async q=>{process.stdout.write(q);const{value}=await lines.next();return String(value??"").trim()};
+(async()=>{
+const {createHmac,randomBytes}=require("crypto");
+const pin=await ask("Staff PIN: ");
+const mpin=await ask("Manager PIN: ");
+const pass=await ask("Back-office password: ");
+rl.close();
+if(!pin||!mpin){console.error("\nBoth PINs required.");process.exit(1)}
+if(pin===mpin){console.error("\nPINs must differ.");process.exit(1)}
+const s=randomBytes(48).toString("base64");
+const h=v=>createHmac("sha256",s).update(v).digest("hex");
+console.log("\n\n=== PASTE THESE 4 INTO CLOUDFLARE ===");
+console.log("\nSESSION_SECRET\n  "+s);
+console.log("\nSTAFF_PIN_HASH\n  "+h(pin));
+console.log("\nMANAGER_PIN_HASH\n  "+h(mpin));
+if(pass)console.log("\nSTAFF_PASSWORD_HASH\n  "+h(pass));
+console.log("");
+})();
+'
+```
+
+(`scripts/gen-shop-secrets.mjs` is the same thing if you already have the repo
+open, and also emits `TILL_SETUP_PASSWORD` and a `STAFF_PATH` suggestion.)
+
+**Do NOT hand someone an `openssl dgst -hmac` line with the password on it.**
+That is what cost an evening on Tad Kebab: a password containing an apostrophe
+ended the shell's quoting early, `$` and `!` expand even inside double quotes,
+and `echo` adds a newline. Every one of those produces a perfectly valid hash of
+the wrong string — it fails at the login box with no error explaining why. The
+node prompt above reads the line literally, so nothing can be mangled.
+
+**Save `SESSION_SECRET` somewhere durable.** Cloudflare shows secrets as "Value
+encrypted" and will never reveal one, so a lost secret means regenerating all
+four and re-entering them.
+
+Diagnosing a login that won't work, in order:
+
+1. `https://<domain>/api/config` → `staffLogin.passwordMode`. `false` means the
+   vars aren't live (see the redeploy gotcha below), `true` means the mode is on
+   and it's the username or the hash. This needs no terminal.
+2. `{"error":"Too many attempts. Try again in 10 minutes."}` is **not** a wrong
+   password — it's the per-IP throttle (8 per 10 min). Wait, use a different
+   connection, or delete the `attempts:<ip>` key from that shop's `STAFF_LOGIN_KV`.
+3. Still failing ⇒ the `SESSION_SECRET` being hashed against isn't the one stored.
+   Regenerate all four rather than guessing.
+
+`auth.js` also accepts a plain `SHA-256` of the PIN/password as a legacy
+fallback, so an older shop can migrate with no downtime — but it's crackable
+offline if the hash leaks, so new shops use the keyed form above.
+
+---
+
 ## Adding a new shop (3rd, 4th, 5th…)
 
 Follow the runbooks — **do not invent a new process:**
@@ -313,6 +380,21 @@ Brief shape:
   Always `npm run build`.
 - **Item IDs drifting between `menu.json` and `menu-visual.json` →** prices/
   options render wrong. Keep IDs identical.
+- **Adding a Cloudflare env var does nothing until you redeploy.** Variables
+  only reach the code on a NEW deployment, so a var added after the last build
+  is invisible — which reads exactly like a wrong value. Deployments → latest →
+  **Retry deployment**, then re-check. Caught on Tad Kebab's `STAFF_USERNAME` /
+  `STAFF_PASSWORD_HASH`.
+- **Hashing a PIN or password on the shell command line →** a valid hash of the
+  wrong string. Use the node prompt in "Generating a shop's secrets" above, never
+  an `openssl` one-liner with the value in quotes.
+- **`env.STAFF_PATH` is build-time**, read from `process.env` in
+  `build-shop.js` — not from `functions/`. Grepping the runtime code for `env.*`
+  will never find it. It moves the back office off `/staff`; it only takes effect
+  on a rebuild.
+- **A LumiWEB shop without `pos.ordersOnly: true` →** the Z93 shows the full
+  EPOS, counter sales and card-reader tile included, to a shop paying for a
+  website. See `docs/PRODUCTS.md`.
 
 ---
 
