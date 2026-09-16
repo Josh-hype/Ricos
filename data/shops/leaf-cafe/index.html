@@ -76,11 +76,14 @@
        positioned ancestor; .hero's top padding keeps the copy clear of this. */
     .nav-wrap {
       position: absolute; z-index: 3; top: 0; left: 0; right: 0;
-      display: grid; grid-template-columns: 210px 1fr auto; align-items: center;
-      min-height: 112px; padding: 0 4.5vw;
+      display: grid; grid-template-columns: 260px 1fr auto; align-items: center;
+      /* Left padding matches .hero's 8vw so the wordmark starts on the same
+         vertical as the headline; the right stays at 4.5vw to keep the Order
+         button near the corner, as the reference has it. */
+      min-height: 112px; padding: 0 4.5vw 0 8vw;
       color: var(--cream);
     }
-    .brand img { display: block; width: 190px; height: auto; }
+    .brand img { display: block; width: 247px; height: auto; }
     .desktop-nav {
       display: flex; justify-content: center; gap: clamp(24px, 3.2vw, 52px);
       font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
@@ -107,7 +110,10 @@
       /* NOT 100svh. At full viewport height the feature strip sits entirely
          below the fold, and the reference deliberately shows it peeking under
          the photograph. The cap stops it becoming absurd on a tall monitor. */
-      min-height: min(86svh, 900px); padding: 122px 8vw 122px; overflow: hidden;
+      /* Shorter than it looks like it should be, deliberately: the reference
+         framing has the copy near the top and BOTH the feature strip and the
+         top of the menus band showing under it without scrolling. */
+      min-height: min(76svh, 820px); padding: 118px 8vw 118px; overflow: hidden;
       background: var(--green-dark); color: var(--cream);
     }
     .hero-bg { position: absolute; inset: 0; z-index: -2; display: block; }
@@ -132,33 +138,33 @@
         linear-gradient(to bottom, rgb(12 33 27 / 46%) 0%, rgb(12 33 27 / 0%) 24%),
         rgb(16 45 37 / 34%);
     }
-    .hero-inner { max-width: min(68vw, 1040px); }
+    .hero-inner { max-width: min(48vw, 730px); }
     .eyebrow {
-      margin: 0 0 20px; color: var(--gold-pale);
-      font-size: 15px; font-weight: 650; letter-spacing: .24em; text-transform: uppercase;
+      margin: 0 0 16px; color: var(--gold-pale);
+      font-size: 11px; font-weight: 650; letter-spacing: .24em; text-transform: uppercase;
     }
     h1 {
       margin: 0; font-family: var(--serif);
-      font-size: clamp(58px, 8.1vw, 150px); font-weight: 400;
+      font-size: clamp(41px, 5.7vw, 105px); font-weight: 400;
       letter-spacing: -.05em; line-height: .95;
     }
     /* "Great food · Good company · All day" — the gold strapline under the H1. */
     .hero-strap {
-      display: flex; flex-wrap: wrap; gap: 20px; margin: 24px 0 0;
+      display: flex; flex-wrap: wrap; gap: 15px; margin: 20px 0 0;
       color: var(--gold-pale);
-      font-size: 15px; font-weight: 650; letter-spacing: .2em; text-transform: uppercase;
+      font-size: 11px; font-weight: 650; letter-spacing: .2em; text-transform: uppercase;
     }
     .hero-strap i { font-style: normal; opacity: .6; }
     .hero-intro {
-      max-width: 700px; margin: 22px 0 0;
+      max-width: 500px; margin: 18px 0 0;
       color: rgb(255 249 235 / 84%); font-family: var(--serif);
-      font-size: clamp(19px, 1.5vw, 27px); line-height: 1.6;
+      font-size: clamp(14px, 1.05vw, 19px); line-height: 1.6;
     }
-    .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 22px; margin-top: 34px; }
+    .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 26px; }
     .button {
       display: inline-flex; align-items: center; justify-content: center; gap: 12px;
-      min-height: 76px; padding: 0 40px;
-      font-size: 14px; font-weight: 750; letter-spacing: .15em; text-transform: uppercase;
+      min-height: 53px; padding: 0 28px;
+      font-size: 10px; font-weight: 750; letter-spacing: .15em; text-transform: uppercase;
       transition: background .2s ease, color .2s ease;
     }
     .button-gold { background: var(--gold); color: var(--green-dark); }
@@ -187,7 +193,7 @@
        was under 4.5:1 against the cream script. Moved left and up onto the
        blurred foliage, where the same measurement gives 2.3%. */
     .hero-script {
-      position: absolute; right: 25vw; top: 12vh;
+      position: absolute; right: 34vw; top: 12vh;
       display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
       color: rgb(255 249 235 / 90%);
       font-family: var(--script); font-size: clamp(26px, 2.5vw, 40px); line-height: 1.02;
