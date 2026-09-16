@@ -23,7 +23,12 @@
     '190059': 'https://ricosyork.co.uk',
     '833541': 'https://bigbiteseasingwold.co.uk',
     '318181': 'https://acombmegachippy.uk',
-    '604827': 'https://acombpizzakebabhouse.co.uk'
+    '604827': 'https://acombpizzakebabhouse.co.uk',
+    // Both LumiWEB (ZCS Z93). Apex, matching the four above — if either domain
+    // turns out to 301 apex -> www, move that entry to the www host, because a
+    // redirect can break the device-setup POST.
+    '517122': 'https://theleafcafebistro.co.uk',
+    '718559': 'https://tadkebab.com'
   };
 
   function prefs() {

@@ -89,6 +89,8 @@ host directory is in `app/web/provision.js`:
 | `833541` | Big Bites (slug `food-station`) | `https://bigbiteseasingwold.co.uk` |
 | `318181` | Mega Chippy | `https://acombmegachippy.uk` |
 | `604827` | Acomb Pizza & Kebab House | `https://acombpizzakebabhouse.co.uk` |
+| `517122` | The Leaf Café & Bistro (LumiWEB) | `https://theleafcafebistro.co.uk` |
+| `718559` | Tad Kebab (LumiWEB) | `https://tadkebab.com` |
 
 **Adding a shop with a device means adding it here** — and the host must be the
 shop's reachable custom domain, never a `*.pages.dev` (those are firewalled on
