@@ -1,0 +1,15 @@
+[
+  {
+    "id": "placeholder",
+    "name": "Menu to be confirmed",
+    "icon": "🌿",
+    "items": [
+      {
+        "id": "placeholder-item",
+        "name": "Menu to be confirmed",
+        "price": 0.00,
+        "desc": "This is a build placeholder, not Leaf's menu. The design handoff shipped no dish list — its menu section is deliberately typographic (Breakfast / Lunch / Bistro) with no items or prices. Replace this file, and menu.json alongside it, with the real menu before the shop opens for online orders."
+      }
+    ]
+  }
+]

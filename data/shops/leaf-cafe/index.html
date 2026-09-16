@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{shopName}} — café & bistro in {{shopCity}}</title>
+  <meta name="description" content="{{shopName}} on {{shopAddressLine1}}, {{shopCity}}. Breakfasts worth getting up for, relaxed lunches and comforting evening plates." />
+  <meta name="theme-color" content="{{themePrimary}}" />
+  {{seoHead}}
+
+  <!-- Display type is a system serif stack (Iowan Old Style / Baskerville /
+       Georgia), exactly as the design handoff specifies — no webfont needed and
+       nothing to block. Geist carries the small uppercase interface labels; it
+       falls back to Arial, which is the handoff's own stated fallback, so the
+       page is intact even if Google Fonts never answers. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      /* Driven by the shop's theme block in config.json. */
+      --green:      {{themePrimary}};
+      --green-dark: {{themePrimaryDark}};
+      --green-deep: {{themePrimaryDeep}};
+      --gold:       {{themeAccent}};
+      --gold-deep:  {{themeAccentDeep}};
+      --ivory:      {{themeBackground}};
+      --surface:    {{themeSurface}};
+
+      /* Design-only tones from the handoff palette. These are shades of the
+         two brand colours rather than brand colours in their own right, so
+         they live here instead of in config.json. */
+      --ink:        #163A30;  /* body green, a hair warmer than --green      */
+      --ink-muted:  #53655E;  /* long-form copy                              */
+      --ink-faint:  #61706A;  /* card copy                                   */
+      --gold-pale:  #D5B573;  /* gold on dark ground — brighter for contrast */
+      --oatmeal:    #EBE2D2;  /* the menus band                              */
+      --cream:      #FFF9EB;  /* type on dark ground                         */
+
+      --rule:       rgb(22 58 48 / 22%);   /* hairlines on light             */
+      --rule-light: rgb(255 249 235 / 14%);/* hairlines on dark              */
+
+      --serif: 'Iowan Old Style', Baskerville, Georgia, 'Times New Roman', serif;
+      --sans:  Geist, Arial, Helvetica, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--ivory);
+      color: var(--ink);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; }
+    .site-shell { min-height: 100vh; background: var(--green); }
+
+    /* Visible only to screen readers, and to a keyboard user who tabs to it. */
+    .skip-link {
+      position: absolute; left: -9999px; top: 0; z-index: 10;
+      padding: 14px 20px; background: var(--gold); color: var(--green-dark);
+      font-size: 11px; font-weight: 750; letter-spacing: .14em; text-transform: uppercase;
+    }
+    .skip-link:focus { left: 0; }
+
+    /* ---------- announcement + navigation ---------- */
+    .announcement {
+      display: flex; justify-content: space-between; align-items: center;
+      min-height: 36px; margin: 0; padding: 0 4.5vw;
+      border-bottom: 1px solid var(--rule-light);
+      color: rgb(255 249 235 / 72%);
+      font-size: 9px; letter-spacing: .18em; text-transform: uppercase;
+    }
+    .announcement a { color: var(--gold-pale); }
+
+    .nav-wrap {
+      display: grid; grid-template-columns: 210px 1fr 210px; align-items: center;
+      min-height: 106px; padding: 0 4.5vw;
+      border-bottom: 1px solid var(--rule-light);
+      color: var(--cream);
+    }
+    .brand img { display: block; width: 178px; height: auto; }
+    .desktop-nav {
+      display: flex; justify-content: center; gap: clamp(24px, 3.5vw, 58px);
+      font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+    }
+    .desktop-nav a { transition: color .2s ease; }
+    .desktop-nav a:hover { color: var(--gold-pale); }
+    .book-nav {
+      justify-self: end; display: inline-flex; align-items: center; gap: 14px;
+      padding: 13px 0 9px; border-bottom: 1px solid var(--gold-pale);
+      color: var(--gold-pale);
+      font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+    }
+
+    /* ---------- hero ---------- */
+    .hero { display: grid; grid-template-columns: 46% 54%; min-height: calc(100svh - 142px); }
+    .hero-copy {
+      display: flex; flex-direction: column; justify-content: center;
+      min-width: 0; padding: 8vh 5vw 6vh 8vw; color: var(--cream);
+    }
+    .eyebrow {
+      margin: 0 0 24px; color: var(--gold-pale);
+      font-size: 10px; font-weight: 650; letter-spacing: .24em; text-transform: uppercase;
+    }
+    h1 {
+      margin: 0; font-family: var(--serif);
+      font-size: clamp(57px, 5.6vw, 96px); font-weight: 400;
+      letter-spacing: -.055em; line-height: .89;
+    }
+    .hero-intro {
+      max-width: 500px; margin: 31px 0 0;
+      color: rgb(255 249 235 / 78%); font-family: var(--serif);
+      font-size: clamp(17px, 1.25vw, 21px); line-height: 1.5;
+    }
+    .hero-actions { display: flex; align-items: center; gap: 28px; margin-top: 34px; }
+    .button {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 50px; padding: 0 27px;
+      font-size: 10px; font-weight: 750; letter-spacing: .15em; text-transform: uppercase;
+    }
+    .button-gold { background: var(--gold); color: var(--green-dark); }
+    .text-link {
+      display: inline-flex; gap: 13px; padding: 10px 0;
+      border-bottom: 1px solid rgb(255 249 235 / 48%);
+      font-size: 10px; font-weight: 650; letter-spacing: .13em; text-transform: uppercase;
+    }
+    .open-note {
+      margin: auto 0 0; padding-top: 44px; color: rgb(255 249 235 / 66%);
+      font-size: 9px; letter-spacing: .16em; text-transform: uppercase;
+    }
+    .open-note span { margin-right: 16px; color: var(--gold-pale); }
+
+    .hero-media { position: relative; overflow: hidden; background: #D8C9AD; }
+    /* The caption strip sits in the bottom 92px, so the picture box is the
+       band minus that. The <img> then fills its box exactly — give the offset
+       to both and it gets subtracted twice, leaving a gap under the photo. */
+    .hero-media > picture { display: block; width: 100%; height: calc(100% - 92px); }
+    .hero-media > picture > img {
+      display: block; width: 100%; height: 100%;
+      object-fit: cover; object-position: center 43%;
+      filter: saturate(.82) contrast(.98) brightness(.96);
+    }
+    .photo-tag {
+      position: absolute; z-index: 1; top: 24px; right: 22px; padding: 9px 12px;
+      background: rgb(255 249 235 / 88%); color: var(--green);
+      font-size: 8px; font-weight: 650; letter-spacing: .14em; text-transform: uppercase;
+    }
+    .hero-caption {
+      display: grid; grid-template-columns: 46px 1fr; align-items: center;
+      height: 92px; padding: 0 34px; color: var(--green);
+    }
+    .hero-caption span { font-family: var(--serif); font-size: 24px; }
+    .hero-caption p {
+      max-width: 475px; margin: 0; font-family: var(--serif);
+      font-size: 14px; font-style: italic; line-height: 1.35;
+    }
+
+    /* ---------- shared section furniture ---------- */
+    .section-kicker {
+      margin: 0 0 25px; color: var(--gold-deep);
+      font-size: 9px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase;
+    }
+    .manifesto h2, .section-heading h2, .inside-copy h2, .visit h2, .booking h2 {
+      margin: 0; font-family: var(--serif);
+      font-size: clamp(48px, 6vw, 92px); font-weight: 400;
+      letter-spacing: -.052em; line-height: .96;
+    }
+
+    /* ---------- manifesto ---------- */
+    .manifesto {
+      position: relative; overflow: hidden;
+      padding: 140px 10vw 128px; background: var(--ivory); color: var(--ink);
+    }
+    .manifesto-copy {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6vw;
+      width: min(690px, 70%); margin: 58px 0 0 auto;
+      padding-top: 25px; border-top: 1px solid var(--rule);
+    }
+    .manifesto-copy p {
+      margin: 0; color: var(--ink-muted); font-family: var(--serif);
+      font-size: 17px; line-height: 1.58;
+    }
+    .manifesto-mark {
+      position: absolute; right: -2vw; bottom: -10vw;
+      color: rgb(22 58 48 / 4%); font-family: var(--serif);
+      font-size: 38vw; line-height: 1;
+    }
+
+    /* ---------- menus ---------- */
+    .menus { padding: 128px 6vw 74px; background: var(--oatmeal); color: var(--ink); }
+    .section-heading {
+      display: grid; grid-template-columns: 1.35fr .65fr; gap: 8vw;
+      align-items: end; padding: 0 3.5vw 76px;
+    }
+    .section-heading > p {
+      max-width: 430px; margin: 0 0 8px; color: var(--ink-muted);
+      font-family: var(--serif); font-size: 18px; line-height: 1.55;
+    }
+    .menu-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    }
+    .menu-card {
+      min-height: 500px; padding: 35px 3.5vw 38px;
+      border-right: 1px solid var(--rule);
+      transition: background .25s ease, color .25s ease;
+    }
+    .menu-card:last-child { border-right: 0; }
+    .menu-card:hover { background: var(--ink); color: var(--cream); }
+    .menu-meta, .menu-foot {
+      display: flex; justify-content: space-between; gap: 20px;
+      font-size: 8px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase;
+    }
+    .menu-meta span:first-child { color: var(--gold-deep); }
+    .menu-card h3 {
+      margin: 124px 0 24px; font-family: var(--serif);
+      font-size: clamp(48px, 4.6vw, 76px); font-weight: 400;
+      letter-spacing: -.045em; line-height: 1;
+    }
+    .menu-card > p {
+      max-width: 320px; margin: 0; color: var(--ink-faint);
+      font-family: var(--serif); font-size: 16px; line-height: 1.55;
+    }
+    .menu-card:hover > p { color: rgb(255 249 235 / 72%); }
+    .menu-foot {
+      align-items: end; margin-top: 85px; padding-top: 20px;
+      border-top: 1px solid currentColor;
+    }
+    .menu-foot > span { opacity: .7; }
+    .menu-foot a { color: var(--gold-deep); }
+    .menu-card:hover .menu-foot a { color: var(--gold-pale); }
+    .menu-note {
+      margin: 22px 0 0; color: #68756F;
+      font-size: 8px; letter-spacing: .11em; text-align: right; text-transform: uppercase;
+    }
+
+    /* ---------- inside ---------- */
+    .inside {
+      display: grid; grid-template-columns: 54% 46%;
+      min-height: 800px; background: var(--surface); color: var(--ink);
+    }
+    .inside-photo { position: relative; min-height: 800px; overflow: hidden; background: #CDBB9B; }
+    .inside-photo > picture { display: block; width: 100%; height: 100%; }
+    .inside-photo img {
+      display: block; width: 100%; height: 100%;
+      object-fit: cover; object-position: 45% center;
+      filter: saturate(.84) contrast(.98) brightness(.95);
+    }
+    .photo-index {
+      position: absolute; left: 22px; bottom: 20px; padding: 9px 12px;
+      background: rgb(255 249 235 / 88%); color: var(--green);
+      font-size: 8px; font-weight: 650; letter-spacing: .14em; text-transform: uppercase;
+    }
+    .inside-copy { display: flex; flex-direction: column; justify-content: center; padding: 110px 7vw; }
+    .inside-lead {
+      max-width: 480px; margin: 34px 0 48px; color: var(--ink-muted);
+      font-family: var(--serif); font-size: 18px; line-height: 1.55;
+    }
+    .inside-points { border-top: 1px solid rgb(22 58 48 / 20%); }
+    .inside-points > div {
+      display: grid; grid-template-columns: 42px 1fr; gap: 18px;
+      padding: 17px 0; border-bottom: 1px solid rgb(22 58 48 / 20%);
+    }
+    .inside-points span {
+      padding-top: 3px; color: var(--gold-deep);
+      font-size: 8px; font-weight: 700; letter-spacing: .14em;
+    }
+    .inside-points p { max-width: 420px; margin: 0; color: var(--ink-muted); font-size: 13px; line-height: 1.6; }
+    .dark-link { align-self: flex-start; margin-top: 34px; border-color: rgb(22 58 48 / 40%); }
+
+    /* ---------- quote ---------- */
+    .quote-band {
+      position: relative; overflow: hidden;
+      padding: 130px 8vw 120px; background: var(--gold); color: var(--green-dark);
+      text-align: center;
+    }
+    .quote-band blockquote {
+      position: relative; z-index: 1; margin: 0; font-family: var(--serif);
+      font-size: clamp(38px, 5.2vw, 78px); letter-spacing: -.05em; line-height: 1.05;
+    }
+    .quote-band > p {
+      position: relative; z-index: 1; margin: 35px 0 0;
+      font-size: 9px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase;
+    }
+    .quote-mark {
+      position: absolute; top: -11vw; left: 2vw; color: rgb(255 249 235 / 11%);
+      font-family: Georgia, serif; font-size: 40vw; line-height: 1;
+    }
+
+    /* ---------- visit ---------- */
+    .visit {
+      display: grid; grid-template-columns: 1fr 1.25fr; gap: 7vw;
+      padding: 132px 8vw; background: #EEE7DA; color: var(--ink);
+    }
+    .visit-details {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 2vw;
+      padding-top: 49px; border-top: 1px solid var(--rule);
+    }
+    .detail-label {
+      margin: 0 0 24px; color: var(--gold-deep);
+      font-size: 8px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase;
+    }
+    .visit-details address, .visit-details > div > p:not(.detail-label) {
+      min-height: 75px; margin: 0; color: var(--ink-muted); font-family: var(--serif);
+      font-size: 16px; font-style: normal; line-height: 1.5;
+    }
+    .detail-link {
+      display: inline-block; margin-top: 25px; padding-bottom: 8px;
+      border-bottom: 1px solid rgb(22 58 48 / 35%);
+      font-size: 8px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+    }
+
+    /* ---------- booking ---------- */
+    .booking { padding: 142px 7vw 135px; background: var(--green); color: var(--cream); text-align: center; }
+    .booking .section-kicker { color: var(--gold-pale); }
+    .booking > p:not(.section-kicker) {
+      max-width: 410px; margin: 28px auto 0; color: rgb(255 249 235 / 72%);
+      font-family: var(--serif); font-size: 17px;
+    }
+    .booking-actions { display: flex; justify-content: center; align-items: center; gap: 32px; margin-top: 43px; }
+
+    /* ---------- footer ---------- */
+    footer {
+      display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 30px;
+      padding: 42px 5vw; border-top: 1px solid rgb(255 249 235 / 13%);
+      background: var(--green-deep); color: rgb(255 249 235 / 62%);
+    }
+    footer > img { width: 150px; }
+    .footer-links {
+      display: flex; gap: 30px;
+      font-size: 8px; font-weight: 650; letter-spacing: .14em; text-transform: uppercase;
+    }
+    footer > p { justify-self: end; margin: 0; font-size: 8px; letter-spacing: .1em; text-transform: uppercase; }
+
+    .button, .text-link, .detail-link { transition: opacity .2s ease, background .2s ease; }
+    .button:hover, .text-link:hover, .detail-link:hover { opacity: .76; }
+
+    /* Keyboard focus has to stay visible on both the dark and light grounds. */
+    a:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { transition: none !important; }
+    }
+
+    @media (max-width: 920px) {
+      .announcement span { display: none; }
+      .announcement { justify-content: center; }
+      .nav-wrap { grid-template-columns: 1fr auto; min-height: 90px; }
+      .desktop-nav { display: none; }
+      .brand img { width: 150px; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-copy { min-height: 610px; padding: 80px 7vw 48px; }
+      .hero-media { min-height: 720px; }
+      .manifesto { padding: 100px 7vw; }
+      .manifesto-copy { width: 100%; }
+      .section-heading { grid-template-columns: 1fr; padding: 0 0 55px; }
+      .menu-grid { grid-template-columns: 1fr; }
+      .menu-card { min-height: auto; border-right: 0; border-bottom: 1px solid var(--rule); }
+      .menu-card:last-child { border-bottom: 0; }
+      .menu-card h3 { margin-top: 70px; }
+      .menu-foot { margin-top: 65px; }
+      .inside { grid-template-columns: 1fr; }
+      .inside-photo { min-height: 680px; }
+      .inside-copy { padding: 95px 8vw; }
+      .visit { grid-template-columns: 1fr; padding: 105px 8vw; }
+      footer { grid-template-columns: 1fr; text-align: center; }
+      footer > img, footer > p { justify-self: center; }
+    }
+
+    @media (max-width: 620px) {
+      .book-nav { font-size: 8px; gap: 7px; }
+      .hero-copy { min-height: 570px; }
+      h1 { font-size: clamp(51px, 15vw, 70px); }
+      .hero-actions { align-items: flex-start; flex-direction: column; gap: 15px; }
+      .hero-media { min-height: 660px; }
+      .hero-caption { height: 110px; padding: 0 22px; }
+      .hero-media > picture { height: calc(100% - 110px); }
+      .manifesto { padding: 86px 7vw; }
+      .manifesto h2, .section-heading h2, .inside-copy h2, .visit h2, .booking h2 { font-size: 48px; }
+      .manifesto-copy { grid-template-columns: 1fr; gap: 25px; margin-top: 42px; }
+      .menus { padding: 88px 6vw 58px; }
+      .menu-card { padding: 28px 4vw 34px; }
+      .menu-card h3 { font-size: 52px; }
+      .inside-photo { min-height: 520px; }
+      .inside-copy { padding: 82px 7vw; }
+      .quote-band { padding: 95px 7vw 88px; }
+      .visit-details { grid-template-columns: 1fr; gap: 50px; }
+      .visit-details address, .visit-details > div > p:not(.detail-label) { min-height: 0; }
+      .booking { padding: 100px 7vw 95px; }
+      .booking-actions { align-items: center; flex-direction: column; gap: 18px; }
+      .footer-links { flex-wrap: wrap; justify-content: center; }
+    }
+  </style>
+</head>
+
+<body>
+<a class="skip-link" href="#home">Skip to content</a>
+
+<main class="site-shell">
+  <p class="announcement">
+    <span>A neighbourhood table, from morning coffee to evening supper</span>
+    <a href="#visit">{{shopAddressLine1}} · {{shopCity}}</a>
+  </p>
+
+  <header class="nav-wrap">
+    <a class="brand" href="#home" aria-label="{{shopName}} home">
+      <img src="/logo.png" alt="{{shopName}}" width="1000" height="333" />
+    </a>
+    <nav class="desktop-nav" aria-label="Primary navigation">
+      <a href="#story">Our place</a>
+      <a href="#menus">Menus</a>
+      <a href="#hours">Opening hours</a>
+      <a href="#visit">Find us</a>
+    </nav>
+    <!-- TODO(owner): #book is an on-page section, not a booking system. Point
+         this at Leaf's real booking URL when we have it. -->
+    <a class="book-nav" href="#book">Book a table <span aria-hidden="true">↗</span></a>
+  </header>
+
+  <section class="hero" id="home">
+    <div class="hero-copy">
+      <p class="eyebrow">Café &amp; bistro · Acomb</p>
+      <h1>Local flavour.<br />Proper welcome.</h1>
+      <p class="hero-intro">
+        Breakfasts worth getting up for, relaxed lunches and comforting
+        evening plates—served in the heart of the neighbourhood.
+      </p>
+      <div class="hero-actions">
+        <a class="button button-gold" href="#book">Reserve your table</a>
+        <a class="text-link" href="#menus">See what’s cooking <span aria-hidden="true">→</span></a>
+      </div>
+      <a class="open-note" href="#hours"><span>Planning a visit?</span> Check today’s hours</a>
+    </div>
+
+    <div class="hero-media">
+      <span class="photo-tag">Inside {{shopShortName}} · Acomb Road</span>
+      <picture>
+        <source srcset="/assets/hero.webp" type="image/webp" />
+        <img src="/assets/hero.jpg" width="760" height="1020"
+             alt="Inside {{shopName}}, showing the counter, seating and a member of the team" />
+      </picture>
+      <div class="hero-caption">
+        <span aria-hidden="true">01</span>
+        <p>Nothing overdone. Just good food, warm lights and a table with your name on it.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="manifesto" id="story">
+    <p class="section-kicker">Acomb’s independent café &amp; bistro</p>
+    <h2>A place that feels<br />like it’s always been yours.</h2>
+    <div class="manifesto-copy">
+      <p>
+        {{shopShortName}} is the easy answer to “where shall we go?” A friendly room for
+        first coffees, catch-up lunches and evenings that unfold at their own pace.
+      </p>
+      <p>
+        The setting is simple, the welcome is genuine and the focus stays where
+        it should: on food you want to eat and people you want to share it with.
+      </p>
+    </div>
+    <span class="manifesto-mark" aria-hidden="true">L</span>
+  </section>
+
+  <section class="menus" id="menus">
+    <div class="section-heading">
+      <div>
+        <p class="section-kicker">One table · three moods</p>
+        <h2>Come as you are.<br />Stay as long as you like.</h2>
+      </div>
+      <p>
+        The day changes, the welcome doesn’t. Drop in for something quick
+        or settle in and make a meal of it.
+      </p>
+    </div>
+
+    <!-- TODO(owner): each "View menu" points at #book because there is no menu
+         page yet. When the real menu exists, these become /order (or a PDF). -->
+    <div class="menu-grid">
+      <article class="menu-card">
+        <div class="menu-meta"><span>01</span><span>Morning</span></div>
+        <h3>Breakfast</h3>
+        <p>Proper coffee, generous breakfasts and a reason to linger over the paper.</p>
+        <div class="menu-foot">
+          <span>From opening</span>
+          <a href="#book" aria-label="Ask about the breakfast menu">View menu <span aria-hidden="true">↗</span></a>
+        </div>
+      </article>
+      <article class="menu-card">
+        <div class="menu-meta"><span>02</span><span>Midday</span></div>
+        <h3>Lunch</h3>
+        <p>Familiar favourites, freshly prepared and served without the fuss.</p>
+        <div class="menu-foot">
+          <span>Into the afternoon</span>
+          <a href="#book" aria-label="Ask about the lunch menu">View menu <span aria-hidden="true">↗</span></a>
+        </div>
+      </article>
+      <article class="menu-card">
+        <div class="menu-meta"><span>03</span><span>Evening</span></div>
+        <h3>Bistro</h3>
+        <p>Relaxed plates, something good to drink and nowhere else you need to be.</p>
+        <div class="menu-foot">
+          <span>Selected evenings</span>
+          <a href="#book" aria-label="Ask about the bistro menu">View menu <span aria-hidden="true">↗</span></a>
+        </div>
+      </article>
+    </div>
+    <p class="menu-note">Menu details shown are concept copy and can be replaced with the current {{shopShortName}} menu.</p>
+  </section>
+
+  <section class="inside" id="experience">
+    <div class="inside-photo">
+      <picture>
+        <source srcset="/assets/counter.webp" type="image/webp" />
+        <img src="/assets/counter.jpg" width="790" height="650"
+             alt="The counter and service area inside {{shopName}}" />
+      </picture>
+      <span class="photo-index">02 / Inside {{shopShortName}}</span>
+    </div>
+    <div class="inside-copy">
+      <p class="section-kicker">The real {{shopShortName}}</p>
+      <h2>Small room.<br />Big-hearted.</h2>
+      <p class="inside-lead">
+        Warm wood, brick, hanging lights and the hum of the coffee machine.
+        It’s relaxed, familiar and unmistakably local.
+      </p>
+      <div class="inside-points">
+        <div><span>01</span><p>Friendly counter service and a comfortable table when you want to settle in.</p></div>
+        <div><span>02</span><p>A straightforward space that lets the food and conversation do the talking.</p></div>
+        <div><span>03</span><p>Right on Acomb Road, for quick coffees and slower catch-ups alike.</p></div>
+      </div>
+      <a class="text-link dark-link" href="#visit">Find your way here <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
+  <section class="quote-band" aria-label="{{shopShortName}} philosophy">
+    <span class="quote-mark" aria-hidden="true">“</span>
+    <blockquote>
+      The sort of place you pop into for coffee<br />and end up staying for lunch.
+    </blockquote>
+    <p>That’s the plan, anyway.</p>
+  </section>
+
+  <section class="visit" id="visit">
+    <div class="visit-heading">
+      <p class="section-kicker">Come and see us</p>
+      <h2>Your table’s<br />just down the road.</h2>
+    </div>
+    <div class="visit-details">
+      <div>
+        <p class="detail-label">Find us</p>
+        <address>{{shopAddressLine1}}<br />{{shopCity}}</address>
+        <a class="detail-link" href="https://maps.google.com/?q={{shopAddressLine1}}+{{shopCity}}"
+           target="_blank" rel="noopener">Open in maps ↗</a>
+      </div>
+      <div id="hours">
+        <p class="detail-label">Opening hours</p>
+        <p>Breakfast · Lunch · Bistro evenings</p>
+        <a class="detail-link" href="#book">Check today’s hours →</a>
+      </div>
+      <div>
+        <p class="detail-label">Good to know</p>
+        <p>Walk-ins are welcome.<br />Booking is best for evenings.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="booking" id="book">
+    <p class="section-kicker">Make a plan</p>
+    <h2>Let’s get a table<br />in the diary.</h2>
+    <p>Choose a time that suits and we’ll save you a seat.</p>
+    <!-- TODO(owner): "Book online" needs Leaf's real booking URL, and "Contact
+         the café" needs the phone or email once business.phone / .email are set. -->
+    <div class="booking-actions">
+      <a class="button button-gold" href="#visit">Book online</a>
+      <a class="text-link" href="#visit">Contact the café <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
+  <footer>
+    <img src="/logo.png" alt="{{shopName}}" width="1000" height="333" />
+    <div class="footer-links">
+      <a href="#menus">Menus</a>
+      <a href="#visit">Visit</a>
+      <a href="#book">Book</a>
+      <a href="#home">Back to top ↑</a>
+    </div>
+    <p>{{shopName}} · {{shopAddressLine1}}, {{shopCity}}</p>
+  </footer>
+</main>
+</body>
+</html>
