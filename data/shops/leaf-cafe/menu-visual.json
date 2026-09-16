@@ -8,19 +8,199 @@
         "id": "bf-mini",
         "name": "Mini English Breakfast",
         "price": 11.5,
-        "desc": "2 Bacon, 2 Sausages, 2 Hash Browns, 2 Eggs, 2 Grilled Tomatoes, Mushrooms, Baked Beans, 2 Slices of Toast. Served with a hot drink."
+        "desc": "2 Bacon, 2 Sausages, 2 Hash Browns, 2 Eggs, 2 Grilled Tomatoes, Mushrooms, Baked Beans, 2 Slices of Toast. Served with a hot drink.",
+        "options": [
+          {
+            "id": "hot-drink",
+            "label": "Your hot drink",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "bfd-americano",
+                "label": "Americano",
+                "price": 0
+              },
+              {
+                "id": "bfd-espresso",
+                "label": "Espresso",
+                "price": 0
+              },
+              {
+                "id": "bfd-cappuccino",
+                "label": "Cappuccino",
+                "price": 0
+              },
+              {
+                "id": "bfd-latte",
+                "label": "Latte",
+                "price": 0
+              },
+              {
+                "id": "bfd-flat-white",
+                "label": "Flat White",
+                "price": 0
+              },
+              {
+                "id": "bfd-macchiato",
+                "label": "Macchiato",
+                "price": 0
+              },
+              {
+                "id": "bfd-mocha",
+                "label": "Mocha",
+                "price": 0
+              },
+              {
+                "id": "bfd-hot-choc",
+                "label": "Hot Chocolate",
+                "price": 0
+              },
+              {
+                "id": "bfd-caramel",
+                "label": "Caramel Latte",
+                "price": 0
+              },
+              {
+                "id": "bfd-tea",
+                "label": "Tea Selection",
+                "price": 0
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "bf-full",
         "name": "Full English Breakfast",
         "price": 13.5,
-        "desc": "3 Bacon, 3 Sausages, 2 Hash Browns, 2 Eggs, 2 Grilled Tomatoes, Mushrooms, Baked Beans, 2 Slices of Toast. Served with a hot drink."
+        "desc": "3 Bacon, 3 Sausages, 2 Hash Browns, 2 Eggs, 2 Grilled Tomatoes, Mushrooms, Baked Beans, 2 Slices of Toast. Served with a hot drink.",
+        "options": [
+          {
+            "id": "hot-drink",
+            "label": "Your hot drink",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "bfd-americano",
+                "label": "Americano",
+                "price": 0
+              },
+              {
+                "id": "bfd-espresso",
+                "label": "Espresso",
+                "price": 0
+              },
+              {
+                "id": "bfd-cappuccino",
+                "label": "Cappuccino",
+                "price": 0
+              },
+              {
+                "id": "bfd-latte",
+                "label": "Latte",
+                "price": 0
+              },
+              {
+                "id": "bfd-flat-white",
+                "label": "Flat White",
+                "price": 0
+              },
+              {
+                "id": "bfd-macchiato",
+                "label": "Macchiato",
+                "price": 0
+              },
+              {
+                "id": "bfd-mocha",
+                "label": "Mocha",
+                "price": 0
+              },
+              {
+                "id": "bfd-hot-choc",
+                "label": "Hot Chocolate",
+                "price": 0
+              },
+              {
+                "id": "bfd-caramel",
+                "label": "Caramel Latte",
+                "price": 0
+              },
+              {
+                "id": "bfd-tea",
+                "label": "Tea Selection",
+                "price": 0
+              }
+            ]
+          }
+        ]
       },
       {
         "id": "bf-veggie",
         "name": "Veggie Breakfast",
         "price": 10.5,
-        "desc": "Spinach Omelette, 2 Hash Browns, Baked Beans, Grilled Tomato, Mushrooms. Served with a hot drink."
+        "desc": "Spinach Omelette, 2 Hash Browns, Baked Beans, Grilled Tomato, Mushrooms. Served with a hot drink.",
+        "options": [
+          {
+            "id": "hot-drink",
+            "label": "Your hot drink",
+            "select": "single",
+            "required": true,
+            "choices": [
+              {
+                "id": "bfd-americano",
+                "label": "Americano",
+                "price": 0
+              },
+              {
+                "id": "bfd-espresso",
+                "label": "Espresso",
+                "price": 0
+              },
+              {
+                "id": "bfd-cappuccino",
+                "label": "Cappuccino",
+                "price": 0
+              },
+              {
+                "id": "bfd-latte",
+                "label": "Latte",
+                "price": 0
+              },
+              {
+                "id": "bfd-flat-white",
+                "label": "Flat White",
+                "price": 0
+              },
+              {
+                "id": "bfd-macchiato",
+                "label": "Macchiato",
+                "price": 0
+              },
+              {
+                "id": "bfd-mocha",
+                "label": "Mocha",
+                "price": 0
+              },
+              {
+                "id": "bfd-hot-choc",
+                "label": "Hot Chocolate",
+                "price": 0
+              },
+              {
+                "id": "bfd-caramel",
+                "label": "Caramel Latte",
+                "price": 0
+              },
+              {
+                "id": "bfd-tea",
+                "label": "Tea Selection",
+                "price": 0
+              }
+            ]
+          }
+        ]
       }
     ]
   },

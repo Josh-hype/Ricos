@@ -6,17 +6,173 @@
       {
         "id": "bf-mini",
         "name": "Mini English Breakfast",
-        "priceP": 1150
+        "priceP": 1150,
+        "modifiers": [
+          {
+            "id": "bfd-americano",
+            "label": "Americano",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-espresso",
+            "label": "Espresso",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-cappuccino",
+            "label": "Cappuccino",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-latte",
+            "label": "Latte",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-flat-white",
+            "label": "Flat White",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-macchiato",
+            "label": "Macchiato",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-mocha",
+            "label": "Mocha",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-hot-choc",
+            "label": "Hot Chocolate",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-caramel",
+            "label": "Caramel Latte",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-tea",
+            "label": "Tea Selection",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "bf-full",
         "name": "Full English Breakfast",
-        "priceP": 1350
+        "priceP": 1350,
+        "modifiers": [
+          {
+            "id": "bfd-americano",
+            "label": "Americano",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-espresso",
+            "label": "Espresso",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-cappuccino",
+            "label": "Cappuccino",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-latte",
+            "label": "Latte",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-flat-white",
+            "label": "Flat White",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-macchiato",
+            "label": "Macchiato",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-mocha",
+            "label": "Mocha",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-hot-choc",
+            "label": "Hot Chocolate",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-caramel",
+            "label": "Caramel Latte",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-tea",
+            "label": "Tea Selection",
+            "priceDeltaP": 0
+          }
+        ]
       },
       {
         "id": "bf-veggie",
         "name": "Veggie Breakfast",
-        "priceP": 1050
+        "priceP": 1050,
+        "modifiers": [
+          {
+            "id": "bfd-americano",
+            "label": "Americano",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-espresso",
+            "label": "Espresso",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-cappuccino",
+            "label": "Cappuccino",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-latte",
+            "label": "Latte",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-flat-white",
+            "label": "Flat White",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-macchiato",
+            "label": "Macchiato",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-mocha",
+            "label": "Mocha",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-hot-choc",
+            "label": "Hot Chocolate",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-caramel",
+            "label": "Caramel Latte",
+            "priceDeltaP": 0
+          },
+          {
+            "id": "bfd-tea",
+            "label": "Tea Selection",
+            "priceDeltaP": 0
+          }
+        ]
       }
     ]
   },

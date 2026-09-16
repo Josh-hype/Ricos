@@ -186,6 +186,26 @@ MENU = [
 EXTRA_MEAT = ('extra-meat', 'Extra Beef or Chicken', 2.00)
 WITH_EXTRA = {'bu-beef', 'bu-chicken', 'bu-special'}
 
+# "Breakfasts are served with hot drink" — so the customer has to say WHICH, or
+# the order reaches the kitchen without it and someone has to ring them back.
+# Required single choice, every drink included at no extra charge because the
+# printed menu draws no distinction between them.
+# NOTE: choice ids are their own namespace, separate from item ids, but they are
+# prefixed anyway so nothing reads as if a drink item were being added to the cart.
+BREAKFAST_DRINKS = [
+    ('bfd-americano',  'Americano'),
+    ('bfd-espresso',   'Espresso'),
+    ('bfd-cappuccino', 'Cappuccino'),
+    ('bfd-latte',      'Latte'),
+    ('bfd-flat-white', 'Flat White'),
+    ('bfd-macchiato',  'Macchiato'),
+    ('bfd-mocha',      'Mocha'),
+    ('bfd-hot-choc',   'Hot Chocolate'),
+    ('bfd-caramel',    'Caramel Latte'),
+    ('bfd-tea',        'Tea Selection'),
+]
+WITH_DRINK = {'bf-mini', 'bf-full', 'bf-veggie'}
+
 P = lambda pounds: int(round(pounds * 100))   # pounds -> pence, once, here
 
 
@@ -198,13 +218,28 @@ def build():
             v = {'id': iid, 'name': name, 'price': price}
             if desc:
                 v['desc'] = desc
+
+            mods, opts = [], []
+            if iid in WITH_DRINK:
+                mods += [{'id': cid, 'label': label, 'priceDeltaP': 0}
+                         for cid, label in BREAKFAST_DRINKS]
+                opts.append({
+                    'id': 'hot-drink', 'label': 'Your hot drink',
+                    'select': 'single', 'required': True,
+                    'choices': [{'id': cid, 'label': label, 'price': 0}
+                                for cid, label in BREAKFAST_DRINKS],
+                })
             if iid in WITH_EXTRA:
                 ex_id, ex_label, ex_price = EXTRA_MEAT
-                s['modifiers'] = [{'id': ex_id, 'label': ex_label, 'priceDeltaP': P(ex_price)}]
-                v['options'] = [{
+                mods.append({'id': ex_id, 'label': ex_label, 'priceDeltaP': P(ex_price)})
+                opts.append({
                     'id': 'extras', 'label': 'Extras', 'select': 'multi', 'required': False,
                     'choices': [{'id': ex_id, 'label': ex_label, 'price': ex_price}],
-                }]
+                })
+            if mods:
+                s['modifiers'] = mods
+                v['options'] = opts
+
             s_items.append(s)
             v_items.append(v)
         server.append({'id': cid, 'name': cname, 'items': s_items})
@@ -236,7 +271,23 @@ def main():
     for k in s_ids:
         assert smap[k]['priceP'] == P(vmap[k]['price']), f'price mismatch on {k}'
         assert smap[k]['name'] == vmap[k]['name'], f'name mismatch on {k}'
-    print('checked: ids, names and prices agree across both files')
+
+    # Options are the half that silently diverges: the cart prices a choice from
+    # menu-visual, the server charges from menu.json, and the customer only finds
+    # out at checkout. Every visible choice must exist server-side at the same price.
+    n_choices = 0
+    for k in s_ids:
+        server_mods = {m['id']: m['priceDeltaP'] for m in smap[k].get('modifiers', [])}
+        for group in vmap[k].get('options', []):
+            for ch in group['choices']:
+                assert ch['id'] in server_mods, f'{k}: choice {ch["id"]} has no server modifier'
+                assert server_mods[ch['id']] == P(ch['price']), \
+                    f'{k}: choice {ch["id"]} priced {ch["price"]} but server says {server_mods[ch["id"]]}p'
+                n_choices += 1
+        assert len(server_mods) == sum(len(g['choices']) for g in vmap[k].get('options', [])), \
+            f'{k}: server carries a modifier the customer is never shown'
+    print(f'checked: ids, names and prices agree across both files '
+          f'({n_choices} option choices cross-checked)')
 
 
 if __name__ == '__main__':
