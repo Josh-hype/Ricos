@@ -4,8 +4,9 @@
     "tradingName": "Tad Kebab",
     "_comment_shortName": "Conversational short form used in page headers, aria labels and the staff PWA name (e.g. 'Pizza Bob's' instead of 'Pizza Bob's Burgers Ltd').",
     "shortName": "Tad Kebab",
-    "legalName": "TODO_LEGAL_NAME",
-    "companyNumber": "TODO_COMPANY_NUMBER",
+    "_comment_legal": "Sole trader — no limited company, so no registered name and no company number. Both are deliberately EMPTY, not placeholders: build-shop.js composes the data-controller line from whatever is set, and empty here gives \"Tad Kebab, of <address>\" rather than the clumsy \"Tad Kebab, trading as Tad Kebab\" that setting legalName to the trading name would produce. Fill both in if the shop ever incorporates.",
+    "legalName": "",
+    "companyNumber": "",
     "address": {
       "line1": "4 Commercial Street",
       "city": "Tadcaster",
