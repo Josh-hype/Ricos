@@ -12,7 +12,7 @@
       "postcode": "LS24 8AA",
       "country": "United Kingdom"
     },
-    "phone": "TODO_PHONE",
+    "phone": "01937 832931",
     "email": "orders@tadkebab.com",
     "_comment_domain": "tadkebab.com is the shop's own domain. tadkebab.uk is NOT controlled by the shop — it is the third-party ordering page the printed menu was transcribed from — so it must never be set here: it drives the canonical URL, sitemap, og:url and structured data, and pointing those at someone else's site hands them the SEO.",
     "domain": "tadkebab.com",
