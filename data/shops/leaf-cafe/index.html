@@ -245,7 +245,7 @@
       margin: 0 0 25px; color: var(--gold-deep);
       font-size: 9px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase;
     }
-    .manifesto h2, .visit h2, .order-band h2 {
+    .manifesto h2, .order-band h2 {
       margin: 0; font-family: var(--serif);
       font-size: clamp(48px, 6vw, 92px); font-weight: 400;
       letter-spacing: -.052em; line-height: .96;
@@ -339,37 +339,39 @@
       font-family: Georgia, serif; font-size: 40vw; line-height: 1;
     }
 
-    /* ---------- visit ---------- */
-    .visit {
-      display: grid; grid-template-columns: 1fr 1.25fr; gap: 7vw;
-      padding: 132px 8vw; background: #EEE7DA; color: var(--ink);
+    /* ---------- order call to action, with the visit details beside it ------
+       Two columns on one dark band: the call to action left, the practical
+       details right. They used to be a separate light band above this one; the
+       tones therefore flip from ink-on-oatmeal to cream-on-green. */
+    .order-band {
+      display: grid; grid-template-columns: 1fr 1.1fr; gap: 6vw; align-items: start;
+      padding: 104px 8vw 108px; background: var(--green); color: var(--cream);
     }
-    .visit-details {
+    .order-band .section-kicker { color: var(--gold-pale); }
+    .order-copy > p:not(.section-kicker) {
+      max-width: 430px; margin: 26px 0 0; color: rgb(255 249 235 / 72%);
+      font-family: var(--serif); font-size: 17px;
+    }
+    .order-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 28px; margin-top: 38px; }
+
+    .order-details {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 2vw;
-      padding-top: 49px; border-top: 1px solid var(--rule);
+      padding-top: 40px; border-top: 1px solid rgb(255 249 235 / 22%);
     }
     .detail-label {
-      margin: 0 0 24px; color: var(--gold-deep);
+      margin: 0 0 20px; color: var(--gold-pale);
       font-size: 8px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase;
     }
-    .visit-details address, .visit-details > div > p:not(.detail-label) {
-      min-height: 75px; margin: 0; color: var(--ink-muted); font-family: var(--serif);
+    /* The min-height lines the two links up across columns of unequal copy. */
+    .order-details address, .order-details > div > p:not(.detail-label) {
+      min-height: 58px; margin: 0; color: rgb(255 249 235 / 76%); font-family: var(--serif);
       font-size: 16px; font-style: normal; line-height: 1.5;
     }
     .detail-link {
-      display: inline-block; margin-top: 25px; padding-bottom: 8px;
-      border-bottom: 1px solid rgb(22 58 48 / 35%);
+      display: inline-block; margin-top: 20px; padding-bottom: 8px;
+      border-bottom: 1px solid rgb(213 181 115 / 55%); color: var(--gold-pale);
       font-size: 8px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
     }
-
-    /* ---------- order call to action ---------- */
-    .order-band { padding: 142px 7vw 135px; background: var(--green); color: var(--cream); text-align: center; }
-    .order-band .section-kicker { color: var(--gold-pale); }
-    .order-band > p:not(.section-kicker) {
-      max-width: 410px; margin: 28px auto 0; color: rgb(255 249 235 / 72%);
-      font-family: var(--serif); font-size: 17px;
-    }
-    .order-actions { display: flex; justify-content: center; align-items: center; gap: 32px; margin-top: 43px; }
 
     /* ---------- footer ---------- */
     footer {
@@ -428,7 +430,7 @@
       .menu-grid { grid-template-columns: repeat(2, 1fr); }
       .menus-head { flex-wrap: wrap; gap: 18px; }
       .menus-rule { display: none; }
-      .visit { grid-template-columns: 1fr; padding: 105px 8vw; }
+      .order-band { grid-template-columns: 1fr; gap: 56px; padding: 86px 7vw 92px; }
       footer { grid-template-columns: 1fr; text-align: center; }
       footer > img, footer > p { justify-self: center; }
     }
@@ -448,7 +450,7 @@
       .features > div:not(:last-child) { border-bottom: 1px solid rgb(22 58 48 / 14%); }
       .features > div { padding: 34px 26px; }
       .manifesto { padding: 86px 7vw; }
-      .manifesto h2, .visit h2, .order-band h2 { font-size: 48px; }
+      .manifesto h2, .order-band h2 { font-size: 48px; }
       .manifesto-copy { grid-template-columns: 1fr; gap: 25px; margin-top: 42px; }
       .menus { padding: 34px 6vw 40px; }
       .menu-grid { gap: 14px; }
@@ -457,8 +459,8 @@
       .menu-card-body p { font-size: 12px; }
       .menu-card-go { right: 13px; bottom: 15px; width: 28px; height: 28px; }
       .quote-band { padding: 95px 7vw 88px; }
-      .visit-details { grid-template-columns: 1fr; gap: 50px; }
-      .visit-details address, .visit-details > div > p:not(.detail-label) { min-height: 0; }
+      .order-details { grid-template-columns: 1fr; gap: 40px; }
+      .order-details address, .order-details > div > p:not(.detail-label) { min-height: 0; }
       .order-band { padding: 100px 7vw 95px; }
       .order-actions { align-items: center; flex-direction: column; gap: 18px; }
       .footer-links { flex-wrap: wrap; justify-content: center; }
@@ -604,12 +606,20 @@
     <p>That’s the plan, anyway.</p>
   </section>
 
-  <section class="visit" id="visit">
-    <div class="visit-heading">
-      <p class="section-kicker">Come and see us</p>
-      <h2>Your next meal’s<br />just down the road.</h2>
+  <section class="order-band" id="order">
+    <div class="order-copy">
+      <p class="section-kicker">Order online</p>
+      <h2>Good food,<br />ready when you are.</h2>
+      <p>Order ahead and pick a time that suits — we’ll bring it round, or have it waiting on Acomb Road.</p>
+      <div class="order-actions">
+        <a class="button button-gold" href="/order">Start your order</a>
+        <a class="text-link" href="#menus">See the menu <span aria-hidden="true">→</span></a>
+      </div>
     </div>
-    <div class="visit-details">
+
+    <!-- Carries id="visit" because the "Find us" nav link and the footer both
+         point at #visit, and the band that used to hold it has gone. -->
+    <div class="order-details" id="visit">
       <div>
         <p class="detail-label">Find us</p>
         <address>{{shopAddressLine1}}<br />{{shopCity}}</address>
@@ -625,16 +635,6 @@
         <p class="detail-label">Good to know</p>
         <p>Delivery and collection.<br />Walk-ins always welcome.</p>
       </div>
-    </div>
-  </section>
-
-  <section class="order-band" id="order">
-    <p class="section-kicker">Order online</p>
-    <h2>Good food,<br />ready when you are.</h2>
-    <p>Order ahead and pick a time that suits — we’ll bring it round, or have it waiting on Acomb Road.</p>
-    <div class="order-actions">
-      <a class="button button-gold" href="/order">Start your order</a>
-      <a class="text-link" href="#menus">See the menu <span aria-hidden="true">→</span></a>
     </div>
   </section>
 
