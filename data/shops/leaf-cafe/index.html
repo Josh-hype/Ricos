@@ -114,8 +114,13 @@
     .hero-bg img {
       display: block; width: 100%; height: 100%;
       /* Weighted right: the food and coffee live in that half of the frame and
-         must survive the crop, because the left half is under the wash anyway. */
-      object-fit: cover; object-position: 70% center;
+         must survive the crop, because the left half is under the wash anyway.
+         BOTTOM, not center: the box is wider than the photograph's own ratio, so
+         cover crops vertically — centred, it takes that off both ends and cuts
+         the near edge of the plate. Anchoring the bottom spends the whole crop
+         on the foliage at the top, which is under the wash and has nothing to
+         lose. */
+      object-fit: cover; object-position: 70% bottom;
     }
     /* Heavy green on the left to give the type a ground, thinning to almost
        nothing on the right so the plate and cup stay legible. The first
@@ -234,7 +239,7 @@
       margin: 0 0 25px; color: var(--gold-deep);
       font-size: 9px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase;
     }
-    .manifesto h2, .section-heading h2, .inside-copy h2, .visit h2, .order-band h2 {
+    .manifesto h2, .inside-copy h2, .visit h2, .order-band h2 {
       margin: 0; font-family: var(--serif);
       font-size: clamp(48px, 6vw, 92px); font-weight: 400;
       letter-spacing: -.052em; line-height: .96;
@@ -260,52 +265,57 @@
       font-size: 38vw; line-height: 1;
     }
 
-    /* ---------- menus ---------- */
-    .menus { padding: 128px 6vw 74px; background: var(--oatmeal); color: var(--ink); }
-    .section-heading {
-      display: grid; grid-template-columns: 1.35fr .65fr; gap: 8vw;
-      align-items: end; padding: 0 3.5vw 76px;
+    /* ---------- menus — the reference's dark band of four photo cards ------- */
+    .menus { padding: 100px 6vw 110px; background: var(--green); color: var(--cream); }
+    .menus-kicker {
+      margin: 0 0 16px; color: var(--gold-pale);
+      font-size: 9px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase;
     }
-    .section-heading > p {
-      max-width: 430px; margin: 0 0 8px; color: var(--ink-muted);
-      font-family: var(--serif); font-size: 18px; line-height: 1.55;
+    .menus-head { display: flex; align-items: center; gap: 28px; margin: 0 0 42px; }
+    .menus-head h2 {
+      margin: 0; font-family: var(--serif); font-weight: 400;
+      font-size: clamp(40px, 4.2vw, 70px); letter-spacing: -.04em; line-height: 1;
     }
-    .menu-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    .menus-rule { flex: 1; height: 1px; background: rgb(213 181 115 / 42%); }
+    .menus-more {
+      flex: none; padding-bottom: 6px;
+      border-bottom: 1px solid rgb(213 181 115 / 60%); color: var(--gold-pale);
+      font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
     }
+    .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
     .menu-card {
-      min-height: 500px; padding: 35px 3.5vw 38px;
-      border-right: 1px solid var(--rule);
-      transition: background .25s ease, color .25s ease;
+      position: relative; display: block; overflow: hidden;
+      aspect-ratio: 1 / 1.04; color: var(--cream);
+      /* Hairline so the cards read as cards while the placeholder panels are
+         nearly the same green as the band behind them. Unobtrusive once the
+         photographs land. */
+      border: 1px solid rgb(255 249 235 / 11%);
     }
-    .menu-card:last-child { border-right: 0; }
-    .menu-card:hover { background: var(--ink); color: var(--cream); }
-    .menu-meta, .menu-foot {
-      display: flex; justify-content: space-between; gap: 20px;
-      font-size: 8px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase;
+    .menu-card .photo-slot { position: absolute; inset: 0; transition: transform .45s ease; }
+    .menu-card:hover .photo-slot { transform: scale(1.05); }
+    /* Keeps the caption readable whatever the photograph underneath is doing. */
+    .menu-card::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(to top,
+        rgb(12 33 27 / 88%) 0%, rgb(12 33 27 / 28%) 44%, rgb(12 33 27 / 4%) 100%);
     }
-    .menu-meta span:first-child { color: var(--gold-deep); }
-    .menu-card h3 {
-      margin: 124px 0 24px; font-family: var(--serif);
-      font-size: clamp(48px, 4.6vw, 76px); font-weight: 400;
-      letter-spacing: -.045em; line-height: 1;
+    .menu-card-body { position: absolute; z-index: 1; left: 22px; right: 64px; bottom: 19px; }
+    .menu-card-body h3 {
+      margin: 0 0 5px;
+      font-size: 13px; font-weight: 750; letter-spacing: .13em; text-transform: uppercase;
     }
-    .menu-card > p {
-      max-width: 320px; margin: 0; color: var(--ink-faint);
-      font-family: var(--serif); font-size: 16px; line-height: 1.55;
+    .menu-card-body p {
+      margin: 0; color: rgb(255 249 235 / 78%);
+      font-family: var(--serif); font-size: 13px; font-style: italic;
     }
-    .menu-card:hover > p { color: rgb(255 249 235 / 72%); }
-    .menu-foot {
-      align-items: end; margin-top: 85px; padding-top: 20px;
-      border-top: 1px solid currentColor;
+    .menu-card-go {
+      position: absolute; z-index: 1; right: 18px; bottom: 19px;
+      display: grid; place-items: center; width: 32px; height: 32px;
+      border: 1px solid rgb(255 249 235 / 55%); border-radius: 50%; font-size: 12px;
+      transition: background .2s ease, border-color .2s ease, color .2s ease;
     }
-    .menu-foot > span { opacity: .7; }
-    .menu-foot a { color: var(--gold-deep); }
-    .menu-card:hover .menu-foot a { color: var(--gold-pale); }
-    .menu-note {
-      margin: 22px 0 0; color: #68756F;
-      font-size: 8px; letter-spacing: .11em; text-align: right; text-transform: uppercase;
+    .menu-card:hover .menu-card-go {
+      background: var(--gold); border-color: var(--gold); color: var(--green-dark);
     }
 
     /* ---------- inside ---------- */
@@ -445,12 +455,9 @@
       .features > div:nth-child(-n+2) { border-bottom: 1px solid rgb(22 58 48 / 14%); }
       .manifesto { padding: 100px 7vw; }
       .manifesto-copy { width: 100%; }
-      .section-heading { grid-template-columns: 1fr; padding: 0 0 55px; }
-      .menu-grid { grid-template-columns: 1fr; }
-      .menu-card { min-height: auto; border-right: 0; border-bottom: 1px solid var(--rule); }
-      .menu-card:last-child { border-bottom: 0; }
-      .menu-card h3 { margin-top: 70px; }
-      .menu-foot { margin-top: 65px; }
+      .menu-grid { grid-template-columns: repeat(2, 1fr); }
+      .menus-head { flex-wrap: wrap; gap: 18px; }
+      .menus-rule { display: none; }
       .inside { grid-template-columns: 1fr; }
       .inside-photo { min-height: 680px; }
       .inside-copy { padding: 95px 8vw; }
@@ -471,11 +478,14 @@
       .features > div:not(:last-child) { border-bottom: 1px solid rgb(22 58 48 / 14%); }
       .features > div { padding: 34px 26px; }
       .manifesto { padding: 86px 7vw; }
-      .manifesto h2, .section-heading h2, .inside-copy h2, .visit h2, .order-band h2 { font-size: 48px; }
+      .manifesto h2, .inside-copy h2, .visit h2, .order-band h2 { font-size: 48px; }
       .manifesto-copy { grid-template-columns: 1fr; gap: 25px; margin-top: 42px; }
-      .menus { padding: 88px 6vw 58px; }
-      .menu-card { padding: 28px 4vw 34px; }
-      .menu-card h3 { font-size: 52px; }
+      .menus { padding: 80px 6vw 84px; }
+      .menu-grid { gap: 14px; }
+      .menu-card-body { left: 16px; right: 54px; bottom: 15px; }
+      .menu-card-body h3 { font-size: 11px; }
+      .menu-card-body p { font-size: 12px; }
+      .menu-card-go { right: 13px; bottom: 15px; width: 28px; height: 28px; }
       .inside-photo { min-height: 520px; }
       .inside-copy { padding: 82px 7vw; }
       .quote-band { padding: 95px 7vw 88px; }
@@ -585,47 +595,38 @@
   </section>
 
   <section class="menus" id="menus">
-    <div class="section-heading">
-      <div>
-        <p class="section-kicker">One table · three moods</p>
-        <h2>Come as you are.<br />Stay as long as you like.</h2>
-      </div>
-      <p>
-        The day changes, the welcome doesn’t. Drop in for something quick
-        or settle in and make a meal of it.
-      </p>
+    <p class="menus-kicker">Explore</p>
+    <div class="menus-head">
+      <h2>Our Menus</h2>
+      <span class="menus-rule" aria-hidden="true"></span>
+      <a class="menus-more" href="/order">View full menus <span aria-hidden="true">→</span></a>
     </div>
 
+    <!-- The four photographs are still to come; each card's .photo-slot is the
+         same placeholder panel the "inside" band uses. Dropping the artwork in
+         is a swap of that div for a <picture>, with no layout to re-tune. -->
     <div class="menu-grid">
-      <article class="menu-card">
-        <div class="menu-meta"><span>01</span><span>Morning</span></div>
-        <h3>Breakfast</h3>
-        <p>Proper coffee, generous breakfasts and a reason to linger over the paper.</p>
-        <div class="menu-foot">
-          <span>From opening</span>
-          <a href="/order" aria-label="Order from the breakfast menu">Order now <span aria-hidden="true">↗</span></a>
-        </div>
-      </article>
-      <article class="menu-card">
-        <div class="menu-meta"><span>02</span><span>Midday</span></div>
-        <h3>Lunch</h3>
-        <p>Familiar favourites, freshly prepared and served without the fuss.</p>
-        <div class="menu-foot">
-          <span>Into the afternoon</span>
-          <a href="/order" aria-label="Order from the lunch menu">Order now <span aria-hidden="true">↗</span></a>
-        </div>
-      </article>
-      <article class="menu-card">
-        <div class="menu-meta"><span>03</span><span>Evening</span></div>
-        <h3>Bistro</h3>
-        <p>Relaxed plates, something good to drink and nowhere else you need to be.</p>
-        <div class="menu-foot">
-          <span>Selected evenings</span>
-          <a href="/order" aria-label="Order from the bistro menu">Order now <span aria-hidden="true">↗</span></a>
-        </div>
-      </article>
+      <a class="menu-card" href="/order" aria-label="Order from the breakfast menu">
+        <div class="photo-slot"></div>
+        <div class="menu-card-body"><h3>Breakfast</h3><p>A brighter start</p></div>
+        <span class="menu-card-go" aria-hidden="true">→</span>
+      </a>
+      <a class="menu-card" href="/order" aria-label="Order from the lunch menu">
+        <div class="photo-slot"></div>
+        <div class="menu-card-body"><h3>Lunch</h3><p>Fresh &amp; satisfying</p></div>
+        <span class="menu-card-go" aria-hidden="true">→</span>
+      </a>
+      <a class="menu-card" href="/order" aria-label="Order from the evening menu">
+        <div class="photo-slot"></div>
+        <div class="menu-card-body"><h3>Evening</h3><p>Relaxed dining</p></div>
+        <span class="menu-card-go" aria-hidden="true">→</span>
+      </a>
+      <a class="menu-card" href="/order" aria-label="Order drinks">
+        <div class="photo-slot"></div>
+        <div class="menu-card-body"><h3>Drinks</h3><p>Something for every mood</p></div>
+        <span class="menu-card-go" aria-hidden="true">→</span>
+      </a>
     </div>
-    <p class="menu-note">Made fresh to order · Delivery &amp; collection from {{shopAddressLine1}}</p>
   </section>
 
   <section class="inside" id="experience">
