@@ -15,7 +15,9 @@
        page is intact even if Google Fonts never answers. -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Dancing Script carries the "Good food, brighter days" line over the hero
+       photograph. One request, same stylesheet as Geist. -->
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Dancing+Script:wght@500;600&display=swap" rel="stylesheet" />
 
   <style>
     :root {
@@ -41,8 +43,9 @@
       --rule:       rgb(22 58 48 / 22%);   /* hairlines on light             */
       --rule-light: rgb(255 249 235 / 14%);/* hairlines on dark              */
 
-      --serif: 'Iowan Old Style', Baskerville, Georgia, 'Times New Roman', serif;
-      --sans:  Geist, Arial, Helvetica, sans-serif;
+      --serif:  'Iowan Old Style', Baskerville, Georgia, 'Times New Roman', serif;
+      --sans:   Geist, Arial, Helvetica, sans-serif;
+      --script: 'Dancing Script', 'Snell Roundhand', cursive;
     }
 
     * { box-sizing: border-box; }
@@ -56,7 +59,8 @@
     }
     a { color: inherit; text-decoration: none; }
     img { max-width: 100%; }
-    .site-shell { min-height: 100vh; background: var(--green); }
+    /* Positioned so .nav-wrap can be laid over the hero photograph. */
+    .site-shell { position: relative; min-height: 100vh; background: var(--green); }
 
     /* Visible only to screen readers, and to a keyboard user who tabs to it. */
     .skip-link {
@@ -66,113 +70,160 @@
     }
     .skip-link:focus { left: 0; }
 
-    /* ---------- announcement + navigation ---------- */
-    .announcement {
-      display: flex; justify-content: space-between; align-items: center;
-      min-height: 36px; margin: 0; padding: 0 4.5vw;
-      border-bottom: 1px solid var(--rule-light);
-      color: rgb(255 249 235 / 72%);
-      font-size: 9px; letter-spacing: .18em; text-transform: uppercase;
-    }
-    .announcement a { color: var(--gold-pale); }
-
+    /* ---------- navigation ----------
+       Laid OVER the hero photograph rather than sitting in a band above it, so
+       the picture runs to the very top of the page. .site-shell is the
+       positioned ancestor; .hero's top padding keeps the copy clear of this. */
     .nav-wrap {
-      display: grid; grid-template-columns: 210px 1fr 210px; align-items: center;
-      min-height: 106px; padding: 0 4.5vw;
-      border-bottom: 1px solid var(--rule-light);
+      position: absolute; z-index: 3; top: 0; left: 0; right: 0;
+      display: grid; grid-template-columns: 210px 1fr auto; align-items: center;
+      min-height: 112px; padding: 0 4.5vw;
       color: var(--cream);
     }
-    .brand img { display: block; width: 178px; height: auto; }
+    .brand img { display: block; width: 190px; height: auto; }
     .desktop-nav {
-      display: flex; justify-content: center; gap: clamp(24px, 3.5vw, 58px);
+      display: flex; justify-content: center; gap: clamp(24px, 3.2vw, 52px);
       font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
     }
     .desktop-nav a { transition: color .2s ease; }
     .desktop-nav a:hover { color: var(--gold-pale); }
     .order-nav {
-      justify-self: end; display: inline-flex; align-items: center; gap: 14px;
-      padding: 13px 0 9px; border-bottom: 1px solid var(--gold-pale);
-      color: var(--gold-pale);
-      font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+      justify-self: end; display: inline-flex; align-items: center; gap: 11px;
+      min-height: 46px; padding: 0 22px; border-radius: 3px;
+      background: var(--gold); color: var(--green-dark);
+      font-size: 10px; font-weight: 750; letter-spacing: .14em; text-transform: uppercase;
+      transition: background .2s ease;
     }
+    .order-nav:hover { background: var(--gold-pale); }
+    .order-nav svg { width: 15px; height: 15px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.5; }
 
-    /* ---------- hero ---------- */
-    .hero { display: grid; grid-template-columns: 46% 54%; min-height: calc(100svh - 142px); }
-    .hero-copy {
+    /* ---------- hero — one full-bleed photograph, nav sitting on it ----------
+       The nav is lifted out of flow and laid over the picture (see .nav-wrap),
+       so the photo starts at the very top of the page. .hero carries the nav's
+       height as top padding to keep the copy clear of it. */
+    .hero {
+      position: relative; isolation: isolate;
       display: flex; flex-direction: column; justify-content: center;
-      min-width: 0; padding: 8vh 5vw 6vh 8vw; color: var(--cream);
+      min-height: 100svh; padding: 150px 8vw 120px; overflow: hidden;
+      background: var(--green-dark); color: var(--cream);
     }
+    .hero-bg { position: absolute; inset: 0; z-index: -2; display: block; }
+    .hero-bg img {
+      display: block; width: 100%; height: 100%;
+      /* Weighted right: the food and coffee live in that half of the frame and
+         must survive the crop, because the left half is under the wash anyway. */
+      object-fit: cover; object-position: 70% center;
+    }
+    /* Heavy green on the left to give the type a ground, thinning to almost
+       nothing on the right so the plate and cup stay legible. The first
+       gradient is just enough top shade to hold the nav against the sky. */
+    .hero-wash {
+      position: absolute; inset: 0; z-index: -1;
+      background:
+        linear-gradient(to bottom, rgb(12 33 27 / 55%) 0%, rgb(12 33 27 / 0%) 26%),
+        linear-gradient(to right,
+          rgb(16 45 37 / 90%) 0%,  rgb(16 45 37 / 84%) 24%,
+          rgb(16 45 37 / 60%) 44%, rgb(16 45 37 / 20%) 66%,
+          rgb(16 45 37 / 3%)  100%);
+    }
+    .hero-inner { max-width: 600px; }
     .eyebrow {
-      margin: 0 0 24px; color: var(--gold-pale);
+      margin: 0 0 22px; color: var(--gold-pale);
       font-size: 10px; font-weight: 650; letter-spacing: .24em; text-transform: uppercase;
     }
     h1 {
       margin: 0; font-family: var(--serif);
-      font-size: clamp(57px, 5.6vw, 96px); font-weight: 400;
-      letter-spacing: -.055em; line-height: .89;
+      font-size: clamp(50px, 5.1vw, 84px); font-weight: 400;
+      letter-spacing: -.05em; line-height: .95;
     }
+    /* "Great food · Good company · All day" — the gold strapline under the H1. */
+    .hero-strap {
+      display: flex; flex-wrap: wrap; gap: 14px; margin: 26px 0 0;
+      color: var(--gold-pale);
+      font-size: 10px; font-weight: 650; letter-spacing: .2em; text-transform: uppercase;
+    }
+    .hero-strap i { font-style: normal; opacity: .6; }
     .hero-intro {
-      max-width: 500px; margin: 31px 0 0;
-      color: rgb(255 249 235 / 78%); font-family: var(--serif);
-      font-size: clamp(17px, 1.25vw, 21px); line-height: 1.5;
+      max-width: 470px; margin: 22px 0 0;
+      color: rgb(255 249 235 / 84%); font-family: var(--serif);
+      font-size: clamp(16px, 1.15vw, 19px); line-height: 1.6;
     }
-    .hero-actions { display: flex; align-items: center; gap: 28px; margin-top: 34px; }
+    .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 34px; }
     .button {
-      display: inline-flex; align-items: center; justify-content: center;
-      min-height: 50px; padding: 0 27px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+      min-height: 52px; padding: 0 28px;
       font-size: 10px; font-weight: 750; letter-spacing: .15em; text-transform: uppercase;
+      transition: background .2s ease, color .2s ease;
     }
     .button-gold { background: var(--gold); color: var(--green-dark); }
+    .button-gold:hover { background: var(--gold-pale); }
+    .button-ghost { border: 1px solid rgb(255 249 235 / 55%); color: var(--cream); }
+    .button-ghost:hover { background: rgb(255 249 235 / 12%); }
     .text-link {
       display: inline-flex; gap: 13px; padding: 10px 0;
       border-bottom: 1px solid rgb(255 249 235 / 48%);
       font-size: 10px; font-weight: 650; letter-spacing: .13em; text-transform: uppercase;
     }
-    .open-note {
-      margin: auto 0 0; padding-top: 44px; color: rgb(255 249 235 / 66%);
-      font-size: 9px; letter-spacing: .16em; text-transform: uppercase;
-    }
-    .open-note span { margin-right: 16px; color: var(--gold-pale); }
 
-    .hero-media { position: relative; overflow: hidden; background: #D8C9AD; }
-    /* The caption strip sits in the bottom 92px, so the picture box is the
-       band minus that. The <img> then fills its box exactly — give the offset
-       to both and it gets subtracted twice, leaving a gap under the photo. */
-    .hero-media > picture { display: block; width: 100%; height: calc(100% - 92px); }
-    .hero-media > picture > img {
-      display: block; width: 100%; height: 100%;
-      object-fit: cover; object-position: center 43%;
-      filter: saturate(.82) contrast(.98) brightness(.96);
+    /* Bottom-left mark + tagline, and the script line top-right. Both are
+       decoration: they sit outside .hero-inner so they pin to the band, not
+       to the copy column. */
+    .hero-foot {
+      position: absolute; left: 8vw; bottom: 54px;
+      display: flex; align-items: center; gap: 16px;
+      color: rgb(255 249 235 / 74%);
+      font-size: 9px; font-weight: 650; letter-spacing: .19em; line-height: 1.9;
+      text-transform: uppercase;
+    }
+    .hero-foot svg { width: 42px; height: 42px; flex: none; stroke: var(--gold); fill: none; stroke-width: 1.1; opacity: .85; }
+    .hero-foot p { margin: 0; }
+    .hero-script {
+      position: absolute; right: 6vw; top: 21vh;
+      display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
+      color: rgb(255 249 235 / 90%);
+      font-family: var(--script); font-size: clamp(26px, 2.5vw, 40px); line-height: 1.02;
+      text-shadow: 0 2px 18px rgb(12 33 27 / 45%);
+      transform: rotate(-4deg); pointer-events: none;
+    }
+    /* Each line steps in a little, the way the reference cascades them. */
+    .hero-script span:nth-child(2) { margin-right: -14px; }
+    .hero-script span:nth-child(3) { margin-right: -30px; }
+    .hero-script span:nth-child(4) { margin-right: -44px; }
+    .hero-script svg { width: 34px; height: 34px; margin: 4px -46px 0 0; stroke: var(--gold-pale); fill: none; stroke-width: 1.1; }
+
+    /* ---------- feature strip ---------- */
+    .features {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      background: var(--ivory); color: var(--green);
+    }
+    .features > div {
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+      padding: 42px 26px; text-align: center;
+    }
+    .features > div + div { border-left: 1px solid rgb(22 58 48 / 14%); }
+    .features svg {
+      width: 34px; height: 34px;
+      stroke: var(--green); fill: none; stroke-width: 1.3;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+    .features h3 {
+      margin: 0; font-size: 10px; font-weight: 700;
+      letter-spacing: .17em; text-transform: uppercase;
+    }
+    .features p {
+      margin: 0; color: var(--ink-muted);
+      font-family: var(--serif); font-size: 13px; font-style: italic;
     }
 
-    /* ---------- photo slots — artwork being reshot ----------
-       Both photographs have been pulled while new ones are made. These panels
-       hold the EXACT boxes the <picture> elements held, so nothing below them
-       shifts and restoring the artwork is a markup swap only. The picture/img
-       rules above and under .inside-photo are deliberately KEPT for that. */
+    /* ---------- photo slot — the "inside" shot is still being reshot ----------
+       Holds the EXACT box its <picture> held, so nothing below it shifts and
+       restoring the artwork is a markup swap. The .inside-photo picture/img
+       rules are deliberately KEPT for that. */
     .photo-slot {
       display: block; width: 100%; height: 100%;
       background:
         repeating-linear-gradient(-45deg, rgb(255 249 235 / 5%) 0 1px, transparent 1px 10px),
-        /* Starts at --green-dark, NOT --green: the hero's copy column beside it
-           is --green, and matching it makes the seam between them disappear. */
         linear-gradient(155deg, var(--green-dark) 0%, var(--green-deep) 100%);
-    }
-    /* Same 92px caption-strip offset the <picture> carried. */
-    .hero-media > .photo-slot { height: calc(100% - 92px); }
-    .photo-tag {
-      position: absolute; z-index: 1; top: 24px; right: 22px; padding: 9px 12px;
-      background: rgb(255 249 235 / 88%); color: var(--green);
-      font-size: 8px; font-weight: 650; letter-spacing: .14em; text-transform: uppercase;
-    }
-    .hero-caption {
-      display: grid; grid-template-columns: 46px 1fr; align-items: center;
-      height: 92px; padding: 0 34px; color: var(--green);
-    }
-    .hero-caption span { font-family: var(--serif); font-size: 24px; }
-    .hero-caption p {
-      max-width: 475px; margin: 0; font-family: var(--serif);
-      font-size: 14px; font-style: italic; line-height: 1.35;
     }
 
     /* ---------- shared section furniture ---------- */
@@ -367,14 +418,28 @@
     }
 
     @media (max-width: 920px) {
-      .announcement span { display: none; }
-      .announcement { justify-content: center; }
       .nav-wrap { grid-template-columns: 1fr auto; min-height: 90px; }
       .desktop-nav { display: none; }
       .brand img { width: 150px; }
-      .hero { grid-template-columns: 1fr; }
-      .hero-copy { min-height: 610px; padding: 80px 7vw 48px; }
-      .hero-media { min-height: 720px; }
+      .hero { padding: 132px 7vw 150px; }
+      /* The desktop wash runs LEFT to right, which only works while the copy
+         sits in the left half. Once it goes full width the transparent end
+         lands under the text and the buttons sit on the bright food, so the
+         wash turns vertical and covers the whole frame. */
+      .hero-wash {
+        background: linear-gradient(to bottom,
+          rgb(12 33 27 / 76%) 0%, rgb(16 45 37 / 82%) 52%, rgb(12 33 27 / 90%) 100%);
+      }
+      /* The script line has nowhere to go once the copy is full width — it
+         would land on top of the headline. */
+      .hero-script { display: none; }
+      .hero-foot { left: 7vw; bottom: 46px; }
+      .features { grid-template-columns: repeat(2, 1fr); }
+      /* Re-draw the dividers as a 2x2 grid: every cell has a left border
+         except the first in each row, and the top row gets a bottom border. */
+      .features > div + div { border-left: 0; }
+      .features > div:nth-child(even) { border-left: 1px solid rgb(22 58 48 / 14%); }
+      .features > div:nth-child(-n+2) { border-bottom: 1px solid rgb(22 58 48 / 14%); }
       .manifesto { padding: 100px 7vw; }
       .manifesto-copy { width: 100%; }
       .section-heading { grid-template-columns: 1fr; padding: 0 0 55px; }
@@ -392,13 +457,16 @@
     }
 
     @media (max-width: 620px) {
-      .order-nav { font-size: 8px; gap: 7px; }
-      .hero-copy { min-height: 570px; }
-      h1 { font-size: clamp(51px, 15vw, 70px); }
-      .hero-actions { align-items: flex-start; flex-direction: column; gap: 15px; }
-      .hero-media { min-height: 660px; }
-      .hero-caption { height: 110px; padding: 0 22px; }
-      .hero-media > picture { height: calc(100% - 110px); }
+      .order-nav { min-height: 40px; padding: 0 14px; font-size: 8px; gap: 7px; }
+      .order-nav svg { width: 13px; height: 13px; }
+      .hero { padding: 120px 6vw 138px; }
+      h1 { font-size: clamp(44px, 12.5vw, 62px); }
+      .hero-strap { gap: 10px; font-size: 9px; letter-spacing: .16em; }
+      .hero-actions { align-items: stretch; flex-direction: column; gap: 12px; }
+      .features { grid-template-columns: 1fr; }
+      .features > div:nth-child(even) { border-left: 0; }
+      .features > div:not(:last-child) { border-bottom: 1px solid rgb(22 58 48 / 14%); }
+      .features > div { padding: 34px 26px; }
       .manifesto { padding: 86px 7vw; }
       .manifesto h2, .section-heading h2, .inside-copy h2, .visit h2, .order-band h2 { font-size: 48px; }
       .manifesto-copy { grid-template-columns: 1fr; gap: 25px; margin-top: 42px; }
@@ -421,11 +489,6 @@
 <a class="skip-link" href="#home">Skip to content</a>
 
 <main class="site-shell">
-  <p class="announcement">
-    <span>Where every cup feels like home · Delivery &amp; collection</span>
-    <a href="#visit">{{shopAddressLine1}} · {{shopCity}}</a>
-  </p>
-
   <header class="nav-wrap">
     <a class="brand" href="#home" aria-label="{{shopName}} home">
       <img src="/logo.png" alt="{{shopName}}" width="1000" height="333" />
@@ -436,31 +499,69 @@
       <a href="#hours">Opening hours</a>
       <a href="#visit">Find us</a>
     </nav>
-    <a class="order-nav" href="/order">Order online <span aria-hidden="true">↗</span></a>
+    <a class="order-nav" href="/order">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4.5 7.5h15l-1.2 12.2a1.6 1.6 0 0 1-1.6 1.4H7.3a1.6 1.6 0 0 1-1.6-1.4Z" />
+        <path d="M8.6 7.5V6a3.4 3.4 0 0 1 6.8 0v1.5" />
+      </svg>
+      Order online
+    </a>
   </header>
 
   <section class="hero" id="home">
-    <div class="hero-copy">
+    <picture class="hero-bg">
+      <source srcset="/assets/hero.webp" type="image/webp" />
+      <img src="/assets/hero.jpg" width="1672" height="941" alt="" />
+    </picture>
+    <div class="hero-wash"></div>
+
+    <p class="hero-script" aria-hidden="true">
+      <span>Good</span><span>Food</span><span>Brighter</span><span>Days</span>
+      <svg viewBox="0 0 24 24"><path d="M21 3C11 3 4 8 4 15a5 5 0 0 0 5 5c7 0 12-7 12-17Z" /><path d="M4 21 13 11" /></svg>
+    </p>
+
+    <div class="hero-inner">
       <p class="eyebrow">Café &amp; bistro · Acomb</p>
       <h1>Local flavour.<br />Proper welcome.</h1>
+      <p class="hero-strap">
+        Great food <i aria-hidden="true">•</i> Good company <i aria-hidden="true">•</i> All day
+      </p>
       <p class="hero-intro">
-        Breakfasts worth getting up for, relaxed lunches and comforting
-        evening plates—delivered to your door, or ready to collect on Acomb Road.
+        From fresh breakfasts to relaxed lunches and comforting evening plates —
+        all made with care, served with a smile, and always locally inspired.
       </p>
       <div class="hero-actions">
-        <a class="button button-gold" href="/order">Order online</a>
-        <a class="text-link" href="#menus">See what’s cooking <span aria-hidden="true">→</span></a>
+        <a class="button button-gold" href="/order">Order online <span aria-hidden="true">→</span></a>
+        <a class="button button-ghost" href="#menus">View our menus</a>
       </div>
-      <a class="open-note" href="#hours"><span>Planning ahead?</span> Check today’s hours</a>
     </div>
 
-    <div class="hero-media">
-      <span class="photo-tag">Inside {{shopShortName}} · Acomb Road</span>
-      <div class="photo-slot"></div>
-      <div class="hero-caption">
-        <span aria-hidden="true">01</span>
-        <p>Nothing overdone. Just good food, warm lights and a table with your name on it.</p>
-      </div>
+    <div class="hero-foot">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3C11 3 4 8 4 15a5 5 0 0 0 5 5c7 0 12-7 12-17Z" /><path d="M4 21 13 11" /></svg>
+      <p>Where every cup<br />feels like home</p>
+    </div>
+  </section>
+
+  <section class="features" aria-label="What {{shopShortName}} is about">
+    <div>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3C11 3 4 8 4 15a5 5 0 0 0 5 5c7 0 12-7 12-17Z" /><path d="M4 21 13 11" /></svg>
+      <h3>Fresh ingredients</h3>
+      <p>Locally sourced, always</p>
+    </div>
+    <div>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h13v5.5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5Z" /><path d="M17 10.5h1.6a2.4 2.4 0 0 1 0 4.8H17" /><path d="M8 5.6c0-1.1.9-1.5.9-2.6M12.2 5.6c0-1.1.9-1.5.9-2.6" /></svg>
+      <h3>Speciality coffee</h3>
+      <p>Brewed with care</p>
+    </div>
+    <div>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9.2" cy="8" r="3" /><circle cx="17" cy="9.6" r="2.2" /><path d="M3 19.5c0-3.4 2.8-5.2 6.2-5.2s6.2 1.8 6.2 5.2" /><path d="M16.4 14.4c2.9.2 4.6 1.9 4.6 5.1" /></svg>
+      <h3>A warm welcome</h3>
+      <p>For everyone</p>
+    </div>
+    <div>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.5V7" /><path d="M12 13c0-3 2.1-5.1 5.2-5.1C17.2 10.9 15.1 13 12 13Z" /><path d="M12 17c0-3-2.1-5.1-5.2-5.1C6.8 14.9 8.9 17 12 17Z" /><path d="M12 8.2c0-2.6 1.7-4.6 4.2-4.6 0 2.6-1.7 4.6-4.2 4.6Z" /></svg>
+      <h3>All day dining</h3>
+      <p>Breakfast, lunch &amp; more</p>
     </div>
   </section>
 

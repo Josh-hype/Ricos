@@ -98,7 +98,21 @@ def main():
     icon.save(p, optimize=True)
     report(p, icon)
 
-    # ---- 3. og-image.jpg : the share card ----------------------------------
+    # ---- 3. hero.jpg / hero.webp : the landing page background -------------
+    # The owner's file is a ~1.9MB PNG. That is fine as a master but far too
+    # heavy to ship as a page background, so it stays in _source/ (never copied
+    # to public/) and the two formats the page actually serves are derived here
+    # — webp first via <source>, jpg as the fallback.
+    hero_src = os.path.join(SHOP, '_source', 'hero-background.png')
+    if os.path.exists(hero_src):
+        shot = Image.open(hero_src).convert('RGB')
+        for name, kw in (('hero.jpg', dict(quality=84, progressive=True)),
+                         ('hero.webp', dict(quality=80, method=6))):
+            p = os.path.join(SHOP, 'assets', name)
+            shot.save(p, optimize=True, **kw)
+            report(p, shot)
+
+    # ---- 4. og-image.jpg : the share card ----------------------------------
     # Rebuilt because the handoff's card carried the OLD wordmark (no "The").
     OW, OH = 1200, 630
     hero = os.path.join(SHOP, 'assets', 'hero.jpg')
