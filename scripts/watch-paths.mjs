@@ -34,13 +34,20 @@ const shops = readdirSync(shopsDir)
    so a change to them cannot alter a single byte of any shop's built site.
    Verified by grep — the only mentions of tests/ and docs/ in build-shop.js are
    inside comments. app/ is the till, which deploys over the air via GitHub
-   Actions, not through Pages. */
+   Actions, not through Pages. print/ is print artwork (Big Bites' A3 trifold and
+   its render scripts) and tools/ is design tooling; both were already excluded by
+   hand on the food-station project, which is how they came to light.
+
+   NOT excludable, however tempting: scripts/* (build-shop.js IS the build) and
+   public/* (gitignored except _headers and _redirects, which are served as-is). */
 const NEVER_BUILT = [
   'data/shops/_template/*',
   'tests/*',
   'test/*',
   'docs/*',
   'app/*',
+  'print/*',
+  'tools/*',
   '.github/*',
   '*.md',
 ];
