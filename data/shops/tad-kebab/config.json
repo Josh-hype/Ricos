@@ -33,6 +33,7 @@
     "collection": {
       "enabled": true
     },
+    "_comment_delivery": "⚠️ NOT CONFIGURED — THESE ARE STILL THE _template SCAFFOLD VALUES. allowedOutcodes is [\"XX1\"], which is not a real outcode, so EVERY delivery order is refused: a customer in Tadcaster is told the shop does not deliver to them, with nothing in any log to say why. The shop is pre-launch so nobody has hit it yet, but this MUST be set before prelaunch comes out. Needed from the owner: the areas actually delivered to (LS24 is Tadcaster; the round may also reach into YO23/YO26 toward York), the fee per area, and the minimum order. If they price by distance rather than postcode, switch mode to \"radius\" with bands instead — see data/shops/_template/config.json.",
     "delivery": {
       "enabled": true,
       "_comment_mode": "Pick the delivery pricing model. 'outcode' = charge by postcode area (fill in allowedOutcodes + feeByOutcode below; this is Rico's model). 'radius' = charge by straight-line distance from the shop in bands (delete the outcode fields, add a radius block — see _comment_radius; this is Food Station's model). 'zones' = charge by hand-drawn map polygons, each with its own fee — use this when the shop already runs an irregular delivery map that rings and postcode areas cannot express; see _comment_zones. Distance and polygon lookups both geocode via postcodes.io (free, no key). See docs/ADDING_A_SHOP.md.",
