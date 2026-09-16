@@ -76,7 +76,7 @@
        positioned ancestor; .hero's top padding keeps the copy clear of this. */
     .nav-wrap {
       position: absolute; z-index: 3; top: 0; left: 0; right: 0;
-      display: grid; grid-template-columns: 260px 1fr auto; align-items: center;
+      display: grid; grid-template-columns: 260px 1fr auto auto; align-items: center;
       /* Left padding matches .hero's 8vw so the wordmark starts on the same
          vertical as the headline; the right stays at 4.5vw to keep the Order
          button near the corner, as the reference has it. */
@@ -99,6 +99,21 @@
     }
     .order-nav:hover { background: var(--gold-pale); }
     .order-nav svg { width: 15px; height: 15px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.5; }
+
+    /* Hamburger. Hidden above 920px, where .desktop-nav is a plain row; below
+       it the nav becomes a panel this button opens. */
+    .nav-toggle {
+      display: none; grid-auto-rows: 2px; align-content: center; justify-items: center; gap: 5px;
+      width: 44px; height: 44px; padding: 0; border: 0;
+      background: none; color: var(--cream); cursor: pointer;
+    }
+    .nav-toggle span {
+      display: block; width: 26px; height: 2px; background: currentColor;
+      transition: transform .25s ease, opacity .15s ease;
+    }
+    .nav-wrap[data-open] .nav-toggle span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-wrap[data-open] .nav-toggle span:nth-child(2) { opacity: 0; }
+    .nav-wrap[data-open] .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
     /* ---------- hero — one full-bleed photograph, nav sitting on it ----------
        The nav is lifted out of flow and laid over the picture (see .nav-wrap),
@@ -252,7 +267,11 @@
     }
 
     /* ---------- menus — the reference's dark band of four photo cards ------- */
-    .menus { padding: 40px 6vw 48px; background: var(--green); color: var(--cream); }
+    .menus {
+      display: grid; grid-template-columns: 1fr auto; gap: 0 28px; align-items: center;
+      padding: 40px 6vw 48px; background: var(--green); color: var(--cream);
+    }
+    .menus-kicker { display: none; }   /* phone only — see the 920px block */
     .menus-head { display: flex; align-items: center; gap: 28px; margin: 0 0 30px; }
     .menus-head h2 {
       margin: 0; font-family: var(--serif); font-weight: 400;
@@ -260,11 +279,12 @@
     }
     .menus-rule { flex: 1; height: 1px; background: rgb(213 181 115 / 42%); }
     .menus-more {
-      flex: none; padding-bottom: 6px;
+      grid-column: 2; grid-row: 1; justify-self: end; margin-bottom: 30px;
+      padding-bottom: 6px;
       border-bottom: 1px solid rgb(213 181 115 / 60%); color: var(--gold-pale);
       font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
     }
-    .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    .menu-grid { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
     .menu-card {
       position: relative; display: block; overflow: hidden;
       aspect-ratio: 1 / 1.04; color: var(--cream);
@@ -392,33 +412,83 @@
     }
 
     @media (max-width: 920px) {
-      .nav-wrap { grid-template-columns: 1fr auto; min-height: 90px; }
-      .desktop-nav { display: none; }
+      /* ---- header: logo | order | hamburger, links in a drop panel -------- */
+      .nav-wrap {
+        grid-template-columns: 1fr auto auto; gap: 14px;
+        min-height: 88px; padding: 0 6vw;
+      }
       .brand img { width: 150px; }
-      .hero { padding: 132px 7vw 178px; }
+      .nav-toggle { display: grid; }
+      .desktop-nav {
+        position: absolute; top: 100%; left: 0; right: 0;
+        display: none; flex-direction: column; gap: 0;
+        background: var(--green-dark);
+        border-top: 1px solid var(--rule-light);
+        box-shadow: 0 18px 44px rgb(12 33 27 / 42%);
+      }
+      .nav-wrap[data-open] .desktop-nav { display: flex; }
+      .desktop-nav a {
+        padding: 18px 6vw; border-bottom: 1px solid var(--rule-light);
+        font-size: 11px; letter-spacing: .18em;
+      }
+
+      /* ---- hero ----------------------------------------------------------- */
+      /* The deep bottom padding is load-bearing: it opens a band of photograph
+         BELOW the copy for the plate to sit in. Without it the food ends up
+         behind the tagline, where 55% of the area measured under 4.5:1. */
+      .hero { padding: 118px 7vw 250px; }
       h1 { font-size: clamp(52px, 8.4vw, 86px); }
       .hero-intro { font-size: 21px; max-width: 560px; }
-      /* The desktop wash runs LEFT to right, which only works while the copy
-         sits in the left half. Once it goes full width the transparent end
-         lands under the text and the buttons sit on the bright food, so the
-         wash turns vertical and covers the whole frame. */
+      /* Vertical, and it CLEARS towards the bottom. The plate is the point of
+         the photograph, and on a phone it sits under the copy rather than
+         beside it, so the wash has to let go before it reaches the food. */
+      /* Holds ~84% down to 74% — the tagline sits at about 69% and the type
+         is 9px, so it needs the full 4.5:1 — then lets go hard so the plate in
+         the bottom quarter reads at nearly full strength. */
       .hero-wash {
         background: linear-gradient(to bottom,
-          rgb(12 33 27 / 76%) 0%, rgb(16 45 37 / 82%) 52%, rgb(12 33 27 / 90%) 100%);
+          rgb(12 33 27 / 88%) 0%,  rgb(16 45 37 / 86%) 46%,
+          rgb(16 45 37 / 84%) 74%, rgb(16 45 37 / 10%) 100%);
       }
-      /* The script line has nowhere to go once the copy is full width — it
-         would land on top of the headline. */
-      .hero-script { display: none; }
-      .hero-foot { left: 7vw; bottom: 46px; }
-      .features { grid-template-columns: repeat(2, 1fr); }
-      /* Re-draw the dividers as a 2x2 grid: every cell has a left border
-         except the first in each row, and the top row gets a bottom border. */
-      .features > div + div { border-left: 0; }
-      .features > div:nth-child(even) { border-left: 1px solid rgb(22 58 48 / 14%); }
-      .features > div:nth-child(-n+2) { border-bottom: 1px solid rgb(22 58 48 / 14%); }
-      .menu-grid { grid-template-columns: repeat(2, 1fr); }
-      .menus-head { flex-wrap: wrap; gap: 18px; }
-      .menus-rule { display: none; }
+      /* Belt and braces for the smallest type on the photograph. */
+      .hero-foot p { text-shadow: 0 1px 12px rgb(12 33 27 / 92%); }
+      /* Kept here now, where it used to be hidden: the copy column is held
+         back to 72% precisely so the script has somewhere to live beside it.
+         The cascading negative margins are zeroed — they hang the lines off to
+         the right, which .hero's overflow:hidden then clips at this width. */
+      .hero-script { display: flex; right: 5vw; top: 13vh; font-size: clamp(21px, 5.6vw, 34px); }
+      .hero-script span:nth-child(2),
+      .hero-script span:nth-child(3),
+      .hero-script span:nth-child(4) { margin-right: 0; }
+      .hero-script svg { margin: 4px 0 0; }
+      .hero-inner { max-width: 72%; }
+      /* Back into the flow. Absolutely positioned it sat under the buttons,
+         which grow down the page once they stack. */
+      .hero-foot { position: static; left: auto; bottom: auto; margin: 34px 0 0; }
+
+      /* ---- features stay FOUR across, as the phone design has them -------- */
+      .features { grid-template-columns: repeat(4, 1fr); }
+      .features > div { padding: 22px 10px 20px; gap: 7px; }
+      .features svg { width: 22px; height: 22px; }
+      .features h3 { font-size: 9px; letter-spacing: .1em; }
+      .features p { font-size: 11px; }
+
+      /* ---- menus: kicker returns, and the link becomes a full-width button
+              under the cards instead of sitting beside the heading ---------- */
+      .menus { grid-template-columns: 1fr; }
+      .menus-kicker {
+        display: block; margin: 0 0 6px; color: var(--gold-pale);
+        font-size: 10px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase;
+      }
+      .menus-head { margin-bottom: 18px; }
+      .menus-rule { flex: none; width: 64px; }
+      .menus-more {
+        display: flex; align-items: center; justify-content: center; gap: 12px;
+        grid-column: 1; grid-row: auto; justify-self: stretch; margin: 22px 0 0;
+        min-height: 54px; padding: 0 20px;
+        border: 1px solid rgb(213 181 115 / 55%);
+      }
+
       .order-band { grid-template-columns: 1fr; gap: 56px; padding: 86px 7vw 92px; }
       footer { grid-template-columns: 1fr; text-align: center; }
       footer > img, footer > p { justify-self: center; }
@@ -427,31 +497,37 @@
     @media (max-width: 620px) {
       .order-nav { min-height: 40px; padding: 0 14px; font-size: 8px; gap: 7px; }
       .order-nav svg { width: 13px; height: 13px; }
-      .hero { padding: 120px 6vw 150px; }
-      h1 { font-size: clamp(48px, 14vw, 70px); }
-      .hero-strap { gap: 12px; font-size: 12px; letter-spacing: .16em; }
-      .eyebrow { font-size: 12px; margin-bottom: 22px; }
-      .hero-intro { font-size: 18px; margin-top: 22px; }
-      .button { min-height: 62px; padding: 0 28px; font-size: 12px; }
-      .hero-actions { align-items: stretch; flex-direction: column; gap: 12px; }
-      .features { grid-template-columns: 1fr; }
-      .features > div:nth-child(even) { border-left: 0; }
-      .features > div:not(:last-child) { border-bottom: 1px solid rgb(22 58 48 / 14%); }
-      .features > div { padding: 34px 26px; }
-      .order-band h2 { font-size: 48px; }
+      .brand img { width: 132px; }
+      .hero { padding: 104px 6vw 230px; }
+      h1 { font-size: clamp(38px, 10.4vw, 52px); }
+      .hero-strap { gap: 10px; font-size: 10px; letter-spacing: .14em; }
+      .eyebrow { font-size: 10px; margin-bottom: 16px; }
+      .hero-intro { font-size: 15px; margin-top: 16px; max-width: none; }
+      .button { min-height: 54px; padding: 0 24px; font-size: 11px; }
+      /* Stacked but NOT stretched: the design has them hugging their labels. */
+      .hero-actions { align-items: flex-start; flex-direction: column; gap: 12px; }
+      .hero-inner { max-width: 68%; }
+      .hero-script { right: 4vw; top: 15vh; }
+      .hero-foot { bottom: 34px; }
+      .features > div { padding: 18px 6px 16px; }
+      .features svg { width: 19px; height: 19px; }
+      .features h3 { font-size: 8px; letter-spacing: .08em; }
+      .features p { font-size: 10px; }
       .menus { padding: 34px 6vw 40px; }
-      .menu-grid { gap: 14px; }
-      .menu-card-body { left: 16px; right: 54px; bottom: 15px; }
-      .menu-card-body h3 { font-size: 11px; }
-      .menu-card-body p { font-size: 12px; }
-      .menu-card-go { right: 13px; bottom: 15px; width: 28px; height: 28px; }
+      .menu-grid { gap: 8px; }
+      .menu-card-body { left: 9px; right: 9px; bottom: 32px; }
+      .menu-card-body h3 { font-size: 8px; letter-spacing: .07em; margin-bottom: 3px; }
+      .menu-card-body p { font-size: 9px; line-height: 1.25; }
+      .menu-card-go { right: 8px; bottom: 7px; width: 22px; height: 22px; font-size: 9px; }
       .quote-band { padding: 95px 7vw 88px; }
+      .order-band h2 { font-size: 48px; }
       .order-details > div { grid-template-columns: 1fr; gap: 12px; padding: 20px 0; }
       .detail-label { padding-top: 0; }
       .order-band { padding: 100px 7vw 95px; }
       .order-actions { align-items: center; flex-direction: column; gap: 18px; }
       .footer-links { flex-wrap: wrap; justify-content: center; }
     }
+
   </style>
 </head>
 
@@ -463,7 +539,7 @@
     <a class="brand" href="#home" aria-label="{{shopName}} home">
       <img src="/logo.png" alt="{{shopName}}" width="1000" height="333" />
     </a>
-    <nav class="desktop-nav" aria-label="Primary navigation">
+    <nav class="desktop-nav" id="primary-nav" aria-label="Primary navigation">
       <a href="#menus">Menus</a>
       <a href="#hours">Opening hours</a>
       <a href="#visit">Find us</a>
@@ -475,6 +551,10 @@
       </svg>
       Order online
     </a>
+    <button class="nav-toggle" type="button" aria-controls="primary-nav"
+            aria-expanded="false" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </header>
 
   <section class="hero" id="home">
@@ -535,10 +615,10 @@
   </section>
 
   <section class="menus" id="menus">
+    <p class="menus-kicker">Explore</p>
     <div class="menus-head">
       <h2>Our Menus</h2>
       <span class="menus-rule" aria-hidden="true"></span>
-      <a class="menus-more" href="/order">View full menus <span aria-hidden="true">→</span></a>
     </div>
 
     <!-- The four photographs are still to come; each card's .photo-slot is the
@@ -566,6 +646,8 @@
         <span class="menu-card-go" aria-hidden="true">→</span>
       </a>
     </div>
+
+    <a class="menus-more" href="/order">View full menus <span aria-hidden="true">→</span></a>
   </section>
 
   <section class="quote-band" aria-label="{{shopShortName}} philosophy">
@@ -625,5 +707,30 @@
     <p>{{shopName}} · {{shopAddressLine1}}, {{shopCity}}</p>
   </footer>
 </main>
+<script>
+  /* The nav panel. The whole page is otherwise static, so this is deliberately
+     the only script on it — no framework, no dependency, and if it fails to run
+     the links are still in the DOM and reachable. */
+  (function () {
+    var nav = document.querySelector('.nav-wrap');
+    var btn = nav && nav.querySelector('.nav-toggle');
+    if (!btn) return;
+    function set(open) {
+      if (open) nav.setAttribute('data-open', ''); else nav.removeAttribute('data-open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    btn.addEventListener('click', function () {
+      set(btn.getAttribute('aria-expanded') !== 'true');
+    });
+    // Every link is an in-page anchor, so the panel must close behind the tap
+    // or it covers what you just jumped to.
+    Array.prototype.forEach.call(nav.querySelectorAll('.desktop-nav a'), function (a) {
+      a.addEventListener('click', function () { set(false); });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') set(false);
+    });
+  })();
+</script>
 </body>
 </html>
