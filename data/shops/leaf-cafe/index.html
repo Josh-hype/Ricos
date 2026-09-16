@@ -344,31 +344,42 @@
        details right. They used to be a separate light band above this one; the
        tones therefore flip from ink-on-oatmeal to cream-on-green. */
     .order-band {
-      display: grid; grid-template-columns: 1fr 1.1fr; gap: 6vw; align-items: start;
+      display: grid; grid-template-columns: 1.15fr 1fr; gap: 6vw; align-items: start;
       padding: 104px 8vw 108px; background: var(--green); color: var(--cream);
     }
     .order-band .section-kicker { color: var(--gold-pale); }
+    /* Its own size, smaller than the manifesto's 92px: this headline only has
+       half the band to live in, and at 92px "ready when you are." wrapped to a
+       third line below ~1800px, which is what made the left column tower over
+       the details beside it. */
+    .order-band h2 { font-size: clamp(40px, 4.8vw, 80px); }
     .order-copy > p:not(.section-kicker) {
       max-width: 430px; margin: 26px 0 0; color: rgb(255 249 235 / 72%);
       font-family: var(--serif); font-size: 17px;
     }
     .order-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 28px; margin-top: 38px; }
 
-    .order-details {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 2vw;
-      padding-top: 40px; border-top: 1px solid rgb(255 249 235 / 22%);
+    /* Three ROWS, not three columns. As columns each entry was only 166px tall
+       against 369px of copy beside it, leaving a 203px pool of empty green;
+       as rows the column fills its own height and the two sides balance. The
+       label sits beside its content rather than above it, which is what makes
+       the full width of the column earn its keep. */
+    .order-details { border-top: 1px solid rgb(255 249 235 / 22%); }
+    .order-details > div {
+      display: grid; grid-template-columns: 170px 1fr; gap: 26px;
+      align-items: start; padding: 26px 0;
+      border-bottom: 1px solid rgb(255 249 235 / 22%);
     }
     .detail-label {
-      margin: 0 0 20px; color: var(--gold-pale);
+      margin: 0; padding-top: 4px; color: var(--gold-pale);
       font-size: 8px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase;
     }
-    /* The min-height lines the two links up across columns of unequal copy. */
-    .order-details address, .order-details > div > p:not(.detail-label) {
-      min-height: 58px; margin: 0; color: rgb(255 249 235 / 76%); font-family: var(--serif);
+    .order-details address, .order-details p:not(.detail-label) {
+      margin: 0; color: rgb(255 249 235 / 76%); font-family: var(--serif);
       font-size: 16px; font-style: normal; line-height: 1.5;
     }
     .detail-link {
-      display: inline-block; margin-top: 20px; padding-bottom: 8px;
+      display: inline-block; margin-top: 16px; padding-bottom: 8px;
       border-bottom: 1px solid rgb(213 181 115 / 55%); color: var(--gold-pale);
       font-size: 8px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
     }
@@ -459,8 +470,8 @@
       .menu-card-body p { font-size: 12px; }
       .menu-card-go { right: 13px; bottom: 15px; width: 28px; height: 28px; }
       .quote-band { padding: 95px 7vw 88px; }
-      .order-details { grid-template-columns: 1fr; gap: 40px; }
-      .order-details address, .order-details > div > p:not(.detail-label) { min-height: 0; }
+      .order-details > div { grid-template-columns: 1fr; gap: 12px; padding: 20px 0; }
+      .detail-label { padding-top: 0; }
       .order-band { padding: 100px 7vw 95px; }
       .order-actions { align-items: center; flex-direction: column; gap: 18px; }
       .footer-links { flex-wrap: wrap; justify-content: center; }
@@ -622,18 +633,24 @@
     <div class="order-details" id="visit">
       <div>
         <p class="detail-label">Find us</p>
-        <address>{{shopAddressLine1}}<br />{{shopCity}}</address>
-        <a class="detail-link" href="https://maps.google.com/?q={{shopAddressLine1}}+{{shopCity}}"
-           target="_blank" rel="noopener">Open in maps ↗</a>
+        <div>
+          <address>{{shopAddressLine1}}<br />{{shopCity}}</address>
+          <a class="detail-link" href="https://maps.google.com/?q={{shopAddressLine1}}+{{shopCity}}"
+             target="_blank" rel="noopener">Open in maps ↗</a>
+        </div>
       </div>
       <div id="hours">
         <p class="detail-label">Opening hours</p>
-        <p>Breakfast · Lunch · Bistro evenings</p>
-        <a class="detail-link" href="/order">Order online →</a>
+        <div>
+          <p>Breakfast · Lunch · Bistro evenings</p>
+          <a class="detail-link" href="/order">Order online →</a>
+        </div>
       </div>
       <div>
         <p class="detail-label">Good to know</p>
-        <p>Delivery and collection.<br />Walk-ins always welcome.</p>
+        <div>
+          <p>Delivery and collection.<br />Walk-ins always welcome.</p>
+        </div>
       </div>
     </div>
   </section>
