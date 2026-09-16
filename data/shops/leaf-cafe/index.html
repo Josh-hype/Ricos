@@ -442,16 +442,18 @@
       /* Vertical, and it CLEARS towards the bottom. The plate is the point of
          the photograph, and on a phone it sits under the copy rather than
          beside it, so the wash has to let go before it reaches the food. */
-      /* Holds ~84% down to 74% — the tagline sits at about 69% and the type
-         is 9px, so it needs the full 4.5:1 — then lets go hard so the plate in
-         the bottom quarter reads at nearly full strength. */
+      /* Dark enough at the top to hold the header and the headline, then off
+         quickly: driven hard all the way down it turned the photograph to mud,
+         which is the opposite of the design. The tagline's legibility is bought
+         by WHERE it sits (see the hero's bottom padding) plus its own shadow,
+         not by flooding the whole frame. */
       .hero-wash {
         background: linear-gradient(to bottom,
-          rgb(12 33 27 / 88%) 0%,  rgb(16 45 37 / 86%) 46%,
-          rgb(16 45 37 / 84%) 74%, rgb(16 45 37 / 10%) 100%);
+          rgb(12 33 27 / 80%) 0%,  rgb(16 45 37 / 66%) 38%,
+          rgb(16 45 37 / 46%) 64%, rgb(16 45 37 / 8%) 100%);
       }
       /* Belt and braces for the smallest type on the photograph. */
-      .hero-foot p { text-shadow: 0 1px 12px rgb(12 33 27 / 92%); }
+      .hero-foot p { text-shadow: 0 1px 3px rgb(12 33 27 / 95%), 0 2px 16px rgb(12 33 27 / 90%); }
       /* Kept here now, where it used to be hidden: the copy column is held
          back to 72% precisely so the script has somewhere to live beside it.
          The cascading negative margins are zeroed — they hang the lines off to
@@ -461,10 +463,26 @@
       .hero-script span:nth-child(3),
       .hero-script span:nth-child(4) { margin-right: 0; }
       .hero-script svg { margin: 4px 0 0; }
-      .hero-inner { max-width: 72%; }
+      .hero-inner { max-width: 80%; }
       /* Back into the flow. Absolutely positioned it sat under the buttons,
-         which grow down the page once they stack. */
-      .hero-foot { position: static; left: auto; bottom: auto; margin: 34px 0 0; }
+         which grow down the page once they stack.
+         The gradient is its own local shade, bled to the left edge and fading
+         out to the right so it reads as part of the wash rather than a box. It
+         exists because this is 9px type sitting on the brightest part of the
+         photograph; without it 72% of the area behind it measured under 4.5:1,
+         and the alternative — flooding the whole frame — is what turned the
+         hero to mud. */
+      .hero-foot {
+        position: static; left: auto; bottom: auto;
+        margin: 6px 0 0 -7vw; padding: 42px 8vw 42px 7vw;
+        /* Radial, and sized so it reaches ZERO inside its own box. A gradient
+           still at 60% opacity when it meets the box edge draws a hard line
+           across the photograph — measured as an 11-18 level step. A vertical
+           radius of 70% hits zero at 0.49 of the box height, just inside the
+           half-height, which is why the padding above is as deep as it is. */
+        background: radial-gradient(100% 70% at 12% 50%,
+          rgb(12 33 27 / 88%) 0%, rgb(12 33 27 / 62%) 40%, rgb(12 33 27 / 0%) 70%);
+      }
 
       /* ---- features stay FOUR across, as the phone design has them -------- */
       .features { grid-template-columns: repeat(4, 1fr); }
@@ -499,14 +517,14 @@
       .order-nav svg { width: 13px; height: 13px; }
       .brand img { width: 132px; }
       .hero { padding: 104px 6vw 230px; }
-      h1 { font-size: clamp(38px, 10.4vw, 52px); }
-      .hero-strap { gap: 10px; font-size: 10px; letter-spacing: .14em; }
+      h1 { font-size: clamp(32px, 8.9vw, 44px); }
+      .hero-strap { gap: 8px; font-size: 9px; letter-spacing: .11em; }
       .eyebrow { font-size: 10px; margin-bottom: 16px; }
       .hero-intro { font-size: 15px; margin-top: 16px; max-width: none; }
       .button { min-height: 54px; padding: 0 24px; font-size: 11px; }
       /* Stacked but NOT stretched: the design has them hugging their labels. */
       .hero-actions { align-items: flex-start; flex-direction: column; gap: 12px; }
-      .hero-inner { max-width: 68%; }
+      .hero-inner { max-width: 82%; }
       .hero-script { right: 4vw; top: 15vh; }
       .hero-foot { bottom: 34px; }
       .features > div { padding: 18px 6px 16px; }
