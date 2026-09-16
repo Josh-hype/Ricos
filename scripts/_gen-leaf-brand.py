@@ -101,14 +101,30 @@ def main():
     # ---- 3. og-image.jpg : the share card ----------------------------------
     # Rebuilt because the handoff's card carried the OLD wordmark (no "The").
     OW, OH = 1200, 630
-    photo = Image.open(os.path.join(SHOP, 'assets', 'hero.jpg')).convert('RGB')
-    scale = max(OW / photo.width, OH / photo.height)
-    photo = photo.resize((round(photo.width * scale), round(photo.height * scale)), Image.LANCZOS)
-    left = (photo.width - OW) // 2
-    top = round((photo.height - OH) * 0.42)
-    card = photo.crop((left, top, left + OW, top + OH)).convert('RGBA')
-    # Green wash so the gold wordmark has something to sit on at thumbnail size.
-    card.alpha_composite(Image.new('RGBA', (OW, OH), (21, 59, 49, 205)))
+    hero = os.path.join(SHOP, 'assets', 'hero.jpg')
+    if os.path.exists(hero):
+        photo = Image.open(hero).convert('RGB')
+        scale = max(OW / photo.width, OH / photo.height)
+        photo = photo.resize((round(photo.width * scale), round(photo.height * scale)), Image.LANCZOS)
+        left = (photo.width - OW) // 2
+        top = round((photo.height - OH) * 0.42)
+        card = photo.crop((left, top, left + OW, top + OH)).convert('RGBA')
+        # Green wash so the gold wordmark has something to sit on at thumbnail size.
+        card.alpha_composite(Image.new('RGBA', (OW, OH), (21, 59, 49, 205)))
+    else:
+        # The interior photographs were pulled to be reshot, so there is nothing
+        # to build the card on. Fall back to the brand ground — the same green
+        # the page's placeholder panels use — rather than shipping a share card
+        # of a photo the shop no longer uses. Drop a new assets/hero.jpg in and
+        # re-run: the photo branch above takes over again on its own.
+        print('no assets/hero.jpg — building the share card on the brand ground')
+        card = Image.new('RGBA', (OW, OH), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(card)
+        TOP, BOTTOM = (21, 59, 49), (12, 33, 27)   # --green -> --green-deep
+        for y in range(OH):
+            t = y / (OH - 1)
+            draw.line([(0, y), (OW, y)],
+                      fill=tuple(round(a + (b - a) * t) for a, b in zip(TOP, BOTTOM)) + (255,))
     mw = round(OW * 0.62)
     mark = art.resize((mw, round(mw * art.height / art.width)), Image.LANCZOS)
     card.alpha_composite(mark, ((OW - mw) // 2, (OH - mark.height) // 2))
