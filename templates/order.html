@@ -1746,6 +1746,11 @@ function loadState() {
     mode: 'deliver',
     postcode: null,
     deliveryFeeP: null,
+    // Minimum order for the band the customer's postcode fell in, when the
+    // shop sets one per band. Travels WITH deliveryFeeP and is cleared
+    // everywhere that is — a £20 minimum left behind after someone corrects
+    // their postcode to a nearer one would block a basket that is fine.
+    deliveryMinP: null,
     user: null,
     activeCategory: null,
     // Last-used checkout details, so a returning customer isn't retyping their
@@ -2575,7 +2580,10 @@ function renderCart() {
   // much more they need before checkout, rather than getting rejected at
   // the end. Checkout is disabled while under the minimum.
   const dCfg = window.SHOP_CONFIG?.fulfillment?.delivery || {};
-  const minP = Number(dCfg.minimumOrderPence) || 0;
+  // The band's own minimum wins when the postcode check returned one, so the
+  // hint can never quote a figure the server then refuses.
+  const minP = Number.isFinite(state.deliveryMinP)
+    ? state.deliveryMinP : (Number(dCfg.minimumOrderPence) || 0);
   const inclFees = !!dCfg.minimumIncludesFees;
   const shownMinP = minP + (inclFees ? Math.round((deliveryFeeGBP() + serviceFeeGBP()) * 100) : 0);
   const netP = Math.round((t.sub - t.discount) * 100);
@@ -2669,7 +2677,7 @@ function applyMode(mode) {
   if (needsServerQuote(dCfg)) {
     if (mode === 'deliver' && state.postcode) {
       state.postcode = null;
-      state.deliveryFeeP = null;
+      state.deliveryFeeP = null; state.deliveryMinP = null;
       saveState();
       const msg = document.getElementById('pcMessage');
       msg.className = 'pc-message';
@@ -2677,7 +2685,7 @@ function applyMode(mode) {
       renderCart();
       return;
     }
-    state.deliveryFeeP = null;
+    state.deliveryFeeP = null; state.deliveryMinP = null;
     saveState();
     renderCart();
     refreshPCMessage();
@@ -2755,7 +2763,7 @@ function refreshPCMessage() {
     msg.innerHTML = `✓ ${verb} confirmed for <strong>${state.postcode}</strong>${extra}. <button class="change" type="button" id="changePc">Change</button>`;
     document.getElementById('changePc').addEventListener('click', () => {
       state.postcode = null;
-      state.deliveryFeeP = null;
+      state.deliveryFeeP = null; state.deliveryMinP = null;
       saveState();
       refreshPCMessage();
       renderCart();
@@ -2801,6 +2809,7 @@ document.getElementById('postcodeForm').addEventListener('submit', async (e) => 
     if (!result.ok) { showError(result); return; }
     state.postcode = result.postcode;
     state.deliveryFeeP = Number.isFinite(result.feePence) ? result.feePence : null;
+    state.deliveryMinP = Number.isFinite(result.minOrderPence) ? result.minOrderPence : null;
     saveState();
     input.value = '';
     refreshPCMessage();
@@ -2812,7 +2821,7 @@ document.getElementById('postcodeForm').addEventListener('submit', async (e) => 
   const result = validatePostcode(raw, state.mode);
   if (!result.ok) { showError(result); return; }
   state.postcode = result.formatted;
-  state.deliveryFeeP = null;
+  state.deliveryFeeP = null; state.deliveryMinP = null;
   saveState();
   input.value = '';
   refreshPCMessage();
@@ -3225,7 +3234,7 @@ async function deleteSavedAddress(i) {
   if (wasCurrent) {
     if (rest.length) { useSavedAddress(0); return; }
     forgetSavedAddress();
-    if (state.mode === 'deliver') { state.postcode = null; state.deliveryFeeP = null; saveState(); }
+    if (state.mode === 'deliver') { state.postcode = null; state.deliveryFeeP = null; state.deliveryMinP = null; saveState(); }
   }
   renderCheckout();
 }
@@ -3238,7 +3247,7 @@ function useSavedAddress(i) {
   checkoutData.notes = a.notes || checkoutData.notes || '';
   checkoutData.postcode = a.postcode || '';
   checkoutData.addrSource = (state.user && Array.isArray(state.user.addresses) && state.user.addresses.length) ? 'account' : 'device';
-  if (state.mode === 'deliver') { state.postcode = null; state.deliveryFeeP = null; saveState(); }
+  if (state.mode === 'deliver') { state.postcode = null; state.deliveryFeeP = null; state.deliveryMinP = null; saveState(); }
   renderCheckout();
 }
 function hasSavedAddress() {
@@ -3682,7 +3691,8 @@ function startCheckout() {
   // Delivery minimum backstop (the checkout button is also disabled while
   // under the minimum; this covers the sign-in/guest resume path).
   const dCfg = window.SHOP_CONFIG?.fulfillment?.delivery || {};
-  const minP = Number(dCfg.minimumOrderPence) || 0;
+  const minP = Number.isFinite(state.deliveryMinP)
+    ? state.deliveryMinP : (Number(dCfg.minimumOrderPence) || 0);
   if (state.mode === 'deliver' && minP > 0) {
     const ct = cartTotals();
     const netP = Math.round((ct.sub - ct.discount) * 100);
@@ -3910,7 +3920,7 @@ function renderCheckout() {
     });
     document.getElementById('coNewAddr')?.addEventListener('click', () => {
       forgetSavedAddress();
-      if (state.mode === 'deliver') { state.postcode = null; state.deliveryFeeP = null; saveState(); }
+      if (state.mode === 'deliver') { state.postcode = null; state.deliveryFeeP = null; state.deliveryMinP = null; saveState(); }
       renderCheckout();                       // redraw with the address fields empty
       document.getElementById('coPostcode')?.focus();
     });
@@ -3987,7 +3997,7 @@ function renderCheckout() {
             if (result.ok) { state.postcode = result.postcode; state.deliveryFeeP = Number.isFinite(result.feePence) ? result.feePence : null; }
           } else {
             result = validatePostcode(pretty, 'deliver');
-            if (result.ok) { state.postcode = result.formatted; state.deliveryFeeP = null; }
+            if (result.ok) { state.postcode = result.formatted; state.deliveryFeeP = null; state.deliveryMinP = null; }
           }
           nextBtn.disabled = false; nextBtn.textContent = prevLabel;
           if (!result.ok) { alert(result.reason + (result.suggestCollection ? ' You can still switch to collection.' : '')); return; }

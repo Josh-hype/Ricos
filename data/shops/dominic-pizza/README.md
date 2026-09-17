@@ -27,7 +27,8 @@ cannot get indexed under this brand.
 - Footer opening hours — were **hard-coded** to Acomb's 11:45pm/12:45am closes
   and survived the rest of the rebrand. Now `{{openingHoursRows}}`, generated
   from `config.hours`, so they can't drift from what the ordering engine enforces.
-- Delivery switched **off** — see below
+- **Delivery** — `radius` mode, three bands from the owner's own provider
+  zones: 2 mi / £2 / £10 min, 4 mi / £3 / £10 min, 7 mi / £5 / **£20 min**
 - **Logo** — `logo.png`, `assets/logo-mark.png` (1200×680) and a square
   `icon.png`, all derived from `_source/dominic-logo.png`. The header CSS was
   retuned: Acomb's was a 1:1 badge, Dominic's is a 1.77:1 wordmark, and the CSS
@@ -46,19 +47,26 @@ cannot get indexed under this brand.
 | item photos | none — every item shows "PHOTO COMING SOON". The workbook carried no images |
 | `assets/` food photos, `order.css` | Acomb's — though the hero (pizza + doner) suits a shop whose logo reads "PIZZA · KEBABS · CALZONES", so it may be worth keeping |
 | `theme.accent` | still Acomb's gold `#c9a227`. The logo's only other colour is Italian-flag green `#036B3A` — a design call, not a correction |
-| Hero "FAST DELIVERY — Right to Your Door" badge, and the footer blurb | Promises delivery, which is off |
 | `stripe.connectedAccountId`, `legalName`, `companyNumber` | placeholders (the build warns) |
 
-### Delivery is off, and not because they don't deliver
+### Delivery: per-band minimums, and how the promo interacts
 
-`fulfillment.delivery.enabled` is `false`. What was inherited is Acomb's:
-`mode: "zones"` with four hand-drawn polygons over Acomb, Poppleton, Rufforth,
-Bishopthorpe and Clifton — the far side of York from Lawrence Street. Left
-enabled it would price and accept deliveries against a map centred miles away,
-and the shop's own postcode may not even fall inside any zone.
+`radius` mode, origin = the owner's zone centre (53.9551430130456,
+-1.07015141349182), `maxMiles` 7, and **no `roadFactor`** — their zones are
+circles on a map, so their real area is straight-line; applying Rico's ~1.3
+road factor would shrink it and start refusing addresses they serve today.
 
-Replace the zones (or switch to `outcode`/`radius`) and set `enabled: true`
-**together**. Don't flip the flag on its own.
+Each band carries its own `minOrderPence`, which needed a small shared-code
+addition (`resolveDelivery` returns the matched band's minimum; `computeTotals`
+and the order page prefer it over the flat `minimumOrderPence`). A band without
+one falls back to the flat value, so every other shop is untouched.
+
+⚠️ **The 20% promo raises the effective minimum.** The minimum is measured on
+the subtotal AFTER the discount — pre-existing, deliberate behaviour, on the
+basis that it is what the shop actually gets paid for the food. So on the
+7-mile band a £24.60 basket nets £19.68 and is refused: the real minimum there
+is **£25.00** (£20 ÷ 0.8). Worth the owner knowing; changing it would mean
+measuring the minimum pre-discount, which would alter Rico's and Big Bites too.
 
 ### Check before launch, inherited and not obviously wrong
 

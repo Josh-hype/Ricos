@@ -66,11 +66,14 @@ export const onRequestPost = async ({ request, env }) => {
   }
   let address = null;
   let deliveryFeeP = null;
+  let deliveryMinOrderP = null;
   if (fulfillment === 'delivery') {
     if (!config.fulfillment.delivery.enabled) return errJson('Delivery is not available right now.', 400);
     const dq = await resolveDelivery(input.deliveryAddress?.postcode, config);
     if (!dq.ok) return errJson(dq.reason, 400);
     deliveryFeeP = dq.feePence;
+    // A radius band's own minimum, when it sets one (see resolveDelivery).
+    deliveryMinOrderP = Number.isFinite(dq.minOrderPence) ? dq.minOrderPence : null;
     const line1 = (input.deliveryAddress?.line1 || '').trim();
     if (line1.length < 2) return errJson('Please enter your delivery address.', 400);
     address = {
@@ -194,7 +197,7 @@ export const onRequestPost = async ({ request, env }) => {
   // Totals (server-side; client never trusted for prices). resolveMenu applies
   // any owner-edited menu from KV, falling back to the static build-time menu.
   const menu = await resolveMenu(env);
-  const totals = computeTotals(input, config, { deliveryFeeP, menu, firstOrderDiscount });
+  const totals = computeTotals(input, config, { deliveryFeeP, deliveryMinOrderP, menu, firstOrderDiscount });
   if (!totals.ok) return errJson(totals.reason, 400);
 
   // Payment method.

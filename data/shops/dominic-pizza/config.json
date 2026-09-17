@@ -35,249 +35,39 @@
       "enabled": true
     },
     "delivery": {
-      "enabled": false,
-      "mode": "zones",
-      "minimumOrderPence": 1500,
-      "areaDescription": "in our delivery area",
-      "zones": [
-        {
-          "name": "Acomb & Poppleton",
-          "feePence": 0,
-          "polygon": [
-            [
-              53.923941,
-              -1.120972
-            ],
-            [
-              53.954797,
-              -1.093106
-            ],
-            [
-              53.961128,
-              -1.10497
-            ],
-            [
-              53.968594,
-              -1.117385
-            ],
-            [
-              53.977681,
-              -1.12649
-            ],
-            [
-              53.988226,
-              -1.136974
-            ],
-            [
-              53.990822,
-              -1.138629
-            ],
-            [
-              53.988713,
-              -1.150768
-            ],
-            [
-              53.975085,
-              -1.169253
-            ],
-            [
-              53.959992,
-              -1.180289
-            ],
-            [
-              53.941645,
-              -1.177806
-            ],
-            [
-              53.926703,
-              -1.164287
-            ],
-            [
-              53.920042,
-              -1.153251
-            ],
-            [
-              53.923941,
-              -1.120972
-            ]
-          ]
+      "_comment_source": "CONFIRMED BY THE OWNER, 17 Sep 2026, from their live provider's own zone definitions. Three concentric circles on one centre, so the distances are STRAIGHT-LINE: 3226.36 m = 2.00 miles, 6469.95 m = 4.02 miles, 11332.72 m = 7.04 miles. Replaces Acomb's inherited hand-drawn polygons over Acomb and Poppleton, which were the far side of York from Lawrence Street.",
+      "enabled": true,
+      "mode": "radius",
+      "_comment_radius": "roadFactor is deliberately ABSENT (defaults to 1, pure straight-line). The shop's own zones are circles on a map, so their current area IS crow-flies; applying the ~1.3 road factor used at Rico's would shrink the area they deliver to today and start refusing addresses they currently serve. origin is their zones' exact centre rather than a geocode of the postcode, so the boundary matches theirs to the metre.",
+      "radius": {
+        "maxMiles": 7,
+        "origin": {
+          "lat": 53.9551430130456,
+          "lng": -1.07015141349182
         },
-        {
-          "name": "West (Rufforth, Askham)",
-          "feePence": 150,
-          "polygon": [
-            [
-              53.989064,
-              -1.150826
-            ],
-            [
-              53.993903,
-              -1.16208
-            ],
-            [
-              53.961679,
-              -1.204996
-            ],
-            [
-              53.928265,
-              -1.193113
-            ],
-            [
-              53.916213,
-              -1.172979
-            ],
-            [
-              53.920101,
-              -1.154495
-            ],
-            [
-              53.927293,
-              -1.164727
-            ],
-            [
-              53.941672,
-              -1.17793
-            ],
-            [
-              53.959737,
-              -1.18024
-            ],
-            [
-              53.975658,
-              -1.168688
-            ],
-            [
-              53.982452,
-              -1.159446
-            ],
-            [
-              53.989064,
-              -1.150826
-            ]
-          ]
-        },
-        {
-          "name": "South (Bishopthorpe, Copmanthorpe)",
-          "feePence": 150,
-          "polygon": [
-            [
-              53.959324,
-              -1.086568
-            ],
-            [
-              53.954899,
-              -1.093212
-            ],
-            [
-              53.923957,
-              -1.12087
-            ],
-            [
-              53.923147,
-              -1.127441
-            ],
-            [
-              53.921622,
-              -1.140605
-            ],
-            [
-              53.920185,
-              -1.151698
-            ],
-            [
-              53.907117,
-              -1.14482
-            ],
-            [
-              53.917012,
-              -1.092745
-            ],
-            [
-              53.930009,
-              -1.077199
-            ],
-            [
-              53.941868,
-              -1.084497
-            ],
-            [
-              53.946005,
-              -1.081727
-            ],
-            [
-              53.949317,
-              -1.079079
-            ],
-            [
-              53.951046,
-              -1.079162
-            ],
-            [
-              53.959324,
-              -1.086568
-            ]
-          ]
-        },
-        {
-          "name": "North-east (Clifton)",
-          "feePence": 300,
-          "polygon": [
-            [
-              53.984765,
-              -1.133635
-            ],
-            [
-              53.979212,
-              -1.128239
-            ],
-            [
-              53.977512,
-              -1.126311
-            ],
-            [
-              53.968102,
-              -1.11706
-            ],
-            [
-              53.964474,
-              -1.110892
-            ],
-            [
-              53.960279,
-              -1.10299
-            ],
-            [
-              53.955175,
-              -1.092967
-            ],
-            [
-              53.962433,
-              -1.082174
-            ],
-            [
-              53.981252,
-              -1.08121
-            ],
-            [
-              53.99757,
-              -1.091811
-            ],
-            [
-              53.994057,
-              -1.109736
-            ],
-            [
-              53.990658,
-              -1.123228
-            ],
-            [
-              53.984765,
-              -1.133635
-            ]
-          ]
-        }
-      ],
-      "_comment_enabled": "OFF until Dominic's own delivery areas are confirmed. It is NOT off because the shop doesn't deliver - it is off because what was inherited here is Acomb Pizza & Kebab House's: four hand-drawn polygons over Acomb, Poppleton, Rufforth, Bishopthorpe and Clifton, which is the far side of York from 3 Lawrence Street (YO10, just outside the walls to the east). Left enabled it would price and accept deliveries against a map centred three miles away, and the shop's own postcode may not even sit inside any of the zones. Replace the zones (or switch to outcode/radius mode) and set enabled back to true together - do not flip this one on its own."
+        "_comment_bands": "minOrderPence is PER BAND: £10 inside 4 miles, £20 out to 7, exactly as the owner has it. resolveDelivery returns the matched band's minimum and both the order page and computeTotals prefer it over minimumOrderPence below.",
+        "bands": [
+          {
+            "maxMiles": 2,
+            "feePence": 200,
+            "minOrderPence": 1000
+          },
+          {
+            "maxMiles": 4,
+            "feePence": 300,
+            "minOrderPence": 1000
+          },
+          {
+            "maxMiles": 7,
+            "feePence": 500,
+            "minOrderPence": 2000
+          }
+        ]
+      },
+      "feePence": 200,
+      "_comment_minimum": "The FALLBACK only — every band above sets its own, so this is what applies if a band ever loses its minOrderPence. £10, the nearest band's figure, so a lapse can only ever be more generous than intended rather than turning customers away. minimumIncludesFees is absent, i.e. false, so the minimum is measured on the basket BEFORE the delivery and service fees - a £9 basket is refused rather than being nudged over the line by charges the customer did not choose.",
+      "minimumOrderPence": 1000,
+      "areaDescription": "within 7 miles of the shop"
     }
   },
   "_comment_serviceFee": "Per-order platform fee in pence. Charged to the customer and kept by the platform.",

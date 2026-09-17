@@ -141,6 +141,12 @@ export async function resolveDelivery(rawPostcode, config) {
       postcode: np.formatted,
       feePence: Number(band.feePence),
       distanceMiles: Math.round(miles * 10) / 10,
+      // Per-band minimum order, for a shop that asks for a bigger basket the
+      // further it has to drive (Dominic: £10 inside 4 miles, £20 out to 7).
+      // null when the band doesn't set one, and every band without it behaves
+      // exactly as before — the flat fulfillment.delivery.minimumOrderPence.
+      minOrderPence: Number.isFinite(Number(band.minOrderPence))
+        ? Number(band.minOrderPence) : null,
     };
   }
 

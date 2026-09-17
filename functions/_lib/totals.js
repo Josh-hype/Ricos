@@ -229,8 +229,15 @@ export function computeTotals(input, config, opts = {}) {
 
   // Minimum order check (applied to subtotal less discount).
   const netSubtotalP = subtotalP - discountP;
-  if (fulfillment === 'delivery' && netSubtotalP < config.fulfillment.delivery.minimumOrderPence) {
-    const minP = config.fulfillment.delivery.minimumOrderPence;
+  // A radius band may carry its own minimum (opts.deliveryMinOrderP, resolved
+  // from the customer's postcode by resolveDelivery and passed in by the API
+  // alongside the fee). Absent — every shop that doesn't use it — falls back to
+  // the flat configured minimum, so behaviour is unchanged.
+  const minOrderP = Number.isFinite(opts.deliveryMinOrderP)
+    ? Number(opts.deliveryMinOrderP)
+    : config.fulfillment.delivery.minimumOrderPence;
+  if (fulfillment === 'delivery' && netSubtotalP < minOrderP) {
+    const minP = minOrderP;
     const inclFees = !!config.fulfillment.delivery.minimumIncludesFees;
     const shownP = inclFees ? (minP + deliveryFeeP + serviceFeeP) : minP;
     return {
