@@ -738,6 +738,15 @@ const tokens = {
   firstOrderPromoText,
   // SEO meta sentence — only advertises the discount for shops that run it.
   promoTagline:            (promo && promo.enabled) ? ` ${promo.percent}% off online orders${promoMinText}.` : '',
+  // Display-ready pieces for a landing page that advertises the offer in its own
+  // layout (a big "20% OFF" over "EVERY ORDER OVER £15") rather than as a
+  // sentence. Same source as promoTagline and promoSection, so the headline, the
+  // terms clause and the discount the checkout actually gives cannot disagree —
+  // which is the failure mode the comment above promoSection is about. Both are
+  // '' when the shop runs no offer, so a page using them must gate the whole
+  // block on the offer existing, not rely on the numbers vanishing.
+  promoPercentText:        (promo && promo.enabled) ? `${promo.percent}%` : '',
+  promoMinimumText:        (promo && promo.enabled && promoMinP) ? `£${(promoMinP / 100).toFixed(2).replace(/\.00$/, '')}` : '',
   // Landing-page SEO <head>: JSON-LD Restaurant schema + canonical + OG/Twitter.
   seoHead:                 buildSeoHead(),
   // Opening hours rows for shops whose landing page shows them.

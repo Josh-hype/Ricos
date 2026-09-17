@@ -960,7 +960,12 @@
       </div>
       <a class="hero-offer" href="/order">
         <span class="ho-eyebrow">Online offer</span>
-        <span class="ho-main"><b>10% off</b><span>every order over &pound;12</span></span>
+        <!-- The percentage and threshold come from config.promo.autoOnlineDiscount
+             via tokens, NOT typed here, so this card can never advertise an offer
+             the checkout refuses. If the offer is ever turned OFF both tokens go
+             empty and this card must be DELETED, not left to render "off every
+             order over". Same applies to the offer band further down. -->
+        <span class="ho-main"><b>{{promoPercentText}} off</b><span>every order over {{promoMinimumText}}</span></span>
         <span class="ho-note">Collection or delivery &middot; applied automatically at checkout</span>
       </a>
     </div>
@@ -1020,8 +1025,8 @@
   <div class="wrap">
     <div class="offer">
       <div class="copy">
-        <h2><span class="hl">10% Off</span>Every Order Over&nbsp;£12</h2>
-        <p>Order online and get 10% off automatically on every order over £12 — no code needed.</p>
+        <h2><span class="hl">{{promoPercentText}} Off</span>Every Order Over&nbsp;{{promoMinimumText}}</h2>
+        <p>Order online and get {{promoPercentText}} off automatically on every order over {{promoMinimumText}} — no code needed.</p>
         <a class="btn btn-primary" href="/order">Order Now <span class="arrow">→</span></a>
       </div>
       <div class="shot"><img src="/assets/offer-pizza.png" alt="Freshly baked pizza on a wooden board" loading="lazy" /></div>
@@ -1111,7 +1116,7 @@
       ["Hero headline", ".hero h1"],
       ["Hero paragraph", ".hero p.sub"],
       ["Order buttons", ".hero .cta"],
-      ["10% offer card", ".hero-offer"],
+      ["online offer card", ".hero-offer"],
       ["Hero badges (all)", ".hero-feats"],
       ["Category tiles", ".cats"],
       ["Offer band", ".offer"],

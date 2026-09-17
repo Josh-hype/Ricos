@@ -368,16 +368,17 @@
   "promo": {
     "autoOnlineDiscount": {
       "enabled": true,
-      "label": "10% off online orders over £12",
-      "percent": 10,
-      "minSubtotalPence": 1200
+      "label": "20% off online orders over £15",
+      "percent": 20,
+      "minSubtotalPence": 1500
     },
     "firstOrders": {
       "enabled": false,
       "percent": 15,
       "limit": 2,
       "label": "15% off — first 2 orders"
-    }
+    },
+    "_comment_autoOnlineDiscount": "CONFIRMED BY THE OWNER, 17 Sep 2026: 20% off the whole order over £15 (was Acomb's 10% over £12). percent and minSubtotalPence are the ONLY source of truth - totals.js applies them server-side and the landing page renders them through the {{promoPercentText}} / {{promoMinimumText}} tokens, so the advertised offer cannot drift from the one given. The minimum is measured on the SUBTOTAL, before the service fee and delivery. No menu item carries noPromo, so the discount really does apply to the whole basket."
   },
   "_comment_pos": "Till behaviour flags (all optional, default off). requireOrderPin:true makes staff enter their operator code to START every order (walk-in/collection/delivery) — leave it false so staff take orders with no per-order PIN. NOTE: the manager/owner PIN on voids, refunds and cancellations is a SEPARATE gate and is ALWAYS required regardless of this flag. selfServeDrinks:true hides the till's drink picker; externalCardMachine:true marks the Card button as paid immediately for a shop using its own card terminal.",
   "pos": {
