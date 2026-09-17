@@ -103,12 +103,23 @@ def main():
     # heavy to ship as a page background, so it stays in _source/ (never copied
     # to public/) and the two formats the page actually serves are derived here
     # — webp first via <source>, jpg as the fallback.
-    hero_src = os.path.join(SHOP, '_source', 'hero-background.png')
-    if os.path.exists(hero_src):
+    # hero-background.png is the landscape shot the desktop band uses; hero-mob
+    # is the portrait one, because at phone widths the hero box is taller than
+    # it is wide TWICE OVER (1:1.93 to 1:2.34), and cover on the landscape
+    # original was a heavy centre crop.
+    for src_name, out_stem in (('hero-background.png', 'hero'), ('hero-mob.png', 'hero-mobile')):
+        hero_src = os.path.join(SHOP, '_source', src_name)
+        if not os.path.exists(hero_src):
+            continue
         shot = Image.open(hero_src).convert('RGB')
-        for name, kw in (('hero.jpg', dict(quality=84, progressive=True)),
-                         ('hero.webp', dict(quality=80, method=6))):
-            p = os.path.join(SHOP, 'assets', name)
+        if out_stem == 'hero-mobile':
+            # Trim hard under the plate. Cropping the BOTTOM pushes the plate DOWN the
+            # frame proportionally, which is what keeps it clear of the stacked
+            # buttons above it; it also drops the dead marble. 0.82 was found by eye.
+            shot = shot.crop((0, 0, shot.width, round(shot.height * 0.82)))
+        for ext, kw in (('jpg', dict(quality=84, progressive=True)),
+                        ('webp', dict(quality=80, method=6))):
+            p = os.path.join(SHOP, 'assets', out_stem + '.' + ext)
             shot.save(p, optimize=True, **kw)
             report(p, shot)
 

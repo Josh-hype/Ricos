@@ -433,10 +433,11 @@
       }
 
       /* ---- hero ----------------------------------------------------------- */
-      /* The deep bottom padding is load-bearing: it opens a band of photograph
-         BELOW the copy for the plate to sit in. Without it the food ends up
-         behind the tagline, where 55% of the area measured under 4.5:1. */
-      .hero { padding: 118px 7vw 250px; }
+      /* The deep bottom padding this used to carry opened a band of photograph
+         below the copy for the plate to sit in. The portrait shot has the plate
+         in it already, so it goes — it was making the hero 849px tall where the
+         design is about 530. */
+      .hero { padding: 118px 7vw 92px; }
       h1 { font-size: clamp(52px, 8.4vw, 86px); }
       .hero-intro { font-size: 21px; max-width: 560px; }
       /* Vertical, and it CLEARS towards the bottom. The plate is the point of
@@ -447,10 +448,15 @@
          which is the opposite of the design. The tagline's legibility is bought
          by WHERE it sits (see the hero's bottom padding) plus its own shadow,
          not by flooding the whole frame. */
+      .hero-bg img { object-position: center; }
+      /* Lighter than it was, because the portrait shot is composed for this
+         box rather than being a centre crop of the landscape one — but not as
+         light as hoped. Measured on the new picture: at 72% the copy had 3.9%
+         of its area under 4.5:1, at 78% it is 1.4%. */
       .hero-wash {
         background: linear-gradient(to bottom,
-          rgb(12 33 27 / 80%) 0%,  rgb(16 45 37 / 66%) 38%,
-          rgb(16 45 37 / 46%) 64%, rgb(16 45 37 / 8%) 100%);
+          rgb(12 33 27 / 78%) 0%,  rgb(16 45 37 / 68%) 40%,
+          rgb(16 45 37 / 48%) 66%, rgb(16 45 37 / 10%) 100%);
       }
       /* Belt and braces for the smallest type on the photograph. */
       .hero-foot p { text-shadow: 0 1px 3px rgb(12 33 27 / 95%), 0 2px 16px rgb(12 33 27 / 90%); }
@@ -516,7 +522,7 @@
       .order-nav { min-height: 40px; padding: 0 14px; font-size: 8px; gap: 7px; }
       .order-nav svg { width: 13px; height: 13px; }
       .brand img { width: 132px; }
-      .hero { padding: 104px 6vw 230px; }
+      .hero { padding: 100px 6vw 80px; }
       h1 { font-size: clamp(32px, 8.9vw, 44px); }
       .hero-strap { gap: 8px; font-size: 9px; letter-spacing: .11em; }
       .eyebrow { font-size: 10px; margin-bottom: 16px; }
@@ -577,6 +583,8 @@
 
   <section class="hero" id="home">
     <picture class="hero-bg">
+      <source media="(max-width: 920px)" srcset="/assets/hero-mobile.webp" type="image/webp" />
+      <source media="(max-width: 920px)" srcset="/assets/hero-mobile.jpg" type="image/jpeg" />
       <source srcset="/assets/hero.webp" type="image/webp" />
       <img src="/assets/hero.jpg" width="1672" height="941" alt="" />
     </picture>
