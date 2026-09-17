@@ -107,12 +107,12 @@ export const onRequestPost = async ({ request, env }) => {
   // opening time.
   let schedule = 'asap';
   if (input.schedule && input.schedule !== 'asap') {
-    if (!isSlotValid(input.schedule, config)) {
+    if (!isSlotValid(input.schedule, config, fulfillment)) {
       return errJson('That time slot is no longer available — please pick another.', 400);
     }
     schedule = input.schedule;
   } else if (!isOpenNow(config)) {
-    const slots = listSlots(config);
+    const slots = listSlots(config, fulfillment);
     if (slots.length === 0) {
       return errJson("Sorry, we're not taking orders right now. Please call the shop.", 400);
     }

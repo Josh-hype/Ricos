@@ -3318,9 +3318,23 @@ async function populateScheduleSelect() {
   const isOpen = !!cfg.isOpenNow;
   const tz = (cfg.ordering && cfg.ordering.timezone) || 'Europe/London';
 
+  /* Prep time for THIS order's mode. Two bugs in one line before this:
+     the "~25 min" was hard-coded, so every shop advertised 25 minutes no
+     matter what its own ordering.asapMinPrepMinutes said; and there was no
+     way to say that delivery takes longer than collection. Mirrors
+     prepMinutesFor() in functions/_lib/hours.js, which /api/order enforces.
+     Safe to read state.mode here: this runs when the checkout step renders,
+     and the mode is chosen back on the order page, so it cannot change
+     underneath the select. */
+  const ord = cfg.ordering || {};
+  const modeKey = state.mode === 'deliver' ? 'delivery' : 'collection';
+  const byMode = Number((ord.asapMinPrepMinutesByMode || {})[modeKey]);
+  const prepMin = (Number.isFinite(byMode) && byMode > 0)
+    ? byMode : (Number(ord.asapMinPrepMinutes) || 0);
+
   const opts = [];
   if (isOpen) {
-    opts.push(`<option value="asap">As soon as possible (~25 min)</option>`);
+    opts.push(`<option value="asap">As soon as possible (~${prepMin} min)</option>`);
   } else if (slots.length > 0) {
     // Closed but slots exist — ASAP means "queued for when we open".
     const d = new Date(slots[0]);
@@ -3331,8 +3345,14 @@ async function populateScheduleSelect() {
   const todayStr = today.toLocaleDateString('en-GB', { weekday: 'long', timeZone: tz });
   const tomorrow = new Date(today.getTime() + 86400000);
   const tomorrowStr = tomorrow.toLocaleDateString('en-GB', { weekday: 'long', timeZone: tz });
+  // /api/config builds the slot list without knowing the mode, so it uses the
+  // base lead time. On a delivery order the first few are now too soon —
+  // /api/order would reject them at the very last step, which is the worst
+  // place for the customer to find out. Drop them here so the two agree.
+  const earliest = Date.now() + prepMin * 60000;
   for (const iso of slots) {
     const d = new Date(iso);
+    if (d.getTime() < earliest) continue;
     const day = d.toLocaleDateString('en-GB', { weekday: 'long', timeZone: tz });
     const time = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: tz });
     let prefix;

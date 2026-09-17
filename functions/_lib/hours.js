@@ -89,6 +89,21 @@ export function pollIntervalMs(config) {
   }
 }
 
+/* Minutes before an ASAP order is ready, for a given fulfilment mode.
+
+   ordering.asapMinPrepMinutes is the base. A shop whose delivery takes longer
+   than its collection (Dominic: 20 minutes over the counter, 45 to the door)
+   adds ordering.asapMinPrepMinutesByMode = { delivery: 45 }. Absent, or absent
+   for the mode asked about, returns the base — so every shop that doesn't set
+   it is completely unaffected. */
+export function prepMinutesFor(config, mode) {
+  const o = config?.ordering || {};
+  const base = Number(o.asapMinPrepMinutes) || 0;
+  const key = mode === 'delivery' ? 'delivery' : 'collection';
+  const v = Number((o.asapMinPrepMinutesByMode || {})[key]);
+  return Number.isFinite(v) && v > 0 ? v : base;
+}
+
 export function isOpenNow(config) {
   const tz = config.ordering.timezone;
   const { dayName, minutesOfDay } = nowInTz(tz);
@@ -117,11 +132,11 @@ export function isOpenNow(config) {
 }
 
 /* Returns array of available slot timestamps (ISO strings) over horizonDays. */
-export function listSlots(config) {
+export function listSlots(config, mode) {
   const tz = config.ordering.timezone;
   const slotMin = config.ordering.scheduling.slotMinutes;
   const horizon = config.ordering.scheduling.horizonDays;
-  const lead = config.ordering.asapMinPrepMinutes;
+  const lead = prepMinutesFor(config, mode);
   const lastBuffer = config.ordering.lastOrderBeforeCloseMinutes || 0;
   /* Closures are calendar dates in the SHOP's timezone, and activeClosure —
      which /api/order enforces — reads them that way. A window running past
@@ -182,13 +197,13 @@ function buildLocalIso(day, minutes, tz) {
   return new Date(local.getTime() + offsetMs);
 }
 
-export function isSlotValid(slotIso, config) {
+export function isSlotValid(slotIso, config, mode) {
   if (!slotIso) return false;
   const slot = new Date(slotIso);
   if (Number.isNaN(slot.getTime())) return false;
-  const lead = config.ordering.asapMinPrepMinutes;
+  const lead = prepMinutesFor(config, mode);
   if (slot.getTime() < Date.now() + lead * 60000) return false;
-  const all = listSlots(config);
+  const all = listSlots(config, mode);
   return all.includes(slotIso);
 }
 

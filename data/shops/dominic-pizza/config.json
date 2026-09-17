@@ -146,7 +146,11 @@
     "timezone": "Europe/London",
     "_comment_businessDayStartHour": "Trading-day rollover hour (0–23, shop local time). 4 = the day's orders / takings / Z-report run 4am-to-4am, so a late-night shop's orders taken after midnight still count toward the day it opened. Set 0 for a plain midnight-to-midnight day. Safe to leave at 4 even for daytime shops (if you close before midnight there's nothing in the 0–4am window to reclassify).",
     "businessDayStartHour": 4,
-    "asapMinPrepMinutes": 25,
+    "_comment_prep": "CONFIRMED BY THE OWNER, 17 Sep 2026: 20 minutes for collection, 45 for delivery (their provider's own auto-accept delivery time). asapMinPrepMinutes is the base and applies to collection; asapMinPrepMinutesByMode overrides it per mode. It sets the \"As soon as possible (~N min)\" label AND the earliest bookable slot, and /api/order enforces the same number, so the promise and the rule cannot drift. 25 was Acomb's inherited value.",
+    "asapMinPrepMinutes": 20,
+    "asapMinPrepMinutesByMode": {
+      "delivery": 45
+    },
     "scheduling": {
       "enabled": true,
       "slotMinutes": 15,
