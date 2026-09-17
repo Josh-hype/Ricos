@@ -7118,25 +7118,58 @@ function printToText(kind, o, ctx, why) {
    host it is talking to, and the raw lines it has seen — the same information
    EPOSNative.getCallerIdLog() returns, just readable without a laptop. Also
    offers to start the call monitor by hand, so a "did it even try?" can be
-   answered without restarting the app. */
+   answered without restarting the app.
+
+   It re-fetches /api/config ITSELF rather than reading the boot-time
+   window.SHOP_CONFIG_POS_CALLERID. That is the whole difference between a
+   diagnostic that can fix the problem and one that can only describe it:
+   callerId.host/port live in the shop's config, so changing them is a redeploy
+   with no APK — but the app reads config exactly once, at page load, and
+   reopening an Android app from Recents RESUMES the WebView without reloading
+   it. So a corrected host would sit on the website, invisible to the till,
+   until someone force-stopped the app — which is not a thing to ask of a shop
+   mid-service. Fetching here means opening the tile picks up the new host, the
+   button starts on it, and the two rows below show config and reality side by
+   side so a mismatch is visible instead of inferred. */
 async function showCallerIdDiag() {
   const N = window.EPOSNative;
   if (!N || !N.getCallerIdLog) { toast('Caller ID needs the till app'); return; }
   let d = {};
   try { d = await N.getCallerIdLog(); } catch (e) { d = { error: String(e) }; }
-  const cid = (window.SHOP_CONFIG_POS_CALLERID || null);
+
+  // Fresh from the website, falling back to the boot-time value if offline —
+  // a till that has lost its network must still show what it last knew.
+  let cid = (window.SHOP_CONFIG_POS_CALLERID || null);
+  let cfgLive = false;
+  try {
+    const res = await fetch('/api/config', { cache: 'no-store' });
+    if (res.ok) {
+      const cfg = await res.json();
+      cid = (cfg && cfg.pos && cfg.pos.callerId) || null;
+      window.SHOP_CONFIG_POS_CALLERID = cid;
+      cfgLive = true;
+    }
+  } catch (e) { /* keep the boot-time value */ }
+
   const lines = (d.lines || []);
   const esc = (v) => String(v === undefined || v === null ? '' : v)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const want = cid && cid.host
+    ? esc(cid.host) + ':' + esc(cid.port || 1012)
+    : (cid ? 'auto-detect (no host set)' : '—');
   const rows = [
     ['Configured source', cid ? esc(cid.mode) : 'USB modem (no pos.callerId set)'],
+    ['Website says' + (cfgLive ? '' : ' (offline — last known)'), want],
     ['USB modem running', d.running ? 'yes' : 'no'],
     ['Call monitor running', d.callMonitor ? 'yes' : 'no'],
-    ['Talking to', esc(d.callMonitorHost) || '—'],
+    ['Actually talking to', esc(d.callMonitorHost) || '—'],
   ].map(([k, v]) => `<div style="display:flex;justify-content:space-between;gap:14px;padding:7px 0;border-bottom:1px solid var(--line)"><span style="color:var(--muted)">${k}</span><b>${v}</b></div>`).join('');
   const log = lines.length
     ? lines.map(l => `<div>${esc(l)}</div>`).join('')
     : '<div style="color:var(--muted)">nothing yet — no connection attempt and no lines received</div>';
+  const btnLabel = cid && cid.host
+    ? 'Start the call monitor on ' + esc(cid.host)
+    : 'Start the call monitor now';
   $('#cidBody').innerHTML = `
     <div style="font-size:14px">${rows}</div>
     <p style="margin:14px 0 6px;font-weight:700">What it has seen</p>
@@ -7144,11 +7177,13 @@ async function showCallerIdDiag() {
                 background:#0e0f12;color:#d6d9df;padding:10px;border-radius:8px;
                 max-height:38vh;overflow:auto;white-space:pre-wrap">${log}</div>
     <p style="color:var(--muted);font-size:12.5px;margin:12px 0 0;line-height:1.5">
-      A <b>;RING;</b> line means the phone line is reaching the till. Ring the shop
+      Oldest first, and it keeps its history — earlier <b>!!</b> errors stay listed
+      after a later attempt succeeds, so read the BOTTOM of the panel. A
+      <b>;RING;</b> line means the phone line is reaching the till. Ring the shop
       from a mobile and reopen this to check.</p>
     <button type="button" id="cidRetry" style="width:100%;margin-top:14px;padding:13px;
       border:0;border-radius:10px;background:var(--ink);color:#fff;font-weight:800">
-      Start the call monitor now</button>
+      ${btnLabel}</button>
   `;
   $('#cidOvl').classList.add('open');
   const btn = document.getElementById('cidRetry');
