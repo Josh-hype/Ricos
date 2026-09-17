@@ -488,7 +488,10 @@
                      0 2px 14px rgb(12 33 27 / 95%);
       }
       .hero-foot svg { filter: drop-shadow(0 1px 3px rgb(12 33 27 / 95%)); }
-      .button-ghost { background: rgb(12 33 27 / 42%); border-color: rgb(255 249 235 / 75%); }
+      /* The outlined button now sits over the plate rather than the foliage, so
+         its own backing does the work: at 42% the label had 28.9% of its area
+         under 4.5:1. This darkens the button, not the photograph. */
+      .button-ghost { background: rgb(12 33 27 / 78%); border-color: rgb(255 249 235 / 80%); }
       /* Kept here now, where it used to be hidden: the copy column is held
          back to 72% precisely so the script has somewhere to live beside it.
          The cascading negative margins are zeroed — they hang the lines off to
@@ -563,8 +566,8 @@
          vw cannot change without the window itself resizing. 190vw lands at
          684px on a 360 phone and 768px on a 404, which is where svh had it. */
       .hero {
-        justify-content: flex-start; min-height: min(190vw, 820px);
-        padding: 106px 6vw 96px;
+        justify-content: flex-start; min-height: min(150vw, 700px);
+        padding: 100px 6vw 40px;
       }
       h1 { font-size: clamp(32px, 8.9vw, 44px); }
       .hero-strap { gap: 8px; font-size: 9px; letter-spacing: .11em; }

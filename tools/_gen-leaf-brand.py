@@ -117,7 +117,9 @@ def main():
             # frame proportionally, which is what keeps it clear of the stacked
             # buttons above it; it also drops the dead marble. Tuned against the measured
             # gap between the buttons and the plate, not by eye.
-            shot = shot.crop((0, 0, shot.width, round(shot.height * 0.84)))
+            # Top 10% off as well as the bottom: the band is shorter now, so the
+            # foliage above the chair was eating height the plate needed.
+            shot = shot.crop((0, round(shot.height * 0.10), shot.width, round(shot.height * 0.84)))
         for ext, kw in (('jpg', dict(quality=84, progressive=True)),
                         ('webp', dict(quality=80, method=6))):
             p = os.path.join(SHOP, 'assets', out_stem + '.' + ext)
