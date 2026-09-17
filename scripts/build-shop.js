@@ -689,6 +689,14 @@ const tokens = {
   shopAreaPrefix:          areaPrefix,
   shopDomain:              config.business.domain || '',
   deliveryAreaDescription: config.fulfillment?.delivery?.areaDescription || 'in our delivery area',
+  // The line under the Collection/Delivery buttons. Identical to what it has
+  // always been for every shop that delivers; a shop with delivery switched off
+  // must not go on advertising a delivery area, so it gets a collection-only
+  // sentence instead. Built here rather than patched in the browser so the page
+  // is right in its first paint, and right with JavaScript disabled.
+  serviceHint: config.fulfillment?.delivery?.enabled === false
+    ? `Enter your postcode to get started. We're collection only at the moment, from any ${a.city || ''} postcode.`
+    : `Pick collection or delivery and enter your postcode. Delivery is ${config.fulfillment?.delivery?.areaDescription || 'in our delivery area'} only — collection from any ${a.city || ''} postcode.`,
   // JSON literal for the allowed outcodes - injected into client JS so
   // postcode validation has a baseline before /api/config arrives.
   allowedOutcodesJSON:     JSON.stringify(config.fulfillment?.delivery?.allowedOutcodes || []),

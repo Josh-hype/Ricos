@@ -1,7 +1,7 @@
 {
-  "_comment": "The Leaf Cafe Bistro — 124 Boroughbridge Road, Acomb, York. Trading name taken from the shop's own logo artwork: THE LEAF / CAFÉ & BISTRO. The printed menu header sets it as CAFE - BISTRO with a dot, but the logo is the brand mark and it carries the accent and the ampersand. The design handoff had dropped the \"The\" when it generated the logo — see _comment_logo. Landing page ported from the supplied design handoff (leaf-cafe-bistro-build-kit). The shop is PRE-LAUNCH: see the prelaunch flag at the bottom, and the UNCONFIRMED list below.",
+  "_comment": "The Leaf Cafe Bistro — 124 Boroughbridge Road, Acomb, York. Trading name taken from the shop's own logo artwork: THE LEAF / CAFÉ & BISTRO. The printed menu header sets it as CAFE - BISTRO with a dot, but the logo is the brand mark and it carries the accent and the ampersand. The design handoff had dropped the \"The\" when it generated the logo — see _comment_logo. Landing page ported from the supplied design handoff (leaf-cafe-bistro-build-kit). The shop is LIVE as of 17 Sep 2026 (prelaunch removed). Delivery is temporarily switched off while the driver recovers from an operation - see _comment_enabled under fulfillment.delivery.",
 
-  "_comment_unconfirmed": "STILL NEEDED BEFORE LAUNCH: the Stripe Connect acct_ id, and the delivery areas and fees — both being done at the Z93 install. Everything else is CONFIRMED: address, postcode, phone, orders email, opening hours, menu, legal name, company number and seo.geo.",
+  "_comment_unconfirmed": "ALL CONFIRMED as of 17 Sep 2026 at the Z93 install: Stripe Connect acct_ id, delivery outcodes, fee and minimum, address, postcode, phone, orders email, opening hours, menu, legal name, company number and seo.geo. Still outstanding, neither blocking: seo.sameAs (Facebook / Instagram / Google Business URLs) and a higher-resolution coffee photo.",
 
   "_comment_ordering": "DECIDED: Leaf is ONLINE ORDERS ONLY — no table booking — and does BOTH delivery and collection. The supplied design was a booking shape ('Book a table', 'View menu' links that went nowhere); the landing page has been reworked so every call to action lands on /order.",
 
@@ -42,7 +42,13 @@
     "collection": { "enabled": true },
     "_comment_delivery": "CONFIRMED BY THE OWNER at the shop, 17 Sep 2026: delivery to YO24 and YO26 only, at a flat £2. YO23 has been REMOVED — it was in the earlier guess and is not served. maxMiles has been removed with it: the owner defined the area by outcode, and a road-distance cap layered on top would silently turn away an address inside an allowed outcode that happens to sit past the cap. The outcode list is now the whole rule. All three delivery numbers are now confirmed: outcodes, fee and the £15 minimum.",
     "delivery": {
-      "enabled": true,
+      "_comment_enabled": "TEMPORARILY OFF, 17 Sep 2026 - the shop's driver is recovering from an operation, so Leaf is collection-only for roughly a fortnight. Set this back to true to restore delivery; NOTHING ELSE needs changing, every confirmed delivery setting below is left exactly as the owner gave it. While it is false the order page hides the delivery option, forces collection, and shows unavailableNotice once per visit so the customer is told WHY rather than finding the option simply gone.",
+      "enabled": false,
+      "_comment_unavailableNotice": "Only read when enabled is false. Remove it (or set enabled back to true) when the driver is back.",
+      "unavailableNotice": {
+        "title": "Collection only for now",
+        "message": "Our driver is recovering from an operation, so we can't deliver for the next couple of weeks. Collection is open as usual - sorry for the inconvenience, and thanks for bearing with us."
+      },
       "mode": "outcode",
       "_comment_minimum": "CONFIRMED by the owner at the shop, 17 Sep 2026: £15 minimum on delivery. minimumIncludesFees is deliberately absent, i.e. false, so the £15 is measured on the BASKET before the £2 delivery and the 50p service fee - a £14 basket is refused rather than being nudged over the line by charges the customer did not choose. Collection is unaffected; the minimum only applies to delivery.",
       "minimumOrderPence": 1500,
@@ -123,8 +129,7 @@
     "metaPixelId": ""
   },
 
-  "_comment_prelaunch": "KEEPS THE SHOP OUT OF GOOGLE. Every page sends X-Robots-Tag: noindex and robots.txt is Disallow-all. REMOVE THIS LINE ON LAUNCH DAY or the site stays invisible.",
-  "prelaunch": true,
+  "_comment_prelaunch": "REMOVED 17 Sep 2026 - Leaf is live and indexable. Re-add \"prelaunch\": true to pull it back out of Google (X-Robots-Tag: noindex on every page + Disallow-all robots.txt).",
 
   "seo": {
     "cuisine": ["Cafe", "British", "Breakfast"],

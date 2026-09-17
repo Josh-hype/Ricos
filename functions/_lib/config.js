@@ -45,6 +45,10 @@ export function getPublicConfig() {
         minimumOrderPence: delivery.minimumOrderPence,
         minimumIncludesFees: !!delivery.minimumIncludesFees,
         allowedOutcodes: delivery.allowedOutcodes,
+        // Shown when delivery is switched OFF, to explain why. Optional: a shop
+        // with delivery enabled, or one that turns it off without a reason,
+        // sends nothing and the order page behaves exactly as before.
+        unavailableNotice: delivery.enabled === false ? (delivery.unavailableNotice || null) : null,
         // Hard distance cap (road miles) layered on top of outcode pricing. When
         // set, the browser can't price locally (distance needs a geocode), so the
         // order page routes the postcode check through /api/delivery-quote — the

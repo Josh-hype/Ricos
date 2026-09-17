@@ -1526,7 +1526,7 @@
     <div class="row">
       <div class="service-info">
         <h2 id="serviceMode">How would you like your order?</h2>
-        <p id="serviceHint">Pick collection or delivery and enter your postcode. Delivery is {{deliveryAreaDescription}} only — collection from any {{shopCity}} postcode.</p>
+        <p id="serviceHint">{{serviceHint}}</p>
       </div>
       <div class="service-controls">
         <div class="mode-toggle" role="tablist">
@@ -1644,6 +1644,23 @@
       <button class="modal-close" data-close-modal aria-label="Close">✕</button>
     </div>
     <div class="modal-body" id="itemDetailBody"></div>
+  </div>
+</div>
+
+<!-- Delivery temporarily off: explains WHY collection is the only option. Only
+     rendered for a shop whose config sets fulfillment.delivery.unavailableNotice
+     alongside enabled:false. Unlike the closure overlay this does NOT disable
+     checkout — the shop is trading, just not delivering. -->
+<div class="modal-overlay" id="deliveryOffOverlay" role="dialog" aria-modal="true" aria-labelledby="deliveryOffTitle">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-head">
+      <h3 id="deliveryOffTitle">Collection only</h3>
+      <button class="modal-close" data-close-modal aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <p id="deliveryOffMsg" style="font-size:15px;line-height:1.6;margin:4px 0 18px"></p>
+      <button type="button" data-close-modal style="width:100%;padding:15px;border:0;border-radius:12px;background:#15171c;color:#fff;font-size:15.5px;font-weight:800;cursor:pointer">Got it</button>
+    </div>
   </div>
 </div>
 
@@ -4522,6 +4539,46 @@ function maybeShowClosedNotice(cfg) {
   } catch (e) {}
 }
 
+/* One-off "why is there no delivery option?" popup. Delivery vanishing with no
+   explanation reads as a broken site to a customer who has had it delivered
+   before, so a shop that switches delivery OFF can set
+   fulfillment.delivery.unavailableNotice = { title, message } to say why.
+   No-op for every shop that hasn't (delivery on, or off without a reason).
+
+   Unlike a closure this does NOT stop ordering — the shop is trading, it just
+   isn't delivering — so checkout stays live and there's no banner.
+
+   Called AFTER the closed-now notice on purpose. Both fire on boot, and
+   [data-close-modal] runs closeOpenModals(), which clears EVERY open overlay at
+   once: shown first, this one sits under the closed popup and is dismissed
+   unread by the tap meant for that one — burning its single showing for the
+   session. So it waits for a clear screen and takes its turn after. */
+function maybeShowDeliveryOffNotice(cfg) {
+  const d = cfg?.fulfillment?.delivery;
+  if (!d || d.enabled !== false) return;
+  const notice = d.unavailableNotice;
+  if (!notice || !notice.message) return;
+  try { if (sessionStorage.getItem('deliveryOffSeen') === '1') return; } catch (e) {}
+
+  function show() {
+    // Marked seen only once it is actually on screen, not when it was queued,
+    // so a visit that never displayed it doesn't spend its one showing.
+    try { sessionStorage.setItem('deliveryOffSeen', '1'); } catch (e) {}
+    const t = document.getElementById('deliveryOffTitle');
+    if (t && notice.title) t.textContent = notice.title;
+    const m = document.getElementById('deliveryOffMsg');
+    if (m) m.textContent = notice.message;
+    openModal('deliveryOffOverlay');
+  }
+
+  if (!document.querySelector('.modal-overlay.open')) { show(); return; }
+  let ticks = 0;
+  const wait = setInterval(() => {
+    if (!document.querySelector('.modal-overlay.open')) { clearInterval(wait); show(); }
+    else if (++ticks > 300) clearInterval(wait); // ~2 min, so an abandoned tab isn't left polling
+  }, 400);
+}
+
 /* Slim banner for a temporary date-bounded delivery late start
    (config.fulfillment.delivery.lateStart maps "YYYY-MM-DD" -> "HH:MM", shop-local).
    Shows TODAY's restriction only while it's still before that time (after it,
@@ -4615,6 +4672,7 @@ fetch('/api/config').then(r => r.ok ? r.json() : null).then(cfg => {
     // A full-day closure takes precedence over the normal "closed now" notice.
     if (cfg.closure) applyClosure(cfg.closure);
     else maybeShowClosedNotice(cfg);
+    maybeShowDeliveryOffNotice(cfg);
     maybeShowDeliveryLateStart(cfg);
   }
 }).catch(() => { /* fall back to defaults baked into the page */ });
