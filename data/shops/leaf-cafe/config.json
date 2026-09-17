@@ -1,7 +1,7 @@
 {
   "_comment": "The Leaf Cafe Bistro — Acomb Road, York. Trading name taken from the shop's own logo artwork: THE LEAF / CAFÉ & BISTRO. The printed menu header sets it as CAFE - BISTRO with a dot, but the logo is the brand mark and it carries the accent and the ampersand. The design handoff had dropped the \"The\" when it generated the logo — see _comment_logo. Landing page ported from the supplied design handoff (leaf-cafe-bistro-build-kit). The shop is PRE-LAUNCH: see the prelaunch flag at the bottom, and the UNCONFIRMED list below.",
 
-  "_comment_unconfirmed": "STILL NEEDED FROM THE OWNER before this can go live: (1) postcode for 124A Acomb Road — needed for the address and seo.geo; (2) phone and orders email — both PRINT on the page, so the build warns about them by name; (3) the real opening hours (the ones below are a placeholder shaped around 'breakfast, lunch, bistro evenings' and are almost certainly wrong); (4) legal name + company number; (5) the Stripe Connect acct_ id; (6) the real menu — see _comment_menu.",
+  "_comment_unconfirmed": "STILL NEEDED FROM THE OWNER before this can go live: (1) postcode for 124A Acomb Road — needed for the address and seo.geo; (2) phone and orders email — both PRINT on the page, so the build warns about them by name; (4) legal name + company number; (5) the Stripe Connect acct_ id; (6) the real menu — see _comment_menu.",
 
   "_comment_ordering": "DECIDED: Leaf is ONLINE ORDERS ONLY — no table booking — and does BOTH delivery and collection. The supplied design was a booking shape ('Book a table', 'View menu' links that went nowhere); the landing page has been reworked so every call to action lands on /order.",
 
@@ -63,15 +63,18 @@
     "connectedAccountId": "acct_REPLACE_WITH_STRIPE_CONNECT_ID"
   },
 
-  "_comment_hours": "PLACEHOLDER — NOT CONFIRMED BY THE OWNER. Shaped around the design's 'breakfast, lunch, bistro evenings' story: daytime trade all week, plus Friday and Saturday evenings. Every one of these windows needs checking before launch. 24-hour format; a close after midnight is written as 25:00 = 01:00 next day.",
+  "_comment_hours": "CONFIRMED BY THE OWNER, 17 Sep 2026. Open 08:00-17:00 every day except TUESDAY, which is closed. These replace the invented placeholder that was scaffolded with the shop. 24-hour format; a close after midnight would be written as 25:00 = 01:00 next day. NOTE: closing at 17:00 every day means the shop does NOT trade in the evening - see _comment_evening_copy.",
+
+  "_comment_evening_copy": "⚠️ THE SITE STILL TALKS ABOUT EVENINGS in three places, written when the hours were a placeholder that had Friday and Saturday evening service: the hero copy says 'comforting evening plates', the menus band has an 'Evening / Relaxed dining' card, and seo.description says 'bistro evenings'. With a 17:00 close none of that is true. Left in place rather than rewritten unilaterally - the owner may intend to add evening service, in which case the hours change instead.",
+
   "hours": {
-    "monday":    { "closed": false, "windows": [{ "open": "08:00", "close": "16:00" }] },
-    "tuesday":   { "closed": false, "windows": [{ "open": "08:00", "close": "16:00" }] },
-    "wednesday": { "closed": false, "windows": [{ "open": "08:00", "close": "16:00" }] },
-    "thursday":  { "closed": false, "windows": [{ "open": "08:00", "close": "16:00" }] },
-    "friday":    { "closed": false, "windows": [{ "open": "08:00", "close": "16:00" }, { "open": "17:30", "close": "21:00" }] },
-    "saturday":  { "closed": false, "windows": [{ "open": "08:00", "close": "16:00" }, { "open": "17:30", "close": "21:00" }] },
-    "sunday":    { "closed": false, "windows": [{ "open": "09:00", "close": "15:00" }] }
+    "monday":    { "closed": false, "windows": [{ "open": "08:00", "close": "17:00" }] },
+    "tuesday":   { "closed": true,  "windows": [] },
+    "wednesday": { "closed": false, "windows": [{ "open": "08:00", "close": "17:00" }] },
+    "thursday":  { "closed": false, "windows": [{ "open": "08:00", "close": "17:00" }] },
+    "friday":    { "closed": false, "windows": [{ "open": "08:00", "close": "17:00" }] },
+    "saturday":  { "closed": false, "windows": [{ "open": "08:00", "close": "17:00" }] },
+    "sunday":    { "closed": false, "windows": [{ "open": "08:00", "close": "17:00" }] }
   },
 
   "ordering": {
