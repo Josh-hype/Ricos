@@ -140,7 +140,11 @@
        header is position:absolute so this overhangs further into the hero
        rather than reflowing the nav; the hero copy starts low enough that it
        still clears. */
-    .brand-logo{display:block;height:165px;width:auto}
+    /* Sized to match the FOOTPRINT of the badge this replaced, not its height:
+       the logo is a 1.77:1 wordmark (1200x680), so 96px tall is ~170px wide,
+       which is where Acomb's 165px square sat. Sizing by height alone would
+       have pushed it to ~292px and into the nav. */
+    .brand-logo{display:block;height:96px;width:auto}
     /* logo-mark.png carries ~11px of transparent padding at the 110px header
        size, so the visible disc floated 15px right and 11px high of the
        reference's (108-196 x / 30-118 y). Shifted visually only — position
@@ -148,15 +152,16 @@
        fraction of the badge, so they scale with it (x1.5 here) rather than
        staying at the 110px values and under-correcting. The footer badge is a
        different size and is not covered by the reference, so it keeps its box. */
-    header.site .brand-logo{position:relative;left:-21px;top:14px}
-    footer.site .brand-logo{height:88px}
+    /* No offsets: the new logo is trimmed to its content box, so it needs no
+       correction for transparent padding the way Acomb's badge did. */
+    footer.site .brand-logo{height:60px}
     /* Step down once the nav collapses so the badge doesn't crowd the burger.
        Both rules live here, before the ≤760px block, so the narrower query
        still wins on a phone. */
     /* The transparent-padding offset scales with the badge, so step it down
        with the height rather than leaving the desktop value to overshoot. */
-    @media(max-width:760px){ .brand-logo{height:117px} header.site .brand-logo{left:-15px;top:9px} }
-    @media(max-width:560px){ .brand-logo{height:105px} header.site .brand-logo{left:-14px;top:9px} }
+    @media(max-width:760px){ .brand-logo{height:72px} }
+    @media(max-width:560px){ .brand-logo{height:62px} }
     /* Reference nav: five links on a ~57px rhythm (link edges 497.6 / 596.8 /
        696.0 / 807.6 / 936.2, run ending at 1004), then a breathing gap before
        the CTA pill. At 45px the run ended 51px short at x=953 and the nav read
@@ -925,7 +930,7 @@
 <header class="site">
   <div class="wrap">
     <a class="brand" href="/" aria-label="{{shopName}} home">
-      <img class="brand-logo" src="/assets/logo-mark.png" alt="{{shopName}}" width="1006" height="1037" />
+      <img class="brand-logo" src="/assets/logo-mark.png" alt="{{shopName}}" width="1200" height="680" />
     </a>
     <button class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="nav">☰</button>
     <nav class="main" id="nav">
@@ -1038,7 +1043,7 @@
   <div class="wrap">
     <div class="fgrid">
       <div id="about">
-        <a class="brand" href="/" style="margin-bottom:18px"><img class="brand-logo" src="/assets/logo-mark.png" alt="{{shopName}}" width="1006" height="1037" /></a>
+        <a class="brand" href="/" style="margin-bottom:18px"><img class="brand-logo" src="/assets/logo-mark.png" alt="{{shopName}}" width="1200" height="680" /></a>
         <p>We serve the best pizzas and kebabs in town. Fresh ingredients, great taste, fast delivery.</p>
       </div>
 
@@ -1110,7 +1115,7 @@
        skipped, so the hero entries cover both the desktop and phone layouts. */
     window.LAYOUT_EDITOR_BLOCKS = [
       ["Header nav", "nav.main"],
-      ["Logo badge", "header.site .brand"],
+      ["Logo wordmark", "header.site .brand"],
       ["Hero photo", ".hero-media"],
       ["Hero kicker", ".hero .kicker"],
       ["Hero headline", ".hero h1"],

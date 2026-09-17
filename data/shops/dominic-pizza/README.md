@@ -28,13 +28,20 @@ cannot get indexed under this brand.
   and survived the rest of the rebrand. Now `{{openingHoursRows}}`, generated
   from `config.hours`, so they can't drift from what the ordering engine enforces.
 - Delivery switched **off** — see below
+- **Logo** — `logo.png`, `assets/logo-mark.png` (1200×680) and a square
+  `icon.png`, all derived from `_source/dominic-logo.png`. The header CSS was
+  retuned: Acomb's was a 1:1 badge, Dominic's is a 1.77:1 wordmark, and the CSS
+  sizes by height with `width:auto`, so the old 165px would have rendered it
+  ~292px wide and into the nav. Now 96px tall / ~169px wide, the same footprint
+  the badge had. Acomb's `left:-21px` nudges removed with it.
+- **Theme reds and cream** sampled from the logo file: `#E7151A`, `#FBF6E8`
 
 ### Still to rebrand
 
 | | Currently |
 |---|---|
-| `logo.png` + `assets/logo-mark.png` | Acomb's logo, in the header and footer |
-| `assets/` photos, `theme` colours, `order.css` | Acomb's brand |
+| `assets/` food photos, `order.css` | Acomb's — though the hero (pizza + doner) suits a shop whose logo reads "PIZZA · KEBABS · CALZONES", so it may be worth keeping |
+| `theme.accent` | still Acomb's gold `#c9a227`. The logo's only other colour is Italian-flag green `#036B3A` — a design call, not a correction |
 | `menu.json` + `menu-visual.json` | Acomb's 141 items across 17 categories |
 | Hero "FAST DELIVERY — Right to Your Door" badge, and the footer blurb | Promises delivery, which is off |
 | `stripe.connectedAccountId`, `legalName`, `companyNumber` | placeholders (the build warns) |

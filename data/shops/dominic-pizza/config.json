@@ -20,14 +20,15 @@
   },
   "_comment_theme": "Brand red and gold sampled from the owner's reference visual. background/surface are the PLATFORM's light surfaces and must stay light: order.html, thank-you.html, reset-password, privacy, terms, allergy-info, the staff manifest and the confirmation email all paint dark ink on them without checking. They were briefly set to this shop's near-black, which rendered every one of those dark-on-dark — invisible headings on the thank-you page and invisible body text in the confirmation email. The DARK landing page is bespoke (data/shops/acomb-pizza-kebab/index.html) and now hardcodes its own #0a0a0a / #141414 rather than borrowing these. chrome stays dark so the staff PWA's theme_color is unchanged.",
   "theme": {
-    "primary": "#cf1c20",
-    "primaryDark": "#a81317",
-    "primaryDeep": "#7d0d10",
+    "primary": "#E7151A",
+    "primaryDark": "#C1121A",
+    "primaryDeep": "#8E0D13",
     "accent": "#c9a227",
     "accentDeep": "#9c7b12",
-    "background": "#FBF3DE",
+    "background": "#FBF6E8",
     "surface": "#FFFDF7",
-    "chrome": "#0a0a0a"
+    "chrome": "#0a0a0a",
+    "_comment_palette": "Reds and cream sampled from the owner's logo artwork (_source/dominic-logo.png), not eyeballed: #E7151A is the most common exact red in the file and #FBF6E8 the most common cream. primaryDark and primaryDeep are darker steps of that same red for hovers and headings. The accent is still Acomb's gold (#c9a227) - the logo's only other colour is the Italian-flag green #036B3A, and swapping gold for green across a red-and-black site is a design call, not a colour correction."
   },
   "fulfillment": {
     "collection": {
