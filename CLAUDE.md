@@ -431,6 +431,18 @@ Brief shape:
   the IP on site (`nc -v <ip> 1012` must connect), never assume the default.
   **`host` and `port` come from `config.json` over `/api/config`, so changing
   them is a redeploy + app restart — no APK.**
+- **Caller ID without `pos.customerLookup` pops a bare number.** They are two
+  halves of one feature and the flag switches on both: the lookup
+  (`/api/staff/customer-lookup` **404s** without it, and the till's call bar
+  treats that as "nobody" and shows just the digits) and the *remembering* that
+  fills the address book — `rememberContact` in `functions/_lib/customer.js`,
+  called by **both** `api/order.js` (website) and `api/staff/counter-order.js`
+  (phone orders on the till), keyed on `normalisePhoneKey` so landlines count.
+  A website order only updates a customer's *account* if they were signed in,
+  and an account keyed by **email** is invisible to a phone lookup however many
+  orders it has placed — which is why the website has to leave a phone-keyed
+  contact record of its own. Currently on for `food-station` and
+  `dominic-pizza`; every other shop stores nothing.
 - **A native change that fails by going quiet is the worst thing we ship.** The
   permission above, the wallet domains, the USB-host feature: none of them error,
   they just find nothing, which from the counter is indistinguishable from

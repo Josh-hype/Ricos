@@ -48,5 +48,7 @@
   "closures": {
     "2026-06-29": { "title": "Closed", "message": "Closed today." }
   },
+  "_comment_pos": "Till flags. customerLookup is ON so the caller-ID address book (rememberContact + /api/staff/customer-lookup) is exercised rather than gated off - a fixture without it made every 'it stored X' assertion pass by storing nothing. tables is deliberately absent: tables.test.mjs builds its own configs.",
+  "pos": { "customerLookup": true },
   "stripe": { "connectedAccountId": "acct_TEST" }
 }

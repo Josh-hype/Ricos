@@ -18,7 +18,7 @@ import { getOffMap } from '../_lib/availability.js';
 import { getOrderingPause } from '../_lib/ordering-pause.js';
 import { normalisePhoneE164UK } from '../_lib/sms.js';
 import { readCustomerSession } from '../_lib/customer-auth.js';
-import { getCustomer, putCustomer, upsertAddress, updateContactDetails } from '../_lib/customer.js';
+import { getCustomer, putCustomer, upsertAddress, updateContactDetails, rememberContact } from '../_lib/customer.js';
 
 export const onRequestPost = async ({ request, env }) => {
   let input;
@@ -376,6 +376,17 @@ export const onRequestPost = async ({ request, env }) => {
   } catch (e) {
     console.warn('saving customer profile from order failed', e);
   }
+
+  // Remember this number so the till's caller ID can name them next time they
+  // ring. Runs for guests AND signed-in customers: a website account is keyed by
+  // whichever contact they signed up with, so an email-keyed account is invisible
+  // to a phone lookup however many orders it has placed. phoneRaw, not `phone` —
+  // the latter is mobile-only (see normalisePhoneKey). Gated on
+  // pos.customerLookup inside rememberContact.
+  await rememberContact({
+    name, phone: phoneRaw, address, at: createdAt, source: 'web',
+    skipContact: storedCustomer?.contact || null,
+  }, env);
 
   // Reserve a slot (best-effort).
   if (schedule !== 'asap') {

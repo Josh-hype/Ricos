@@ -2,6 +2,8 @@
    normalised contact (lowercase email or +44... phone) so signin can look up
    directly without needing a secondary index. */
 
+import { getConfig } from './config.js';
+
 // Exported so the API and the order page agree on the cap — the checkout warns
 // the customer when they're at it, and must not invent its own number.
 export const MAX_SAVED_ADDRESSES = 5;
@@ -97,6 +99,71 @@ export function removeAddress(customer, addr) {
     !((a.line1 || '').trim().toLowerCase() === line &&
       (a.postcode || '').trim().toUpperCase().replace(/\s+/g, '') === pc));
   return customer;
+}
+
+/* Remember a phone number as a CONTACT record, so the till's caller ID can name
+   whoever rings and offer the address they last ordered to.
+
+   ONE function for both halves on purpose: a website order (api/order.js) and a
+   phone order typed at the till (api/staff/counter-order.js) must build ONE
+   address book, and the gate, the key and the "never an account" rule have to be
+   identical or the two quietly diverge. It used to live only in counter-order,
+   which meant the till learned nothing from the website — so a new shop whose
+   orders all arrive online saw caller ID pop a bare number indefinitely and
+   reasonably concluded it was broken. That is exactly how it read on Dominic
+   Pizza's first live call.
+
+   Deliberate choices:
+   - Gated INSIDE, on pos.customerLookup, so neither caller can forget it and a
+     shop that hasn't asked for the feature stores nothing at all.
+   - Keyed with normalisePhoneKey (see above): any UK number, landlines included,
+     and the same normalisation the lookup uses, so the keys agree.
+   - Never creates or touches auth fields — a record from here is a contact, not
+     an account. If that person later signs up with the same number, signup owns
+     the record and their addresses are already in it.
+   - Never overwrites an existing name. One typed at a noisy counter, or in a
+     hurry at checkout, shouldn't replace what the customer entered themselves.
+   - `skipContact` is for the caller that has ALREADY written this exact record
+     in the same request (a phone-keyed account ordering from its own number).
+     Writing it twice would re-read a stale copy and could undo the first-orders
+     redemption increment.
+   - BEST EFFORT: callers await it only after the order is safely persisted, so a
+     KV hiccup can never cost an order that has been placed and paid for.
+
+   Returns the contact key it wrote, or null if it stored nothing. */
+export async function rememberContact({ name, phone, address, at, source, skipContact }, env) {
+  try {
+    if (!getConfig().pos?.customerLookup) return null;
+    if (!env || !env.CUSTOMERS_KV) return null;
+    const contact = normalisePhoneKey(phone || '');
+    if (!contact) return null;                 // no number, or not a UK one
+    if (skipContact && skipContact === contact) return null;
+
+    const when = at || new Date().toISOString();
+    let customer = await getCustomer(contact, env);
+    if (!customer) {
+      customer = {
+        id: newCustomerId(),
+        name: name || '',
+        contact,
+        contactType: 'phone',
+        email: null,
+        phone: contact,
+        createdAt: when,
+        source: source || 'counter',
+        addresses: [],
+      };
+    } else if (!customer.name && name) {
+      customer.name = name;
+    }
+    customer.lastOrderAt = when;
+    if (address && address.line1 && address.postcode) upsertAddress(customer, address);
+    await putCustomer(customer, env);
+    return contact;
+  } catch (e) {
+    console.warn('remembering contact failed', e);
+    return null;
+  }
 }
 
 export function upsertAddress(customer, addr) {

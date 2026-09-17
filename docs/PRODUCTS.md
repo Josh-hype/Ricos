@@ -123,6 +123,40 @@ the same records as their website account). Collection / Delivery buttons open a
 new sale with the caller prefilled. It is a bar, not a modal, on purpose: a
 ringing phone must not block an order already being taken.
 
+### It needs `pos.customerLookup` as well — a number alone is nothing
+
+Getting the number onto the screen is only half of it, and the other half is a
+separate flag. **Without `pos.customerLookup: true`** the lookup endpoint 404s,
+the call bar reads that as "nobody" and shows bare digits — which is exactly
+what Dominic's first live call did, minutes after the hard part started working.
+
+The flag switches on **two** things, and it has to be both or the feature has
+nothing to find:
+
+| | |
+|---|---|
+| the **lookup** | `/api/staff/customer-lookup?phone=…` → name + addresses, most recent first |
+| the **remembering** | `rememberContact()` in `functions/_lib/customer.js`, called by `api/order.js` (every website order) **and** `api/staff/counter-order.js` (every phone order typed at the till) |
+
+One function for both callers deliberately: the two must build **one** address
+book, keyed by `normalisePhoneKey` so a landline counts — caller ID reports
+plenty of those, and the SMS normaliser would have dropped every one.
+
+Two things that are easy to get wrong here:
+
+- **A website order does not update an account unless they were signed in**, and
+  an account keyed by **email** is invisible to a phone lookup however many
+  orders it has placed. So the website leaves a phone-keyed *contact* record of
+  its own — no password, no account, and it never overwrites a name the customer
+  set themselves. If they later sign up with that number, signup owns the record
+  and their addresses are already in it.
+- **A new shop has no phone-order history**, so for the first weeks its website
+  is the only thing that can fill the book. Until the website fed it too, caller
+  ID on a brand-new install could only ever show numbers staff had already typed
+  in by hand.
+
+On for `food-station` and `dominic-pizza`. Every other shop stores nothing.
+
 The number can come from either source. Everything downstream is identical —
 both fire the same `callerId` event.
 
