@@ -252,5 +252,11 @@ export function activeClosure(config, when = new Date()) {
   return {
     title: (rec.title && String(rec.title)) || 'We’re closed today',
     message: String(rec.message || 'We’re closed today. Apologies for any inconvenience.'),
+    // Optional override for the disabled checkout button, which otherwise reads
+    // "Closed today". Right for a one-day closure, wrong for an indefinite one:
+    // a shop that is trading normally but has online ordering switched off ends
+    // up telling the customer it is closed directly beneath a message saying it
+    // is open. Omitted by every shop that doesn't need it.
+    buttonLabel: rec.buttonLabel ? String(rec.buttonLabel) : null,
   };
 }

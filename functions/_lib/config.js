@@ -64,7 +64,11 @@ export function getPublicConfig() {
     // online orders — reuse the same client machinery (popup + banner + disabled
     // checkout) permanently, with an "in store" message instead of "closed".
     closure: activeClosure(config) || ((collection.enabled === false && delivery.enabled === false)
-      ? { title: 'Online ordering unavailable', message: 'We don’t take online orders — come and see us in store!' }
+      ? {
+          title: 'Online ordering unavailable',
+          message: 'We don’t take online orders — come and see us in store!',
+          buttonLabel: 'Not available',
+        }
       : null),
     ordering: config.ordering,
     // promo carries both the standing autoOnlineDiscount and the first-orders

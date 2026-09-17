@@ -351,6 +351,14 @@
       ]
     }
   },
+  "_comment_closures": "TEMPORARY, 17 Sep 2026 - the shop is on a holding page while a new site is built (index.html; the finished landing is preserved as index.full.html). Keyed by date YYYY-MM-DD, and \"*\" means EVERY day. activeClosure() in functions/_lib/hours.js reads it, so /order shows this message, disables checkout, and /api/order rejects with 503 (functions/api/order.js:33) - the page cannot be bypassed by a bookmark or a stale Google result. Needed because cashOnCollectionEnabled is true and this shop has no Stripe account, so without it a cash order could still land on a board nobody watches. DELETE this whole block to reopen ordering.",
+  "closures": {
+    "*": {
+      "title": "New website coming soon",
+      "message": "We're having a new website built, so online ordering is paused for now. We're still open as usual - please give us a call on 01904 785588 and we'll take your order.",
+      "buttonLabel": "Ordering paused"
+    }
+  },
   "ordering": {
     "timezone": "Europe/London",
     "_comment_businessDayStartHour": "Trading-day rollover hour (0–23, shop local time). 4 = the day's orders / takings / Z-report run 4am-to-4am, so a late-night shop's orders taken after midnight still count toward the day it opened. Set 0 for a plain midnight-to-midnight day. Safe to leave at 4 even for daytime shops (if you close before midnight there's nothing in the 0–4am window to reclassify).",

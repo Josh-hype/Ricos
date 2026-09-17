@@ -4644,7 +4644,7 @@ function applyClosure(c) {
     if (b) { b.textContent = c.message; b.hidden = false; }
     ['checkoutBtn', 'mCheckoutBtn'].forEach(id => {
       const el = document.getElementById(id);
-      if (el) { el.disabled = true; el.textContent = 'Closed today'; el.style.opacity = '.55'; el.style.cursor = 'not-allowed'; }
+      if (el) { el.disabled = true; el.textContent = c.buttonLabel || 'Closed today'; el.style.opacity = '.55'; el.style.cursor = 'not-allowed'; }
     });
   } catch (e) {}
 }
