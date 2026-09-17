@@ -1,7 +1,7 @@
 {
-  "_comment": "The Leaf Cafe Bistro — Acomb Road, York. Trading name taken from the shop's own logo artwork: THE LEAF / CAFÉ & BISTRO. The printed menu header sets it as CAFE - BISTRO with a dot, but the logo is the brand mark and it carries the accent and the ampersand. The design handoff had dropped the \"The\" when it generated the logo — see _comment_logo. Landing page ported from the supplied design handoff (leaf-cafe-bistro-build-kit). The shop is PRE-LAUNCH: see the prelaunch flag at the bottom, and the UNCONFIRMED list below.",
+  "_comment": "The Leaf Cafe Bistro — 124 Boroughbridge Road, Acomb, York. Trading name taken from the shop's own logo artwork: THE LEAF / CAFÉ & BISTRO. The printed menu header sets it as CAFE - BISTRO with a dot, but the logo is the brand mark and it carries the accent and the ampersand. The design handoff had dropped the \"The\" when it generated the logo — see _comment_logo. Landing page ported from the supplied design handoff (leaf-cafe-bistro-build-kit). The shop is PRE-LAUNCH: see the prelaunch flag at the bottom, and the UNCONFIRMED list below.",
 
-  "_comment_unconfirmed": "STILL NEEDED FROM THE OWNER before this can go live: (1) postcode for 124A Acomb Road — needed for the address and seo.geo; (2) phone and orders email — both PRINT on the page, so the build warns about them by name; (4) legal name + company number; (5) the Stripe Connect acct_ id; (6) the real menu — see _comment_menu.",
+  "_comment_unconfirmed": "STILL NEEDED BEFORE LAUNCH: (1) legal name + company number; (2) the Stripe Connect acct_ id and the delivery areas and fees — both being done at the Z93 install; (3) seo.geo latitude/longitude for YO26 6AB, which must be looked up rather than guessed. Address, postcode, phone, orders email, opening hours and the menu are all CONFIRMED.",
 
   "_comment_ordering": "DECIDED: Leaf is ONLINE ORDERS ONLY — no table booking — and does BOTH delivery and collection. The supplied design was a booking shape ('Book a table', 'View menu' links that went nowhere); the landing page has been reworked so every call to action lands on /order.",
 
@@ -14,15 +14,14 @@
     "legalName": "TODO_LEGAL_NAME",
     "companyNumber": "TODO_COMPANY_NUMBER",
     "address": {
-      "line1": "124A Acomb Road",
+      "line1": "124 Boroughbridge Road",
       "city": "York",
-      "_comment_postcode": "NOT KNOWN. Acomb Road is in the YO24 area but the exact unit postcode must come from the owner — do not guess it, it drives seo.geo and any future delivery geocoding.",
-      "postcode": "TODO_POSTCODE",
+      "postcode": "YO26 6AB",
       "country": "United Kingdom"
     },
     "_comment_contact": "Both of these PRINT on the customer-facing pages. The landing page deliberately does not render a phone number anywhere (the design doesn't have one), so a placeholder here is not visible on the landing page itself — but it is on the shared order/terms pages.",
-    "phone": "TODO_PHONE",
-    "email": "TODO_EMAIL",
+    "phone": "07428 290563",
+    "email": "orders@theleafcafebistro.co.uk",
     "domain": "theleafcafebistro.co.uk"
   },
 
@@ -41,7 +40,7 @@
 
   "fulfillment": {
     "collection": { "enabled": true },
-    "_comment_delivery": "ON — the owner has confirmed Leaf does delivery as well as collection. ⚠️ THE AREAS AND FEES BELOW ARE NOT CONFIRMED. They are a starting point only, shaped on Leaf sitting on Acomb Road in the same part of York as Mega Chippy (Gale Lane): the YO24/YO26/YO23 outcodes nearest the shop, one flat fee, a 3-mile cap. EVERY ONE OF THESE NUMBERS MUST COME FROM THE OWNER BEFORE LAUNCH — a wrong fee is charged on every single delivery order, and a wrong outcode either turns away a street the shop serves or commits it to one it does not. If Leaf prices by distance rather than postcode, switch mode to 'radius' and use bands instead (see data/shops/_template/config.json).",
+    "_comment_delivery": "ON — the owner has confirmed Leaf does delivery as well as collection. ⚠️ THE AREAS AND FEES BELOW ARE NOT CONFIRMED. They are a starting point only, shaped on Leaf sitting on Boroughbridge Road in the same part of York as Mega Chippy (Gale Lane): the YO24/YO26/YO23 outcodes nearest the shop, one flat fee, a 3-mile cap. EVERY ONE OF THESE NUMBERS MUST COME FROM THE OWNER BEFORE LAUNCH — a wrong fee is charged on every single delivery order, and a wrong outcode either turns away a street the shop serves or commits it to one it does not. If Leaf prices by distance rather than postcode, switch mode to 'radius' and use bands instead (see data/shops/_template/config.json).",
     "delivery": {
       "enabled": true,
       "mode": "outcode",
@@ -65,7 +64,7 @@
 
   "_comment_hours": "CONFIRMED BY THE OWNER, 17 Sep 2026. Open 08:00-17:00 every day except TUESDAY, which is closed. These replace the invented placeholder that was scaffolded with the shop. 24-hour format; a close after midnight would be written as 25:00 = 01:00 next day. NOTE: closing at 17:00 every day means the shop does NOT trade in the evening - see _comment_evening_copy.",
 
-  "_comment_evening_copy": "⚠️ THE SITE STILL TALKS ABOUT EVENINGS in three places, written when the hours were a placeholder that had Friday and Saturday evening service: the hero copy says 'comforting evening plates', the menus band has an 'Evening / Relaxed dining' card, and seo.description says 'bistro evenings'. With a 17:00 close none of that is true. Left in place rather than rewritten unilaterally - the owner may intend to add evening service, in which case the hours change instead.",
+  "_comment_evening_copy": "RESOLVED. The shop closes at 17:00, so the three evening references written against the placeholder hours have all gone: the 'Evening / Relaxed dining' menu card was removed on the owner's instruction, and with that as the signal the hero's 'comforting evening plates' became 'comforting plates all day' and seo.description's 'bistro evenings' became 'proper coffee'. Restore all three together if evening service is ever added.",
 
   "hours": {
     "monday":    { "closed": false, "windows": [{ "open": "08:00", "close": "17:00" }] },
@@ -134,10 +133,10 @@
     "priceRange": "££",
     "addressRegion": "North Yorkshire",
     "_comment_description": "The line Google shows under the result, written for a person. Leads with the brand name plus Acomb because that adjacency is what a local search matches on.",
-    "description": "The Leaf Café & Bistro — an independent café and bistro on Acomb Road, York. Breakfasts, relaxed lunches and bistro evenings. Order online for delivery or collection in Acomb and York.",
+    "description": "The Leaf Café & Bistro — an independent café and bistro on Boroughbridge Road, Acomb, York. Breakfasts, relaxed lunches and proper coffee. Order online for delivery or collection in Acomb and York.",
     "_comment_ogImage": "The picture shown when the link is shared. Supplied in the design handoff as a 1200x630 card built from the real interior photo and the gold wordmark.",
     "ogImage": "assets/og-image.jpg",
-    "_comment_geo": "MISSING and must not be guessed. Look the postcode up on api.postcodes.io once the owner confirms it, and paste the real latitude/longitude here.",
+    "_comment_geo": "STILL MISSING. The postcode is now known (YO26 6AB) but api.postcodes.io is blocked from the build environment, and these must not be guessed — they place the pin on Google. Look YO26 6AB up and paste the real latitude/longitude here.",
     "_comment_sameAs": "MISSING. Add Leaf's Facebook / Instagram / Google Business profile URLs once known."
   }
 }
