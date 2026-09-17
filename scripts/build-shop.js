@@ -739,7 +739,7 @@ const tokens = {
   // SEO meta sentence — only advertises the discount for shops that run it.
   promoTagline:            (promo && promo.enabled) ? ` ${promo.percent}% off online orders${promoMinText}.` : '',
   // Display-ready pieces for a landing page that advertises the offer in its own
-  // layout (a big "20% OFF" over "EVERY ORDER OVER £15") rather than as a
+  // layout (a big "20% OFF" over "EVERY ORDER £15 OR MORE") rather than as a
   // sentence. Same source as promoTagline and promoSection, so the headline, the
   // terms clause and the discount the checkout actually gives cannot disagree —
   // which is the failure mode the comment above promoSection is about. Both are
