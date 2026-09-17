@@ -449,17 +449,27 @@
          by WHERE it sits (see the hero's bottom padding) plus its own shadow,
          not by flooding the whole frame. */
       .hero-bg img { object-position: center; }
-      /* Lighter than it was, because the portrait shot is composed for this
-         box rather than being a centre crop of the landscape one — but not as
-         light as hoped. Measured on the new picture: at 72% the copy had 3.9%
-         of its area under 4.5:1, at 78% it is 1.4%. */
-      .hero-wash {
-        background: linear-gradient(to bottom,
-          rgb(12 33 27 / 78%) 0%,  rgb(16 45 37 / 68%) 40%,
-          rgb(16 45 37 / 48%) 66%, rgb(16 45 37 / 10%) 100%);
+      /* NOTHING over the photograph on a phone. The portrait shot is used as
+         shot — no wash, no scrim, no tint. Legibility is carried entirely by
+         the type's own shadow below, which darkens only the pixels around each
+         glyph and leaves the picture itself untouched. */
+      .hero-wash { display: none; }
+      /* Carries every piece of hero type now that the wash has gone. Two
+         layers each: a tight one for the glyph edge, a wide soft one to lift it
+         off whatever is behind. */
+      .eyebrow, .hero-strap { text-shadow: 0 1px 2px rgb(12 33 27 / 92%), 0 2px 14px rgb(12 33 27 / 88%); }
+      h1 { text-shadow: 0 2px 4px rgb(12 33 27 / 82%), 0 4px 26px rgb(12 33 27 / 72%); }
+      .hero-intro { text-shadow: 0 1px 3px rgb(12 33 27 / 92%), 0 2px 16px rgb(12 33 27 / 86%); }
+      .hero-script { text-shadow: 0 2px 4px rgb(12 33 27 / 88%), 0 3px 20px rgb(12 33 27 / 78%); }
+      /* The tagline is 9px and lands on the brightest part of the picture, so
+         its shadow is effectively an outline — three layers, tight to the
+         glyph. This is the only lever left that does not touch the photograph. */
+      .hero-foot p {
+        text-shadow: 0 0 2px rgb(12 33 27), 0 1px 3px rgb(12 33 27),
+                     0 2px 14px rgb(12 33 27 / 95%);
       }
-      /* Belt and braces for the smallest type on the photograph. */
-      .hero-foot p { text-shadow: 0 1px 3px rgb(12 33 27 / 95%), 0 2px 16px rgb(12 33 27 / 90%); }
+      .hero-foot svg { filter: drop-shadow(0 1px 3px rgb(12 33 27 / 95%)); }
+      .button-ghost { background: rgb(12 33 27 / 42%); border-color: rgb(255 249 235 / 75%); }
       /* Kept here now, where it used to be hidden: the copy column is held
          back to 72% precisely so the script has somewhere to live beside it.
          The cascading negative margins are zeroed — they hang the lines off to
@@ -480,14 +490,7 @@
          hero to mud. */
       .hero-foot {
         position: static; left: auto; bottom: auto;
-        margin: 6px 0 0 -7vw; padding: 42px 8vw 42px 7vw;
-        /* Radial, and sized so it reaches ZERO inside its own box. A gradient
-           still at 60% opacity when it meets the box edge draws a hard line
-           across the photograph — measured as an 11-18 level step. A vertical
-           radius of 70% hits zero at 0.49 of the box height, just inside the
-           half-height, which is why the padding above is as deep as it is. */
-        background: radial-gradient(100% 70% at 12% 50%,
-          rgb(12 33 27 / 88%) 0%, rgb(12 33 27 / 62%) 40%, rgb(12 33 27 / 0%) 70%);
+        margin: 30px 0 0; padding: 0;
       }
 
       /* ---- features stay FOUR across, as the phone design has them -------- */
