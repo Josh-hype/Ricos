@@ -35,14 +35,17 @@ cannot get indexed under this brand.
   ~292px wide and into the nav. Now 96px tall / ~169px wide, the same footprint
   the badge had. Acomb's `left:-21px` nudges removed with it.
 - **Theme reds and cream** sampled from the logo file: `#E7151A`, `#FBF6E8`
+- **The menu** — 175 items in 18 categories, generated from the owner's
+  workbook by `tools/_gen-dominic-menu.py`. Re-run that script to refresh it;
+  do not hand-edit the two JSON files, they are generated output.
 
 ### Still to rebrand
 
 | | Currently |
 |---|---|
+| item photos | none — every item shows "PHOTO COMING SOON". The workbook carried no images |
 | `assets/` food photos, `order.css` | Acomb's — though the hero (pizza + doner) suits a shop whose logo reads "PIZZA · KEBABS · CALZONES", so it may be worth keeping |
 | `theme.accent` | still Acomb's gold `#c9a227`. The logo's only other colour is Italian-flag green `#036B3A` — a design call, not a correction |
-| `menu.json` + `menu-visual.json` | Acomb's 141 items across 17 categories |
 | Hero "FAST DELIVERY — Right to Your Door" badge, and the footer blurb | Promises delivery, which is off |
 | `stripe.connectedAccountId`, `legalName`, `companyNumber` | placeholders (the build warns) |
 
@@ -59,10 +62,15 @@ Replace the zones (or switch to `outcode`/`radius`) and set `enabled: true`
 
 ### Check before launch, inherited and not obviously wrong
 
-- **`promo.autoOnlineDiscount` is ENABLED** — 10% off orders over £12, and the
-  landing page advertises it in two places. That was Acomb's commercial
-  decision, not Dominic's. The server honours it, so the page isn't lying; it
-  just may not be what this shop wants to give away.
+- **Two items are missing on purpose.** Lamb Shish Kebab and Lamb Shish Wrap
+  are "Sold out" in the workbook with a BLANK price, so importing them would
+  have put £0 orderable items on the menu. Add them with real prices when they
+  are back on.
+- **The 8 Special Offers carry `noPromo`.** Meal Deal 1 is "any 2 x 11\" pizzas
+  and a bottle of Pepsi" for £20; the cheapest possible parts come to £19.90,
+  so 20% off would sell it at £16 — nearly £4 under cost, and much worse on the
+  dearer pizzas. The five "Specials" do NOT carry it: those are single dishes
+  served with chips, not bundles.
 - **`business.email`** is the right *shape* but nothing receives it yet: the
   domain needs verifying in Resend, `RESEND_FROM_EMAIL` setting, and MX /
   Email Routing if `orders@` is to accept replies.

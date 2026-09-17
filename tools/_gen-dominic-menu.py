@@ -1,0 +1,280 @@
+#!/usr/bin/env python3
+"""Build Dominic Pizza's menu.json + menu-visual.json from the owner's extraction.
+
+Run:  python3 tools/_gen-dominic-menu.py <workbook.xlsx>
+
+Hand-run tooling: lives in tools/ so editing it never queues a build on the
+nine Pages projects (see the tools/ row in CLAUDE.md). Re-runnable — it
+overwrites both files from the workbook every time.
+
+SOURCE: an xlsx extraction of the shop's live FoodBooking menu, captured
+17 Sep 2026. Five sheets: Overview, Menu (177 items), Variants (304 rows),
+"Modifier groups" (1038) and "Modifier choices" (7977).
+
+HOW THE TWO SHAPES MAP (see CLAUDE.md "Menu / item-options schema"):
+
+  menu.json        server truth, prices in PENCE
+                   [{id, name, items:[{id, name, priceP, modifiers:[...]}]}]
+  menu-visual.json customer display, prices in POUNDS
+                   [{id, name, icon, items:[{id, name, price, desc, options:[...]}]}]
+
+  Sizes are NOT a separate concept — a size is just a modifier with a price
+  delta. So priceP is the CHEAPEST variant and each size becomes a modifier
+  whose delta is (that variant - cheapest). An 11" pizza is the base and 13"/15"
+  are surcharges.
+
+  1194 choices are priced BY SIZE (extra toppings are £2.10 on an 11" and £3.20
+  on a 15"). Those carry priceDeltaPBySize keyed by the size modifier's own id;
+  totals.js finds whichever size id is selected and uses that delta, falling
+  back to priceDeltaP for the base size. Verified against the workbook: group
+  metadata and choice sets are identical across sizes, only surcharges move, so
+  one merged group per (order, name) is lossless.
+
+JOIN KEY: "Group ID" from the workbook, never (item, group name) — 33 items
+repeat a group name at two different positions (a 2-pizza deal has "Crust" and
+"Extra toppings" twice, once per pizza). Keyed on the name those collapse into
+one group and the item silently loses half its options; keyed on Group ID there
+are zero duplicate choices anywhere in the file.
+"""
+import json, re, sys, unicodedata
+from collections import defaultdict, OrderedDict
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+REPO = Path(__file__).resolve().parent.parent
+OUT = REPO / 'data' / 'shops' / 'dominic-pizza'
+
+# Emoji per category for the order page's category tiles. Order follows the
+# workbook, which follows the shop's own live menu.
+ICONS = {
+    'New!! Pizza Fries!': '🍟', 'Pizza': '🍕', 'Vegan Pizzas': '🌱',
+    'Garlic Bread': '🥖', 'Calzones': '🥟', 'Burgers': '🍔', 'Kebabs': '🥙',
+    'Parmesans': '🧀', 'Nachos': '🌮', 'Specials': '⭐', 'Wraps': '🌯',
+    'Side Orders': '🍟', 'Sauces': '🥫', 'Kids Menu': '🧒', 'Desserts': '🍰',
+    'Drinks': '🥤', 'Alcoholic Drinks': '🍺', 'Special Offers': '🎉',
+}
+
+# Bundles: several separately-priced things sold together below their combined
+# price. A percentage promo on top sells them under what the parts cost, so they
+# are held out of it. Must be set in BOTH files or the build fails the parity
+# check. "Specials" is NOT in here — those are single dishes served with chips,
+# not bundles.
+NO_PROMO_CATEGORIES = {'Special Offers'}
+
+
+def slug(s, maxlen=48):
+    s = unicodedata.normalize('NFKD', str(s or ''))
+    s = s.encode('ascii', 'ignore').decode('ascii').lower()
+    s = re.sub(r'[^a-z0-9]+', '-', s).strip('-')
+    return s[:maxlen].strip('-') or 'x'
+
+
+def pence(v):
+    """Pounds -> pence. Round half-up on the exact decimal, never float-floor."""
+    if v is None or v == '':
+        return None
+    return int(round(float(v) * 100))
+
+
+def load(path):
+    import xlsx
+    sheets = dict(xlsx.load(path))
+
+    def table(name, header_row=2):
+        rows = sheets[name]
+        idx = {h: i for i, h in enumerate(rows[header_row]) if h}
+        body = [r for r in rows[header_row + 1:] if r and any(c is not None for c in r)]
+        return idx, body
+
+    return {k: table(k) for k in ('Menu', 'Variants', 'Modifier groups', 'Modifier choices')}
+
+
+def cell(row, idx, key):
+    i = idx.get(key)
+    return row[i] if i is not None and i < len(row) else None
+
+
+def build(path):
+    T = load(path)
+    mi, menu_rows = T['Menu']
+    vi, var_rows = T['Variants']
+    gi, grp_rows = T['Modifier groups']
+    ci, cho_rows = T['Modifier choices']
+
+    variants = defaultdict(list)
+    for r in var_rows:
+        variants[cell(r, vi, 'Item ID')].append(
+            (cell(r, vi, 'Variant / size'), cell(r, vi, 'Exact price')))
+
+    groups = {}
+    for r in grp_rows:
+        groups[cell(r, gi, 'Group ID')] = {
+            'item': cell(r, gi, 'Item ID'), 'ctx': cell(r, gi, 'Variant context'),
+            'order': cell(r, gi, 'Group order'), 'name': cell(r, gi, 'Group name'),
+            'req': cell(r, gi, 'Requirement'), 'sel': cell(r, gi, 'Selection type'),
+            'min': cell(r, gi, 'Minimum selections'), 'max': cell(r, gi, 'Maximum selections'),
+        }
+
+    choices = defaultdict(list)
+    for r in cho_rows:
+        choices[cell(r, ci, 'Group ID')].append(
+            (cell(r, ci, 'Choice order'), cell(r, ci, 'Choice'), cell(r, ci, 'Surcharge')))
+
+    # item -> (order, name) -> ctx -> [(choice order, label, surcharge)]
+    by_item = defaultdict(lambda: defaultdict(dict))
+    meta = {}
+    for gid, g in groups.items():
+        key = (g['order'], g['name'])
+        by_item[g['item']][key][g['ctx']] = sorted(choices.get(gid, []))
+        meta[(g['item'], key)] = g
+
+    cats_menu, cats_visual = OrderedDict(), OrderedDict()
+    skipped, seen_ids = [], {}
+    stats = {'items': 0, 'mods': 0, 'by_size': 0, 'sized_items': 0, 'no_promo': 0,
+             'dropped_size_groups': 0}
+
+    for r in menu_rows:
+        iid, cat, name = cell(r, mi, 'Item ID'), cell(r, mi, 'Category'), cell(r, mi, 'Item')
+        desc, avail = cell(r, mi, 'Description'), cell(r, mi, 'Availability')
+
+        vs = [(lbl, p) for lbl, p in variants.get(iid, []) if isinstance(p, (int, float))]
+        if not vs:
+            # No priced variant at all. The two that hit this are sold out with a
+            # blank price; shipping them would put a £0 orderable item on the menu.
+            skipped.append((iid, cat, name, avail))
+            continue
+        vs.sort(key=lambda t: t[1])
+        base_label, base_price = vs[0]
+
+        item_id = '%s-%s' % (slug(cat, 24), slug(name, 40))
+        if item_id in seen_ids:
+            seen_ids[item_id] += 1
+            item_id = '%s-%d' % (item_id, seen_ids[item_id])
+        else:
+            seen_ids[item_id] = 1
+
+        size_ids = {lbl: 'sz-' + slug(lbl, 12) for lbl, _ in vs}
+        mods, opts = [], []
+
+        if len(vs) > 1:
+            stats['sized_items'] += 1
+            ch = []
+            for lbl, p in vs:
+                d = pence(p) - pence(base_price)
+                mods.append({'id': size_ids[lbl], 'label': lbl, 'priceDeltaP': d})
+                ch.append({'id': size_ids[lbl], 'label': lbl, 'price': round(d / 100, 2)})
+            opts.append({'id': 'size', 'label': 'Size', 'select': 'single',
+                         'required': True, 'choices': ch})
+
+        variant_labels = {lbl for lbl, _ in vs}
+        for key in sorted(by_item.get(iid, {}), key=lambda k: (k[0] or 0, str(k[1]))):
+            per_ctx = by_item[iid][key]
+            g = meta[(iid, key)]
+            order, gname = key
+
+            # The workbook says sizes TWICE: once in the Variants sheet and once
+            # as an ordinary modifier group (199 of them, named "Size", carrying
+            # the same surcharges). Emitting both gave the customer the same
+            # required question twice and DOUBLE-CHARGED the size — picking 15"
+            # in both groups added £4.00 twice. Caught by rendering the item and
+            # seeing two Size groups, not by any check in the build.
+            #
+            # Dropped by comparing choice labels against the item's variant
+            # labels rather than by matching the name "Size": a name match would
+            # be guesswork, whereas an identical label set IS the duplication.
+            # Verified against the workbook — this removes exactly 199 groups
+            # across exactly the 72 multi-variant items, leaves no "Size"-named
+            # group behind, and no item loses its sizes.
+            if len(vs) > 1:
+                labels = {lbl for _, lbl, _ in next(iter(per_ctx.values()))}
+                if labels == variant_labels:
+                    stats['dropped_size_groups'] += 1
+                    continue
+            opt_id = 'g%s-%s' % (order, slug(gname, 28))
+            base_ctx = base_label if base_label in per_ctx else next(iter(per_ctx))
+            ch = []
+            for corder, label, _ in per_ctx[base_ctx]:
+                cid = 'g%s-%s' % (order, slug(label, 34))
+                surch = {c: s for c, rows_ in per_ctx.items()
+                         for o, l, s in rows_ if l == label for c in [c]}
+                base_s = pence(surch.get(base_ctx, 0)) or 0
+                by_size = {size_ids[c]: pence(s) for c, s in surch.items()
+                           if c in size_ids and c != base_ctx and pence(s) != base_s}
+                mod = {'id': cid, 'label': label, 'priceDeltaP': base_s}
+                cho = {'id': cid, 'label': label, 'price': round(base_s / 100, 2)}
+                if by_size:
+                    mod['priceDeltaPBySize'] = by_size
+                    cho['priceBySize'] = {k: round(v / 100, 2) for k, v in by_size.items()}
+                    stats['by_size'] += 1
+                mods.append(mod)
+                ch.append(cho)
+
+            single = str(g['sel'] or '').lower().startswith(('single', 'optional single'))
+            required = g['req'] == 'Required'
+            opt = {'id': opt_id, 'label': gname,
+                   'select': 'single' if single else 'multi',
+                   'required': required, 'choices': ch}
+            # min/max are gated in the order page: absent keeps the plain
+            # required/optional behaviour. Only worth emitting for a multi group
+            # that asks for an exact number ("choose 2 toppings"), which a bare
+            # `required` would let a customer satisfy with one.
+            if not single:
+                lo, hi = g['min'], g['max']
+                if isinstance(lo, int) and lo > 1:
+                    opt['min'] = lo
+                if isinstance(hi, int) and hi >= 1:
+                    opt['max'] = hi
+            opts.append(opt)
+
+        stats['items'] += 1
+        stats['mods'] += len(mods)
+        no_promo = cat in NO_PROMO_CATEGORIES
+        if no_promo:
+            stats['no_promo'] += 1
+
+        m_item = {'id': item_id, 'name': name, 'priceP': pence(base_price)}
+        v_item = {'id': item_id, 'name': name, 'price': round(pence(base_price) / 100, 2)}
+        if desc:
+            v_item['desc'] = desc
+        if no_promo:
+            m_item['noPromo'] = True
+            v_item['noPromo'] = True
+        if mods:
+            m_item['modifiers'] = mods
+        if opts:
+            v_item['options'] = opts
+
+        cid_ = slug(cat, 28)
+        cats_menu.setdefault(cid_, {'id': cid_, 'name': cat, 'items': []})['items'].append(m_item)
+        cats_visual.setdefault(cid_, {'id': cid_, 'name': cat,
+                                      'icon': ICONS.get(cat, '🍽️'), 'items': []})['items'].append(v_item)
+
+    return list(cats_menu.values()), list(cats_visual.values()), skipped, stats
+
+
+def main():
+    src = sys.argv[1] if len(sys.argv) > 1 else None
+    if not src:
+        sys.exit('usage: python3 tools/_gen-dominic-menu.py <workbook.xlsx>')
+    menu, visual, skipped, stats = build(src)
+    (OUT / 'menu.json').write_text(json.dumps(menu, indent=2, ensure_ascii=False) + '\n')
+    (OUT / 'menu-visual.json').write_text(json.dumps(visual, indent=2, ensure_ascii=False) + '\n')
+
+    print('categories      %d' % len(menu))
+    print('items           %d' % stats['items'])
+    print('  sized items   %d' % stats['sized_items'])
+    print('  noPromo       %d (bundles held out of the percentage promo)' % stats['no_promo'])
+    print('modifiers       %d' % stats['mods'])
+    print('  size-priced   %d' % stats['by_size'])
+    print('dropped         %d duplicate size groups (the workbook states sizes twice)'
+          % stats['dropped_size_groups'])
+    for f in ('menu.json', 'menu-visual.json'):
+        print('%-16s %6.0f KB' % (f, (OUT / f).stat().st_size / 1024))
+    if skipped:
+        print('\nSKIPPED — no priced variant, so they would have shipped as £0 items:')
+        for iid, cat, name, avail in skipped:
+            print('  %-9s %-14s %-24s (%s)' % (iid, cat, name, avail))
+
+
+if __name__ == '__main__':
+    main()
