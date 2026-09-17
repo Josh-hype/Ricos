@@ -91,6 +91,7 @@ and where each subsystem is documented — is in **`docs/PRODUCTS.md`**.
 | `app/` | The LumiPOS native till (Capacitor/Android wrapper around `templates/staff/`). Ships to real Sunmi tills **over the air** — see the OTA note below. |
 | `test/`, `tests/` | Unit tests (`test/auth.test.mjs`; `tests/` covers the money/logic libs — run `node --import ./tests/support/register.mjs --test tests/*.test.mjs`). |
 | `docs/` | `ADDING_A_SHOP.md`, `SHOP_CHECKLIST.md`, etc. |
+| ~~`print/`~~, ~~`<shop>/_source/`~~ | **Archived out of the tree, 17 Sep 2026** — 61 MB of print artwork and design originals no build has ever read. Still in the history and restorable: `docs/ARCHIVED_ASSETS.md`. Watch-path excludes stop a project *building*, not *cloning*, so all nine were pulling this on every deploy. |
 
 **Static files in `public/` that ARE committed** (served as-is, not generated):
 just `_headers` and `_redirects`. Everything else under `public/` —

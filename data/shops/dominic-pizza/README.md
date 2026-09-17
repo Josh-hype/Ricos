@@ -30,7 +30,7 @@ cannot get indexed under this brand.
 - **Delivery** — `radius` mode, three bands from the owner's own provider
   zones: 2 mi / £2 / £10 min, 4 mi / £3 / £10 min, 7 mi / £5 / **£20 min**
 - **Logo** — `logo.png`, `assets/logo-mark.png` (1200×680) and a square
-  `icon.png`, all derived from `_source/dominic-logo.png`. The header CSS was
+  `icon.png`, all derived from `_source/dominic-logo.png`, archived out of the tree on 17 Sep 2026 — restore it with `git checkout 09f3db4febb6 -- data/shops/dominic-pizza/_source/` if the logo ever needs regenerating (see `docs/ARCHIVED_ASSETS.md`). The header CSS was
   retuned: Acomb's was a 1:1 badge, Dominic's is a 1.77:1 wordmark, and the CSS
   sizes by height with `width:auto`, so the old 165px would have rendered it
   ~292px wide and into the nav. Now 96px tall / ~169px wide, the same footprint
@@ -96,7 +96,8 @@ rebrand; work the table above.
   the card-reader tile. Dominic is buying the full EPOS, so it's been removed;
   leaving it would have hidden the counter sales they're paying for.
 - **`reference/` and `_reference-src/`** — Acomb's landing-page design source.
-  Still in their folder; they were never build inputs.
+  Never build inputs, and archived out of the tree on 17 Sep 2026 along with
+  every other shop's design originals (`docs/ARCHIVED_ASSETS.md`).
 
 ### Missing entirely
 

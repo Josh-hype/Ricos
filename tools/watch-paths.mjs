@@ -34,9 +34,15 @@ const shops = readdirSync(shopsDir)
    so a change to them cannot alter a single byte of any shop's built site.
    Verified by grep — the only mentions of tests/ and docs/ in build-shop.js are
    inside comments. app/ is the till, which deploys over the air via GitHub
-   Actions, not through Pages. print/ is print artwork (Big Bites' A3 trifold and
-   its render scripts) and tools/ is design tooling; both were already excluded by
-   hand on the food-station project, which is how they came to light.
+   Actions, not through Pages. tools/ is design tooling. print/ stays in the list
+   although the folder was archived out of the tree on 17 Sep 2026 (see
+   docs/ARCHIVED_ASSETS.md) — the exclusion costs nothing and means the lists
+   still work if anyone restores it to run the menu build.
+
+   Worth knowing when you paste these in: an exclude stops a project BUILDING,
+   it does not stop it CLONING. Every project clones the whole repo either way,
+   which is why archiving 61 MB of unread binaries did more for deploy time than
+   any exclusion could.
 
    NOT excludable, however tempting: scripts/* (build-shop.js IS the build) and
    public/* (gitignored except _headers and _redirects, which are served as-is).
