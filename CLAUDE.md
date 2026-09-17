@@ -402,6 +402,16 @@ Brief shape:
   `build-shop.js` — not from `functions/`. Grepping the runtime code for `env.*`
   will never find it. It moves the back office off `/staff`; it only takes effect
   on a rebuild.
+- **Apple Pay / Google Pay stay hidden until the shop's domain is registered
+  on its CONNECTED account.** The wallet buttons are shared code and ship to
+  every shop, so there is nothing per-shop to switch on in the repo — but
+  Stripe won't render them on an unregistered domain, and nothing in the build,
+  the logs or the page complains. Log in at `<domain>/staff`, then open
+  `<domain>/api/staff/wallet-domain` in the same browser; expect
+  `applePay`/`googlePay: "active"`. PIN-gated and idempotent. It cannot be done
+  from the Stripe Dashboard — Connect **direct-charge** accounts only accept it
+  via the API. Registration is per **exact host**, so `www.` ≠ apex. Missed on
+  Leaf, which went live without wallets; now Phase 7b of `docs/SHOP_CHECKLIST.md`.
 - **A LumiWEB shop without `pos.ordersOnly: true` →** the Z93 shows the full
   EPOS, counter sales and card-reader tile included, to a shop paying for a
   website. See `docs/PRODUCTS.md`.

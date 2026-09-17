@@ -250,6 +250,33 @@ once in your Stripe dashboard). They:
 From that point card payments flow to the shop's bank, the
 `serviceFeePence` per-order fee flows to your platform account.
 
+### Turning on Apple Pay / Google Pay
+
+One extra step, once the custom domain is live, and **nothing warns you if you
+forget it**. The wallet buttons are shared code — every shop's checkout already
+has them — but Stripe only renders them on a domain registered as a *payment
+method domain* on that shop's connected account.
+
+Log in at `<shop-domain>/staff`, then open `<shop-domain>/api/staff/wallet-domain`
+in the same browser. Expect:
+
+```json
+{ "applePay": "active", "googlePay": "active" }
+```
+
+PIN-gated and idempotent, so re-running is safe. It must go through this
+endpoint — Connect **direct-charge** accounts can't register a domain from the
+Stripe Dashboard, which is why there's no toggle to hunt for.
+
+`applePay: "inactive"` almost always means
+`https://<shop-domain>/.well-known/apple-developer-merchantid-domain-association`
+isn't reachable yet; `public/_redirects` already points it at Stripe's hosted
+copy for every shop, so wait for DNS/SSL and re-run. Read `applePayDetails` in
+the response for Stripe's own reason.
+
+Registration is per **exact host** — `www.` is a different domain to the apex,
+so make sure one redirects to the other or pick the one customers actually use.
+
 ---
 
 ## 5. Verify before going live
@@ -264,6 +291,11 @@ Walk through end-to-end on the new domain:
       the right error message mentioning the shop's area description
 - [ ] Place a real order with a real card — confirm receipt email
       arrives in the shop's brand colours with their logo
+- [ ] Apple / Google Pay shows at the payment step — Apple Pay needs
+      **Safari on an Apple device with a card in Wallet**, Google Pay
+      **Chrome with a saved card**; neither appears on a plain desktop
+      browser or once Cash is selected. Missing on a device that should
+      have it ⇒ the wallet-domain step above hasn't been run
 - [ ] `<shop-domain>/staff` — log in with the staff PIN, the test
       order is visible, sound notification fires
 - [ ] Cancel/refund the test order in Stripe so the customer (you)

@@ -135,6 +135,33 @@ Add each as **encrypted** (the lock icon), not plaintext:
       brand colours
 - [ ] Open `/order` — menu items + correct prices appear
 
+## Phase 7b — Turn on Apple Pay / Google Pay (~1 min, you)
+
+**Easy to miss, and nothing in the build or the logs complains.** The wallet
+buttons are shared code and already on every shop's checkout, but they stay
+hidden until the shop's domain is registered as a Stripe *payment method
+domain* on **that shop's connected account**. Skip this and the shop simply
+never sees Apple or Google Pay.
+
+- [ ] Log in at `<shop-domain>/staff` with the staff PIN
+- [ ] In the same browser, open `<shop-domain>/api/staff/wallet-domain`
+- [ ] Expect `"applePay": "active"` and `"googlePay": "active"`
+
+It's PIN-gated and idempotent, so it's safe to re-run. It has to go through
+that endpoint: Connect **direct-charge** accounts can't register a domain from
+the Stripe Dashboard.
+
+If Apple Pay comes back `inactive`, read `applePayDetails` — it's almost always
+that `https://<shop-domain>/.well-known/apple-developer-merchantid-domain-association`
+isn't reachable yet. `public/_redirects` already points that path at Stripe's
+hosted copy for every shop, so the usual cause is just that the domain or its
+SSL isn't live yet (Phase 6). Wait, then re-run.
+
+⚠️ **Registration is per exact host.** `www.` is a different domain to the apex.
+If both are attached to the Pages project, either redirect one to the other (see
+the canonical-host rules in `public/_redirects`) or customers landing on the
+other host get no wallets.
+
 ## Phase 8 — Pre-launch testing (~10 min)
 
 Walk through on the live URL with a real card (you'll refund after):
@@ -143,6 +170,11 @@ Walk through on the live URL with a real card (you'll refund after):
       shows the right error mentioning their service area
 - [ ] **Place a real order with a real card** — go all the way through
       payment, confirm `/thank-you` loads
+- [ ] **Apple / Google Pay button appears** at the payment step. Check on a
+      real device: Apple Pay only renders in **Safari on an Apple device with a
+      card in Wallet**, Google Pay in **Chrome signed in with a saved card**.
+      Neither shows on a plain desktop browser, and neither shows once **Cash**
+      is picked — that's correct, not a fault. Nothing? Phase 7b.
 - [ ] **Receipt email arrives** in the shop's brand colours with logo,
       address, phone
 - [ ] **Staff page** (`<shop-domain>/staff`) — log in with the staff
