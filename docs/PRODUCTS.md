@@ -157,6 +157,33 @@ Two things that are easy to get wrong here:
 
 On for `food-station` and `dominic-pizza`. Every other shop stores nothing.
 
+### Starting the order: "Who's calling?"
+
+Pressing **Collection** or **Delivery** on the call bar asks the question in the
+middle of the screen, like an incoming online order does — the caller's name,
+one big button per address they have ordered to, and **Take new details** last:
+
+| Tap | What happens |
+|---|---|
+| a saved address | name, number and that address are filled and the form is submitted for them — straight to the menu, one tap |
+| the name *(collection)* | same, with no address to pick |
+| **Take new details** | the blank form, with the number kept and the saved addresses no longer offered — they have just said they're wrong |
+| **Back** | no sale started; returns to the board |
+
+Only shown when there is something that saves work — a saved address on a
+delivery, a name on a collection — and only when the sale was started **from the
+call bar**. Everything else opens the details form exactly as before, so a shop
+without `pos.customerLookup`, a manually started sale, and walk-in/eat-in are
+all untouched.
+
+**Picking an address submits the real form rather than jumping to the menu**, on
+purpose: the submit handler is where the delivery fee comes from, and on a
+**radius** shop that means asking the server for the band. A shortcut past it
+would show £0 delivery on the till while the server recorded the real total —
+the exact bug the comment in that handler warns about. It also means one
+validation path, and a postcode the server now refuses leaves staff on the
+prefilled form with the reason, which is where they can fix it.
+
 The number can come from either source. Everything downstream is identical —
 both fire the same `callerId` event.
 

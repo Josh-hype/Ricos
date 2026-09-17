@@ -2065,6 +2065,23 @@ textarea.me-in{resize:vertical;font-family:inherit}
   </div>
 </div>
 
+<!-- ============================== Caller's saved details (phone orders)
+     Comes up when staff start a sale from the incoming-call bar and caller ID
+     recognises the number: their name, and one big button per address they have
+     ordered to, so a regular's order starts with ONE tap instead of retyping an
+     address the shop already holds. Last option always takes new details — a
+     number is a line, not a person, and the caller may be at a new address or
+     be somebody else in the house. Options are built per call by
+     askCallerDetails(). -->
+<div class="ovl" id="callerPickOvl" role="dialog" aria-modal="true" aria-labelledby="cpTitle">
+  <div class="modal">
+    <h2 id="cpTitle">Who's calling?</h2>
+    <p id="cpSub" style="color:var(--muted);font-size:13.5px;font-weight:500;margin-bottom:14px;text-align:center"></p>
+    <div class="routing-opts" id="cpOpts"></div>
+    <div class="row"><button class="cancel" id="cpBack" type="button">Back</button></div>
+  </div>
+</div>
+
 <!-- ============================== Item-detail modal (Sale view)
      Mirrors the website's item modal: spice level, option groups, meal
      upgrade + meal-choice dropdowns. Built dynamically per item. -->
@@ -2359,6 +2376,7 @@ const state = {
   printCounter: true,      // does the till auto-print for COUNTER sales? (online always follows printOnAccept)
   printerLast: null,       // { ok, at, reason } — last print attempt, shown on the Printer tile
   pendingReject: null,     // in-flight rejection-reason prompt
+  pendingCallerPick: null, // in-flight "use a saved address or take new details?" prompt
   rejectChoice: null,      // the reason button currently selected
   orderingPaused: false,   // back-office toggle: online ordering paused for the rest of today
 };
@@ -5317,13 +5335,30 @@ async function pickSaleMode(mode) {
   $('#cfPc').value = '';
   $('#cfNotes').value = '';
   hideKnownCustomer();   // a previous caller's details must not linger into a new order
-  // Started from the incoming-call bar: seed the number and look them up, so the
-  // form opens with the caller's saved addresses already offered. Consumed once,
-  // so the next sale started by hand begins blank.
+  /* Started from the incoming-call bar: seed the number, and if caller ID
+     recognises them, ASK before showing a blank form — see askCallerDetails.
+     Consumed once, so the next sale started by hand begins blank.
+
+     Awaited here, before the stage changes, so staff never see the form flash
+     up behind the question. A lookup that finds nothing (or a shop without the
+     feature) falls through to exactly the old behaviour. */
+  let callerPick = null;
   if (sale.pendingCallerPhone) {
-    $('#cfPhone').value = sale.pendingCallerPhone;
-    lookupCustomerByPhone(sale.pendingCallerPhone);
+    const callerPhone = sale.pendingCallerPhone;
     sale.pendingCallerPhone = null;
+    $('#cfPhone').value = callerPhone;
+    const known = await fetchCustomerByPhone(callerPhone);
+    if (callerPickWorthShowing(known, mode)) {
+      callerPick = await askCallerDetails(known, mode, callerPhone);
+      if (!callerPick) return false;     // Back: no sale started, returns to the board
+      // Declining the saved details means they are wrong for THIS call, so the
+      // panel offering them again inside the form would be noise. The number
+      // stays — that part is not in doubt.
+      if (callerPick.fresh) callerPick = null;
+      else if (callerPick.name) $('#cfName').value = callerPick.name;
+    } else if (known) {
+      renderKnownCustomer(known);        // nothing worth a chooser; offer it in the form
+    }
   }
   const isDelivery = mode === 'delivery';
   $('#cfL1Field').hidden = !isDelivery;
@@ -5337,7 +5372,35 @@ async function pickSaleMode(mode) {
   $('#saleFormTitle').textContent = isDelivery ? 'Delivery details' : 'Collection details';
   $('#cfContinue').textContent = 'Continue to menu →';
   setSaleStage('form');
+  /* Staff picked saved details, so fill the form and submit it for them rather
+     than shortcutting to the menu. The submit handler is where the delivery fee
+     comes from — a RADIUS shop has to ask the server for the band, and a till
+     that skipped that showed £0 delivery while the server recorded the real
+     total (which is why that code says so in capitals). Going through it also
+     means one validation path, and a postcode the server now refuses leaves
+     them on this form, prefilled, with the reason — the right place to fix it. */
+  if (callerPick) {
+    if (callerPick.address) {
+      const a = callerPick.address;
+      $('#cfL1').value = a.line1 || '';
+      $('#cfL2').value = a.line2 || '';
+      $('#cfPc').value = a.postcode || '';
+      $('#cfNotes').value = a.notes || '';
+    }
+    submitSaleForm();
+  }
   return true;
+}
+
+/* Submit #saleForm as if Continue had been pressed. requestSubmit is Chrome 76+
+   and the Sunmi T2's WebView can be older, so fall back to a cancelable submit
+   event — the handler preventDefaults and validates by hand either way, so the
+   two paths behave identically. */
+function submitSaleForm() {
+  const form = $('#saleForm');
+  if (!form) return;
+  if (typeof form.requestSubmit === 'function') form.requestSubmit();
+  else form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
 }
 
 // Mode cards are painted by renderSaleModes() once config is known (it binds the
@@ -5383,17 +5446,105 @@ function renderKnownCustomer(d) {
   }));
   box.hidden = false;
 }
+/* The lookup itself. Returns the record, or null for "nobody" — which covers a
+   404 (the shop hasn't got pos.customerLookup), a network failure and a number
+   we have never served, because the till does the same thing in all three
+   cases. Shared by the form's type-ahead and the incoming-call chooser so there
+   is one request shape and one idea of what "known" means. */
+async function fetchCustomerByPhone(raw) {
+  const phone = String(raw || '').trim();
+  if (phone.length < 7) return null;
+  try {
+    const res = await fetch('/api/staff/customer-lookup?phone=' + encodeURIComponent(phone), { cache: 'no-store' });
+    if (!res.ok) return null;                    // 404 = feature off for this shop
+    const d = await res.json().catch(() => null);
+    return d && d.found ? d : null;
+  } catch { return null; }
+}
 async function lookupCustomerByPhone(raw) {
   const phone = String(raw || '').trim();
   if (phone.length < 7) { hideKnownCustomer(); return; }
   const seq = ++cfLookupSeq;                     // ignore results that arrive out of order
-  try {
-    const res = await fetch('/api/staff/customer-lookup?phone=' + encodeURIComponent(phone), { cache: 'no-store' });
-    if (!res.ok) { if (seq === cfLookupSeq) hideKnownCustomer(); return; }   // 404 = feature off
-    const d = await res.json().catch(() => null);
-    if (seq === cfLookupSeq) renderKnownCustomer(d);
-  } catch { if (seq === cfLookupSeq) hideKnownCustomer(); }
+  const d = await fetchCustomerByPhone(phone);
+  if (seq !== cfLookupSeq) return;
+  if (d) renderKnownCustomer(d); else hideKnownCustomer();
 }
+/* ============================== "Who's calling?" — the caller-ID chooser
+
+   Starting a sale from the incoming-call bar used to drop staff straight onto
+   the blank details form with the caller's saved addresses offered as a small
+   panel INSIDE it — so the first thing on screen was "take new details" for a
+   customer the shop already knows, and the saved address was a secondary thing
+   to notice. This asks the question first, in the middle of the screen, the way
+   an incoming online order does: their name, one big button per address they
+   have ordered to, and one tap starts the order.
+
+   Only ever shown when there is something to choose that actually saves work —
+   a saved address on a delivery, or a name on a collection. Otherwise the form
+   opens exactly as before, so the shops and modes this cannot help are
+   untouched.
+
+   "Take new details" is always the last option and never a fallback: a phone
+   number is a LINE, not a person. The caller may have moved, or be somebody
+   else in the same house, and a chooser with no way past it would force staff
+   to accept details they can see are wrong.
+
+   Resolves { address } | { name } | { fresh: true } | null (Back). */
+function callerPickWorthShowing(d, mode) {
+  if (!d) return false;
+  if (mode === 'delivery') return (d.addresses || []).length > 0;
+  return !!d.name;
+}
+function askCallerDetails(d, mode, phone) {
+  return new Promise((resolve) => {
+    state.pendingCallerPick = { resolve };
+    const name = (d.name || '').trim();
+    $('#cpTitle').textContent = name || 'Ordered from here before';
+    $('#cpSub').textContent = name
+      ? `${phone} — they have ordered here before. Pick where it's going.`
+      : `${phone} — we have served this number before.`;
+
+    // Delivery: the saved addresses. Collection: there is no address to pick,
+    // so the win is not retyping the name. Capped at 4 — more than that is a
+    // wall of buttons on a till screen, and they are sorted most-recent first
+    // by the server, so the ones that matter are at the top.
+    const addrs = mode === 'delivery' ? (d.addresses || []).slice(0, 4) : [];
+    const rows = addrs.map((a, i) => `
+      <button class="routing-opt" type="button" data-pick="addr" data-i="${i}">
+        <b>🛵 ${escapeHtml(a.line1)}${a.line2 ? ', ' + escapeHtml(a.line2) : ''}</b>
+        <span>${escapeHtml(a.postcode)}${a.notes ? ' · ' + escapeHtml(a.notes) : ''}</span>
+      </button>`);
+    if (mode !== 'delivery' && name) {
+      rows.push(`
+      <button class="routing-opt" type="button" data-pick="name">
+        <b>✅ ${escapeHtml(name)}</b>
+        <span>Use these details and start the order</span>
+      </button>`);
+    }
+    rows.push(`
+      <button class="routing-opt" type="button" data-pick="fresh">
+        <b>✏️ Take new details</b>
+        <span>${mode === 'delivery' ? 'A different address, or someone else on this line' : 'Someone else on this line'}</span>
+      </button>`);
+    const opts = $('#cpOpts');
+    opts.innerHTML = rows.join('');
+    opts.querySelectorAll('.routing-opt').forEach(b => b.addEventListener('click', () => {
+      const kind = b.dataset.pick;
+      if (kind === 'addr') resolveCallerPick({ address: addrs[Number(b.dataset.i)] || null, name });
+      else if (kind === 'name') resolveCallerPick({ name });
+      else resolveCallerPick({ fresh: true });
+    }));
+    $('#callerPickOvl').classList.add('open');
+  });
+}
+function resolveCallerPick(val) {
+  $('#callerPickOvl').classList.remove('open');
+  const p = state.pendingCallerPick;
+  state.pendingCallerPick = null;
+  if (p) p.resolve(val);
+}
+$('#cpBack').addEventListener('click', () => resolveCallerPick(null));
+
 {
   const el = $('#cfPhone');
   if (el) {
