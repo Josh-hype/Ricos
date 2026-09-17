@@ -124,6 +124,26 @@ def main():
             shot.save(p, optimize=True, **kw)
             report(p, shot)
 
+    # ---- 3b. the three menu-card photographs -------------------------------
+    # Cards render at 562x584 CSS, so 1124px covers a 2x screen. Never upscaled:
+    # coffee.jpg is only 500px square and blowing it up would just soften it.
+    CARDS = (('breakfast.webp', 'menu-breakfast'),
+             ('toastie.webp',   'menu-lunch'),
+             ('coffee.jpg',     'menu-drinks'))
+    for src_name, out_stem in CARDS:
+        card_src = os.path.join(SHOP, '_source', src_name)
+        if not os.path.exists(card_src):
+            continue
+        card = Image.open(card_src).convert('RGB')
+        target = min(1124, card.width)
+        if card.width != target:
+            card = card.resize((target, round(card.height * target / card.width)), Image.LANCZOS)
+        for ext, kw in (('jpg', dict(quality=82, progressive=True)),
+                        ('webp', dict(quality=78, method=6))):
+            q = os.path.join(SHOP, 'assets', out_stem + '.' + ext)
+            card.save(q, optimize=True, **kw)
+            report(q, card)
+
     # ---- 4. og-image.jpg : the share card ----------------------------------
     # Rebuilt because the handoff's card carried the OLD wordmark (no "The").
     OW, OH = 1200, 630

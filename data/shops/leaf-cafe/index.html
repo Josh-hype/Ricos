@@ -293,8 +293,11 @@
          photographs land. */
       border: 1px solid rgb(255 249 235 / 11%);
     }
-    .menu-card .photo-slot { position: absolute; inset: 0; transition: transform .45s ease; }
-    .menu-card:hover .photo-slot { transform: scale(1.05); }
+    .menu-card .photo-slot,
+    .menu-card picture { position: absolute; inset: 0; display: block; transition: transform .45s ease; }
+    .menu-card picture img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .menu-card:hover .photo-slot,
+    .menu-card:hover picture { transform: scale(1.05); }
     /* Keeps the caption readable whatever the photograph underneath is doing. */
     .menu-card::after {
       content: ''; position: absolute; inset: 0; pointer-events: none;
@@ -690,17 +693,26 @@
          is a swap of that div for a <picture>, with no layout to re-tune. -->
     <div class="menu-grid">
       <a class="menu-card" href="/order" aria-label="Order from the breakfast menu">
-        <div class="photo-slot"></div>
+        <picture>
+          <source srcset="/assets/menu-breakfast.webp" type="image/webp" />
+          <img src="/assets/menu-breakfast.jpg" alt="A breakfast at The Leaf" loading="lazy" />
+        </picture>
         <div class="menu-card-body"><h3>Breakfast</h3><p>A brighter start</p></div>
         <span class="menu-card-go" aria-hidden="true">→</span>
       </a>
       <a class="menu-card" href="/order" aria-label="Order from the lunch menu">
-        <div class="photo-slot"></div>
+        <picture>
+          <source srcset="/assets/menu-lunch.webp" type="image/webp" />
+          <img src="/assets/menu-lunch.jpg" alt="A toasted sandwich at The Leaf" loading="lazy" />
+        </picture>
         <div class="menu-card-body"><h3>Lunch</h3><p>Fresh &amp; satisfying</p></div>
         <span class="menu-card-go" aria-hidden="true">→</span>
       </a>
       <a class="menu-card" href="/order" aria-label="Order drinks">
-        <div class="photo-slot"></div>
+        <picture>
+          <source srcset="/assets/menu-drinks.webp" type="image/webp" />
+          <img src="/assets/menu-drinks.jpg" alt="Coffee at The Leaf" loading="lazy" />
+        </picture>
         <div class="menu-card-body"><h3>Drinks</h3><p>Something for every mood</p></div>
         <span class="menu-card-go" aria-hidden="true">→</span>
       </a>
