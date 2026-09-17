@@ -115,8 +115,9 @@ def main():
         if out_stem == 'hero-mobile':
             # Trim hard under the plate. Cropping the BOTTOM pushes the plate DOWN the
             # frame proportionally, which is what keeps it clear of the stacked
-            # buttons above it; it also drops the dead marble. 0.82 was found by eye.
-            shot = shot.crop((0, 0, shot.width, round(shot.height * 0.82)))
+            # buttons above it; it also drops the dead marble. Tuned against the measured
+            # gap between the buttons and the plate, not by eye.
+            shot = shot.crop((0, 0, shot.width, round(shot.height * 0.72)))
         for ext, kw in (('jpg', dict(quality=84, progressive=True)),
                         ('webp', dict(quality=80, method=6))):
             p = os.path.join(SHOP, 'assets', out_stem + '.' + ext)

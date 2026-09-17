@@ -417,7 +417,7 @@
         grid-template-columns: 1fr auto auto; gap: 14px;
         min-height: 88px; padding: 0 6vw;
       }
-      .brand img { width: 150px; }
+      .brand img { width: 225px; }
       .nav-toggle { display: grid; }
       .desktop-nav {
         position: absolute; top: 100%; left: 0; right: 0;
@@ -480,7 +480,11 @@
       .hero-script span:nth-child(4) { margin-right: 0; }
       .hero-script svg { margin: 4px 0 0; }
       .hero-inner { max-width: 80%; }
-      /* Back into the flow. Absolutely positioned it sat under the buttons,
+      /* Removed on a phone — it was the element sitting on the food.
+         Still shown on desktop; say if it should go there too. */
+      .hero-foot { display: none; }
+      /* (kept below for the desktop rules it still shares)
+         Back into the flow. Absolutely positioned it sat under the buttons,
          which grow down the page once they stack.
          The gradient is its own local shade, bled to the left edge and fading
          out to the right so it reads as part of the wash rather than a box. It
@@ -522,17 +526,25 @@
     }
 
     @media (max-width: 620px) {
-      .order-nav { min-height: 40px; padding: 0 14px; font-size: 8px; gap: 7px; }
-      .order-nav svg { width: 13px; height: 13px; }
-      .brand img { width: 132px; }
-      .hero { padding: 100px 6vw 80px; }
+      /* Icon only. The logo at 50% bigger needs 198px and the header only had
+         161px spare with the label in place — and 122px at 360px wide, where the
+         logo was already maxed out. The label goes, aria-label carries the
+         meaning, and the hero's own gold "Order online" is directly below. */
+      .order-nav { min-height: 44px; padding: 0 13px; gap: 0; }
+      .order-nav-label { display: none; }
+      .order-nav svg { width: 17px; height: 17px; }
+      .brand img { width: 198px; }
+      /* Top-aligned, not centred. .hero is a centred flex column, so trimming
+         the top padding just re-centred the block and moved nothing; pinning it
+         to the top is what actually lifts the copy off the plate. */
+      .hero { justify-content: flex-start; padding: 112px 6vw 64px; }
       h1 { font-size: clamp(32px, 8.9vw, 44px); }
       .hero-strap { gap: 8px; font-size: 9px; letter-spacing: .11em; }
-      .eyebrow { font-size: 10px; margin-bottom: 16px; }
-      .hero-intro { font-size: 15px; margin-top: 16px; max-width: none; }
+      .eyebrow { font-size: 10px; margin-bottom: 12px; }
+      .hero-intro { font-size: 15px; margin-top: 13px; max-width: none; }
       .button { min-height: 54px; padding: 0 24px; font-size: 11px; }
       /* Stacked but NOT stretched: the design has them hugging their labels. */
-      .hero-actions { align-items: flex-start; flex-direction: column; gap: 12px; }
+      .hero-actions { align-items: flex-start; flex-direction: column; gap: 10px; margin-top: 20px; }
       .hero-inner { max-width: 82%; }
       .hero-script { right: 4vw; top: 15vh; }
       .hero-foot { bottom: 34px; }
@@ -571,12 +583,12 @@
       <a href="#hours">Opening hours</a>
       <a href="#visit">Find us</a>
     </nav>
-    <a class="order-nav" href="/order">
+    <a class="order-nav" href="/order" aria-label="Order online">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M4.5 7.5h15l-1.2 12.2a1.6 1.6 0 0 1-1.6 1.4H7.3a1.6 1.6 0 0 1-1.6-1.4Z" />
         <path d="M8.6 7.5V6a3.4 3.4 0 0 1 6.8 0v1.5" />
       </svg>
-      Order online
+      <span class="order-nav-label">Order online</span>
     </a>
     <button class="nav-toggle" type="button" aria-controls="primary-nav"
             aria-expanded="false" aria-label="Menu">
