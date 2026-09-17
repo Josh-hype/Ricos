@@ -135,30 +135,54 @@ if (!existsSync(appGradle)) {
   }
 }
 
-// 5) USB host feature ----------------------------------------------------------
-// Caller ID reads a USB modem in the till's own port. Declared required="false"
-// on purpose: most tills have no modem attached and must still install.
+// 5) Manifest: USB host feature + caller-ID permissions ------------------------
+// Both of caller ID's two sources need something declared here, and NEITHER
+// fails the build or throws at runtime if it is missing — they just silently
+// find nothing, which is the worst failure mode we have:
+//
+//   USB modem     android.hardware.usb.host, required="false" on purpose so a
+//                 till with no modem attached still installs.
+//   FRITZ!Box     ACCESS_WIFI_STATE, for the DHCP-gateway fallback when
+//                 pos.callerId.host is omitted. getDhcpInfo() THROWS without
+//                 it ("Neither user NNNNN nor current process has
+//                 android.permission.ACCESS_WIFI_STATE"), the plugin catches
+//                 it, reports reason:"no-host" and never opens the socket.
+//                 Missed when the call monitor went in, and it cost an evening
+//                 on Dominic's install — hence the shared table below rather
+//                 than another one-off `if`.
+//
+// Capacitor's generated manifest already carries INTERNET, which is all the
+// socket itself needs; these are the two extras.
+const MANIFEST_DECLS = [
+  { id: 'android.hardware.usb.host',
+    xml: '<uses-feature android:name="android.hardware.usb.host" android:required="false" />',
+    why: 'USB host feature (caller-ID modem)' },
+  { id: 'android.permission.ACCESS_WIFI_STATE',
+    xml: '<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />',
+    why: 'ACCESS_WIFI_STATE (FRITZ!Box call monitor: DHCP gateway lookup)' },
+];
+
 const manifest = resolve(androidDir, 'app/src/main/AndroidManifest.xml');
 if (!existsSync(manifest)) {
   console.error('✗ inject-native: AndroidManifest.xml not found.');
   ok = false;
 } else {
   let x = readFileSync(manifest, 'utf8');
-  if (x.includes('android.hardware.usb.host')) {
-    console.log('• inject-native: USB host feature already declared');
-  } else {
+  for (const d of MANIFEST_DECLS) {
+    if (x.includes(d.id)) {
+      console.log(`• inject-native: ${d.why} already declared`);
+      continue;
+    }
     const m = x.match(/<manifest[^>]*>/);
     if (!m) {
       console.error('✗ inject-native: no <manifest> tag in AndroidManifest.xml.');
       ok = false;
-    } else {
-      const at = m.index + m[0].length;
-      x = x.slice(0, at) +
-        `\n    <uses-feature android:name="android.hardware.usb.host" android:required="false" />` +
-        x.slice(at);
-      writeFileSync(manifest, x);
-      console.log('✓ inject-native: declared USB host feature (caller-ID modem)');
+      break;
     }
+    const at = m.index + m[0].length;
+    x = x.slice(0, at) + `\n    ${d.xml}` + x.slice(at);
+    writeFileSync(manifest, x);
+    console.log(`✓ inject-native: declared ${d.why}`);
   }
 }
 
@@ -166,4 +190,4 @@ if (!ok) {
   console.error('✗ inject-native: FAILED — printer/drawer would be missing from the APK.');
   process.exit(1);
 }
-console.log('inject-native: done (printer + drawer + USB host wired).');
+console.log('inject-native: done (printer + drawer + USB host + caller-ID permissions wired).');

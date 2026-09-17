@@ -90,6 +90,22 @@ were never filled in for Acomb either. A field that is confidently **wrong**
 looks identical to a correct one. Don't read a quiet build as a finished
 rebrand; work the table above.
 
+### Caller ID (working — but the host must stay set)
+
+The handsets plug into the **FRITZ!Box FON port**, so there is no analogue line
+for a USB modem: `pos.callerId.mode` is `"fritzbox"` and the till listens to the
+router's own call monitor on TCP **1012**. Someone dialled **`#96*5*`** on a
+handset to open that port; it survives reboots but not a factory reset.
+
+`host` is **pinned to `192.168.178.1`** and should stay pinned. The fallback
+(read the till's DHCP gateway) is wrong here twice over — the T2 is on the
+separate WiFi box rather than the FRITZ!Box, and the lookup needs
+`ACCESS_WIFI_STATE`, which the APK installed on this till doesn't declare. The
+explicit host skips the lookup, so it works on the APK already on the counter.
+`192.168.178.1:1012` was verified on site on 17 Sep 2026 with `nc`, against a
+real incoming call. If the router is replaced or its subnet changed, change this
+with it.
+
 ### Not carried over on purpose
 
 - **`pos.ordersOnly`** — Acomb is LumiWEB, so it hid the counter mode bar and

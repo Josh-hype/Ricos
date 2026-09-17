@@ -421,6 +421,22 @@ Brief shape:
   **nothing**. The FRITZ!Box route also needs someone to dial **`#96*5*`** on a
   handset once, which is what opens port 1012. And caller ID is **native code**,
   so Capgo cannot deliver it — the till needs an APK. See `docs/PRODUCTS.md`.
+- **Always set `pos.callerId.host` on a FRITZ!Box shop.** Leaving it off makes
+  the plugin read the till's DHCP gateway, which needs
+  `ACCESS_WIFI_STATE` — missed from the manifest when the call monitor went in,
+  so an APK built before 17 Sep 2026 throws, returns `no-host` and **never
+  opens the socket**, silently. `app/scripts/inject-native.mjs` declares it now,
+  but an explicit host is still right: the till is often on a different access
+  point from the handsets, so its gateway isn't the FRITZ!Box anyway. Measure
+  the IP on site (`nc -v <ip> 1012` must connect), never assume the default.
+  **`host` and `port` come from `config.json` over `/api/config`, so changing
+  them is a redeploy + app restart — no APK.**
+- **A native change that fails by going quiet is the worst thing we ship.** The
+  permission above, the wallet domains, the USB-host feature: none of them error,
+  they just find nothing, which from the counter is indistinguishable from
+  "the feature doesn't work". When adding native capability, add the on-till
+  diagnostic in the same commit (Back Office → Caller ID is the model) — over
+  the air, it reaches a device you cannot plug a cable into.
 - **A LumiWEB shop without `pos.ordersOnly: true` →** the Z93 shows the full
   EPOS, counter sales and card-reader tile included, to a shop paying for a
   website. See `docs/PRODUCTS.md`.

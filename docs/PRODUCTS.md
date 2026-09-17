@@ -139,9 +139,22 @@ Dominic Pizza is wired that way.
 
 ### Setting up the FRITZ!Box route
 
-1. `pos.callerId: { mode: "fritzbox" }` in the shop's `config.json`. `host` is
-   optional — the plugin falls back to the till's DHCP gateway, which on a shop
-   LAN is the router. Set it only if the FRITZ!Box is not the gateway.
+1. `pos.callerId: { mode: "fritzbox", host: "<router LAN IP>" }` in the shop's
+   `config.json`. **Set `host` — don't rely on the fallback.** It is nominally
+   optional (the plugin reads the till's DHCP gateway, which on a shop LAN is
+   usually the router), but two things bite:
+   - the till is often on a **separate access point / WiFi box** while the
+     handsets hang off the FRITZ!Box, so the till's gateway isn't the FRITZ!Box
+     at all — Dominic Pizza is wired exactly that way;
+   - the lookup needs `ACCESS_WIFI_STATE`, and an APK built before
+     17 Sep 2026 doesn't declare it (see below).
+
+   An explicit host skips the lookup entirely, so it works on any APK.
+   **Measure it, don't assume `192.168.178.1`:** on a Mac on the shop's wifi,
+   `route -n get default | grep gateway`, then prove the router half before
+   touching the till —
+   `nc -v <router IP> 1012` should connect and print `;RING;` lines when the
+   shop's phone is called.
 2. **Dial `#96*5*` from a handset connected to the FRITZ!Box.** This is what
    opens port 1012; nothing works without it. Survives reboots, not a factory
    reset. `#96*4*` turns it off.
@@ -158,7 +171,31 @@ every connection when it reboots.
 
 ### When it doesn't pop up
 
-From the till, in the app:
+**Read it on the till: Back Office → Caller ID.** Configured source, whether
+either listener is running, the `host:port` it is talking to, every line it has
+seen, and a button to start the call monitor there and then. The tile only
+appears in the app (it is gated on the native plugin), which is the point — no
+USB cable, no `chrome://inspect`, no Developer options, none of which are
+available on a Sunmi T2 in a shop.
+
+What the log tells you:
+
+| It says | Meaning | Fix |
+|---|---|---|
+| `!! gateway lookup failed: … ACCESS_WIFI_STATE` | the APK predates 17 Sep 2026 and cannot read the DHCP gateway, so it never opened a socket | set `pos.callerId.host` — **no APK needed** |
+| nothing at all, `Call monitor running: no` | the config hadn't arrived when the app booted | restart the app, or tap the button |
+| `!! call monitor: ConnectException` | the till cannot reach `host:1012` — wrong host, wifi client isolation, or a different network from the router | router side, no code |
+| `== call monitor connected` then `;RING;` lines | the line is reaching the till and the fault is downstream | ours |
+
+That first row was a real evening on Dominic's install: `dhcpGateway()` calls
+`WifiManager.getDhcpInfo()`, which **throws** without
+`android.permission.ACCESS_WIFI_STATE`. The permission was missed when the call
+monitor went in; `app/scripts/inject-native.mjs` now declares it alongside the
+USB-host feature, so any APK built since carries it. Nothing failed loudly —
+the plugin caught the throw, returned `reason: "no-host"` and sat silent, which
+from the counter looks identical to "caller ID doesn't work".
+
+The same values are available programmatically:
 
 ```js
 EPOSNative.getCallerIdLog()   // every line either source has produced,
