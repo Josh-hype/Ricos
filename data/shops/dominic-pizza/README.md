@@ -61,12 +61,12 @@ addition (`resolveDelivery` returns the matched band's minimum; `computeTotals`
 and the order page prefer it over the flat `minimumOrderPence`). A band without
 one falls back to the flat value, so every other shop is untouched.
 
-⚠️ **The 20% promo raises the effective minimum.** The minimum is measured on
-the subtotal AFTER the discount — pre-existing, deliberate behaviour, on the
-basis that it is what the shop actually gets paid for the food. So on the
-7-mile band a £24.60 basket nets £19.68 and is refused: the real minimum there
-is **£25.00** (£20 ÷ 0.8). Worth the owner knowing; changing it would mean
-measuring the minimum pre-discount, which would alter Rico's and Big Bites too.
+**The minimum is measured BEFORE the discount** — owner's decision, to match
+the system they came from, whose promo threshold is also read off the gross
+subtotal. So £20 means £20 of menu items: a £24.60 basket is accepted on the
+7-mile band even though 20% off nets £19.68. That's
+`fulfillment.delivery.minimumBeforeDiscount: true`; absent (every other shop)
+keeps the after-discount behaviour, which is what Rico's and Big Bites use.
 
 ### Check before launch, inherited and not obviously wrong
 

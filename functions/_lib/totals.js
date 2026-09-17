@@ -227,8 +227,16 @@ export function computeTotals(input, config, opts = {}) {
     : serviceFeeP;
   const serviceFeeShopP = serviceFeeP - serviceFeePlatformP;
 
-  // Minimum order check (applied to subtotal less discount).
+  // Minimum order check. By default it is measured on the subtotal AFTER the
+  // online discount — what the shop actually gets paid for the food.
+  // fulfillment.delivery.minimumBeforeDiscount flips it to the GROSS subtotal,
+  // i.e. £20 means £20 of menu items whatever the promo then takes off. Dominic
+  // sets it to match the behaviour of the ordering system they came from, where
+  // the promo threshold and the delivery minimum are both read off the gross
+  // subtotal. Absent — every other shop — keeps the existing behaviour.
   const netSubtotalP = subtotalP - discountP;
+  const minBasisP = config.fulfillment?.delivery?.minimumBeforeDiscount
+    ? subtotalP : netSubtotalP;
   // A radius band may carry its own minimum (opts.deliveryMinOrderP, resolved
   // from the customer's postcode by resolveDelivery and passed in by the API
   // alongside the fee). Absent — every shop that doesn't use it — falls back to
@@ -236,7 +244,7 @@ export function computeTotals(input, config, opts = {}) {
   const minOrderP = Number.isFinite(opts.deliveryMinOrderP)
     ? Number(opts.deliveryMinOrderP)
     : config.fulfillment.delivery.minimumOrderPence;
-  if (fulfillment === 'delivery' && netSubtotalP < minOrderP) {
+  if (fulfillment === 'delivery' && minBasisP < minOrderP) {
     const minP = minOrderP;
     const inclFees = !!config.fulfillment.delivery.minimumIncludesFees;
     const shownP = inclFees ? (minP + deliveryFeeP + serviceFeeP) : minP;

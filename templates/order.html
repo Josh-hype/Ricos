@@ -2586,12 +2586,16 @@ function renderCart() {
     ? state.deliveryMinP : (Number(dCfg.minimumOrderPence) || 0);
   const inclFees = !!dCfg.minimumIncludesFees;
   const shownMinP = minP + (inclFees ? Math.round((deliveryFeeGBP() + serviceFeeGBP()) * 100) : 0);
-  const netP = Math.round((t.sub - t.discount) * 100);
-  const underMin = state.mode === 'deliver' && minP > 0 && state.cart.length > 0 && netP < minP;
+  // Same basis computeTotals uses, or the hint tells the customer to add an
+  // amount that still gets rejected (or blocks a basket the server would take).
+  const basisP = dCfg.minimumBeforeDiscount
+    ? Math.round(t.sub * 100)
+    : Math.round((t.sub - t.discount) * 100);
+  const underMin = state.mode === 'deliver' && minP > 0 && state.cart.length > 0 && basisP < minP;
   const hintText = underMin
     ? (inclFees
-        ? `Add ${fmt((minP - netP) / 100)} more — ${fmt(shownMinP / 100)} minimum order`
-        : `Add ${fmt((minP - netP) / 100)} more for delivery (${fmt(minP / 100)} minimum)`)
+        ? `Add ${fmt((minP - basisP) / 100)} more — ${fmt(shownMinP / 100)} minimum order`
+        : `Add ${fmt((minP - basisP) / 100)} more for delivery (${fmt(minP / 100)} minimum)`)
     : '';
   for (const id of ['minHint', 'mMinHint']) {
     const el = document.getElementById(id);
@@ -3715,12 +3719,14 @@ function startCheckout() {
     ? state.deliveryMinP : (Number(dCfg.minimumOrderPence) || 0);
   if (state.mode === 'deliver' && minP > 0) {
     const ct = cartTotals();
-    const netP = Math.round((ct.sub - ct.discount) * 100);
-    if (netP < minP) {
+    const basisP = dCfg.minimumBeforeDiscount
+      ? Math.round(ct.sub * 100)
+      : Math.round((ct.sub - ct.discount) * 100);
+    if (basisP < minP) {
       const inclFees = !!dCfg.minimumIncludesFees;
       const shownMinP = minP + (inclFees ? Math.round((deliveryFeeGBP() + serviceFeeGBP()) * 100) : 0);
       const lead = inclFees ? `Minimum order ${fmt(shownMinP / 100)}` : `Minimum delivery order is ${fmt(shownMinP / 100)}`;
-      alert(`${lead}. Add ${fmt((minP - netP) / 100)} more, or switch to collection.`);
+      alert(`${lead}. Add ${fmt((minP - basisP) / 100)} more, or switch to collection.`);
       return;
     }
   }

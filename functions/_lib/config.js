@@ -44,6 +44,10 @@ export function getPublicConfig() {
         feeByOutcode: delivery.feeByOutcode || {},
         minimumOrderPence: delivery.minimumOrderPence,
         minimumIncludesFees: !!delivery.minimumIncludesFees,
+        // Measure the delivery minimum on the GROSS subtotal rather than
+        // after the online discount. The order page needs it too, or its
+        // hint quotes a shortfall the server doesn't agree with.
+        minimumBeforeDiscount: !!delivery.minimumBeforeDiscount,
         allowedOutcodes: delivery.allowedOutcodes,
         // Shown when delivery is switched OFF, to explain why. Optional: a shop
         // with delivery enabled, or one that turns it off without a reason,

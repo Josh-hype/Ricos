@@ -67,6 +67,8 @@
       "feePence": 200,
       "_comment_minimum": "The FALLBACK only — every band above sets its own, so this is what applies if a band ever loses its minOrderPence. £10, the nearest band's figure, so a lapse can only ever be more generous than intended rather than turning customers away. minimumIncludesFees is absent, i.e. false, so the minimum is measured on the basket BEFORE the delivery and service fees - a £9 basket is refused rather than being nudged over the line by charges the customer did not choose.",
       "minimumOrderPence": 1000,
+      "_comment_minimumBeforeDiscount": "CONFIRMED BY THE OWNER, 17 Sep 2026: measure the delivery minimum on the subtotal BEFORE the 20% online discount, matching the ordering system they came from (whose promo threshold is also read off the gross subtotal). So £20 means £20 of menu items. Without it the 7-mile band's real minimum would be £25.00 - a £24.60 basket nets £19.68 after the discount and would be refused. Default (absent) keeps the after-discount behaviour, so Rico's and Big Bites are untouched.",
+      "minimumBeforeDiscount": true,
       "areaDescription": "within 7 miles of the shop"
     }
   },
