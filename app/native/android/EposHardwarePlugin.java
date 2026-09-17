@@ -417,8 +417,15 @@ public class EposHardwarePlugin extends Plugin {
     private int cidCtrlIface = 0;
     private volatile boolean cidIsCdc = true;
     // Last lines off the modem, kept so a failed install can still be diagnosed
-    // from the till without a cable or a laptop.
+    // from the till without a cable or a laptop. Shared with the call monitor
+    // below, so getCallerIdLog() answers for whichever source a shop uses.
     private final java.util.List<String> cidLog = new java.util.ArrayList<>();
+
+    // FRITZ!Box call monitor (see startCallMonitor).
+    private Thread cmThread = null;
+    private volatile boolean cmRunning = false;
+    private volatile String cmHost = null;
+    private volatile int cmPort = 1012;
 
     private void cidNote(String line) {
         synchronized (cidLog) {
@@ -563,9 +570,174 @@ public class EposHardwarePlugin extends Plugin {
         JSArray arr = new JSArray();
         synchronized (cidLog) { for (String s : cidLog) arr.put(s); }
         res.put("ok", true);
-        res.put("running", cidRunning);
+        res.put("running", cidRunning);           // USB modem
+        res.put("callMonitor", cmRunning);        // FRITZ!Box call monitor
+        res.put("callMonitorHost", cmHost == null ? "" : (cmHost + ":" + cmPort));
         res.put("lines", arr);
         call.resolve(res);
+    }
+
+    /* ====================================================================
+       Caller ID over the network — AVM FRITZ!Box "call monitor".
+
+       The USB-modem path above needs an analogue line with CLI on it. A shop
+       whose handset plugs into the router's FON port has no such pair to tap:
+       the router is doing the telephony, so the number never reaches a socket
+       a modem could sit on. Dominic Pizza is wired that way.
+
+       Every FRITZ!Box can instead broadcast call events on the LAN over plain
+       TCP, port 1012, once someone dials #96*5* from a handset on it (#96*4*
+       turns it off). No authentication, no API key, no dependency — which is
+       why this is a Socket and a BufferedReader and nothing else.
+
+       The lines look like:
+         17.09.26 21:30:15;RING;0;01904621622;01904621622;SIP0;
+         17.09.26 21:30:15;CALL;0;11;01904621622;07700900123;SIP0;
+         17.09.26 21:30:20;CONNECT;0;11;01904621622;
+         17.09.26 21:30:48;DISCONNECT;0;28;
+
+       Only RING is acted on. CALL is an OUTGOING call, and firing the incoming
+       -call bar when staff dial a customer would be worse than useless.
+
+       Fires the SAME "callerId" event as the modem, so the staff page, the
+       lookup and the call bar are all completely unchanged.
+
+       Host: whatever is passed in, else the DHCP gateway — on a shop LAN the
+       FRITZ!Box IS the gateway, so the common case needs no configuration.
+       Reconnects with a backoff, because the router drops every socket when it
+       reboots and a till that quietly stopped listening is the failure nobody
+       would notice until a customer rang.
+       ==================================================================== */
+    @PluginMethod
+    public void startCallMonitor(PluginCall call) {
+        JSObject res = new JSObject();
+        String host = call.getString("host");
+        Integer port = call.getInt("port");
+        if (port != null && port > 0) cmPort = port;
+
+        if (host == null || host.trim().isEmpty()) host = dhcpGateway();
+        if (host == null || host.trim().isEmpty()) {
+            res.put("ok", false);
+            res.put("reason", "no-host");
+            res.put("hint", "pass pos.callerId.host — the router's LAN address");
+            call.resolve(res);
+            return;
+        }
+        host = host.trim();
+
+        if (cmRunning && host.equals(cmHost)) {
+            res.put("ok", true); res.put("already", true);
+            res.put("host", cmHost); res.put("port", cmPort);
+            call.resolve(res);
+            return;
+        }
+        stopCallMonitor();
+
+        cmHost = host;
+        cmRunning = true;
+        cidNote("== call monitor starting " + cmHost + ":" + cmPort);
+        final String h = cmHost;
+        cmThread = new Thread(new Runnable() { public void run() { runCallMonitor(h); } });
+        cmThread.setDaemon(true);
+        cmThread.start();
+
+        res.put("ok", true);
+        res.put("host", cmHost);
+        res.put("port", cmPort);
+        call.resolve(res);
+    }
+
+    @PluginMethod
+    public void stopCallMonitorCall(PluginCall call) {
+        stopCallMonitor();
+        JSObject res = new JSObject();
+        res.put("ok", true);
+        call.resolve(res);
+    }
+
+    private void stopCallMonitor() {
+        cmRunning = false;
+        Thread t = cmThread;
+        cmThread = null;
+        if (t != null) t.interrupt();
+    }
+
+    /** The router's LAN address, on the assumption it is this device's gateway. */
+    private String dhcpGateway() {
+        try {
+            android.net.wifi.WifiManager wm =
+                (android.net.wifi.WifiManager) getContext().getApplicationContext()
+                    .getSystemService(Context.WIFI_SERVICE);
+            if (wm == null) return null;
+            android.net.DhcpInfo info = wm.getDhcpInfo();
+            if (info == null || info.gateway == 0) return null;
+            int g = info.gateway;   // little-endian in DhcpInfo
+            return String.format(java.util.Locale.UK, "%d.%d.%d.%d",
+                (g & 0xFF), (g >> 8 & 0xFF), (g >> 16 & 0xFF), (g >> 24 & 0xFF));
+        } catch (Throwable t) {
+            cidNote("!! gateway lookup failed: " + t.getMessage());
+            return null;
+        }
+    }
+
+    private void runCallMonitor(String host) {
+        int backoff = 2000;
+        while (cmRunning) {
+            java.net.Socket sock = null;
+            try {
+                sock = new java.net.Socket();
+                sock.connect(new java.net.InetSocketAddress(host, cmPort), 5000);
+                sock.setKeepAlive(true);
+                cidNote("== call monitor connected " + host + ":" + cmPort);
+                backoff = 2000;   // a good connection resets the backoff
+                java.io.BufferedReader rd = new java.io.BufferedReader(
+                    new java.io.InputStreamReader(sock.getInputStream(), "ISO-8859-1"));
+                String line;
+                while (cmRunning && (line = rd.readLine()) != null) {
+                    line = line.trim();
+                    if (line.isEmpty()) continue;
+                    cidNote(line);
+                    String number = parseRing(line);
+                    if (number != null) {
+                        JSObject ev = new JSObject();
+                        ev.put("number", number);
+                        notifyListeners("callerId", ev);
+                    }
+                }
+                cidNote("== call monitor stream ended");
+            } catch (Throwable t) {
+                cidNote("!! call monitor: " + t.getClass().getSimpleName() + " " + t.getMessage());
+            } finally {
+                if (sock != null) try { sock.close(); } catch (Throwable ignored) {}
+            }
+            if (!cmRunning) break;
+            try { Thread.sleep(backoff); } catch (InterruptedException ie) { break; }
+            backoff = Math.min(backoff * 2, 60000);
+        }
+        cidNote("== call monitor stopped");
+    }
+
+    /* The caller's number from a RING line, or null for anything else.
+
+       Semicolon-separated, and the caller sits in field 3:
+         date ; RING ; connectionId ; CALLER ; called ; line ;
+       A withheld number arrives as an empty field, which must stay null rather
+       than opening the bar with nothing in it. Digits (and a leading +) only,
+       so a stray space cannot lose the call. */
+    static String parseRing(String s) {
+        if (s == null) return null;
+        String[] f = s.split(";", -1);
+        if (f.length < 4) return null;
+        if (!"RING".equalsIgnoreCase(f[1].trim())) return null;
+        String raw = f[3].trim();
+        StringBuilder out = new StringBuilder();
+        for (int i = 0; i < raw.length(); i++) {
+            char c = raw.charAt(i);
+            if (c >= '0' && c <= '9') out.append(c);
+            else if (c == '+' && out.length() == 0) out.append(c);
+        }
+        String n = out.toString();
+        return n.length() >= 5 ? n : null;
     }
 
     private void writeAt(UsbEndpoint out, String cmd) {

@@ -115,6 +115,64 @@ Acomb Pizza & Kebab did not until it was spotted on the device.
 
 ---
 
+## Caller ID — two sources, and the shop's wiring decides which
+
+When the phone rings, the till shows a bar with the number and, if that number
+has ordered before, the customer's **name and address** (`/api/staff/customer-lookup`,
+the same records as their website account). Collection / Delivery buttons open a
+new sale with the caller prefilled. It is a bar, not a modal, on purpose: a
+ringing phone must not block an order already being taken.
+
+The number can come from either source. Everything downstream is identical —
+both fire the same `callerId` event.
+
+| | **USB modem** | **FRITZ!Box call monitor** |
+|---|---|---|
+| For | an analogue line with CLI on it | a handset plugged into the **router's FON port** |
+| Hardware | a USB fax modem in the till's USB port | none — the router already does it |
+| Config | none; `native.js` starts it on boot | `pos.callerId: { mode: "fritzbox" }` |
+| How | CDC-ACM, `AT+VCID=1` / `AT#CID=1`, parses `NMBR=` | plain TCP to port 1012, parses `;RING;` lines |
+
+**Pick by where the handset plugs in.** If it goes into the router, there is no
+analogue pair for a modem to tap and a USB modem will see nothing at all —
+Dominic Pizza is wired that way.
+
+### Setting up the FRITZ!Box route
+
+1. `pos.callerId: { mode: "fritzbox" }` in the shop's `config.json`. `host` is
+   optional — the plugin falls back to the till's DHCP gateway, which on a shop
+   LAN is the router. Set it only if the FRITZ!Box is not the gateway.
+2. **Dial `#96*5*` from a handset connected to the FRITZ!Box.** This is what
+   opens port 1012; nothing works without it. Survives reboots, not a factory
+   reset. `#96*4*` turns it off.
+3. **Build and install an APK.** Caller ID is native code — Capgo carries web
+   changes over the air but *not* this. Do it at install, before the till goes
+   on the counter: changing signing key later means uninstall, reinstall,
+   re-provision (see `docs/TODO.md`).
+
+Only `RING` opens the bar. `CALL` is an *outgoing* call, and popping the
+incoming-call bar when staff dial a customer would be worse than useless.
+A withheld number arrives as an empty field and is ignored rather than opening
+an empty bar. The socket reconnects with a backoff, because the router drops
+every connection when it reboots.
+
+### When it doesn't pop up
+
+From the till, in the app:
+
+```js
+EPOSNative.getCallerIdLog()   // every line either source has produced,
+                              // plus running / callMonitor / callMonitorHost
+EPOSNative.startCallerId()    // USB path: lists every attached device
+```
+
+`getCallerIdLog()` answers for both sources, so it is the one place to look.
+Port 1012 is unauthenticated and LAN-only by design, so anyone on the shop's
+wifi can see call events — worth knowing, not worth worrying about on a
+takeaway's network.
+
+---
+
 ## Who is on what today
 
 | Shop | Slug | Product | Weekly | Device |

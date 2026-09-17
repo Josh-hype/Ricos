@@ -179,7 +179,11 @@
   },
   "_comment_pos": "Till behaviour flags (all optional, default off). requireOrderPin:true makes staff enter their operator code to START every order (walk-in/collection/delivery) — leave it false so staff take orders with no per-order PIN. NOTE: the manager/owner PIN on voids, refunds and cancellations is a SEPARATE gate and is ALWAYS required regardless of this flag. selfServeDrinks:true hides the till's drink picker; externalCardMachine:true marks the Card button as paid immediately for a shop using its own card terminal.",
   "pos": {
-    "requireOrderPin": false
+    "requireOrderPin": false,
+    "_comment_callerId": "The shop's handset plugs into the FRITZ!Box FON port, so there is NO analogue line for a USB caller-ID modem to read — the router does the telephony. mode 'fritzbox' makes the till listen to the router's own call monitor over the LAN (plain TCP, port 1012) instead, and the number arrives as the same event, so the call bar and the customer lookup are unchanged. host is omitted deliberately: the plugin falls back to this device's DHCP gateway, which on the shop LAN is the router. Set host only if the FRITZ!Box is not the gateway. ⚠️ SOMEONE MUST DIAL #96*5* ON A HANDSET CONNECTED TO THE FRITZ!BOX ONCE - that is what opens port 1012. It survives reboots but not a factory reset (#96*4* turns it off again). ⚠️ Caller ID is NATIVE code, so Capgo cannot deliver it: the T2 needs an APK built from this commit or later. Flash it during install, before the till goes on the counter.",
+    "callerId": {
+      "mode": "fritzbox"
+    }
   },
   "payments": {
     "stripeEnabled": true,

@@ -106,6 +106,15 @@ export function getPublicConfig() {
       // required either way — that one is validated in priceCounterSale, and a
       // driver has to have somewhere to go.
       customerDetailsOptional: !!pos.customerDetailsOptional,
+      // Caller ID source. Only meaningful in the till app. { mode: "fritzbox",
+      // host?, port? } makes it listen to the router's call monitor on the LAN
+      // instead of a USB modem; absent leaves the modem path alone. Passed
+      // through explicitly because this object is an allow-list.
+      callerId: pos.callerId && pos.callerId.mode ? {
+        mode: String(pos.callerId.mode),
+        host: pos.callerId.host ? String(pos.callerId.host) : null,
+        port: Number(pos.callerId.port) > 0 ? Number(pos.callerId.port) : null,
+      } : null,
       // Service style drives the till's sale modes: 'takeaway' (default) keeps
       // Walk in / Collection / Delivery; 'hospitality' swaps to Eat in / Takeaway
       // for coffee shops + restaurants. `modes` overrides the derived set, and

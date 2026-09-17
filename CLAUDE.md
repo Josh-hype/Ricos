@@ -413,6 +413,14 @@ Brief shape:
   from the Stripe Dashboard — Connect **direct-charge** accounts only accept it
   via the API. Registration is per **exact host**, so `www.` ≠ apex. Missed on
   Leaf, which went live without wallets; now Phase 7b of `docs/SHOP_CHECKLIST.md`.
+- **Caller ID needs the right SOURCE for the shop's wiring, and an APK.** Two
+  paths, both firing the same event: a USB modem on the till (default, needs an
+  analogue line with CLI) or the router's call monitor over the LAN
+  (`pos.callerId: { mode: "fritzbox" }`, for a handset plugged into the
+  router's FON port — Dominic Pizza). A USB modem on a router-phone shop sees
+  **nothing**. The FRITZ!Box route also needs someone to dial **`#96*5*`** on a
+  handset once, which is what opens port 1012. And caller ID is **native code**,
+  so Capgo cannot deliver it — the till needs an APK. See `docs/PRODUCTS.md`.
 - **A LumiWEB shop without `pos.ordersOnly: true` →** the Z93 shows the full
   EPOS, counter sales and card-reader tile included, to a shop paying for a
   website. See `docs/PRODUCTS.md`.

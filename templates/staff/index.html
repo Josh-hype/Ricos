@@ -2859,6 +2859,11 @@ async function applyShopBranding() {
     // Online-orders-only device mode (delivery-only shops on a handheld): hide the
     // in-person EPOS (counter sale + card reader), keep everything else.
     state.ordersOnly = !!(cfg.pos && cfg.pos.ordersOnly);
+    // Caller ID over the LAN, for a shop whose phone is on the router rather
+    // than an analogue socket (see startCallMonitor in the native plugin). Only
+    // when the shop asks for it, and only in the app — a browser cannot open a
+    // TCP socket, so the web back office simply skips this.
+    startCallMonitorIfConfigured(cfg);
     // Username + password mode: WEB only. The till app (EPOS_IS_APP) always keeps the
     // numeric PIN pad for fast per-staff operator-code login; only the browser back
     // office swaps to username/password.
@@ -2878,6 +2883,37 @@ async function applyShopBranding() {
     const eb = document.getElementById('topEyebrow'); if (eb) eb.textContent = name;
     try { document.title = `${name} — orders`; } catch (e) {}
   } catch (e) { /* keep the baked name */ }
+}
+
+/* Caller ID has two possible sources and the shop config picks one:
+
+     (nothing)                    a USB caller-ID modem on the till's USB port,
+                                  which native.js starts on boot by itself
+     pos.callerId.mode "fritzbox" the router's call monitor over the LAN, for a
+                                  shop whose handset plugs into the router's FON
+                                  port and therefore has no analogue line to tap
+
+   Either way the number arrives as the same epos:callerid event, so everything
+   downstream — the call bar, the customer lookup, the prefilled sale — is
+   identical and none of it is duplicated.
+
+   host is optional: the plugin falls back to this device's DHCP gateway, which
+   on a shop LAN is the router. Set pos.callerId.host only if the router is not
+   the gateway.
+
+   ⚠️ The shop must also dial #96*5* from a handset on the FRITZ!Box once, which
+   is what enables port 1012. It survives reboots but not a factory reset. */
+async function startCallMonitorIfConfigured(cfg) {
+  try {
+    const cid = cfg && cfg.pos && cfg.pos.callerId;
+    if (!cid || cid.mode !== 'fritzbox') return;
+    if (!window.EPOSNative || !window.EPOSNative.startCallMonitor) return;
+    const r = await window.EPOSNative.startCallMonitor({ host: cid.host || '', port: cid.port || 0 });
+    // Logged rather than surfaced: staff can do nothing about it, and the till
+    // is perfectly usable without caller ID. EPOSNative.getCallerIdLog() on the
+    // device gives the whole story when someone asks why it isn't popping up.
+    try { console.log('[staff] callMonitor ' + JSON.stringify(r)); } catch (e) {}
+  } catch (e) { /* never let this stop the till loading */ }
 }
 
 // Effective print⇄KDS routing for this shop. When on, the till skips the kitchen

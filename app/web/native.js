@@ -232,6 +232,16 @@
       var p = eposPlugin(); if (p && p.startCallerId) return p.startCallerId();
       return Promise.resolve({ ok: false, reason: 'not-in-app' });
     },
+    // Caller ID for a shop whose handset is on the router's FON port, so there
+    // is no analogue line for a USB modem to read: listen to the FRITZ!Box call
+    // monitor on the LAN instead. Fires the same callerId event, so the call bar
+    // and the customer lookup are unchanged. Started by the staff page when the
+    // shop config asks for it (pos.callerId), never automatically — a till whose
+    // shop has not opted in must not sit poking its router.
+    startCallMonitor: function (opts) {
+      var p = eposPlugin(); if (p && p.startCallMonitor) return p.startCallMonitor(opts || {});
+      return Promise.resolve({ ok: false, reason: 'not-in-app' });
+    },
     // Raw lines the modem has sent. The till has no remote console, so this is
     // how a caller-ID problem gets diagnosed on site without a cable: run
     // EPOSNative.getCallerIdLog() from the setup screen and read the answer.
