@@ -123,6 +123,20 @@
         "perWeekPence": 1900,
         "via": "stripe"
       }
+    },
+    {
+      "slug": "leaf-cafe",
+      "name": "The Leaf Café & Bistro",
+      "city": "York",
+      "connectedAccountId": "acct_1UGcdzJrk4bTZqxo",
+      "onlineProcessor": "stripe",
+      "live": false,
+      "_subscription_note": "LumiWEB (ZCS Z93) at £19/wk. Set live:true and the subscription status when the shop goes live and the Stripe subscription is active.",
+      "subscription": {
+        "status": "pending",
+        "perWeekPence": 1900,
+        "via": "stripe"
+      }
     }
   ]
 }

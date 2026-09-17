@@ -40,18 +40,16 @@
 
   "fulfillment": {
     "collection": { "enabled": true },
-    "_comment_delivery": "ON — the owner has confirmed Leaf does delivery as well as collection. ⚠️ THE AREAS AND FEES BELOW ARE NOT CONFIRMED. They are a starting point only, shaped on Leaf sitting on Boroughbridge Road in the same part of York as Mega Chippy (Gale Lane): the YO24/YO26/YO23 outcodes nearest the shop, one flat fee, a 3-mile cap. EVERY ONE OF THESE NUMBERS MUST COME FROM THE OWNER BEFORE LAUNCH — a wrong fee is charged on every single delivery order, and a wrong outcode either turns away a street the shop serves or commits it to one it does not. If Leaf prices by distance rather than postcode, switch mode to 'radius' and use bands instead (see data/shops/_template/config.json).",
+    "_comment_delivery": "CONFIRMED BY THE OWNER at the shop, 17 Sep 2026: delivery to YO24 and YO26 only, at a flat £2. YO23 has been REMOVED — it was in the earlier guess and is not served. maxMiles has been removed with it: the owner defined the area by outcode, and a road-distance cap layered on top would silently turn away an address inside an allowed outcode that happens to sit past the cap. The outcode list is now the whole rule. ⚠️ minimumOrderPence is the one number still NOT confirmed — see its own comment.",
     "delivery": {
       "enabled": true,
       "mode": "outcode",
-      "minimumOrderPence": 1500,
-      "areaDescription": "in our delivery area",
-      "feePence": 300,
-      "allowedOutcodes": ["YO24", "YO26", "YO23"],
-      "feeByOutcode": {},
-      "_comment_maxMiles": "Road-distance cap layered on top of the outcode list, so an outcode that sprawls past the round cannot be ordered from. roadFactor scales straight-line distance to approximate a driven route.",
-      "maxMiles": 3,
-      "roadFactor": 1.3
+      "_comment_minimum": "⚠️ NOT CONFIRMED. Was £15 in the original guess; set to 0 (no minimum) because the failure modes are not equal - too high a minimum silently turns paying customers away at checkout, whereas no minimum only risks the odd small order. Tell me the real figure and it is a one-line change.",
+      "minimumOrderPence": 0,
+      "areaDescription": "in YO24 and YO26",
+      "feePence": 200,
+      "allowedOutcodes": ["YO24", "YO26"],
+      "feeByOutcode": {}
     }
   },
 
@@ -59,7 +57,7 @@
   "serviceFeePence": 50,
 
   "stripe": {
-    "connectedAccountId": "acct_REPLACE_WITH_STRIPE_CONNECT_ID"
+    "connectedAccountId": "acct_1UGcdzJrk4bTZqxo"
   },
 
   "_comment_hours": "CONFIRMED BY THE OWNER, 17 Sep 2026. Open 08:00-17:00 every day except TUESDAY, which is closed. These replace the invented placeholder that was scaffolded with the shop. 24-hour format; a close after midnight would be written as 25:00 = 01:00 next day. NOTE: closing at 17:00 every day means the shop does NOT trade in the evening - see _comment_evening_copy.",
