@@ -2053,6 +2053,18 @@ textarea.me-in{resize:vertical;font-family:inherit}
   </div>
 </div>
 
+<!-- ============================== Caller ID diagnostic
+     Back Office > Caller ID. The till has no console and Sunmi's Settings
+     hijacks the Developer-options tap, so this is the only way to see what the
+     caller-ID source is doing while standing at the counter. -->
+<div class="ovl" id="cidOvl" role="dialog" aria-modal="true" aria-labelledby="cidTitle">
+  <div class="modal" style="max-width:540px;text-align:left">
+    <h2 id="cidTitle">Caller ID</h2>
+    <div id="cidBody"></div>
+    <div class="row"><button class="cancel" id="cidClose" type="button">Close</button></div>
+  </div>
+</div>
+
 <!-- ============================== Item-detail modal (Sale view)
      Mirrors the website's item modal: spice level, option groups, meal
      upgrade + meal-choice dropdowns. Built dynamically per item. -->
@@ -2863,6 +2875,7 @@ async function applyShopBranding() {
     // than an analogue socket (see startCallMonitor in the native plugin). Only
     // when the shop asks for it, and only in the app — a browser cannot open a
     // TCP socket, so the web back office simply skips this.
+    try { window.SHOP_CONFIG_POS_CALLERID = (cfg.pos && cfg.pos.callerId) || null; } catch (e) {}
     startCallMonitorIfConfigured(cfg);
     // Username + password mode: WEB only. The till app (EPOS_IS_APP) always keeps the
     // numeric PIN pad for fast per-staff operator-code login; only the browser back
@@ -3488,6 +3501,16 @@ function renderBackOffice() {
   if (!state.ordersOnly) tiles.push({ k: 'reader', ic: 'blue', svg: ICON.reader, tl: 'Card Reader', ds: 'Register the WisePOS card terminal' });
   tiles.push({ k: 'routing', ic: 'green', svg: ICON.routing, tl: 'Order routing', ds: 'Currently: <b>' + routingLabel(state.routing) + '</b> — tap to change' });
   tiles.push({ k: 'testprint', ic: 'orange', svg: ICON.routing, tl: 'Test print', ds: printerTileDesc() });
+  // Caller ID diagnosis, on the till's own screen. native.js has always said
+  // this is how a caller-ID problem gets looked at "on site without a cable" —
+  // but there was no way to actually run it, and the T2 has no console. On a
+  // Sunmi the Developer-options route is worse than useless: tapping Build
+  // number opens their updater instead. App only: in a browser there is no
+  // plugin to ask.
+  if (window.EPOSNative && window.EPOSNative.getCallerIdLog) {
+    tiles.push({ k: 'callerid', ic: 'blue', svg: ICON.routing, tl: 'Caller ID',
+                 ds: 'Is the phone line reaching the till? Tap to check' });
+  }
   $('#grid').innerHTML = '<div class="bo-wrap"><div class="bo-grid">' +
     tiles.map(t => `<button class="bo-tile" data-bo="${t.k}"><div class="ic ${t.ic}">${t.svg}</div><div class="tl">${t.tl}</div><div class="ds">${t.ds}</div></button>`).join('') +
     '</div></div>';
@@ -3502,6 +3525,7 @@ function renderBackOffice() {
     else if (k === 'reader') openReaderModal();
     else if (k === 'routing') openRouting();
     else if (k === 'testprint') runTestPrint();
+    else if (k === 'callerid') showCallerIdDiag();
     else if (k === 'pause') toggleOrderingPause();
   }));
 }
@@ -7086,6 +7110,61 @@ function printToText(kind, o, ctx, why) {
     })
     .catch((e) => fail('text-threw'));
 }
+/* Back Office > Caller ID. Shows what the caller-ID source is actually doing,
+   on the till's screen, because the T2 has no console and Sunmi's Settings
+   hijacks the Developer-options tap.
+
+   Reports which source is live (USB modem or the router's call monitor), the
+   host it is talking to, and the raw lines it has seen — the same information
+   EPOSNative.getCallerIdLog() returns, just readable without a laptop. Also
+   offers to start the call monitor by hand, so a "did it even try?" can be
+   answered without restarting the app. */
+async function showCallerIdDiag() {
+  const N = window.EPOSNative;
+  if (!N || !N.getCallerIdLog) { toast('Caller ID needs the till app'); return; }
+  let d = {};
+  try { d = await N.getCallerIdLog(); } catch (e) { d = { error: String(e) }; }
+  const cid = (window.SHOP_CONFIG_POS_CALLERID || null);
+  const lines = (d.lines || []);
+  const esc = (v) => String(v === undefined || v === null ? '' : v)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const rows = [
+    ['Configured source', cid ? esc(cid.mode) : 'USB modem (no pos.callerId set)'],
+    ['USB modem running', d.running ? 'yes' : 'no'],
+    ['Call monitor running', d.callMonitor ? 'yes' : 'no'],
+    ['Talking to', esc(d.callMonitorHost) || '—'],
+  ].map(([k, v]) => `<div style="display:flex;justify-content:space-between;gap:14px;padding:7px 0;border-bottom:1px solid var(--line)"><span style="color:var(--muted)">${k}</span><b>${v}</b></div>`).join('');
+  const log = lines.length
+    ? lines.map(l => `<div>${esc(l)}</div>`).join('')
+    : '<div style="color:var(--muted)">nothing yet — no connection attempt and no lines received</div>';
+  $('#cidBody').innerHTML = `
+    <div style="font-size:14px">${rows}</div>
+    <p style="margin:14px 0 6px;font-weight:700">What it has seen</p>
+    <div style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;line-height:1.55;
+                background:#0e0f12;color:#d6d9df;padding:10px;border-radius:8px;
+                max-height:38vh;overflow:auto;white-space:pre-wrap">${log}</div>
+    <p style="color:var(--muted);font-size:12.5px;margin:12px 0 0;line-height:1.5">
+      A <b>;RING;</b> line means the phone line is reaching the till. Ring the shop
+      from a mobile and reopen this to check.</p>
+    <button type="button" id="cidRetry" style="width:100%;margin-top:14px;padding:13px;
+      border:0;border-radius:10px;background:var(--ink);color:#fff;font-weight:800">
+      Start the call monitor now</button>
+  `;
+  $('#cidOvl').classList.add('open');
+  const btn = document.getElementById('cidRetry');
+  if (btn) btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    btn.textContent = 'Starting…';
+    let r = {};
+    try {
+      r = await N.startCallMonitor({ host: (cid && cid.host) || '', port: (cid && cid.port) || 0 });
+    } catch (e) { r = { ok: false, reason: String(e) }; }
+    btn.textContent = r && r.ok
+      ? ('Connected — ' + (r.host || '') + ':' + (r.port || ''))
+      : ('Failed: ' + (r && (r.reason || r.hint) || 'unknown'));
+  });
+}
+
 /* Back Office > Test print. Prints a short slip AND reports the exact reason on
    failure, so a new device can be verified during setup instead of discovering on
    a Friday night that it never printed. The reason string is the native plugin's
@@ -7910,6 +7989,9 @@ $('#sfSave').addEventListener('click', async () => {
 
 /* Activity log (audit trail viewer) */
 function openAuditModal() { $('#auditOvl').classList.add('open'); loadAudit(); }
+function closeCidModal() { $('#cidOvl').classList.remove('open'); }
+$('#cidClose').addEventListener('click', closeCidModal);
+$('#cidOvl').addEventListener('click', (e) => { if (e.target.id === 'cidOvl') closeCidModal(); });
 function closeAuditModal() { $('#auditOvl').classList.remove('open'); }
 
 // Register a Stripe Terminal reader from the 3-word code on its screen.
