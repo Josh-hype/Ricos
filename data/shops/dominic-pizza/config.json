@@ -3,20 +3,20 @@
   "_comment_rebrand": "MUST ALL CHANGE BEFORE THIS SHOP TAKES A REAL ORDER. Still Acomb's: tradingName, shortName, the whole address block, phone, email, domain, logo.png, assets/, index.html (the landing page is built around Acomb's reference visual), order.css, and every one of the 141 menu items in menu.json + menu-visual.json. prelaunch is ON so none of it can reach Google in the meantime. The build already warns about legalName, companyNumber and stripe.connectedAccountId because those were never filled in for Acomb either - do not read a quiet build as a finished rebrand, because the fields that are WRONG rather than missing cannot warn.",
   "_comment_product": "LumiPOS, unlike Acomb which is LumiWEB. pos.ordersOnly has been REMOVED from the copy: Dominic is buying the full EPOS, so the T2 must show the counter mode bar and the card-reader tile. Leaving Acomb's ordersOnly:true would have hidden the counter sales this shop is paying ~£35/wk for. See docs/PRODUCTS.md.",
   "business": {
-    "tradingName": "Acomb Pizza & Kebab House",
+    "tradingName": "Dominic Pizza",
     "_comment_shortName": "Conversational short form used in page headers, aria labels and the staff PWA name (e.g. 'Pizza Bob's' instead of 'Pizza Bob's Burgers Ltd').",
-    "shortName": "Acomb Pizza & Kebab House",
+    "shortName": "Dominic Pizza",
     "legalName": "TODO_LEGAL_NAME",
     "companyNumber": "TODO_COMPANY_NUMBER",
     "address": {
-      "line1": "2 Front Street",
+      "line1": "3 Lawrence Street",
       "city": "York",
-      "postcode": "YO24 3BQ",
+      "postcode": "YO10 3BP",
       "country": "United Kingdom"
     },
-    "phone": "01904 785588",
-    "email": "orders@acombpizzakebabhouse.co.uk",
-    "domain": "acombpizzakebabhouse.co.uk"
+    "phone": "01904 621622",
+    "email": "orders@dominicpizza-york.co.uk",
+    "domain": "dominicpizza-york.co.uk"
   },
   "_comment_theme": "Brand red and gold sampled from the owner's reference visual. background/surface are the PLATFORM's light surfaces and must stay light: order.html, thank-you.html, reset-password, privacy, terms, allergy-info, the staff manifest and the confirmation email all paint dark ink on them without checking. They were briefly set to this shop's near-black, which rendered every one of those dark-on-dark — invisible headings on the thank-you page and invisible body text in the confirmation email. The DARK landing page is bespoke (data/shops/acomb-pizza-kebab/index.html) and now hardcodes its own #0a0a0a / #141414 rather than borrowing these. chrome stays dark so the staff PWA's theme_color is unchanged.",
   "theme": {
@@ -34,13 +34,10 @@
       "enabled": true
     },
     "delivery": {
-      "enabled": true,
-      "_comment_mode": "Pick the delivery pricing model. 'outcode' = charge by postcode area (fill in allowedOutcodes + feeByOutcode below; this is Rico's model). 'radius' = charge by straight-line distance from the shop in bands (delete the outcode fields, add a radius block — see _comment_radius; this is Food Station's model). Distance lookups use postcodes.io (free, no key). See docs/ADDING_A_SHOP.md.",
+      "enabled": false,
       "mode": "zones",
       "minimumOrderPence": 1500,
-      "_comment_areaDescription": "Used in delivery messages: 'we deliver {areaDescription} only'. Keep natural so the sentence reads well.",
-      "areaDescription": "in our delivery area around Acomb and York",
-      "_comment_zones": "Traced by the owner from the shop's previous provider's delivery map (_reference-src/untitled.geojson). FIRST match wins, so these are ordered cheapest first. Fees from that map: yellow free, blue and pink both £1.50, orange £3.00; £15 minimum everywhere. Boundaries checked by measuring distance from the nearest zone edge: York centre sits 65m outside, i.e. on the line and effectively covered. New Earswick's CENTRE is 1.05km outside because the trace reaches the village's southern edge, not the whole village — deliberate, so southern New Earswick postcodes are in and northern ones are not. Huntington (1.4km), Fulford (1.0km) and Heslington (1.9km) are clearly outside and are the far side of York from Acomb. Nudge the north-east polygon and re-export if the shop wants more of New Earswick.",
+      "areaDescription": "in our delivery area",
       "zones": [
         {
           "name": "Acomb & Poppleton",
@@ -278,7 +275,8 @@
             ]
           ]
         }
-      ]
+      ],
+      "_comment_enabled": "OFF until Dominic's own delivery areas are confirmed. It is NOT off because the shop doesn't deliver - it is off because what was inherited here is Acomb Pizza & Kebab House's: four hand-drawn polygons over Acomb, Poppleton, Rufforth, Bishopthorpe and Clifton, which is the far side of York from 3 Lawrence Street (YO10, just outside the walls to the east). Left enabled it would price and accept deliveries against a map centred three miles away, and the shop's own postcode may not even sit inside any of the zones. Replace the zones (or switch to outcode/radius mode) and set enabled back to true together - do not flip this one on its own."
     }
   },
   "_comment_serviceFee": "Per-order platform fee in pence. Charged to the customer and kept by the platform.",
@@ -288,13 +286,13 @@
     "connectedAccountId": "acct_REPLACE_WITH_STRIPE_CONNECT_ID"
   },
   "hours": {
-    "_comment": "From the shop's Google Business Profile (Aug 2026): Sun-Thu 4pm-11:45pm, Fri+Sat 4pm-12:45am. A close after midnight is written past 24:00 — 24:45 = 00:45 the next day. lastOrderBeforeCloseMinutes is subtracted for the online cut-off.",
+    "_comment": "CONFIRMED BY THE OWNER, 17 Sep 2026: 4pm-3am every day, no closed day. 27:00 is 03:00 the NEXT morning - hours.js reads any close past 24:00 as rolling over, and 27:00 is the latest in the estate (the previous high-water mark was 25:00). ordering.businessDayStartHour stays 4, so the trading day runs 4am-4am and a 2am order is still counted against the night it belongs to.",
     "monday": {
       "closed": false,
       "windows": [
         {
           "open": "16:00",
-          "close": "23:45"
+          "close": "27:00"
         }
       ]
     },
@@ -303,7 +301,7 @@
       "windows": [
         {
           "open": "16:00",
-          "close": "23:45"
+          "close": "27:00"
         }
       ]
     },
@@ -312,7 +310,7 @@
       "windows": [
         {
           "open": "16:00",
-          "close": "23:45"
+          "close": "27:00"
         }
       ]
     },
@@ -321,7 +319,7 @@
       "windows": [
         {
           "open": "16:00",
-          "close": "23:45"
+          "close": "27:00"
         }
       ]
     },
@@ -330,7 +328,7 @@
       "windows": [
         {
           "open": "16:00",
-          "close": "24:45"
+          "close": "27:00"
         }
       ]
     },
@@ -339,7 +337,7 @@
       "windows": [
         {
           "open": "16:00",
-          "close": "24:45"
+          "close": "27:00"
         }
       ]
     },
@@ -348,7 +346,7 @@
       "windows": [
         {
           "open": "16:00",
-          "close": "23:45"
+          "close": "27:00"
         }
       ]
     }

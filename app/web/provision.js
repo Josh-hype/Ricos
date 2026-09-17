@@ -28,7 +28,9 @@
     // turns out to 301 apex -> www, move that entry to the www host, because a
     // redirect can break the device-setup POST.
     '517122': 'https://theleafcafebistro.co.uk',
-    '718559': 'https://tadkebab.com'
+    '718559': 'https://tadkebab.com',
+    // LumiPOS (Sunmi T2) — the full EPOS, unlike the two LumiWEB shops above.
+    '867648': 'https://dominicpizza-york.co.uk'
   };
 
   function prefs() {

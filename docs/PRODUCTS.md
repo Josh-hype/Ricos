@@ -91,6 +91,7 @@ host directory is in `app/web/provision.js`:
 | `604827` | Acomb Pizza & Kebab House | `https://acombpizzakebabhouse.co.uk` |
 | `517122` | The Leaf Café & Bistro (LumiWEB) | `https://theleafcafebistro.co.uk` |
 | `718559` | Tad Kebab (LumiWEB) | `https://tadkebab.com` |
+| `867648` | Dominic Pizza (LumiPOS) | `https://dominicpizza-york.co.uk` |
 
 **Adding a shop with a device means adding it here** — and the host must be the
 shop's reachable custom domain, never a `*.pages.dev` (those are firewalled on

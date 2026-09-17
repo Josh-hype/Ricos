@@ -1,4 +1,12 @@
-/* Acomb Pizza & Kebab — order page contrast corrections.
+/* Dominic Pizza — order page contrast corrections
+ *
+ * INHERITED from acomb-pizza-kebab along with the rest of this folder. The
+ * corrections themselves are tied to the brand palette, which is still Acomb's,
+ * so revisit this file when the theme colours change.
+ *
+ * Original note follows.
+ *
+ * Acomb Pizza & Kebab — order page contrast corrections.
  *
  * No palette here any more. theme.background / theme.surface are the platform's
  * light surfaces and are now set to cream in config.json, and theme.primary /

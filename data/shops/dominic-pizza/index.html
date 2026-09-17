@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{shopName}} — pizza & kebabs in Acomb, York</title>
-  <meta name="description" content="{{shopName}} on Front Street, Acomb. Fresh pizzas, doner and shish kebabs, burgers and sides for collection or delivery in York." />
+  <title>{{shopName}} — pizza & kebabs on Lawrence Street, York</title>
+  <meta name="description" content="Fresh pizzas, doner and shish kebabs, burgers and sides. Order online from {{shopName}} on Lawrence Street, York." />
   <meta name="theme-color" content="#0a0a0a" />
   {{seoHead}}
 
@@ -669,6 +669,10 @@
     .hours{display:grid;gap:11px}
     .hours .row{display:flex;justify-content:space-between;gap:18px;font-size:.9rem;color:var(--muted)}
     .hours .row b{font-weight:500;color:var(--muted)}
+    /* {{openingHoursRows}} emits .hours-row with two spans; match .row so the
+       footer looks identical whether the rows are hand-written or generated. */
+    .hours .hours-row{display:flex;justify-content:space-between;gap:18px;font-size:.9rem;color:var(--muted)}
+    .hours .hours-row span:first-child{font-weight:500}
     .contact{display:grid;gap:14px}
     .contact .line{display:flex;gap:12px;align-items:flex-start;font-size:.9rem;color:var(--muted)}
     .contact .line svg{width:17px;height:17px;color:var(--red);flex:0 0 auto;margin-top:3px}
@@ -1046,10 +1050,13 @@
 
       <div>
         <h4>Opening Hours</h4>
+        <!-- Generated from config.hours by build-shop.js, NOT typed here. These
+             three rows were previously hard-coded to Acomb's 11:45pm/12:45am
+             closes and survived the rebrand of everything around them, telling
+             customers the shop shut three hours before it does. A token cannot
+             drift from the hours the ordering engine actually enforces. -->
         <div class="hours">
-          <div class="row"><b>Monday – Thursday</b><span>4:00pm – 11:45pm</span></div>
-          <div class="row"><b>Friday – Saturday</b><span>4:00pm – 12:45am</span></div>
-          <div class="row"><b>Sunday</b><span>4:00pm – 11:45pm</span></div>
+{{openingHoursRows}}
         </div>
       </div>
 
