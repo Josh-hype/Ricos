@@ -131,7 +131,13 @@
     /* The owner's real badge logo (assets/logo-mark.png — the black background
        keyed off so it floats on the page), used instead of the reference's
        text wordmark. */
-    .brand{display:inline-flex;line-height:1}
+    /* flex-shrink:0 — WITHOUT it the header's flex row compresses the logo to
+       make room for the nav, and because .brand-logo pins the HEIGHT with
+       width:auto, the compression distorts the image instead of scaling it:
+       measured 35px wide at 125px tall (ratio 0.28) around 860px viewport, and
+       still ~4px narrow even at 1920. A square badge hid this; a 1.77:1
+       wordmark does not. */
+    .brand{display:inline-flex;line-height:1;flex-shrink:0}
     /* The reference badge shows 88x90px of visible artwork. This asset is 83%
        ink inside its box, so a 110px box yields ~91px of mark. The header is
        position:absolute, so the taller badge overhangs the hero rather than
@@ -144,7 +150,7 @@
        the logo is a 1.77:1 wordmark (1200x680), so 96px tall is ~170px wide,
        which is where Acomb's 165px square sat. Sizing by height alone would
        have pushed it to ~292px and into the nav. */
-    .brand-logo{display:block;height:96px;width:auto}
+    .brand-logo{display:block;height:125px;width:auto}
     /* logo-mark.png carries ~11px of transparent padding at the 110px header
        size, so the visible disc floated 15px right and 11px high of the
        reference's (108-196 x / 30-118 y). Shifted visually only — position
@@ -152,16 +158,25 @@
        fraction of the badge, so they scale with it (x1.5 here) rather than
        staying at the 110px values and under-correcting. The footer badge is a
        different size and is not covered by the reference, so it keeps its box. */
-    /* No offsets: the new logo is trimmed to its content box, so it needs no
-       correction for transparent padding the way Acomb's badge did. */
+    /* Dropped so the logo sits centred in the band between the top of the page
+       and the hero's first line, rather than tucked against the top edge. A
+       RELATIVE offset, so it moves visually without pushing the nav, the hero
+       or anything else — the header keeps its own height. The value is the gap
+       to the hero strap halved, minus half the logo: measured per breakpoint
+       (strap at 206px on desktop, 122px once the layout stacks) rather than
+       eyeballed, and re-measured after the size change because a taller logo
+       moves its own centre. Re-measure if the hero's top spacing changes. */
+    header.site .brand-logo{position:relative;top:31px}
     footer.site .brand-logo{height:60px}
-    /* Step down once the nav collapses so the badge doesn't crowd the burger.
+    /* Step down on tablet/phone so the wordmark doesn't crowd the burger.
+       Not tied to the nav collapse any more — that now happens at 1250px,
+       where there is plenty of room for the logo at full size.
        Both rules live here, before the ≤760px block, so the narrower query
        still wins on a phone. */
     /* The transparent-padding offset scales with the badge, so step it down
        with the height rather than leaving the desktop value to overshoot. */
-    @media(max-width:760px){ .brand-logo{height:72px} }
-    @media(max-width:560px){ .brand-logo{height:62px} }
+    @media(max-width:760px){ .brand-logo{height:94px} header.site .brand-logo{top:4px} }
+    @media(max-width:560px){ .brand-logo{height:81px} header.site .brand-logo{top:11px} }
     /* Reference nav: five links on a ~57px rhythm (link edges 497.6 / 596.8 /
        696.0 / 807.6 / 936.2, run ending at 1004), then a breathing gap before
        the CTA pill. At 45px the run ended 51px short at x=953 and the nav read
@@ -170,6 +185,12 @@
        past the right gutter between 760px (where the nav collapses) and ~1010px.
        3.96vw resolves to exactly 57px at the 1440 the reference was measured at. */
     nav.main{margin-left:auto;display:flex;gap:clamp(30px,3.96vw,57px);align-items:center}
+    /* nowrap: with .brand no longer shrinking, the squeeze lands on the nav
+       instead, and "About Us" and "Order Now" each broke onto two lines at
+       1440px. A nav link wrapping is never the right answer — the row should
+       collapse to the burger instead, which is what the 1100px breakpoint
+       below is for. */
+    nav.main a{white-space:nowrap}
     nav.main a{
       /* 1.14rem: at 1.05 the nav caps measured 11.5 CSS px against the
          reference's 12.5 (MENU 37.5 vs 40.5), ~8% under across all five links.
@@ -698,7 +719,19 @@
       .fgrid{grid-template-columns:1fr 1fr;gap:36px}
       .fgrid > div + div{border-left:0;padding-left:0}
     }
-    @media(max-width:760px){
+    /* The nav collapses to the burger at 1250px, not 760px. MEASURED: with the
+       logo at its full size and nothing allowed to wrap, the header row needs
+       1266px (five links, the ORDER NOW button, and the nav's own
+       clamp(30px,3.96vw,57px) gaps). So below ~1250 it did not fit — the flex row was simply crushing the logo
+       to absorb it (0px wide at 800, 35px at 860) and the page still scrolled
+       sideways. With .brand{flex-shrink:0} that overflow became visible
+       instead of hidden, so the breakpoint moves to where the nav actually
+       stops fitting: 1250px, checked at 25 widths from 360 to 1920 for
+       horizontal scroll, logo ratio and wrapped nav links.
+
+       Only the nav/burger rules move. The phone hero treatment stays at 760,
+       where it belongs. */
+    @media(max-width:1250px){
       nav.main{
         display:none;position:absolute;top:100%;left:0;right:0;
         flex-direction:column;gap:0;background:#0d0d0d;border-top:1px solid var(--line);
@@ -708,6 +741,8 @@
       nav.main a{padding:14px 0;border-bottom:1px solid var(--line);width:100%}
       nav.main a.on::after{display:none}
       .burger{display:block}
+    }
+    @media(max-width:760px){
       /* Phone: the WHOLE shot, uncropped, as a full-bleed banner with the copy
          stacked beneath.
 
