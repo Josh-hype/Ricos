@@ -124,6 +124,7 @@ Acomb Pizza & Kebab did not until it was spotted on the device.
 | One Sip | `one-sip` | LumiPOS, till-only (no website, no Stripe) | £0 — family venue, provided free | not provisioned in `provision.js` |
 | The Grub Hub | `grub-hub` | LumiPOS | £35 | pre-launch |
 | Acomb Pizza & Kebab House | `acomb-pizza-kebab` *(pre-launch — awaiting Stripe Connect)* | **LumiWEB** | £19 | Z93 to supply |
+| Dominic Pizza | `dominic-pizza` *(pre-launch — site is still a copy of Acomb's, awaiting rebrand + Stripe Connect)* | **LumiPOS** | ~£35 | Sunmi T2 |
 
 Commercial state (Stripe Connect, subscription status, processor) is in
 `data/platform/registry.json`, which the owner console reads. Note it currently

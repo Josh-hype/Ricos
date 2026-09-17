@@ -1,0 +1,31 @@
+/* Acomb Pizza & Kebab — order page contrast corrections.
+ *
+ * No palette here any more. theme.background / theme.surface are the platform's
+ * light surfaces and are now set to cream in config.json, and theme.primary /
+ * theme.accent are already this shop's own red and gold, so the order page
+ * arrives cream-with-Acomb-brand on its own. What remains is the three places
+ * that pairing does not clear WCAG unaided, each measured on the built page.
+ *
+ * Appended by scripts/build-shop.js to the end of the order page's <style>,
+ * so none of it reaches any other shop.
+ */
+
+:root {
+  /* The shared sheet's muted grey (#8a807c) is 3.8:1 on white — under AA for
+     body text, and it carries the empty-basket prompt among others. Warmed and
+     darkened to 5.5:1. It is only ever used as an ink. */
+  --grey: #6f6559;
+}
+
+/* The price sits in a --yellow chip, and this shop's red on this shop's gold is
+   2.26:1 — both are mid-tones, so they never separate. Charcoal on the same gold
+   is 8.09:1 and leaves the chip colour alone. Two selectors because the item
+   sheet uses its own class. */
+.item-row-price,
+.item-detail-price { color: #0C0C0C; }
+
+/* The delivery bar's sub-line is cream at 85% alpha on the brand red, which
+   lands at 3.39:1 — and removing the alpha only reaches 4.24, so cream and this
+   red cannot clear 4.5 together at any opacity. White does, at 5.47. This is
+   the line that tells a customer which postcodes are served. */
+.service-bar p { color: #fff; opacity: 1; }

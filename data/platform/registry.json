@@ -125,6 +125,20 @@
       }
     },
     {
+      "slug": "dominic-pizza",
+      "name": "Dominic Pizza",
+      "city": "York",
+      "connectedAccountId": "",
+      "onlineProcessor": "stripe",
+      "live": false,
+      "_subscription_note": "LumiPOS at ~£35/wk (software £10 + T2 hardware £15 + card terminal £10). Not live: no Stripe Connect account yet, so card payments are off. The site is currently a copy of acomb-pizza-kebab pending rebrand - see that folder's README.",
+      "subscription": {
+        "status": "pending",
+        "perWeekPence": 3500,
+        "via": "stripe"
+      }
+    },
+    {
       "slug": "leaf-cafe",
       "name": "The Leaf Café & Bistro",
       "city": "York",
