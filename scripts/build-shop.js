@@ -629,6 +629,50 @@ function buildSeoHead() {
   ].join('\n');
 }
 
+/* Opening hours as ready-to-drop rows, grouped so consecutive days that share
+   the same windows print as one line ("Mon - Thu"). Shops that never reference
+   {{openingHoursRows}} in their landing page are unaffected — the token is
+   simply built and not used. */
+function buildOpeningHoursRows() {
+  // Local, because buildSeoHead's esc is scoped inside that function.
+  const esc = (v) => String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const ORDER = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+  const LABEL = { monday: 'Monday', tuesday: 'Tuesday', wednesday: 'Wednesday',
+                  thursday: 'Thursday', friday: 'Friday', saturday: 'Saturday', sunday: 'Sunday' };
+  const SHORT = { monday: 'Mon', tuesday: 'Tue', wednesday: 'Wed', thursday: 'Thu',
+                  friday: 'Fri', saturday: 'Sat', sunday: 'Sun' };
+  const hours = config.hours || {};
+  // "08:00" -> "8am", "17:30" -> "5.30pm", "25:00" -> "1am" (past-midnight close).
+  const t = (v) => {
+    const [rawH, m] = String(v).split(':').map(Number);
+    const h24 = rawH % 24;
+    const suffix = h24 >= 12 ? 'pm' : 'am';
+    const h = h24 % 12 === 0 ? 12 : h24 % 12;
+    return m ? `${h}.${String(m).padStart(2, '0')}${suffix}` : `${h}${suffix}`;
+  };
+  const textFor = (key) => {
+    const d = hours[key];
+    if (!d || d.closed || !Array.isArray(d.windows) || !d.windows.length) return 'Closed';
+    return d.windows.map((w) => `${t(w.open)} – ${t(w.close)}`).join(', ');
+  };
+
+  const groups = [];
+  for (const key of ORDER) {
+    const text = textFor(key);
+    const last = groups[groups.length - 1];
+    if (last && last.text === text) last.days.push(key);
+    else groups.push({ days: [key], text });
+  }
+  return groups.map(({ days, text }) => {
+    const label = days.length === 1
+      ? LABEL[days[0]]
+      : `${SHORT[days[0]]} – ${SHORT[days[days.length - 1]]}`;
+    const closed = text === 'Closed' ? ' is-closed' : '';
+    return `      <div class="hours-row${closed}"><span>${esc(label)}</span><span>${esc(text)}</span></div>`;
+  }).join('\n');
+}
+
 const tokens = {
   shopName:                config.business.tradingName || '',
   shopShortName:           config.business.shortName || config.business.tradingName || '',
@@ -688,6 +732,8 @@ const tokens = {
   promoTagline:            (promo && promo.enabled) ? ` ${promo.percent}% off online orders${promoMinText}.` : '',
   // Landing-page SEO <head>: JSON-LD Restaurant schema + canonical + OG/Twitter.
   seoHead:                 buildSeoHead(),
+  // Opening hours rows for shops whose landing page shows them.
+  openingHoursRows:        buildOpeningHoursRows(),
 };
 
 // Source HTML / manifest files with {{tokens}}. The build reads each from

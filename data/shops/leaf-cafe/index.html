@@ -378,6 +378,16 @@
       margin: 0; color: rgb(255 249 235 / 76%); font-family: var(--serif);
       font-size: 16px; font-style: normal; line-height: 1.5;
     }
+    /* Capped, or the day and its time sit at opposite ends of a very wide
+       column with a stretch of nothing between them. */
+    .hours-table { display: grid; gap: 6px; max-width: 330px; }
+    .hours-row {
+      display: flex; justify-content: space-between; gap: 20px;
+      color: rgb(255 249 235 / 78%); font-family: var(--serif); font-size: 15px;
+    }
+    .hours-row span:first-child { color: rgb(255 249 235 / 55%); }
+    .hours-row.is-closed span:last-child { opacity: .55; }
+
     .detail-link {
       display: inline-block; margin-top: 16px; padding-bottom: 8px;
       border-bottom: 1px solid rgb(213 181 115 / 55%); color: var(--gold-pale);
@@ -395,9 +405,15 @@
        the 150px CSS width and the wordmark renders stretched tall. */
     footer > img { width: 150px; height: auto; }
     .footer-links {
-      display: flex; gap: 30px;
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 26px;
       font-size: 8px; font-weight: 650; letter-spacing: .14em; text-transform: uppercase;
     }
+    .footer-links a { transition: color .2s ease; }
+    .footer-links a:hover { color: var(--gold-pale); }
+    /* Its own line under the address, so the credit reads as a credit rather
+       than as part of the shop's own details. */
+    .footer-credit { display: block; margin-top: 7px; color: rgb(255 249 235 / 45%); }
+    .footer-credit a { color: var(--gold-pale); border-bottom: 1px solid rgb(213 181 115 / 45%); }
     footer > p { justify-self: end; margin: 0; font-size: 8px; letter-spacing: .1em; text-transform: uppercase; }
 
     .button, .text-link, .detail-link { transition: opacity .2s ease, background .2s ease; }
@@ -537,7 +553,14 @@
       /* Top-aligned, not centred. .hero is a centred flex column, so trimming
          the top padding just re-centred the block and moved nothing; pinning it
          to the top is what actually lifts the copy off the plate. */
-      .hero { justify-content: flex-start; padding: 112px 6vw 64px; }
+      /* Its own floor here. The shared min(76svh, 820px) came out at 684px on a
+         phone, and the plate sits at a fixed fraction of the hero's height, so
+         the only way to get daylight between the buttons and the food is to
+         make the band itself taller. */
+      .hero {
+        justify-content: flex-start; min-height: min(88svh, 780px);
+        padding: 106px 6vw 96px;
+      }
       h1 { font-size: clamp(32px, 8.9vw, 44px); }
       .hero-strap { gap: 8px; font-size: 9px; letter-spacing: .11em; }
       .eyebrow { font-size: 10px; margin-bottom: 12px; }
@@ -724,7 +747,11 @@
       <div id="hours">
         <p class="detail-label">Opening hours</p>
         <div>
-          <p>Breakfast · Lunch · Bistro evenings</p>
+          <!-- Rendered by build-shop.js from config.hours, so this is never a
+               second copy of the times that can drift from the real one. -->
+          <div class="hours-table">
+{{openingHoursRows}}
+          </div>
           <a class="detail-link" href="/order">Order online →</a>
         </div>
       </div>
@@ -743,9 +770,16 @@
       <a href="#menus">Menus</a>
       <a href="#visit">Visit</a>
       <a href="/order">Order</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+      <a href="/allergy-info">Allergy info</a>
       <a href="#home">Back to top ↑</a>
     </div>
-    <p>{{shopName}} · {{shopAddressLine1}}, {{shopCity}}</p>
+    <p>
+      {{shopName}} · {{shopAddressLine1}}, {{shopCity}}
+      <span class="footer-credit">Developed by
+        <a href="https://luminlabs.co.uk" target="_blank" rel="noopener">Lumin Labs</a></span>
+    </p>
   </footer>
 </main>
 <script>
