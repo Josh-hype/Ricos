@@ -19717,7 +19717,6 @@
         "id": "special-offers-meal-deal-1",
         "name": "Meal Deal 1",
         "priceP": 2000,
-        "noPromo": true,
         "modifiers": [
           {
             "id": "g1-margherita-pizza",
@@ -20450,7 +20449,6 @@
         "id": "special-offers-meal-deal-2",
         "name": "Meal Deal 2",
         "priceP": 2400,
-        "noPromo": true,
         "modifiers": [
           {
             "id": "g1-margherita-pizza",
@@ -20908,7 +20906,6 @@
         "id": "special-offers-meal-deal-3",
         "name": "Meal Deal 3",
         "priceP": 2500,
-        "noPromo": true,
         "modifiers": [
           {
             "id": "g1-margherita-pizza",
@@ -21366,7 +21363,6 @@
         "id": "special-offers-meal-deal-4",
         "name": "Meal Deal 4",
         "priceP": 2800,
-        "noPromo": true,
         "modifiers": [
           {
             "id": "g1-margherita-pizza",
@@ -22139,7 +22135,6 @@
         "id": "special-offers-meal-deal-5",
         "name": "Meal Deal 5",
         "priceP": 3300,
-        "noPromo": true,
         "modifiers": [
           {
             "id": "g1-margherita-pizza",
@@ -23362,7 +23357,6 @@
         "id": "special-offers-meal-deal-6",
         "name": "Meal Deal 6",
         "priceP": 2450,
-        "noPromo": true,
         "modifiers": [
           {
             "id": "g1-margherita-pizza",
@@ -24135,7 +24129,6 @@
         "id": "special-offers-student-deal-a",
         "name": "Student Deal A",
         "priceP": 2700,
-        "noPromo": true,
         "modifiers": [
           {
             "id": "g1-margherita-pizza",
@@ -24978,7 +24971,6 @@
         "id": "special-offers-student-deal-b",
         "name": "Student Deal B",
         "priceP": 2500,
-        "noPromo": true,
         "modifiers": [
           {
             "id": "g1-margherita-pizza",

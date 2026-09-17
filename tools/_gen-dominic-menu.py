@@ -54,12 +54,20 @@ ICONS = {
     'Drinks': '🥤', 'Alcoholic Drinks': '🍺', 'Special Offers': '🎉',
 }
 
-# Bundles: several separately-priced things sold together below their combined
-# price. A percentage promo on top sells them under what the parts cost, so they
-# are held out of it. Must be set in BOTH files or the build fails the parity
-# check. "Specials" is NOT in here — those are single dishes served with chips,
-# not bundles.
-NO_PROMO_CATEGORIES = {'Special Offers'}
+# Categories held out of the percentage promo via noPromo (set in BOTH files or
+# the build fails the parity check).
+#
+# EMPTY BY THE OWNER'S DECISION, 17 Sep 2026. The Special Offers bundles were
+# excluded on the first import, because 20% off Meal Deal 1 takes £20 to £16
+# against £19.90 for the cheapest possible parts (2 x 11" Margherita + a Pepsi
+# bottle), and further under on the dearer pizzas. The owner confirmed the deals
+# DO get the discount on their existing FoodBooking page and asked to match it,
+# so the platform now behaves the same and the offer is consistent with what
+# their customers already see.
+#
+# Do not "fix" this back without asking: it is a priced commercial decision, not
+# an oversight. Put 'Special Offers' back in this set to reverse it.
+NO_PROMO_CATEGORIES = set()
 
 
 def slug(s, maxlen=48):

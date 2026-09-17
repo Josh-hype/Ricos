@@ -74,11 +74,12 @@ measuring the minimum pre-discount, which would alter Rico's and Big Bites too.
   are "Sold out" in the workbook with a BLANK price, so importing them would
   have put £0 orderable items on the menu. Add them with real prices when they
   are back on.
-- **The 8 Special Offers carry `noPromo`.** Meal Deal 1 is "any 2 x 11\" pizzas
-  and a bottle of Pepsi" for £20; the cheapest possible parts come to £19.90,
-  so 20% off would sell it at £16 — nearly £4 under cost, and much worse on the
-  dearer pizzas. The five "Specials" do NOT carry it: those are single dishes
-  served with chips, not bundles.
+- **The Special Offers get the 20% too** — owner's decision, 17 Sep 2026, to
+  match their existing FoodBooking page. So Meal Deal 1 sells at £16.00 against
+  £19.90 for the cheapest possible parts (2 × 11" Margherita + a Pepsi bottle).
+  `NO_PROMO_CATEGORIES` in `tools/_gen-dominic-menu.py` is empty for that
+  reason — it is a priced commercial decision, not an oversight, so don't put
+  it back without asking.
 - **`business.email`** is the right *shape* but nothing receives it yet: the
   domain needs verifying in Resend, `RESEND_FROM_EMAIL` setting, and MX /
   Email Routing if `orders@` is to accept replies.

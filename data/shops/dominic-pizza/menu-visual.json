@@ -23125,7 +23125,6 @@
         "name": "Meal Deal 1",
         "price": 20.0,
         "desc": "Any 2 x 11\" pizzas and a bottle of Pepsi",
-        "noPromo": true,
         "options": [
           {
             "id": "g1-pizza-1-11",
@@ -23915,7 +23914,6 @@
         "name": "Meal Deal 2",
         "price": 24.0,
         "desc": "Any 13\" pizza, donner meat and chips and a bottle of Pepsi",
-        "noPromo": true,
         "options": [
           {
             "id": "g1-pizza-1-13",
@@ -24430,7 +24428,6 @@
         "name": "Meal Deal 3",
         "price": 25.0,
         "desc": "Any 15\" pizza, medium donner kebab, and a bottle of Pepsi",
-        "noPromo": true,
         "options": [
           {
             "id": "g1-pizza-1-15",
@@ -24945,7 +24942,6 @@
         "name": "Meal Deal 4",
         "price": 28.0,
         "desc": "Any 2 x 15\" pizza and a bottle of Pepsi",
-        "noPromo": true,
         "options": [
           {
             "id": "g1-pizza-1-15",
@@ -25775,7 +25771,6 @@
         "name": "Meal Deal 5",
         "price": 33.0,
         "desc": "Any 3 x 11\" pizza, any 1/4lb burger and chips with a bottle of Pepsi",
-        "noPromo": true,
         "options": [
           {
             "id": "g1-pizza-1-11",
@@ -27103,7 +27098,6 @@
         "name": "Meal Deal 6",
         "price": 24.5,
         "desc": "Any 2 x 13\" pizzas and a bottle of Pepsi",
-        "noPromo": true,
         "options": [
           {
             "id": "g1-pizza-1-13",
@@ -27933,7 +27927,6 @@
         "name": "Student Deal A",
         "price": 27.0,
         "desc": "Any 2 x 11\" pizza, any 1/4lb burger and chips with a bottle of Pepsi",
-        "noPromo": true,
         "options": [
           {
             "id": "g1-pizza-1-11",
@@ -28857,7 +28850,6 @@
         "name": "Student Deal B",
         "price": 25.0,
         "desc": "Any 2 x 11\" pizza, onion rings or hash brown and a bottle of Pepsi",
-        "noPromo": true,
         "options": [
           {
             "id": "g1-pizza-1-11",
