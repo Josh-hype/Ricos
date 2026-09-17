@@ -1,7 +1,7 @@
 {
   "_comment": "The Leaf Cafe Bistro — 124 Boroughbridge Road, Acomb, York. Trading name taken from the shop's own logo artwork: THE LEAF / CAFÉ & BISTRO. The printed menu header sets it as CAFE - BISTRO with a dot, but the logo is the brand mark and it carries the accent and the ampersand. The design handoff had dropped the \"The\" when it generated the logo — see _comment_logo. Landing page ported from the supplied design handoff (leaf-cafe-bistro-build-kit). The shop is PRE-LAUNCH: see the prelaunch flag at the bottom, and the UNCONFIRMED list below.",
 
-  "_comment_unconfirmed": "STILL NEEDED BEFORE LAUNCH: (1) legal name + company number; (2) the Stripe Connect acct_ id and the delivery areas and fees — both being done at the Z93 install; (3) seo.geo latitude/longitude for YO26 6AB, which must be looked up rather than guessed. Address, postcode, phone, orders email, opening hours and the menu are all CONFIRMED.",
+  "_comment_unconfirmed": "STILL NEEDED BEFORE LAUNCH: the Stripe Connect acct_ id, and the delivery areas and fees — both being done at the Z93 install. Everything else is CONFIRMED: address, postcode, phone, orders email, opening hours, menu, legal name, company number and seo.geo.",
 
   "_comment_ordering": "DECIDED: Leaf is ONLINE ORDERS ONLY — no table booking — and does BOTH delivery and collection. The supplied design was a booking shape ('Book a table', 'View menu' links that went nowhere); the landing page has been reworked so every call to action lands on /order.",
 
@@ -11,8 +11,8 @@
     "tradingName": "The Leaf Café & Bistro",
     "_comment_shortName": "Conversational short form used in page headers, aria labels and the staff PWA name.",
     "shortName": "The Leaf",
-    "legalName": "TODO_LEGAL_NAME",
-    "companyNumber": "TODO_COMPANY_NUMBER",
+    "legalName": "MEHMET POLAT LTD",
+    "companyNumber": "17159885",
     "address": {
       "line1": "124 Boroughbridge Road",
       "city": "York",
@@ -136,7 +136,8 @@
     "description": "The Leaf Café & Bistro — an independent café and bistro on Boroughbridge Road, Acomb, York. Breakfasts, relaxed lunches and proper coffee. Order online for delivery or collection in Acomb and York.",
     "_comment_ogImage": "The picture shown when the link is shared. Supplied in the design handoff as a 1200x630 card built from the real interior photo and the gold wordmark.",
     "ogImage": "assets/og-image.jpg",
-    "_comment_geo": "STILL MISSING. The postcode is now known (YO26 6AB) but api.postcodes.io is blocked from the build environment, and these must not be guessed — they place the pin on Google. Look YO26 6AB up and paste the real latitude/longitude here.",
+    "_comment_geo": "Supplied by the owner for YO26 6AB, not guessed. Drives the GeoCoordinates in the Restaurant JSON-LD, i.e. where Google puts the pin. Key names are lat/lng, which is what build-shop.js reads.",
+    "geo": { "lat": 53.966465, "lng": -1.125649 },
     "_comment_sameAs": "MISSING. Add Leaf's Facebook / Instagram / Google Business profile URLs once known."
   }
 }
