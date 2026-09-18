@@ -93,7 +93,11 @@ POS_DEFAULTS = {
     'pizza':        {'size': '11"', 'crust': 'thick'},
     'vegan pizzas': {'size': '11"', 'crust': 'thick'},
     'garlic bread': {'size': '11"', 'crust': 'thick'},
-    'burgers':      {'size': '1/4lb'},          # 1/2lb is +£1.00 to +£1.50
+    # Salad is a required single-select, Salad / No salad, BOTH £0.00 — so the
+    # default costs nothing either way and staff untick it when someone says no.
+    # The identical group also exists on Kebabs (5 items), Wraps (6), Special
+    # Offers (4) and Specials (1); the owner asked for burgers, so only burgers.
+    'burgers':      {'size': '1/4lb', 'salad': 'salad'},   # 1/2lb is +£1.00 to +£1.50
     'kebabs':       {'size': 'medium'},         # Large is +£1.40 / +£2.00
 }
 # Left on "Choose…" deliberately: Specials, whose Size is 6pcs (£0.00) / 10pcs

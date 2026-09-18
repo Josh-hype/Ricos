@@ -18477,7 +18477,8 @@
               {
                 "id": "g3-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g3-no-salad",
@@ -18633,7 +18634,8 @@
               {
                 "id": "g2-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g2-no-salad",
@@ -18807,7 +18809,8 @@
               {
                 "id": "g3-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g3-no-salad",
@@ -18981,7 +18984,8 @@
               {
                 "id": "g3-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g3-no-salad",
@@ -19155,7 +19159,8 @@
               {
                 "id": "g3-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g3-no-salad",
@@ -19329,7 +19334,8 @@
               {
                 "id": "g3-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g3-no-salad",
@@ -19504,7 +19510,8 @@
               {
                 "id": "g3-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g3-no-salad",
@@ -19678,7 +19685,8 @@
               {
                 "id": "g3-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g3-no-salad",
@@ -19853,7 +19861,8 @@
               {
                 "id": "g3-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g3-no-salad",
@@ -20028,7 +20037,8 @@
               {
                 "id": "g3-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g3-no-salad",
@@ -20166,7 +20176,8 @@
               {
                 "id": "g1-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g1-no-salad",
@@ -20304,7 +20315,8 @@
               {
                 "id": "g1-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g1-no-salad",
