@@ -90,6 +90,28 @@ were never filled in for Acomb either. A field that is confidently **wrong**
 looks identical to a correct one. Don't read a quiet build as a finished
 rebrand; work the table above.
 
+### Card is taken on the shop's OWN machine
+
+`pos.externalCardMachine: true` (owner, 18 Sep 2026). Pressing **Card** on the
+till **records the sale as paid by card** there and then — counter sale, paying
+off an existing order, and the card half of a split. There is no LumiPOS reader
+to drive, so the Back Office no longer offers to register one.
+
+Two consequences to know before the shop asks:
+
+- **Refunds on a counter card sale must be done on their own machine.** LumiPOS
+  never touched that money and there is no PaymentIntent, so the till answers
+  "This order has no refundable card payment" — correct, not a fault. Cancelling
+  the order still works.
+- **Takings still show it as card** (`paymentMethod: 'counter_card'`), and the
+  Lumin Labs fee and Stripe cost both come out at **£0** for these sales, which
+  is right: both figures key off `payment.intentId`, and an external sale has
+  none.
+
+This is independent of the website — online card payments still go through
+Stripe once `stripe.connectedAccountId` is real. Same setup as Big Bites and
+One Sip.
+
 ### Caller ID (working — but the host must stay set)
 
 The handsets plug into the **FRITZ!Box FON port**, so there is no analogue line

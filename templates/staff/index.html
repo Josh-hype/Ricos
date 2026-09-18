@@ -2369,6 +2369,7 @@ const state = {
   pendingMgrTarget: null, // tab we're trying to open behind the manager PIN gate
   operatorsEnabled: false, // per-operator mode (from /api/staff/me)
   ordersOnly: false,       // online-orders-only device: hide counter EPOS + card reader (from /api/config pos.ordersOnly)
+  externalCard: false,     // shop takes card on its own terminal: no LumiPOS reader to register (pos.externalCardMachine)
   operator: null,          // { id, name, role, colour } when signed in per-operator
   perms: new Set(),        // permissions the signed-in operator holds
   fullAccess: false,       // owner/master session (username-password or pre-operators) — full perms, bypasses forced manager-override prompts
@@ -2897,6 +2898,12 @@ async function applyShopBranding() {
     // Online-orders-only device mode (delivery-only shops on a handheld): hide the
     // in-person EPOS (counter sale + card reader), keep everything else.
     state.ordersOnly = !!(cfg.pos && cfg.pos.ordersOnly);
+    // Shop takes card on its OWN terminal, so there is no LumiPOS reader to
+    // register — the Back Office tile for it is offering hardware that will
+    // never exist here. (The pay overlay already reads the same flag straight
+    // off sale.config; this copy is for renderBackOffice, which runs before a
+    // sale is started.)
+    state.externalCard = !!(cfg.pos && cfg.pos.externalCardMachine);
     // Caller ID over the LAN, for a shop whose phone is on the router rather
     // than an analogue socket (see startCallMonitor in the native plugin). Only
     // when the shop asks for it, and only in the app — a browser cannot open a
@@ -3524,7 +3531,7 @@ function renderBackOffice() {
   ];
   if (canStaff) tiles.push({ k: 'staff', ic: 'green', svg: ICON.staff, tl: 'Staff', ds: 'Operators &amp; their PIN codes' });
   tiles.push({ k: 'audit', ic: 'ink', svg: ICON.audit, tl: 'Activity Log', ds: 'Refunds, voids, sign-ins &amp; overrides' });
-  if (!state.ordersOnly) tiles.push({ k: 'reader', ic: 'blue', svg: ICON.reader, tl: 'Card Reader', ds: 'Register the WisePOS card terminal' });
+  if (!state.ordersOnly && !state.externalCard) tiles.push({ k: 'reader', ic: 'blue', svg: ICON.reader, tl: 'Card Reader', ds: 'Register the WisePOS card terminal' });
   tiles.push({ k: 'routing', ic: 'green', svg: ICON.routing, tl: 'Order routing', ds: 'Currently: <b>' + routingLabel(state.routing) + '</b> — tap to change' });
   tiles.push({ k: 'testprint', ic: 'orange', svg: ICON.routing, tl: 'Test print', ds: printerTileDesc() });
   // Caller ID diagnosis, on the till's own screen. native.js has always said
