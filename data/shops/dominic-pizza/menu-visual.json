@@ -20646,24 +20646,6 @@
             ]
           },
           {
-            "id": "g2-chip-spice",
-            "label": "Chip spice",
-            "select": "single",
-            "required": true,
-            "choices": [
-              {
-                "id": "g2-chip-spice",
-                "label": "Chip Spice",
-                "price": 0.0
-              },
-              {
-                "id": "g2-no-chip-spice",
-                "label": "No Chip Spice",
-                "price": 0.0
-              }
-            ]
-          },
-          {
             "id": "g3-sauce",
             "label": "Sauce",
             "select": "single",
@@ -21019,24 +21001,6 @@
             ]
           },
           {
-            "id": "g3-chip-spice",
-            "label": "Chip spice",
-            "select": "single",
-            "required": true,
-            "choices": [
-              {
-                "id": "g3-chip-spice",
-                "label": "Chip Spice",
-                "price": 0.0
-              },
-              {
-                "id": "g3-no-chip-spice",
-                "label": "No Chip Spice",
-                "price": 0.0
-              }
-            ]
-          },
-          {
             "id": "g4-optional-add-ons",
             "label": "Optional add-ons",
             "select": "single",
@@ -21077,7 +21041,8 @@
               {
                 "id": "g1-chips",
                 "label": "Chips",
-                "price": 0.0
+                "price": 0.0,
+                "default": true
               },
               {
                 "id": "g1-chips-with-cheese",
@@ -21168,7 +21133,8 @@
               {
                 "id": "g1-chips",
                 "label": "Chips",
-                "price": 0.0
+                "price": 0.0,
+                "default": true
               },
               {
                 "id": "g1-chips-with-cheese",
@@ -21259,7 +21225,8 @@
               {
                 "id": "g1-chips",
                 "label": "Chips",
-                "price": 0.0
+                "price": 0.0,
+                "default": true
               },
               {
                 "id": "g1-chips-with-cheese",
@@ -21350,7 +21317,8 @@
               {
                 "id": "g1-chips",
                 "label": "Chips",
-                "price": 0.0
+                "price": 0.0,
+                "default": true
               },
               {
                 "id": "g1-chips-with-cheese",
@@ -21441,7 +21409,8 @@
               {
                 "id": "g1-chips",
                 "label": "Chips",
-                "price": 0.0
+                "price": 0.0,
+                "default": true
               },
               {
                 "id": "g1-chips-with-cheese",
@@ -21533,7 +21502,8 @@
               {
                 "id": "g1-chips",
                 "label": "Chips",
-                "price": 0.0
+                "price": 0.0,
+                "default": true
               },
               {
                 "id": "g1-chips-with-cheese",
@@ -21797,24 +21767,6 @@
                 "price": 1.5
               }
             ]
-          },
-          {
-            "id": "g2-chip-spice",
-            "label": "Chip spice",
-            "select": "single",
-            "required": true,
-            "choices": [
-              {
-                "id": "g2-chip-spice",
-                "label": "Chip Spice",
-                "price": 0.0
-              },
-              {
-                "id": "g2-no-chip-spice",
-                "label": "No Chip Spice",
-                "price": 0.0
-              }
-            ]
           }
         ]
       },
@@ -21857,24 +21809,6 @@
                 "id": "g2-chips-with-cheese",
                 "label": "CHIPS WITH CHEESE",
                 "price": 1.5
-              }
-            ]
-          },
-          {
-            "id": "g3-chip-spice",
-            "label": "Chip spice",
-            "select": "single",
-            "required": true,
-            "choices": [
-              {
-                "id": "g3-chip-spice",
-                "label": "Chip Spice",
-                "price": 0.0
-              },
-              {
-                "id": "g3-no-chip-spice",
-                "label": "No Chip Spice",
-                "price": 0.0
               }
             ]
           },
@@ -22017,24 +21951,6 @@
                 "price": 1.5
               }
             ]
-          },
-          {
-            "id": "g4-chip-spice",
-            "label": "Chip spice",
-            "select": "single",
-            "required": true,
-            "choices": [
-              {
-                "id": "g4-chip-spice",
-                "label": "Chip Spice",
-                "price": 0.0
-              },
-              {
-                "id": "g4-no-chip-spice",
-                "label": "No Chip Spice",
-                "price": 0.0
-              }
-            ]
           }
         ]
       },
@@ -22053,30 +21969,13 @@
               {
                 "id": "sz-6pcs",
                 "label": "6pcs",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "sz-10pcs",
                 "label": "10pcs",
                 "price": 3.3
-              }
-            ]
-          },
-          {
-            "id": "g2-chip-spice",
-            "label": "Chip spice",
-            "select": "single",
-            "required": true,
-            "choices": [
-              {
-                "id": "g2-chip-spice",
-                "label": "Chip Spice",
-                "price": 0.0
-              },
-              {
-                "id": "g2-no-chip-spice",
-                "label": "No Chip Spice",
-                "price": 0.0
               }
             ]
           },
@@ -22135,7 +22034,8 @@
               {
                 "id": "sz-6pcs",
                 "label": "6pcs",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "sz-10pcs",
@@ -22159,24 +22059,6 @@
                 "id": "g2-chips-with-cheese",
                 "label": "CHIPS WITH CHEESE",
                 "price": 1.5
-              }
-            ]
-          },
-          {
-            "id": "g3-chip-spice",
-            "label": "Chip spice",
-            "select": "single",
-            "required": true,
-            "choices": [
-              {
-                "id": "g3-chip-spice",
-                "label": "Chip Spice",
-                "price": 0.0
-              },
-              {
-                "id": "g3-no-chip-spice",
-                "label": "No Chip Spice",
-                "price": 0.0
               }
             ]
           },

@@ -105,6 +105,15 @@ NO_PROMO_CATEGORIES = set()
 # negative choice prices (it would have refused EVERY back-office menu save
 # while this existed), and both UIs had to learn to print "−£2.50" instead of
 # "+£-2.50".
+# Groups deleted outright, by label (lowercased), across EVERY category.
+#
+# OWNER'S DECISION, 18 Sep 2026: "Chip spice" asked a required question — Chip
+# Spice or No Chip Spice, both £0.00 — on 7 items, for something the shop just
+# does. A forced tap that carries no money and no information. Removed from both
+# files together, so menu.json keeps no orphan modifiers and the build's parity
+# check stays happy.
+DROP_GROUPS = {'chip spice'}
+
 EXTRA_CHOICES = {
     'burgers': {'Chips': [('No chips', -2.50)]},
 }
@@ -119,6 +128,24 @@ EXTRA_CHOICES = {
 # IMPLICIT first-choice auto-tick, never an explicit default.
 DEFAULT_CHOICES = {
     'burgers': {'chips': 'chips'},
+    # Parmesans come with chips too, and unlike the burgers there is no "No
+    # chips" opt-out to explain — so pre-ticking the £0.00 choice just removes a
+    # pointless tap. On the website as well, matching the burgers: the
+    # force-a-choice flag only suppresses the IMPLICIT first-choice tick, never
+    # an explicit default.
+    'parmesans': {'chips': 'chips'},
+}
+
+# Till-only defaults for ONE named item, where the category would be too broad.
+# Keyed by item name, lowercased. Checked in addition to POS_DEFAULTS below.
+#
+# OWNER'S DECISION, 18 Sep 2026: the wings open on 6pcs. Deliberately NOT done
+# at category level: Chicken Dippers shares the identical 6pcs/10pcs group and
+# was not asked for. 6pcs is the £0.00 choice (10pcs is +£3.30 on the wings,
+# +£4.60 on the dippers), so the assertion below passes either way.
+POS_DEFAULTS_ITEMS = {
+    'spicy hot wings': {'size': '6pcs'},
+    'bbq wings':       {'size': '6pcs'},
 }
 
 POS_DEFAULTS = {
@@ -154,13 +181,15 @@ def default_for(category, group, choice):
     return want is not None and want == str(choice or '').strip().lower()
 
 
-def pos_default_for(category, group, choice):
-    """Is this the till's pre-selected choice for that category's group?"""
-    rules = POS_DEFAULTS.get(str(category or '').strip().lower())
-    if not rules:
-        return False
-    want = rules.get(str(group or '').strip().lower())
-    return want is not None and want == str(choice or '').strip().lower()
+def pos_default_for(category, group, choice, item=None):
+    """Is this the till's pre-selected choice? Item rule first, then category."""
+    g = str(group or '').strip().lower()
+    c = str(choice or '').strip().lower()
+    for rules in (POS_DEFAULTS_ITEMS.get(str(item or '').strip().lower()),
+                  POS_DEFAULTS.get(str(category or '').strip().lower())):
+        if rules and rules.get(g) is not None:
+            return rules[g] == c
+    return False
 
 
 def pence(v):
@@ -226,7 +255,7 @@ def build(path):
     skipped, seen_ids = [], {}
     stats = {'items': 0, 'mods': 0, 'by_size': 0, 'sized_items': 0, 'no_promo': 0,
              'dropped_size_groups': 0, 'pos_defaults': 0,
-             'defaults': 0, 'extra_choices': 0}
+             'defaults': 0, 'extra_choices': 0, 'dropped_groups': 0}
 
     for r in menu_rows:
         iid, cat, name = cell(r, mi, 'Item ID'), cell(r, mi, 'Category'), cell(r, mi, 'Item')
@@ -258,7 +287,7 @@ def build(path):
                 d = pence(p) - pence(base_price)
                 mods.append({'id': size_ids[lbl], 'label': lbl, 'priceDeltaP': d})
                 cho = {'id': size_ids[lbl], 'label': lbl, 'price': round(d / 100, 2)}
-                if pos_default_for(cat, 'Size', lbl):
+                if pos_default_for(cat, 'Size', lbl, name):
                     assert d == 0, ('POS_DEFAULTS points at a PRICED size: %s / %s (+%dp)'
                                     % (cat, lbl, d))
                     cho['posDefault'] = True
@@ -291,6 +320,12 @@ def build(path):
                 if labels == variant_labels:
                     stats['dropped_size_groups'] += 1
                     continue
+            # Groups the owner has had removed outright (see DROP_GROUPS). Skipped
+            # BEFORE any modifier is appended, so menu.json gains no orphan ids
+            # and the build's visual/server parity check has nothing to compare.
+            if str(gname or '').strip().lower() in DROP_GROUPS:
+                stats['dropped_groups'] += 1
+                continue
             opt_id = 'g%s-%s' % (order, slug(gname, 28))
             base_ctx = base_label if base_label in per_ctx else next(iter(per_ctx))
             ch = []
@@ -306,7 +341,7 @@ def build(path):
                 # Pre-select on the till? Display-only, so it goes on the visual
                 # side only — menu.json prices whatever ids are submitted and has
                 # no concept of a default.
-                if pos_default_for(cat, gname, label):
+                if pos_default_for(cat, gname, label, name):
                     assert base_s == 0, ('POS_DEFAULTS points at a PRICED choice: %s / %s / %s (+%dp)'
                                          % (cat, gname, label, base_s))
                     cho['posDefault'] = True

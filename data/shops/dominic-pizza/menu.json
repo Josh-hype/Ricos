@@ -17683,16 +17683,6 @@
             "priceDeltaP": 0
           },
           {
-            "id": "g2-chip-spice",
-            "label": "Chip Spice",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "g2-no-chip-spice",
-            "label": "No Chip Spice",
-            "priceDeltaP": 0
-          },
-          {
             "id": "g3-bbq-sauce",
             "label": "BBQ Sauce",
             "priceDeltaP": 0
@@ -17961,16 +17951,6 @@
           {
             "id": "g2-no-sauce",
             "label": "No Sauce",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "g3-chip-spice",
-            "label": "Chip Spice",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "g3-no-chip-spice",
-            "label": "No Chip Spice",
             "priceDeltaP": 0
           },
           {
@@ -18559,16 +18539,6 @@
             "id": "g1-chips-with-cheese",
             "label": "CHIPS WITH CHEESE",
             "priceDeltaP": 150
-          },
-          {
-            "id": "g2-chip-spice",
-            "label": "Chip Spice",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "g2-no-chip-spice",
-            "label": "No Chip Spice",
-            "priceDeltaP": 0
           }
         ]
       },
@@ -18596,16 +18566,6 @@
             "id": "g2-chips-with-cheese",
             "label": "CHIPS WITH CHEESE",
             "priceDeltaP": 150
-          },
-          {
-            "id": "g3-chip-spice",
-            "label": "Chip Spice",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "g3-no-chip-spice",
-            "label": "No Chip Spice",
-            "priceDeltaP": 0
           },
           {
             "id": "g4-can-of-fosters",
@@ -18713,16 +18673,6 @@
             "id": "g3-chips-with-cheese",
             "label": "CHIPS WITH CHEESE",
             "priceDeltaP": 150
-          },
-          {
-            "id": "g4-chip-spice",
-            "label": "Chip Spice",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "g4-no-chip-spice",
-            "label": "No Chip Spice",
-            "priceDeltaP": 0
           }
         ]
       },
@@ -18740,16 +18690,6 @@
             "id": "sz-10pcs",
             "label": "10pcs",
             "priceDeltaP": 330
-          },
-          {
-            "id": "g2-chip-spice",
-            "label": "Chip Spice",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "g2-no-chip-spice",
-            "label": "No Chip Spice",
-            "priceDeltaP": 0
           },
           {
             "id": "g3-can-of-fosters",
@@ -18807,16 +18747,6 @@
             "id": "g2-chips-with-cheese",
             "label": "CHIPS WITH CHEESE",
             "priceDeltaP": 150
-          },
-          {
-            "id": "g3-chip-spice",
-            "label": "Chip Spice",
-            "priceDeltaP": 0
-          },
-          {
-            "id": "g3-no-chip-spice",
-            "label": "No Chip Spice",
-            "priceDeltaP": 0
           },
           {
             "id": "g4-can-of-fosters",
