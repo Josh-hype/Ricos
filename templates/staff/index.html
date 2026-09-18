@@ -6123,7 +6123,7 @@ function openItemDetail(id) {
       const span = lbl.querySelector('.opt-delta');
       if (!span) return;
       const d = modDeltaP(canonical.modifiers?.find(m => m.id === inp.value), active);
-      span.textContent = d ? `+£${(d / 100).toFixed(2)}` : '';
+      span.textContent = deltaText(d);
     });
     // Single-select dropdowns: refresh each option's +£ for the current size.
     body.querySelectorAll('.opt-group select option').forEach(opt => {
@@ -6407,7 +6407,8 @@ function optionGroupHTML(g, canonical) {
          || null);
     const opts = (autoId ? '' : '<option value="">Choose…</option>') + choices.map(c => {
       const d = choiceDeltaP(c, canonical);
-      const label = `${c.label}${d ? ` (+£${(d / 100).toFixed(2)})` : ''}`;
+      const dt = deltaText(d);
+      const label = `${c.label}${dt ? ` (${dt})` : ''}`;
       return `<option value="${escapeHtml(c.id)}" data-label="${escapeHtml(c.label)}"${c.id === autoId ? ' selected' : ''}>${escapeHtml(label)}</option>`;
     }).join('');
     return `${open}<select class="opt-sel">${opts}</select>${errEl}</fieldset>`;
@@ -6417,7 +6418,7 @@ function optionGroupHTML(g, canonical) {
   const rows = choices.map(c => {
     const checked = c.default === true ? 'checked' : '';
     const d = choiceDeltaP(c, canonical);
-    const delta = `<span class="opt-delta">${d ? '+£' + (d / 100).toFixed(2) : ''}</span>`;
+    const delta = `<span class="opt-delta">${deltaText(d)}</span>`;
     return `<div class="opt-choice">
       <input type="checkbox" name="${gid}" value="${escapeHtml(c.id)}" aria-label="${escapeHtml(c.label)}" ${checked} />
       <span>${escapeHtml(c.label)}</span>
@@ -7335,6 +7336,16 @@ function printToText(kind, o, ctx, why) {
 function discountLine(t) {
   const label = String((t && t.discountLabel) || 'Discount').trim() || 'Discount';
   return label.length > 22 ? label.slice(0, 21) + '\u2026' : label;
+}
+
+/* A choice's price delta as staff/customers should read it. Deltas may now be
+   NEGATIVE — a burger that comes with chips has a "No chips" choice worth
+   -£2.50 — and the old `'+£' + (d/100).toFixed(2)` rendered that as "+£-2.50".
+   Uses a real minus sign, and returns '' for zero so free choices stay clean. */
+function deltaText(d) {
+  const n = Number(d) || 0;
+  if (!n) return '';
+  return (n < 0 ? '\u2212\u00a3' : '+\u00a3') + (Math.abs(n) / 100).toFixed(2);
 }
 
 /* Back Office > Caller ID. Shows what the caller-ID source is actually doing,

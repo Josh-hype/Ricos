@@ -89,6 +89,38 @@ NO_PROMO_CATEGORIES = set()
 # Scoped BY CATEGORY on purpose: "Size" also exists on Burgers (1/4lb, 1/2lb) and
 # Kebabs (Medium, Large), where an 11" rule is meaningless, and "Crust" appears on
 # Special Offers, where the owner did not ask for it.
+# Choices the workbook does not contain, injected into an existing group:
+#   {category: {group label: [(choice label, price in POUNDS), ...]}}
+#
+# OWNER'S DECISION, 18 Sep 2026: a burger comes with chips, and a customer who
+# does not want them pays £2.50 less. The workbook's Chips group only offers
+# Chips (£0.00) and CHIPS WITH CHEESE (+£1.50), so "No chips" has to be added
+# here — re-running the generator keeps it, which a hand-edit of the JSON would
+# not.
+#
+# ⚠️ A NEGATIVE delta is real money leaving the till, so it needed three things
+# beyond the data: totals.js floors a line at £0 (one required single-select
+# cannot stack, but a cheap item with a big deduction would otherwise go
+# negative and eat the rest of the basket), menu-store.js had to stop rejecting
+# negative choice prices (it would have refused EVERY back-office menu save
+# while this existed), and both UIs had to learn to print "−£2.50" instead of
+# "+£-2.50".
+EXTRA_CHOICES = {
+    'burgers': {'Chips': [('No chips', -2.50)]},
+}
+
+# Pre-selected EVERYWHERE — till and website both honour `default: true`. Use
+# this only where the shop wants the customer to get the choice without asking;
+# POS_DEFAULTS below is the till-only version.
+#
+# OWNER'S DECISION, 18 Sep 2026: burgers come with chips on the website too, so
+# Chips is ticked and "No chips" is the deliberate opt-out. Note this survives
+# ordering.forceRequiredChoice on the website — that flag only suppresses the
+# IMPLICIT first-choice auto-tick, never an explicit default.
+DEFAULT_CHOICES = {
+    'burgers': {'chips': 'chips'},
+}
+
 POS_DEFAULTS = {
     'pizza':        {'size': '11"', 'crust': 'thick'},
     'vegan pizzas': {'size': '11"', 'crust': 'thick'},
@@ -111,6 +143,15 @@ def slug(s, maxlen=48):
     s = s.encode('ascii', 'ignore').decode('ascii').lower()
     s = re.sub(r'[^a-z0-9]+', '-', s).strip('-')
     return s[:maxlen].strip('-') or 'x'
+
+
+def default_for(category, group, choice):
+    """Is this the pre-selected choice EVERYWHERE (till + website)?"""
+    rules = DEFAULT_CHOICES.get(str(category or '').strip().lower())
+    if not rules:
+        return False
+    want = rules.get(str(group or '').strip().lower())
+    return want is not None and want == str(choice or '').strip().lower()
 
 
 def pos_default_for(category, group, choice):
@@ -184,7 +225,8 @@ def build(path):
     cats_menu, cats_visual = OrderedDict(), OrderedDict()
     skipped, seen_ids = [], {}
     stats = {'items': 0, 'mods': 0, 'by_size': 0, 'sized_items': 0, 'no_promo': 0,
-             'dropped_size_groups': 0, 'pos_defaults': 0}
+             'dropped_size_groups': 0, 'pos_defaults': 0,
+             'defaults': 0, 'extra_choices': 0}
 
     for r in menu_rows:
         iid, cat, name = cell(r, mi, 'Item ID'), cell(r, mi, 'Category'), cell(r, mi, 'Item')
@@ -269,12 +311,25 @@ def build(path):
                                          % (cat, gname, label, base_s))
                     cho['posDefault'] = True
                     stats['pos_defaults'] += 1
+                if default_for(cat, gname, label):
+                    assert base_s == 0, ('DEFAULT_CHOICES points at a PRICED choice: %s / %s / %s (+%dp)'
+                                         % (cat, gname, label, base_s))
+                    cho['default'] = True
+                    stats['defaults'] += 1
                 if by_size:
                     mod['priceDeltaPBySize'] = by_size
                     cho['priceBySize'] = {k: round(v / 100, 2) for k, v in by_size.items()}
                     stats['by_size'] += 1
                 mods.append(mod)
                 ch.append(cho)
+
+            # Injected choices the workbook does not carry (see EXTRA_CHOICES).
+            for xlabel, xprice in EXTRA_CHOICES.get(str(cat or '').strip().lower(), {}).get(gname, []):
+                xid = 'g%s-%s' % (order, slug(xlabel, 34))
+                assert not any(c['id'] == xid for c in ch), 'EXTRA_CHOICES collides: %s' % xid
+                mods.append({'id': xid, 'label': xlabel, 'priceDeltaP': pence(xprice)})
+                ch.append({'id': xid, 'label': xlabel, 'price': round(pence(xprice) / 100, 2)})
+                stats['extra_choices'] += 1
 
             single = str(g['sel'] or '').lower().startswith(('single', 'optional single'))
             required = g['req'] == 'Required'

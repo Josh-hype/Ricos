@@ -1878,6 +1878,15 @@ function itemRowHTML(item) {
   `;
 }
 
+/* A choice's price delta as the customer should read it. Deltas may be NEGATIVE
+   (a burger includes chips; "No chips" is -£2.50) and `'+' + fmt(price)` printed
+   that as "+£-2.50". Real minus sign, '' when free. */
+function optDeltaText(price) {
+  const n = Number(price) || 0;
+  if (!n) return '';
+  return (n < 0 ? '\u2212' : '+') + fmt(Math.abs(n));
+}
+
 /* Build the option groups (sizes, add-ons) for the item modal. Each group is
    single-select (radios, e.g. pizza size) or multi-select (checkboxes, e.g.
    extra toppings). Choice `price` is the £ delta added on top of the base
@@ -1911,7 +1920,7 @@ function optionGroupsHTML(item) {
       const checked = (c.default === true || autoFirst) ? 'checked' : '';
       // Delta span is always emitted (empty when £0) so recalc can refresh it
       // when the chosen size re-prices a modifier (pizza toppings / stuffed crust).
-      const delta = `<span class="opt-delta">${c.price ? '+' + fmt(c.price) : ''}</span>`;
+      const delta = `<span class="opt-delta">${optDeltaText(c.price)}</span>`;
       return `<label class="opt-choice"><input type="${type}" name="${gid}" value="${escapeHTML(c.id)}" data-price="${Number(c.price) || 0}" data-label="${escapeHTML(c.label)}" ${checked}/><span>${escapeHTML(c.label)}</span>${delta}</label>`;
     }).join('');
     // Optional exact/ranged count for multi-selects (e.g. a meal-deal's "choose 3
@@ -1999,7 +2008,7 @@ function openItemDetail(itemId) {
       const inp = lbl.querySelector('input'); const span = lbl.querySelector('.opt-delta');
       if (!inp || !span) return;
       const pr = choicePrice(byId.get(inp.value), active);
-      span.textContent = pr ? '+' + fmt(pr) : '';
+      span.textContent = optDeltaText(pr);
     });
     if (priceEl) priceEl.textContent = fmt(p);
   };

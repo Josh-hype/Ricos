@@ -18534,12 +18534,18 @@
               {
                 "id": "g5-chips",
                 "label": "Chips",
-                "price": 0.0
+                "price": 0.0,
+                "default": true
               },
               {
                 "id": "g5-chips-with-cheese",
                 "label": "CHIPS WITH CHEESE",
                 "price": 1.5
+              },
+              {
+                "id": "g5-no-chips",
+                "label": "No chips",
+                "price": -2.5
               }
             ]
           },
@@ -18691,12 +18697,18 @@
               {
                 "id": "g4-chips",
                 "label": "Chips",
-                "price": 0.0
+                "price": 0.0,
+                "default": true
               },
               {
                 "id": "g4-chips-with-cheese",
                 "label": "CHIPS WITH CHEESE",
                 "price": 1.5
+              },
+              {
+                "id": "g4-no-chips",
+                "label": "No chips",
+                "price": -2.5
               }
             ]
           },
@@ -18866,12 +18878,18 @@
               {
                 "id": "g5-chips",
                 "label": "Chips",
-                "price": 0.0
+                "price": 0.0,
+                "default": true
               },
               {
                 "id": "g5-chips-with-cheese",
                 "label": "CHIPS WITH CHEESE",
                 "price": 1.5
+              },
+              {
+                "id": "g5-no-chips",
+                "label": "No chips",
+                "price": -2.5
               }
             ]
           },
@@ -19041,12 +19059,18 @@
               {
                 "id": "g5-chips",
                 "label": "Chips",
-                "price": 0.0
+                "price": 0.0,
+                "default": true
               },
               {
                 "id": "g5-chips-with-cheese",
                 "label": "CHIPS WITH CHEESE",
                 "price": 1.5
+              },
+              {
+                "id": "g5-no-chips",
+                "label": "No chips",
+                "price": -2.5
               }
             ]
           },
@@ -19216,12 +19240,18 @@
               {
                 "id": "g5-chips",
                 "label": "Chips",
-                "price": 0.0
+                "price": 0.0,
+                "default": true
               },
               {
                 "id": "g5-chips-with-cheese",
                 "label": "CHIPS WITH CHEESE",
                 "price": 1.5
+              },
+              {
+                "id": "g5-no-chips",
+                "label": "No chips",
+                "price": -2.5
               }
             ]
           },
@@ -19391,12 +19421,18 @@
               {
                 "id": "g5-chips",
                 "label": "Chips",
-                "price": 0.0
+                "price": 0.0,
+                "default": true
               },
               {
                 "id": "g5-chips-with-cheese",
                 "label": "CHIPS WITH CHEESE",
                 "price": 1.5
+              },
+              {
+                "id": "g5-no-chips",
+                "label": "No chips",
+                "price": -2.5
               }
             ]
           },
@@ -19567,12 +19603,18 @@
               {
                 "id": "g5-chips",
                 "label": "Chips",
-                "price": 0.0
+                "price": 0.0,
+                "default": true
               },
               {
                 "id": "g5-chips-with-cheese",
                 "label": "CHIPS WITH CHEESE",
                 "price": 1.5
+              },
+              {
+                "id": "g5-no-chips",
+                "label": "No chips",
+                "price": -2.5
               }
             ]
           },
@@ -19742,12 +19784,18 @@
               {
                 "id": "g5-chips",
                 "label": "Chips",
-                "price": 0.0
+                "price": 0.0,
+                "default": true
               },
               {
                 "id": "g5-chips-with-cheese",
                 "label": "CHIPS WITH CHEESE",
                 "price": 1.5
+              },
+              {
+                "id": "g5-no-chips",
+                "label": "No chips",
+                "price": -2.5
               }
             ]
           },
@@ -19918,12 +19966,18 @@
               {
                 "id": "g5-chips",
                 "label": "Chips",
-                "price": 0.0
+                "price": 0.0,
+                "default": true
               },
               {
                 "id": "g5-chips-with-cheese",
                 "label": "CHIPS WITH CHEESE",
                 "price": 1.5
+              },
+              {
+                "id": "g5-no-chips",
+                "label": "No chips",
+                "price": -2.5
               }
             ]
           },
@@ -20094,12 +20148,18 @@
               {
                 "id": "g5-chips",
                 "label": "Chips",
-                "price": 0.0
+                "price": 0.0,
+                "default": true
               },
               {
                 "id": "g5-chips-with-cheese",
                 "label": "CHIPS WITH CHEESE",
                 "price": 1.5
+              },
+              {
+                "id": "g5-no-chips",
+                "label": "No chips",
+                "price": -2.5
               }
             ]
           },
@@ -20233,12 +20293,18 @@
               {
                 "id": "g3-chips",
                 "label": "Chips",
-                "price": 0.0
+                "price": 0.0,
+                "default": true
               },
               {
                 "id": "g3-chips-with-cheese",
                 "label": "CHIPS WITH CHEESE",
                 "price": 1.5
+              },
+              {
+                "id": "g3-no-chips",
+                "label": "No chips",
+                "price": -2.5
               }
             ]
           },
@@ -20372,12 +20438,18 @@
               {
                 "id": "g3-chips",
                 "label": "Chips",
-                "price": 0.0
+                "price": 0.0,
+                "default": true
               },
               {
                 "id": "g3-chips-with-cheese",
                 "label": "CHIPS WITH CHEESE",
                 "price": 1.5
+              },
+              {
+                "id": "g3-no-chips",
+                "label": "No chips",
+                "price": -2.5
               }
             ]
           },

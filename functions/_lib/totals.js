@@ -117,6 +117,17 @@ export function computeTotals(input, config, opts = {}) {
       }
     }
 
+    /* A line can never be worth negative money. Modifier deltas may now be
+       NEGATIVE — Dominic's burgers include chips and "No chips" takes £2.50 off —
+       and nothing above clamps the sum. One required single-select cannot stack
+       (modIds is de-duplicated), so today's worst case is one deduction against
+       a £6.00 burger. But a cheap item with a large deduction, or a future group
+       that allows more than one, would otherwise produce a negative line that
+       silently eats into the REST of the basket. Floor it here, at the one place
+       both the website and the till price through. A no-op for every shop that
+       has no negative delta. */
+    if (lineP < 0) lineP = 0;
+
     const lineTotalP = lineP * qty;
     subtotalP += lineTotalP;
     // A percentage promo applies to this line unless the item is flagged out of

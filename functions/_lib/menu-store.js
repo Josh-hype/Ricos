@@ -262,6 +262,22 @@ export function validateUnified(input) {
     if (n > MAX_PRICE_P) { errors.push(`${field}: price looks too high (max £${MAX_PRICE_P / 100}).`); return MAX_PRICE_P; }
     return n;
   };
+  /* An option choice's delta may be NEGATIVE, unlike an item's own price: a
+     burger that comes with chips needs a "No chips" choice worth -£2.50.
+
+     Kept as a separate validator rather than relaxing priceP, because an item
+     priced below zero is still nonsense and should still be rejected. Without
+     this, a menu containing a negative choice could not be SAVED AT ALL — priceP
+     pushes a validation error, validateUnified returns {ok:false}, and the owner
+     would find the whole back-office menu editor refusing every edit with a
+     message about one option they may not even be looking at. */
+  const deltaP = (v, field) => {
+    const n = Math.round(Number(v));
+    if (!Number.isFinite(n)) { errors.push(`${field}: price is not a number.`); return 0; }
+    if (n > MAX_PRICE_P) { errors.push(`${field}: price looks too high (max £${MAX_PRICE_P / 100}).`); return MAX_PRICE_P; }
+    if (n < -MAX_PRICE_P) { errors.push(`${field}: deduction looks too large (max £${MAX_PRICE_P / 100}).`); return -MAX_PRICE_P; }
+    return n;
+  };
 
   for (const c of input.categories) {
     const cid = str(c.id, 60).toLowerCase();
@@ -322,7 +338,7 @@ export function validateUnified(input) {
             choiceIds.add(chid);
             return {
               id: chid, label: str(ch.label, 60) || 'Option',
-              priceP: priceP(ch.priceP, `Option "${str(ch.label, 30)}" on "${name}"`),
+              priceP: deltaP(ch.priceP, `Option "${str(ch.label, 30)}" on "${name}"`),
               ...(ch.default ? { default: true } : {}),
               ...(ch.posDefault ? { posDefault: true } : {}),
             };

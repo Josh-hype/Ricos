@@ -16246,6 +16246,11 @@
             "priceDeltaP": 150
           },
           {
+            "id": "g5-no-chips",
+            "label": "No chips",
+            "priceDeltaP": -250
+          },
+          {
             "id": "g6-coke-can",
             "label": "COKE CAN",
             "priceDeltaP": 150
@@ -16351,6 +16356,11 @@
             "id": "g4-chips-with-cheese",
             "label": "CHIPS WITH CHEESE",
             "priceDeltaP": 150
+          },
+          {
+            "id": "g4-no-chips",
+            "label": "No chips",
+            "priceDeltaP": -250
           },
           {
             "id": "g5-coke-can",
@@ -16470,6 +16480,11 @@
             "priceDeltaP": 150
           },
           {
+            "id": "g5-no-chips",
+            "label": "No chips",
+            "priceDeltaP": -250
+          },
+          {
             "id": "g6-coke-can",
             "label": "COKE CAN",
             "priceDeltaP": 150
@@ -16585,6 +16600,11 @@
             "id": "g5-chips-with-cheese",
             "label": "CHIPS WITH CHEESE",
             "priceDeltaP": 150
+          },
+          {
+            "id": "g5-no-chips",
+            "label": "No chips",
+            "priceDeltaP": -250
           },
           {
             "id": "g6-coke-can",
@@ -16704,6 +16724,11 @@
             "priceDeltaP": 150
           },
           {
+            "id": "g5-no-chips",
+            "label": "No chips",
+            "priceDeltaP": -250
+          },
+          {
             "id": "g6-coke-can",
             "label": "COKE CAN",
             "priceDeltaP": 150
@@ -16819,6 +16844,11 @@
             "id": "g5-chips-with-cheese",
             "label": "CHIPS WITH CHEESE",
             "priceDeltaP": 150
+          },
+          {
+            "id": "g5-no-chips",
+            "label": "No chips",
+            "priceDeltaP": -250
           },
           {
             "id": "g6-coke-can",
@@ -16938,6 +16968,11 @@
             "priceDeltaP": 150
           },
           {
+            "id": "g5-no-chips",
+            "label": "No chips",
+            "priceDeltaP": -250
+          },
+          {
             "id": "g6-coke-can",
             "label": "COKE CAN",
             "priceDeltaP": 150
@@ -17053,6 +17088,11 @@
             "id": "g5-chips-with-cheese",
             "label": "CHIPS WITH CHEESE",
             "priceDeltaP": 150
+          },
+          {
+            "id": "g5-no-chips",
+            "label": "No chips",
+            "priceDeltaP": -250
           },
           {
             "id": "g6-coke-can",
@@ -17172,6 +17212,11 @@
             "priceDeltaP": 150
           },
           {
+            "id": "g5-no-chips",
+            "label": "No chips",
+            "priceDeltaP": -250
+          },
+          {
             "id": "g6-coke-can",
             "label": "COKE CAN",
             "priceDeltaP": 150
@@ -17289,6 +17334,11 @@
             "priceDeltaP": 150
           },
           {
+            "id": "g5-no-chips",
+            "label": "No chips",
+            "priceDeltaP": -250
+          },
+          {
             "id": "g6-coke-can",
             "label": "COKE CAN",
             "priceDeltaP": 150
@@ -17386,6 +17436,11 @@
             "priceDeltaP": 150
           },
           {
+            "id": "g3-no-chips",
+            "label": "No chips",
+            "priceDeltaP": -250
+          },
+          {
             "id": "g4-coke-can",
             "label": "COKE CAN",
             "priceDeltaP": 150
@@ -17481,6 +17536,11 @@
             "id": "g3-chips-with-cheese",
             "label": "CHIPS WITH CHEESE",
             "priceDeltaP": 150
+          },
+          {
+            "id": "g3-no-chips",
+            "label": "No chips",
+            "priceDeltaP": -250
           },
           {
             "id": "g4-coke-can",
