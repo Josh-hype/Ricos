@@ -18440,7 +18440,8 @@
               {
                 "id": "sz-1-4lb",
                 "label": "1/4lb",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "sz-1-2lb",
@@ -18613,7 +18614,8 @@
               {
                 "id": "sz-1-4lb",
                 "label": "1/4lb",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "sz-1-2lb",
@@ -18768,7 +18770,8 @@
               {
                 "id": "sz-1-4lb",
                 "label": "1/4lb",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "sz-1-2lb",
@@ -18941,7 +18944,8 @@
               {
                 "id": "sz-1-4lb",
                 "label": "1/4lb",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "sz-1-2lb",
@@ -19114,7 +19118,8 @@
               {
                 "id": "sz-1-4lb",
                 "label": "1/4lb",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "sz-1-2lb",
@@ -19287,7 +19292,8 @@
               {
                 "id": "sz-1-4lb",
                 "label": "1/4lb",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "sz-1-2lb",
@@ -19461,7 +19467,8 @@
               {
                 "id": "sz-1-4lb",
                 "label": "1/4lb",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "sz-1-2lb",
@@ -19634,7 +19641,8 @@
               {
                 "id": "sz-1-4lb",
                 "label": "1/4lb",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "sz-1-2lb",
@@ -19808,7 +19816,8 @@
               {
                 "id": "sz-1-4lb",
                 "label": "1/4lb",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "sz-1-2lb",
@@ -19982,7 +19991,8 @@
               {
                 "id": "sz-1-4lb",
                 "label": "1/4lb",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "sz-1-2lb",
@@ -20439,7 +20449,8 @@
               {
                 "id": "sz-medium",
                 "label": "Medium",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "sz-large",
@@ -20656,7 +20667,8 @@
               {
                 "id": "sz-medium",
                 "label": "Medium",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "sz-large",

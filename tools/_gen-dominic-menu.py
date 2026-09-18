@@ -93,7 +93,13 @@ POS_DEFAULTS = {
     'pizza':        {'size': '11"', 'crust': 'thick'},
     'vegan pizzas': {'size': '11"', 'crust': 'thick'},
     'garlic bread': {'size': '11"', 'crust': 'thick'},
+    'burgers':      {'size': '1/4lb'},          # 1/2lb is +£1.00 to +£1.50
+    'kebabs':       {'size': 'medium'},         # Large is +£1.40 / +£2.00
 }
+# Left on "Choose…" deliberately: Specials, whose Size is 6pcs (£0.00) / 10pcs
+# (+£3.30 or +£4.60). The owner has not asked for it, and a portion count is the
+# kind of thing worth a staff member's deliberate tap. Add 'specials':
+# {'size': '6pcs'} here if that changes.
 
 
 def slug(s, maxlen=48):
