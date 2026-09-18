@@ -250,23 +250,50 @@ install a terminal app on.
 It did not produce a number, and the investigation went to the router and
 stopped at not being able to log in. **That was the wrong thing to be stuck on.**
 
-**The router question was finally answered on 18 Sep 2026: a BT hub, with the
-handset plugged into it.** So:
+**Answered by photographs on 18 Sep 2026, and it is neither of our two routes:**
 
-- **The FRITZ!Box call monitor is out.** That is an AVM feature; a BT hub has no
-  port 1012 and nothing equivalent. This half of the wall was real.
-- **But the USB modem should still work — from the RIGHT socket.** BT Digital
-  Voice terminates the line in the hub and converts it back to analogue on the
-  hub's phone port, CLI included, which is how customers' existing
-  caller-display handsets keep working after migration. **The wall sockets are
-  dead.** If that modem was plugged into a wall socket — the obvious place to
-  put it, and where a pre-switchover install would have gone — it was listening
-  to a dead pair, which looks identical to "caller ID doesn't work".
+| | |
+|---|---|
+| Broadband | **BT Business Smart Hub** (`BTB-539THJ`, Hub Manager on `192.168.1.254`) |
+| Telephony | **Yealink W70B DECT IP Base Station** → DECT cordless handsets |
 
-So the leading hypothesis is a **£3 phone splitter**: handset and modem both on
-the hub's phone port. Unverified against their hardware, but cheap to test and
-the diagnostic below tells you which branch you are on before anyone buys
-anything.
+That is a **SIP/VoIP** chain end to end: internet → SIP → W70B → DECT. So:
+
+- **The FRITZ!Box call monitor is out.** An AVM feature; a BT hub has no port
+  1012 and nothing equivalent.
+- **The USB modem never had a chance.** Not a chipset fault and not a wrong
+  socket — **there is no analogue signal anywhere in that shop.** Nothing in the
+  wall, nothing in the hub, nothing in the Yealink. A modem there was always
+  going to be silent.
+
+⚠️ An earlier revision of this section guessed at a dead wall socket and a £3
+splitter, on the assumption that BT Digital Voice terminates to analogue in the
+hub. **That is wrong for this shop** and is recorded here so nobody re-derives
+it: a DECT IP base station makes the whole question moot. Do not buy a splitter.
+
+**The way in is the Yealink itself.** Yealink devices support **Action URL** —
+on an incoming call the base station fires an HTTP request at a URL you
+configure, with the caller's number substituted in (`$remote_number`). That is a
+THIRD source, and the best-shaped one we have: no analogue line, **no native
+code and no APK**, so it would work on a Z93 as readily as a T2, and everything
+downstream — the dialog, the lookup, the "Who's calling?" chooser — is unchanged
+because it would fire the same `epos:callerid` event.
+
+Not yet built, and two things to confirm on the hardware first:
+
+1. **Does the W70B's web UI have it?** Its IP is on the hub's device list (or
+   the handset's status menu); the setting lives under Features → Action URL on
+   the models that have it. Documented on the W60B; the W70B is its successor
+   and should match, but confirm before designing around it.
+2. **Can it post to HTTPS?** Pages is HTTPS-only. Some older Yealink firmware
+   does plain HTTP for action URLs.
+
+Sketch, if it goes ahead: `pos.callerId.mode: "webhook"`, an endpoint that takes
+the number plus a per-shop shared secret and parks it in KV for ~60s, and a
+small fast poll on the till while that mode is set — the existing order poll
+backs off to 30 minutes when idle, which is useless for a ringing phone. The
+secret matters: without one, anyone who found the URL could pop arbitrary
+numbers onto a shop's till.
 
 What has changed since, and it is not small:
 
@@ -288,7 +315,7 @@ possibilities that September could not tell apart:
 | Back Office → Caller ID says | Means | Next |
 |---|---|---|
 | **USB modem running: no** | the modem is not detected at all | unplugged, wrong USB port, or an unsupported chipset — the 9 Sep commit flagged FTDI/Prolific/Silabs/CH340 bridges as only partly handled, since their baud setup is chip-specific and is not sent |
-| **USB modem running: yes**, log empty | the modem is healthy and **the line into it is silent** | the dead-wall-socket case. Move it to the hub's phone port on a splitter |
+| **USB modem running: yes**, log empty | the modem is healthy and the line into it is silent | at **Big Bites** this is expected and final — there is no analogue line to hear. At another shop it means the wrong socket |
 | lines in the log, no call bar | the line reaches the till | the fault is ours, and the log has what is needed to fix it |
 
 **No new APK is needed to read that.** The tile is web layer, delivered by Capgo,
