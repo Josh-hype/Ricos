@@ -249,11 +249,24 @@ install a terminal app on.
 
 It did not produce a number, and the investigation went to the router and
 stopped at not being able to log in. **That was the wrong thing to be stuck on.**
-The question that decides this shop was never asked:
 
-> **What router is on the wall, and where does the handset plug in?**
+**The router question was finally answered on 18 Sep 2026: a BT hub, with the
+handset plugged into it.** So:
 
-Nothing that followed can be settled without it, and the answer takes a photo.
+- **The FRITZ!Box call monitor is out.** That is an AVM feature; a BT hub has no
+  port 1012 and nothing equivalent. This half of the wall was real.
+- **But the USB modem should still work — from the RIGHT socket.** BT Digital
+  Voice terminates the line in the hub and converts it back to analogue on the
+  hub's phone port, CLI included, which is how customers' existing
+  caller-display handsets keep working after migration. **The wall sockets are
+  dead.** If that modem was plugged into a wall socket — the obvious place to
+  put it, and where a pre-switchover install would have gone — it was listening
+  to a dead pair, which looks identical to "caller ID doesn't work".
+
+So the leading hypothesis is a **£3 phone splitter**: handset and modem both on
+the hub's phone port. Unverified against their hardware, but cheap to test and
+the diagnostic below tells you which branch you are on before anyone buys
+anything.
 
 What has changed since, and it is not small:
 
@@ -269,13 +282,24 @@ So it was a real wall, made of code that had not been written and a device
 nobody could see inside. Both are fixed. What remains is a fact about their
 building:
 
-| If Big Bites has… | Then |
-|---|---|
-| a **FRITZ!Box** | exactly what Dominic has. Needs a **new APK** — the call monitor is native and their build predates it. A fresh build also carries the `ACCESS_WIFI_STATE` fix, so the gateway fallback works first time |
-| an **analogue line with CLI** | the USB modem, which is what was already tried. Confirm the line carries CLI *and* that the device has a spare USB host port before buying anything |
-| an **ISP router doing VoIP** (BT / Sky / Virgin / EE) | **neither route exists.** The call monitor is an AVM feature, not a standard. This would need a different approach entirely |
+**Read the tile before buying or building anything.** It splits the two
+possibilities that September could not tell apart:
 
-Do not attempt this shop again without answering the router question first.
+| Back Office → Caller ID says | Means | Next |
+|---|---|---|
+| **USB modem running: no** | the modem is not detected at all | unplugged, wrong USB port, or an unsupported chipset — the 9 Sep commit flagged FTDI/Prolific/Silabs/CH340 bridges as only partly handled, since their baud setup is chip-specific and is not sent |
+| **USB modem running: yes**, log empty | the modem is healthy and **the line into it is silent** | the dead-wall-socket case. Move it to the hub's phone port on a splitter |
+| lines in the log, no call bar | the line reaches the till | the fault is ours, and the log has what is needed to fix it |
+
+**No new APK is needed to read that.** The tile is web layer, delivered by Capgo,
+and `getCallerIdLog` has been in their APK since the 9 Sep build — so the thing
+that was missing in September is already sitting on their counter.
+
+For any OTHER shop, the router question still comes first, and the answers run:
+FRITZ!Box → what Dominic has, needs a new APK for the native call monitor;
+analogue line with CLI, or an ISP hub with an analogue phone port → the USB
+modem from that port; anything with no analogue port at all → neither route
+exists today.
 
 ### When it doesn't pop up
 
