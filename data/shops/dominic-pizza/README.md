@@ -47,7 +47,7 @@ cannot get indexed under this brand.
 | item photos | none — every item shows "PHOTO COMING SOON". The workbook carried no images |
 | `assets/` food photos, `order.css` | Acomb's — though the hero (pizza + doner) suits a shop whose logo reads "PIZZA · KEBABS · CALZONES", so it may be worth keeping |
 | `theme.accent` | still Acomb's gold `#c9a227`. The logo's only other colour is Italian-flag green `#036B3A` — a design call, not a correction |
-| `stripe.connectedAccountId`, `legalName`, `companyNumber` | placeholders (the build warns) |
+| `legalName`, `companyNumber` | placeholders (the build warns). `stripe.connectedAccountId` is **set** — `acct_1UGqDKBzGUOO3oql`, 18 Sep 2026 |
 
 ### Delivery: per-band minimums, and how the promo interacts
 
@@ -149,8 +149,10 @@ with it.
 ## Before this shop takes a real order
 
 - [ ] Work the rebrand table above, top to bottom
-- [ ] `stripe.connectedAccountId` — Dominic's own `acct_…`; card money goes to
-      their bank, so Acomb's could never have been reused even if it existed
+- [x] `stripe.connectedAccountId` — `acct_1UGqDKBzGUOO3oql`, set 18 Sep 2026.
+      Confirm the account is charge-ready and the webhook secret is set with
+      `<domain>/api/staff/stripe-test` (PIN-gated; reports both, and retrieves
+      the account from Stripe rather than assuming)
 - [ ] `business.legalName` + `companyNumber` — these print on the privacy and
       terms pages as the data controller
 - [ ] Add a 6-digit Restaurant ID to `app/web/provision.js` → Dominic's custom

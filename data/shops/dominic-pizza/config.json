@@ -76,7 +76,7 @@
   "serviceFeePence": 50,
   "_comment_stripe": "Stripe Connect: this site's PaymentIntents are created on the venue's connected account. connectedAccountId is the venue's acct_xxx string from Stripe Connect.",
   "stripe": {
-    "connectedAccountId": "acct_REPLACE_WITH_STRIPE_CONNECT_ID"
+    "connectedAccountId": "acct_1UGqDKBzGUOO3oql"
   },
   "hours": {
     "_comment": "CONFIRMED BY THE OWNER, 17 Sep 2026: 4pm-3am every day, no closed day. 27:00 is 03:00 the NEXT morning - hours.js reads any close past 24:00 as rolling over, and 27:00 is the latest in the estate (the previous high-water mark was 25:00). ordering.businessDayStartHour stays 4, so the trading day runs 4am-4am and a 2am order is still counted against the night it belongs to.",

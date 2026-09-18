@@ -128,10 +128,10 @@
       "slug": "dominic-pizza",
       "name": "Dominic Pizza",
       "city": "York",
-      "connectedAccountId": "",
+      "connectedAccountId": "acct_1UGqDKBzGUOO3oql",
       "onlineProcessor": "stripe",
       "live": false,
-      "_subscription_note": "LumiPOS at ~£35/wk (software £10 + T2 hardware £15 + card terminal £10). Not live: no Stripe Connect account yet, so card payments are off. The site is currently a copy of acomb-pizza-kebab pending rebrand - see that folder's README.",
+      "_subscription_note": "LumiPOS at ~£35/wk (software £10 + T2 hardware £15 + card terminal £10). Stripe Connect account set 18 Sep 2026, payments enabled on the account. NOT YET LIVE: config still carries prelaunch:true plus placeholder legalName and companyNumber, which print on the privacy and terms pages as the data controller. ⚠️ The shop takes card at the counter on their OWN terminal (pos.externalCardMachine), so the £10 card-terminal line in the price above may not apply - confirm what was actually agreed before the first invoice.",
       "subscription": {
         "status": "pending",
         "perWeekPence": 3500,
