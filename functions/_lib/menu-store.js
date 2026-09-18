@@ -41,17 +41,53 @@ export async function getUnified(env) {
   } catch { return null; }
 }
 
+/* noPromo, restored from the static menu for any item the stored doc has lost
+   it on.
+
+   Until 18 Sep 2026 none of the four transforms in this file carried noPromo, so
+   the FIRST menu edit a shop made silently dropped the flag off every item and
+   the KV doc became authoritative. computeTotals then folded the meal deals into
+   promoBaseP and the welcome promo took 15% off a bundle the shop had already
+   discounted. Mega Chippy sold a £25.90 Big Mega Box for £23.01 that way, and
+   the receipt showed no discount line to explain it.
+
+   Fixing the transforms does not repair a doc already saved without the flag —
+   the information is simply gone from KV — so this puts it back on read. The
+   static menu.json is the shop's own committed source of truth, and the editor
+   has never had a control for noPromo, so a missing flag can only ever be this
+   bug and never an owner's decision.
+
+   Union, not override: an item flagged in EITHER source is held out of promos.
+   For a pricing flag the safe direction is obvious — the cost of a false
+   positive is a discount not given, the cost of a false negative is selling a
+   meal deal under what its parts cost. */
+function healNoPromo(items) {
+  const flagged = new Set();
+  for (const c of getMenu()) {
+    for (const it of (c.items || [])) if (it.noPromo) flagged.add(it.id);
+  }
+  if (!flagged.size) return items;
+  for (const c of items) {
+    for (const it of (c.items || [])) if (!it.noPromo && flagged.has(it.id)) it.noPromo = true;
+  }
+  return items;
+}
+
 // Pricing/server menu (menu.json shape). KV override wins; else the static import.
 export async function resolveMenu(env) {
   const doc = env ? await getUnified(env) : null;
-  return doc ? deriveServerMenu(doc) : getMenu();
+  return doc ? healNoPromo(deriveServerMenu(doc)) : getMenu();
 }
 
 // Customer display menu (menu-visual.json shape). KV override wins; else the
 // static asset, fetched from the same origin so we never bundle it server-side.
 export async function resolveVisual(env, request) {
   const doc = env ? await getUnified(env) : null;
-  if (doc) return deriveVisualMenu(doc);
+  // Healed the same way, and it has to be: the cart preview reads this file and
+  // computeTotals reads the other, so a flag on one and not the other quotes the
+  // customer a discount the server then withholds. build-shop.js fails the build
+  // over exactly that mismatch in the static files; this is the runtime half.
+  if (doc) return healNoPromo(deriveVisualMenu(doc));
   try {
     const res = await fetch(new URL('/menu-visual.json', request.url).toString(), { cf: { cacheTtl: 30 } });
     if (res.ok) return await res.json();
@@ -71,6 +107,7 @@ export function deriveServerMenu(doc) {
     items: (c.items || []).filter((it) => !it.hidden).map((it) => {
       const out = { id: it.id, name: it.name, priceP: Math.round(it.priceP) || 0 };
       if (it.posOnly) out.posOnly = true;
+      if (it.noPromo) out.noPromo = true;
       if (it.meal) {
         out.mealAddP = Math.round(it.meal.addP) || 0;
         out.mealChoose = (it.meal.choose || []).map(cleanChoose);
@@ -92,6 +129,7 @@ export function deriveVisualMenu(doc) {
       if (it.desc) out.desc = it.desc;
       if (it.spicy) out.spicy = true;
       if (it.posOnly) out.posOnly = true;
+      if (it.noPromo) out.noPromo = true;
       if (it.image) out.image = it.image;
       if (it.meal) {
         const meal = { label: it.meal.label || '+ meal', addPrice: p2f(it.meal.addP), choose: (it.meal.choose || []).map(cleanChoose) };
@@ -154,6 +192,7 @@ export function unifyStatic(serverMenu, visual) {
         if (vi.desc) it.desc = vi.desc;
         if (vi.spicy) it.spicy = true;
         if (mi.posOnly || vi.posOnly) it.posOnly = true;
+        if (mi.noPromo || vi.noPromo) it.noPromo = true;
         if (vi.image) it.image = vi.image;
         if (mi.mealChoose || (vi.meal && vi.meal.choose)) {
           const vm = vi.meal || {};
@@ -232,6 +271,7 @@ export function validateUnified(input) {
       if (it.spicy) out.spicy = true;
       if (it.hidden) out.hidden = true;
       if (it.posOnly) out.posOnly = true;
+      if (it.noPromo) out.noPromo = true;
       if (typeof it.image === 'string' && it.image) out.image = it.image.slice(0, 800000);
 
       if (it.meal && typeof it.meal === 'object') {

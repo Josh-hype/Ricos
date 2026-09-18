@@ -6933,7 +6933,14 @@ function buildReceiptText(o, ctx) {
     if (li.notes) out.push('   >> ' + li.notes);
   }
   out.push(light);
-  if (t.deliveryFeeP || t.serviceFeeP) out.push(row('Subtotal', money(t.subtotalP)));
+  if (t.deliveryFeeP || t.serviceFeeP || t.discountP) out.push(row('Subtotal', money(t.subtotalP)));
+  // A discount MUST print. Without this line the paper said Subtotal 25.90,
+  // Service 1.00, TOTAL 23.01 — arithmetic that cannot be checked by the
+  // customer holding it or the shop reconciling the till, and the reason a real
+  // pricing bug ran unnoticed at Mega Chippy. The label is truncated rather
+  // than wrapped: row() pads to the paper width, and a long promo name would
+  // otherwise push the amount off the end.
+  if (t.discountP) out.push(row(discountLine(t), '-' + money(t.discountP)));
   if (t.deliveryFeeP) out.push(row('Delivery', money(t.deliveryFeeP)));
   if (t.serviceFeeP) {
     // Show the whole service charge as one line on the ticket. The shop/platform
@@ -7130,7 +7137,10 @@ function buildReceiptDoc(o, ctx, kind) {
     firstItem = false;
   }
   ops.push(ruleOp());
-  if (t.deliveryFeeP || t.serviceFeeP) ops.push(rowOp('Subtotal', money(t.subtotalP), SZ.body, true));
+  if (t.deliveryFeeP || t.serviceFeeP || t.discountP) ops.push(rowOp('Subtotal', money(t.subtotalP), SZ.body, true));
+  // See the note in the plain-text builder: a discount that does not print
+  // makes the receipt's arithmetic impossible to follow.
+  if (t.discountP) ops.push(rowOp(discountLine(t), '-' + money(t.discountP), SZ.body, true));
   if (t.deliveryFeeP) ops.push(rowOp('Delivery', money(t.deliveryFeeP), SZ.body, true));
   if (t.serviceFeeP) {
     // One combined "Service charge" line on the printed ticket (the shop/platform
@@ -7278,6 +7288,15 @@ function printToText(kind, o, ctx, why) {
     })
     .catch((e) => fail('text-threw'));
 }
+/* The label for a discount line on a printed ticket. Falls back to "Discount"
+   so an order whose promo label was never set still prints something truthful
+   rather than a blank left column, and caps the length because the receipt row
+   pads to a fixed paper width. */
+function discountLine(t) {
+  const label = String((t && t.discountLabel) || 'Discount').trim() || 'Discount';
+  return label.length > 22 ? label.slice(0, 21) + '\u2026' : label;
+}
+
 /* Back Office > Caller ID. Shows what the caller-ID source is actually doing,
    on the till's screen, because the T2 has no console and Sunmi's Settings
    hijacks the Developer-options tap.
