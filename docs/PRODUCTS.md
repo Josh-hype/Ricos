@@ -120,8 +120,16 @@ Acomb Pizza & Kebab did not until it was spotted on the device.
 When the phone rings, the till shows a bar with the number and, if that number
 has ordered before, the customer's **name and address** (`/api/staff/customer-lookup`,
 the same records as their website account). Collection / Delivery buttons open a
-new sale with the caller prefilled. It is a bar, not a modal, on purpose: a
-ringing phone must not block an order already being taken.
+new sale with the caller prefilled.
+
+It is a **centred dialog**, the same shape as the new-order alarm, because that
+is the one place on the screen staff already watch. It was a bar along the
+bottom until 18 Sep 2026 — the reasoning being that a ringing phone must not
+block an order already being taken — but on a T2 on a counter it was simply
+missed, and caller ID nobody notices is caller ID you don't have. It keeps the
+bar's two safety valves: one tap dismisses it, and it clears itself after two
+minutes. It also sits at `z-index` 50 against the alarm's 60, so **an order
+already placed outranks a ringing phone** and is still revealed underneath.
 
 ### It needs `pos.customerLookup` as well — a number alone is nothing
 
