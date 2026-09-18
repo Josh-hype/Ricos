@@ -47,10 +47,19 @@ export const onRequestGet = async ({ request, env }) => {
      sends someone off buying a phone number when the real fix is deleting a
      letter. "DominicPizza" is 12; the limit is 11. */
   const looksLikeSenderId = !isE164 && /[A-Za-z]/.test(from);
+  /* Always offer a value that WOULD work. Strip the punctuation, collapse the
+     spaces, cut to 11. Someone fixing this is standing in a shop reading JSON
+     off a phone; "letters, digits and spaces only" is a rule to apply, and a
+     string to paste is an answer. Dominic went DominicPizza (too long) ->
+     Dominic's (apostrophe) across two redeploys, each round-trip a rebuild. */
+  const senderIdSuggestion = from.replace(/[^A-Za-z0-9 ]/g, '').replace(/\s+/g, ' ').trim().slice(0, 11);
   const senderIdFault = looksLikeSenderId && !isSenderId
     ? (from.length > 11
-        ? `"${from}" is ${from.length} characters — an alphanumeric sender ID may be at most 11. Shorten it (e.g. "${from.replace(/[^A-Za-z0-9 ]/g, '').slice(0, 11)}") and redeploy.`
-        : `"${from}" is not a valid alphanumeric sender ID — letters, digits and spaces only, at least one letter, max 11 characters.`)
+        ? `"${from}" is ${from.length} characters — an alphanumeric sender ID may be at most 11.`
+        : `"${from}" contains characters that are not allowed — letters, digits and spaces only, at least one letter, max 11 characters.`)
+      + (senderIdSuggestion && /[A-Za-z]/.test(senderIdSuggestion)
+          ? ` Set TWILIO_FROM_NUMBER to "${senderIdSuggestion}" (Production AND Preview) and redeploy.`
+          : ' Use the shop name with no punctuation, or a Twilio-owned +44 number.')
     : null;
 
   const problems = [];
