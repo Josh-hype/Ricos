@@ -41,58 +41,126 @@ export async function getUnified(env) {
   } catch { return null; }
 }
 
-/* noPromo, restored from the static menu for any item the stored doc has lost
-   it on.
+/* Flags restored from the static menu for anything the stored doc has lost.
 
-   Until 18 Sep 2026 none of the four transforms in this file carried noPromo, so
-   the FIRST menu edit a shop made silently dropped the flag off every item and
-   the KV doc became authoritative. computeTotals then folded the meal deals into
-   promoBaseP and the welcome promo took 15% off a bundle the shop had already
-   discounted. Mega Chippy sold a £25.90 Big Mega Box for £23.01 that way, and
-   the receipt showed no discount line to explain it.
+   THE SHAPE OF THIS BUG, twice in one day: a flag exists only in the shop's
+   committed menu files, the editor rebuilds every item and choice field by field
+   and silently drops what it does not know about, and from the first save
+   onwards the KV doc is authoritative. The flag is then gone with nothing to say
+   so — and because /api/menu-visual prefers KV, editing the static file again
+   changes NOTHING. That is unfixable from the repo, which is why it is healed
+   here instead.
 
-   Fixing the transforms does not repair a doc already saved without the flag —
-   the information is simply gone from KV — so this puts it back on read. The
-   static menu.json is the shop's own committed source of truth, and the editor
-   has never had a control for noPromo, so a missing flag can only ever be this
-   bug and never an owner's decision.
+     noPromo     item-level. Mega Chippy sold a £25.90 Big Mega Box for £23.01
+                 because the welcome promo took 15% off a bundle flagged out of
+                 every promo.
+     default     choice-level, pre-selects on the website AND the till.
+     posDefault  choice-level, TILL-ONLY.
 
-   Union, not override: an item flagged in EITHER source is held out of promos.
-   For a pricing flag the safe direction is obvious — the cost of a false
-   positive is a discount not given, the cost of a false negative is selling a
-   meal deal under what its parts cost. */
-function healNoPromo(items) {
-  const flagged = new Set();
+   The editor has never had a control for any of them, so a missing flag can only
+   ever be this bug and never an owner's decision — which is what makes healing
+   safe. Union, not override: flagged in EITHER source wins. For noPromo the safe
+   direction is obvious (a discount not given costs less than a meal deal sold
+   under the price of its parts); for the two pre-selection flags the cost either
+   way is taps, not money, because the generator only ever points them at a £0.00
+   choice.
+
+   NOT healed: a whole missing CHOICE. If the stored doc has no "No chips" option
+   this cannot invent one, because resurrecting a choice an owner may later have
+   deleted on purpose is a different and worse risk than a missing flag. A shop in
+   that position needs its menu re-saved from the back office — which now keeps
+   these flags — or the override cleared. */
+function staticFlags() {
+  const items = new Map();       // item id -> noPromo
+  const choices = new Map();     // choice id -> { default, posDefault }
   for (const c of getMenu()) {
-    for (const it of (c.items || [])) if (it.noPromo) flagged.add(it.id);
+    for (const it of (c.items || [])) {
+      if (it.noPromo) items.set(it.id, true);
+      for (const m of (it.modifiers || [])) {
+        // menu.json carries no pre-selection flags (they are display-only), so
+        // the ids come from here and the flags from the VISUAL side below.
+        if (!choices.has(m.id)) choices.set(m.id, {});
+      }
+    }
   }
-  if (!flagged.size) return items;
-  for (const c of items) {
-    for (const it of (c.items || [])) if (!it.noPromo && flagged.has(it.id)) it.noPromo = true;
+  return { items, choices };
+}
+
+function healFlags(cats) {
+  const { items } = staticFlags();
+  for (const c of cats) {
+    for (const it of (c.items || [])) {
+      if (!it.noPromo && items.get(it.id)) it.noPromo = true;
+    }
   }
-  return items;
+  return cats;
+}
+
+/* The choice-level half. The pre-selection flags live only in menu-visual.json,
+   which the build writes to public/ and is therefore not importable here — so it
+   has to be fetched. Same origin, cached at the edge, and only on the path that
+   actually has a stored doc to repair. */
+function healChoiceFlags(cats, staticVisual) {
+  const flags = new Map();
+  for (const c of (staticVisual || [])) {
+    for (const it of (c.items || [])) {
+      for (const g of (it.options || [])) {
+        for (const ch of (g.choices || [])) {
+          if (ch.default || ch.posDefault) {
+            flags.set(ch.id, {
+              ...(ch.default ? { default: true } : {}),
+              ...(ch.posDefault ? { posDefault: true } : {}),
+            });
+          }
+        }
+      }
+    }
+  }
+  if (!flags.size) return cats;
+  for (const c of cats) {
+    for (const it of (c.items || [])) {
+      for (const g of (it.options || [])) {
+        for (const ch of (g.choices || [])) {
+          const f = flags.get(ch.id);
+          if (!f) continue;
+          if (f.default && !ch.default) ch.default = true;
+          if (f.posDefault && !ch.posDefault) ch.posDefault = true;
+        }
+      }
+    }
+  }
+  return cats;
+}
+
+async function fetchStaticVisual(request) {
+  if (!request || !request.url) return null;
+  try {
+    const res = await fetch(new URL('/menu-visual.json', request.url).toString(), { cf: { cacheTtl: 30 } });
+    if (res.ok) return await res.json();
+  } catch { /* the caller degrades to whatever it has */ }
+  return null;
 }
 
 // Pricing/server menu (menu.json shape). KV override wins; else the static import.
 export async function resolveMenu(env) {
   const doc = env ? await getUnified(env) : null;
-  return doc ? healNoPromo(deriveServerMenu(doc)) : getMenu();
+  return doc ? healFlags(deriveServerMenu(doc)) : getMenu();
 }
 
 // Customer display menu (menu-visual.json shape). KV override wins; else the
 // static asset, fetched from the same origin so we never bundle it server-side.
 export async function resolveVisual(env, request) {
   const doc = env ? await getUnified(env) : null;
-  // Healed the same way, and it has to be: the cart preview reads this file and
-  // computeTotals reads the other, so a flag on one and not the other quotes the
-  // customer a discount the server then withholds. build-shop.js fails the build
-  // over exactly that mismatch in the static files; this is the runtime half.
-  if (doc) return healNoPromo(deriveVisualMenu(doc));
-  try {
-    const res = await fetch(new URL('/menu-visual.json', request.url).toString(), { cf: { cacheTtl: 30 } });
-    if (res.ok) return await res.json();
-  } catch { /* fall through */ }
-  return [];
+  if (!doc) return (await fetchStaticVisual(request)) || [];
+  /* An edited menu, so KV is authoritative for items and prices — but not for
+     the flags the editor used to drop. Heal the item-level one from the imported
+     menu.json, and the choice-level ones from the committed menu-visual.json,
+     which has to be fetched because the build writes it to public/.
+     Without this, a shop that has ever pressed Save in the back office can never
+     receive a new default from the repo again: /api/menu-visual prefers KV, so
+     editing the static file changes nothing at all. */
+  const derived = healFlags(deriveVisualMenu(doc));
+  return healChoiceFlags(derived, await fetchStaticVisual(request));
 }
 
 /* -------------------------------------------------------------- derive ---- */
