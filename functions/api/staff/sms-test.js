@@ -41,6 +41,17 @@ export const onRequestGet = async ({ request, env }) => {
      here: a sender ID is fine, it just can't receive replies. */
   const isE164 = /^\+[1-9]\d{6,14}$/.test(from);
   const isSenderId = /^(?=.*[A-Za-z])[A-Za-z0-9 ]{1,11}$/.test(from);
+  /* What the operator was TRYING to set, as opposed to what is valid. A shop
+     name that is one character too long fails isSenderId, and without this the
+     advice below fell through to "check it is a Twilio-owned +44 number" — which
+     sends someone off buying a phone number when the real fix is deleting a
+     letter. "DominicPizza" is 12; the limit is 11. */
+  const looksLikeSenderId = !isE164 && /[A-Za-z]/.test(from);
+  const senderIdFault = looksLikeSenderId && !isSenderId
+    ? (from.length > 11
+        ? `"${from}" is ${from.length} characters — an alphanumeric sender ID may be at most 11. Shorten it (e.g. "${from.replace(/[^A-Za-z0-9 ]/g, '').slice(0, 11)}") and redeploy.`
+        : `"${from}" is not a valid alphanumeric sender ID — letters, digits and spaces only, at least one letter, max 11 characters.`)
+    : null;
 
   const problems = [];
   const notes = [];
@@ -48,6 +59,7 @@ export const onRequestGet = async ({ request, env }) => {
   else if (!sid.startsWith('AC')) problems.push(`TWILIO_ACCOUNT_SID starts with "${sid.slice(0, 2)}" — it must start with "AC" (the Account SID). If it starts with "SK" you pasted an API Key by mistake; that returns 401 and never logs a message. This code needs the Account SID specifically, because it goes in the request URL as well as the auth header.`);
   if (!token) problems.push('TWILIO_AUTH_TOKEN is MISSING on this deployment.');
   if (!from) problems.push('TWILIO_FROM_NUMBER is MISSING on this deployment.');
+  else if (senderIdFault) problems.push(`TWILIO_FROM_NUMBER: ${senderIdFault}`);
   else if (!isE164 && !isSenderId) problems.push(`TWILIO_FROM_NUMBER is "${from}", which is neither a Twilio number in +44… (E.164) format nor a valid alphanumeric sender ID (max 11 characters, letters/digits/spaces, at least one letter).`);
   else if (isSenderId) notes.push(`Sending as the alphanumeric sender ID "${from}", so the shop's name shows instead of a number. Customers cannot reply to it — anything needing a reply has to go by another route.`);
   if (sid && token && from && problems.length === 0) notes.push('All three secrets are present and look well-formed. Add &to=+447XXXXXXXXX to send a real test and see Twilio’s response.');
@@ -84,9 +96,14 @@ export const onRequestGet = async ({ request, env }) => {
           messageSid: parsed?.sid ?? null,
         };
         if (res.status === 401) send.diagnosis = 'Twilio rejected the credentials (401). The Account SID and/or Auth Token in Cloudflare are wrong, or the SID is an API Key (SK…) instead of the Account SID (AC…).';
-        else if (parsed?.code === 21606 || parsed?.code === 21612 || parsed?.code === 21659 || parsed?.code === 21212) send.diagnosis = isSenderId
-          ? `Twilio rejected the sender "${from}". Alphanumeric sender IDs must be 1–11 characters (letters, digits and spaces only, at least one letter) and the destination country must allow them — the UK does, most US numbers do not.`
-          : 'The From number is not a valid Twilio SMS sender for this route. Check TWILIO_FROM_NUMBER is a Twilio-owned, SMS-capable +44 number.';
+        else if (parsed?.code === 21606 || parsed?.code === 21612 || parsed?.code === 21659 || parsed?.code === 21212) send.diagnosis = senderIdFault
+          // The commonest real case, and the one the generic advice sent the
+          // wrong way: a shop name over the length limit. Say THAT, not "go and
+          // buy a phone number".
+          ? `Twilio rejected the sender. ${senderIdFault}`
+          : isSenderId
+            ? `Twilio rejected the sender "${from}". It is a valid SHAPE, so this is the route rather than the format: the destination country must allow alphanumeric sender IDs (the UK does, most US numbers do not) and some routes need the sender ID registered with Twilio first.`
+            : 'The From number is not a valid Twilio SMS sender for this route. Check TWILIO_FROM_NUMBER is a Twilio-owned, SMS-capable +44 number.';
         else if (parsed?.code === 21608) send.diagnosis = 'Trial-account restriction — the destination number is unverified. Confirm the account is upgraded (paid).';
         else if (parsed?.code === 30007 || parsed?.code === 30034) send.diagnosis = 'Carrier filtered / sender not registered — you likely need UK A2P sender registration in Twilio.';
         else if (send.ok) send.diagnosis = 'SUCCESS — Twilio accepted the message. It will now appear in Monitor → Logs → Messaging. If it does not arrive on the handset, check Geo Permissions / carrier delivery.';
