@@ -66,7 +66,7 @@ test('the template carries no Sitemap line — the build adds an absolute one', 
    stray config edit. */
 import { readdirSync } from 'node:fs';
 
-const LIVE_SLUGS = ['ricos', 'food-station', 'mega-chippy', 'acomb-pizza-kebab', 'leaf-cafe'];
+const LIVE_SLUGS = ['ricos', 'food-station', 'mega-chippy', 'acomb-pizza-kebab', 'leaf-cafe', 'dominic-pizza'];
 
 const shopConfig = (slug) =>
   JSON.parse(readFileSync(new URL(`../data/shops/${slug}/config.json`, import.meta.url), 'utf8'));

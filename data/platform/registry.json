@@ -130,10 +130,10 @@
       "city": "York",
       "connectedAccountId": "acct_1UGqDKBzGUOO3oql",
       "onlineProcessor": "stripe",
-      "live": false,
-      "_subscription_note": "LumiPOS at ~£35/wk (software £10 + T2 hardware £15 + card terminal £10). Stripe Connect account set 18 Sep 2026, payments enabled on the account. NOT YET LIVE: config still carries prelaunch:true plus placeholder legalName and companyNumber, which print on the privacy and terms pages as the data controller. ⚠️ The shop takes card at the counter on their OWN terminal (pos.externalCardMachine), so the £10 card-terminal line in the price above may not apply - confirm what was actually agreed before the first invoice.",
+      "live": true,
+      "_subscription_note": "LumiPOS at ~£35/wk (software £10 + T2 hardware £15 + card terminal £10). LIVE 18 Sep 2026: T2 installed in the shop, Stripe Connect acct_1UGqDKBzGUOO3oql charge-ready, prelaunch removed. ⚠️ The shop takes counter card on their OWN terminal (pos.externalCardMachine), so the £10 card-terminal line in the price above may not apply - settle that before the first invoice.",
       "subscription": {
-        "status": "pending",
+        "status": "active",
         "perWeekPence": 3500,
         "via": "stripe"
       }

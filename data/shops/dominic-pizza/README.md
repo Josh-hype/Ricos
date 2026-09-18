@@ -5,16 +5,18 @@ drawer, Z report) plus the website. ~£35/wk. See `docs/PRODUCTS.md`.
 
 ---
 
-## ⚠️ Read this first: the content in here is not Dominic's
+## LIVE since 18 Sep 2026
 
-This folder was copied wholesale from `data/shops/acomb-pizza-kebab` on
-**17 Sep 2026**, so a Cloudflare Pages project could be created under the right
-name and the T2 installed before Dominic's own details arrived.
+`prelaunch` removed and the **T2 installed in the shop**. The site is indexable
+(`X-Robots-Tag: index, follow`, `robots.txt` Allow, sitemap at the apex) and
+card payments take real money on `acct_1UGqDKBzGUOO3oql`.
 
-**Everything below still says Acomb Pizza & Kebab House.** `prelaunch: true` is
-set for exactly that reason — every page sends `X-Robots-Tag: noindex` and
-`robots.txt` is `Disallow: /`, so another shop's real name, address and phone
-cannot get indexed under this brand.
+The folder began on 17 Sep as a wholesale copy of `data/shops/acomb-pizza-kebab`,
+so the Pages project and the till could be stood up before Dominic's own details
+arrived. Everything customer-facing has since been replaced. What is left of that
+origin is cosmetic and listed under "Still to rebrand" below — the one thing to
+understand is that a field which is confidently **wrong** looks identical to a
+correct one, so don't read a quiet build as a finished job.
 
 ### Done (17 Sep 2026)
 
@@ -162,6 +164,12 @@ with it.
       `app/web/provision.js`
 - [ ] Register the wallet domain — Phase 7b of `docs/SHOP_CHECKLIST.md`.
       Registration is per exact host, so nothing carries over from anywhere else
-- [ ] **Remove `prelaunch`** — last, once everything above is true
+- [x] **`prelaunch` removed** — 18 Sep 2026, T2 installed. Verified in the built
+      output: `robots.txt` Allow + absolute Sitemap line, `_headers` `index,
+      follow` on `/*` with noindex kept on `/api/*` and `/staff/*`, and
+      `sitemap.xml` carrying the four absolute apex URLs. `dominic-pizza` is now
+      in `LIVE_SLUGS` in `tests/indexability.test.mjs`, so a future
+      `prelaunch: true` on this shop fails the suite rather than quietly
+      deindexing a trading shop.
 
 Full runbook: `docs/ADDING_A_SHOP.md` / `docs/SHOP_CHECKLIST.md`.
