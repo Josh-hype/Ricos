@@ -47,7 +47,7 @@ cannot get indexed under this brand.
 | item photos | none — every item shows "PHOTO COMING SOON". The workbook carried no images |
 | `assets/` food photos, `order.css` | Acomb's — though the hero (pizza + doner) suits a shop whose logo reads "PIZZA · KEBABS · CALZONES", so it may be worth keeping |
 | `theme.accent` | still Acomb's gold `#c9a227`. The logo's only other colour is Italian-flag green `#036B3A` — a design call, not a correction |
-| `legalName`, `companyNumber` | placeholders (the build warns). `stripe.connectedAccountId` is **set** — `acct_1UGqDKBzGUOO3oql`, 18 Sep 2026 |
+| ~~`stripe.connectedAccountId`, `legalName`, `companyNumber`~~ | **all three set, 18 Sep 2026.** The build now reports no unfilled config — see "Ready to launch" below |
 
 ### Delivery: per-band minimums, and how the promo interacts
 
@@ -153,11 +153,13 @@ with it.
       Confirm the account is charge-ready and the webhook secret is set with
       `<domain>/api/staff/stripe-test` (PIN-gated; reports both, and retrieves
       the account from Stripe rather than assuming)
-- [ ] `business.legalName` + `companyNumber` — these print on the privacy and
-      terms pages as the data controller
-- [ ] Add a 6-digit Restaurant ID to `app/web/provision.js` → Dominic's custom
-      domain (never a `*.pages.dev` — 403). Shared `app/web/` code, so merging
-      it is a **fleet OTA deploy**
+- [x] `business.legalName` + `companyNumber` — **HAZEL CATERING LTD, 17037139**
+      (18 Sep 2026). Verified in the built output: "The data controller for your
+      personal data is HAZEL CATERING LTD (company number 17037139), a company
+      registered in England and Wales, trading as Dominic Pizza from 3 Lawrence
+      Street, York, YO10 3BP."
+- [x] Restaurant ID `867648` → `https://dominicpizza-york.co.uk` in
+      `app/web/provision.js`
 - [ ] Register the wallet domain — Phase 7b of `docs/SHOP_CHECKLIST.md`.
       Registration is per exact host, so nothing carries over from anywhere else
 - [ ] **Remove `prelaunch`** — last, once everything above is true
