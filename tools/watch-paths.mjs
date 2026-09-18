@@ -54,6 +54,14 @@ const shops = readdirSync(shopsDir)
    always means a real build change. Put new hand-run tooling in tools/. */
 const NEVER_BUILT = [
   'data/shops/_template/*',
+  /* data/platform/registry.json is the COMMERCIAL record — who is live, whose
+     acct_ is whose, what each shop pays. Only the Lumin owner console reads it
+     (PLATFORM_BUILD=1, which gets its own list below and must keep watching
+     it); grep build-shop.js for "platform" and every hit is inside the admin
+     branch. So every edit to it — marking a shop live, recording a Connect
+     account — was rebuilding all nine SHOP projects to produce byte-identical
+     sites. Two of those on the night Dominic launched. */
+  'data/platform/*',
   'tests/*',
   'test/*',
   'docs/*',
@@ -84,7 +92,14 @@ for (const slug of targets) {
 
 if (!only) {
   console.log('─── the Lumin admin project (PLATFORM_BUILD=1, no SHOP_SLUG) ───');
-  console.log('  It serves templates/admin + data/platform, so exclude EVERY shop:');
-  const excl = [...shops.map((s) => `data/shops/${s}/*`), ...NEVER_BUILT];
+  console.log('  It serves templates/admin + data/platform, so exclude EVERY shop');
+  console.log('  — but NOT data/platform/*, which is this project\'s own input:');
+  // The one exception to NEVER_BUILT. That list is "never built by a SHOP", and
+  // data/platform is precisely what this project exists to render: inheriting
+  // the exclusion would stop the owner console rebuilding when a shop is marked
+  // live or a Connect account is recorded — the console would then quietly show
+  // last week's figures, which is worse than a wasted build.
+  const excl = [...shops.map((s) => `data/shops/${s}/*`),
+                ...NEVER_BUILT.filter((p) => p !== 'data/platform/*')];
   console.log(`  one line: ${excl.join(', ')}\n`);
 }
