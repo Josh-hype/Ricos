@@ -12,7 +12,7 @@ import { computeTotals } from '../_lib/totals.js';
 import { resolveMenu } from '../_lib/menu-store.js';
 import { resolveDelivery } from '../_lib/delivery.js';
 import { isOpenNow, isSlotValid, listSlots, deliveryLateStart, activeClosure } from '../_lib/hours.js';
-import { createPaymentIntent, createCustomer } from '../_lib/stripe.js';
+import { createPaymentIntent, createCustomer, chargeableAccountId } from '../_lib/stripe.js';
 import { putOrder, newOrderId, nextOrderNumber, recordOptIn, incrSlotCount, getSlotCount } from '../_lib/kv.js';
 import { getOffMap } from '../_lib/availability.js';
 import { getOrderingPause } from '../_lib/ordering-pause.js';
@@ -254,8 +254,8 @@ export const onRequestPost = async ({ request, env }) => {
   // account (Stripe Connect direct charge). The platform retains the
   // service fee via application_fee_amount.
   if (paymentMethod === 'card') {
-    const connectedAccountId = config.stripe?.connectedAccountId;
-    if (!connectedAccountId || connectedAccountId === 'TBD') {
+    const connectedAccountId = chargeableAccountId(config);
+    if (!connectedAccountId) {
       return errJson('Card payments are not configured yet. Please choose cash, or contact us.', 503);
     }
 

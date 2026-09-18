@@ -20,7 +20,7 @@ import { getConfig } from '../../_lib/config.js';
 import { priceCounterSale, ANON_MODES, TABLE_MODES } from '../../_lib/counter-totals.js';
 import { findTable } from '../../_lib/tables.js';
 import { resolveMenu } from '../../_lib/menu-store.js';
-import { retrievePaymentIntent, capturePaymentIntent } from '../../_lib/stripe.js';
+import { retrievePaymentIntent, capturePaymentIntent, chargeableAccountId } from '../../_lib/stripe.js';
 import { putOrder, newOrderId, nextOrderNumber } from '../../_lib/kv.js';
 import { rememberContact, normalisePhoneKey } from '../../_lib/customer.js';
 
@@ -120,8 +120,8 @@ export const onRequestPost = async ({ request, env }) => {
       const piId = String(body.paymentIntentId || '');
       const chargeOrderId = String(body.orderId || '');
       if (!piId || !chargeOrderId) return err('Card payment not started — start it on the reader first.', 400);
-      const acct = config.stripe?.connectedAccountId;
-      if (!acct || acct === 'TBD') return err('Card payments are not configured for this shop.', 400);
+      const acct = chargeableAccountId(config);
+      if (!acct) return err('Card payments are not configured for this shop.', 400);
 
       // Verify + capture (idempotent, crash-safe — see verifyAndCapture).
       const vc = await verifyAndCapture(piId, acct, env, totals.totalP, chargeOrderId);
@@ -151,8 +151,8 @@ export const onRequestPost = async ({ request, env }) => {
       const piId = String(body.paymentIntentId || '');
       const chargeOrderId = String(body.orderId || '');
       if (!piId || !chargeOrderId) return err('Card payment not started — start it on the reader first.', 400);
-      const acct = config.stripe?.connectedAccountId;
-      if (!acct || acct === 'TBD') return err('Card payments are not configured for this shop.', 400);
+      const acct = chargeableAccountId(config);
+      if (!acct) return err('Card payments are not configured for this shop.', 400);
 
       // Verify + capture the CARD portion (idempotent, crash-safe).
       const vc = await verifyAndCapture(piId, acct, env, cardP, chargeOrderId);

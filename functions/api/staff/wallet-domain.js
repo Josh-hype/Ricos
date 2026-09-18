@@ -9,20 +9,18 @@
    just re-validates. */
 import { requireStaff } from '../../_lib/auth.js';
 import { getConfig } from '../../_lib/config.js';
-import {
-  listPaymentMethodDomains,
+import { listPaymentMethodDomains,
   createPaymentMethodDomain,
-  validatePaymentMethodDomain,
-} from '../../_lib/stripe.js';
+  validatePaymentMethodDomain, chargeableAccountId } from '../../_lib/stripe.js';
 
 export const onRequestGet = async ({ request, env }) => {
   const denied = await requireStaff(request, env);
   if (denied) return denied;
 
   const config = getConfig();
-  const acct = config.stripe?.connectedAccountId;
+  const acct = chargeableAccountId(config);
   const domain = config.business?.domain;
-  if (!acct || acct === 'TBD') return j({ error: 'No Stripe connected account configured for this shop.' }, 400);
+  if (!acct) return j({ error: 'No Stripe connected account configured for this shop.' }, 400);
   if (!domain) return j({ error: 'No business.domain set in this shop\'s config.' }, 400);
 
   try {

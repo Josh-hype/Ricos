@@ -11,7 +11,7 @@
 import { getConfig } from '../../_lib/config.js';
 import { readCustomerSession } from '../../_lib/customer-auth.js';
 import { getCustomer } from '../../_lib/customer.js';
-import { listPaymentMethods, detachPaymentMethod } from '../../_lib/stripe.js';
+import { listPaymentMethods, detachPaymentMethod, chargeableAccountId } from '../../_lib/stripe.js';
 
 function projection(pm) {
   return {
@@ -31,8 +31,8 @@ export const onRequestGet = async ({ request, env }) => {
   if (!customer?.stripeCustomerId) return Response.json({ cards: [] });
 
   const config = getConfig();
-  const connectedAccountId = config.stripe?.connectedAccountId;
-  if (!connectedAccountId || connectedAccountId === 'TBD') {
+  const connectedAccountId = chargeableAccountId(config);
+  if (!connectedAccountId) {
     return Response.json({ cards: [] });
   }
 
@@ -58,7 +58,7 @@ export const onRequestDelete = async ({ request, env }) => {
   if (!/^pm_[A-Za-z0-9]+$/.test(id)) return errJson('Invalid card id.', 400);
 
   const config = getConfig();
-  const connectedAccountId = config.stripe?.connectedAccountId;
+  const connectedAccountId = chargeableAccountId(config);
   if (!connectedAccountId) return errJson('Card service unavailable.', 503);
 
   try {

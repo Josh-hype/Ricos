@@ -27,7 +27,7 @@ import { getConfig } from '../../_lib/config.js';
 import { computeTotals } from '../../_lib/totals.js';
 import { resolveMenu } from '../../_lib/menu-store.js';
 import { resolveDelivery } from '../../_lib/delivery.js';
-import { createCheckoutSession } from '../../_lib/stripe.js';
+import { createCheckoutSession, chargeableAccountId } from '../../_lib/stripe.js';
 import { putOrder, newOrderId, nextOrderNumber } from '../../_lib/kv.js';
 import { sendSms, normalisePhoneE164UK } from '../../_lib/sms.js';
 import { MODES, ANON_MODES, TABLE_MODES } from '../../_lib/counter-totals.js';
@@ -48,8 +48,8 @@ export const onRequestPost = async ({ request, env }) => {
   catch { return err('Invalid JSON', 400); }
 
   const config = getConfig();
-  const acct = config.stripe?.connectedAccountId;
-  if (!acct || acct === 'TBD') return err('Card payments are not configured for this shop.', 400);
+  const acct = chargeableAccountId(config);
+  if (!acct) return err('Card payments are not configured for this shop.', 400);
 
   const mode = MODES.has(body.mode) ? body.mode : 'walkin';
   const fulfillment = mode === 'delivery' ? 'delivery' : 'collection';

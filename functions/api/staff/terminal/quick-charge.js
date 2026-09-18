@@ -8,7 +8,7 @@ import { requirePermission } from '../../../_lib/permissions.js';
 import { logAudit } from '../../../_lib/audit.js';
 import { getConfig } from '../../../_lib/config.js';
 import { cardFeeP } from '../../../_lib/counter-totals.js';
-import { createPaymentIntent, listTerminalReaders, processPaymentIntentOnReader } from '../../../_lib/stripe.js';
+import { createPaymentIntent, listTerminalReaders, processPaymentIntentOnReader, chargeableAccountId } from '../../../_lib/stripe.js';
 import { newOrderId, putOrder, nextOrderNumber } from '../../../_lib/kv.js';
 
 export const onRequestPost = async ({ request, env }) => {
@@ -24,8 +24,8 @@ export const onRequestPost = async ({ request, env }) => {
   if (amountP > 100000) return err('That amount looks too high (max £1000).', 400);
 
   const config = getConfig();
-  const acct = config.stripe?.connectedAccountId;
-  if (!acct || acct === 'TBD') return err('Card payments are not configured for this shop.', 400);
+  const acct = chargeableAccountId(config);
+  if (!acct) return err('Card payments are not configured for this shop.', 400);
 
   let readers;
   try { readers = await listTerminalReaders(acct, env); }

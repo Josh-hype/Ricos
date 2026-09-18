@@ -69,7 +69,7 @@ export const onRequestPost = async ({ request, env }) => {
     try { body = await request.json(); } catch { /* tolerate empty body */ }
 
     const acct = getConfig().stripe?.connectedAccountId;
-    if (!acct || acct === 'TBD') return json({ error: 'Card payments are not configured for this shop.' }, 400);
+    if (!acct) return json({ error: 'Card payments are not configured for this shop.' }, 400);
 
     let blob;
     if (body.logo) {

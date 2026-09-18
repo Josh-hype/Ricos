@@ -60,6 +60,36 @@ async function call(path, body, env, opts = {}) {
      PI server-side off-session, so the customer skips Stripe Elements
      entirely (the client only handles 3DS challenges if Stripe demands
      one). */
+
+/* The shop's connected account id, but ONLY if it is one we could actually
+   charge on — otherwise null.
+
+   Every card path used to test `!acct || acct === 'TBD'`. That catches the
+   empty string and the string one early shop used, and waves through the
+   placeholder the scaffold actually ships,
+   "acct_REPLACE_WITH_STRIPE_CONNECT_ID". It is truthy and it is not "TBD", so
+   the request went all the way to Stripe and came back as an opaque failure —
+   a pay-by-link reported "Could not create the payment link", with the real
+   cause (nobody has filled the account in yet) visible only in the build's
+   warning, which by then is hours in the past. Dominic hit exactly that.
+
+   A real id is "acct_" followed by a long run of alphanumerics — Stripe issues
+   16 (acct_1UGqDKBzGUOO3oql). So the test is shape plus LENGTH, not a list of
+   known placeholders: a list is always one entry short, and the first draft of
+   this proved it by accepting "acct_TODO", which is perfectly alphanumeric.
+   Ten is a deliberate floor well under Stripe's 16, so a format change would
+   have to be drastic to reach it — and if it ever did, the failure is a shop
+   told "card payments are not configured", never a charge sent to the wrong
+   account. Callers get that clear answer instead of a 502. */
+export function chargeableAccountId(config) {
+  const raw = config?.stripe?.connectedAccountId;
+  if (typeof raw !== 'string') return null;
+  const acct = raw.trim();
+  if (!acct || acct === 'TBD') return null;
+  if (!/^acct_[A-Za-z0-9]{10,}$/.test(acct)) return null;   // placeholder / typo
+  return acct;
+}
+
 export async function createPaymentIntent({
   amountP,
   currency,

@@ -19,10 +19,8 @@ import { logAudit } from '../../../../_lib/audit.js';
 import { getConfig } from '../../../../_lib/config.js';
 import { cardFeeP } from '../../../../_lib/counter-totals.js';
 import { getOrder, putOrder } from '../../../../_lib/kv.js';
-import {
-  createPaymentIntent, listTerminalReaders, processPaymentIntentOnReader,
-  retrievePaymentIntent, capturePaymentIntent,
-} from '../../../../_lib/stripe.js';
+import { createPaymentIntent, listTerminalReaders, processPaymentIntentOnReader,
+  retrievePaymentIntent, capturePaymentIntent, chargeableAccountId } from '../../../../_lib/stripe.js';
 
 export const onRequestPost = async ({ request, env, params }) => {
   const ctx = {};
@@ -74,8 +72,8 @@ export const onRequestPost = async ({ request, env, params }) => {
   }
 
   // ── Card: needs a configured connected account + an online reader ───────────
-  const acct = config.stripe?.connectedAccountId;
-  if (!acct || acct === 'TBD') return err('Card payments are not configured for this shop.', 400);
+  const acct = chargeableAccountId(config);
+  if (!acct) return err('Card payments are not configured for this shop.', 400);
   const action = body.action === 'capture' ? 'capture' : 'start';
 
   if (action === 'start') {

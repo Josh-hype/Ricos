@@ -6,7 +6,7 @@
 
 import { requirePermission } from '../../../_lib/permissions.js';
 import { getConfig } from '../../../_lib/config.js';
-import { listTerminalLocations, createTerminalLocation, registerTerminalReader } from '../../../_lib/stripe.js';
+import { listTerminalLocations, createTerminalLocation, registerTerminalReader, chargeableAccountId } from '../../../_lib/stripe.js';
 
 export const onRequestPost = async ({ request, env }) => {
   const denied = await requirePermission(request, env, 'sell');
@@ -21,8 +21,8 @@ export const onRequestPost = async ({ request, env }) => {
   }
 
   const config = getConfig();
-  const acct = config.stripe?.connectedAccountId;
-  if (!acct || acct === 'TBD') return err('Card payments are not configured for this shop.', 400);
+  const acct = chargeableAccountId(config);
+  if (!acct) return err('Card payments are not configured for this shop.', 400);
 
   // Readers belong to a Terminal Location. Reuse one if present, else create it from the
   // shop's address. Stripe wants an ISO country code; config stores a friendly name.
