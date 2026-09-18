@@ -1893,8 +1893,22 @@ function optionGroupsHTML(item) {
     // that are included by default). For single-selects an explicit default
     // suppresses the usual first-choice auto-check so we never double-check.
     const hasDefault = (g.choices || []).some(c => c.default === true);
+    /* A required single-select otherwise auto-checks its FIRST choice, which for
+       a pizza means the customer is handed a size and a crust they never picked.
+       That is fine where the first choice is the plain one and the price on the
+       tile matches it — it has been the behaviour everywhere for a long time —
+       but a shop can now ask for the customer to choose deliberately, with
+       `ordering.forceRequiredChoice: true`. Absent (every other shop) keeps the
+       auto-check exactly as it was.
+
+       `posDefault` is deliberately NOT read here. That flag is the till's, so
+       staff open on 11" and Thick while the customer is still asked — the whole
+       point of having two flags. */
+    const forceChoice = !!(window.SHOP_CONFIG && window.SHOP_CONFIG.ordering
+      && window.SHOP_CONFIG.ordering.forceRequiredChoice);
     const rows = (g.choices || []).map((c, i) => {
-      const checked = (c.default === true || (type === 'radio' && g.required && !hasDefault && i === 0)) ? 'checked' : '';
+      const autoFirst = type === 'radio' && g.required && !hasDefault && !forceChoice && i === 0;
+      const checked = (c.default === true || autoFirst) ? 'checked' : '';
       // Delta span is always emitted (empty when £0) so recalc can refresh it
       // when the chosen size re-prices a modifier (pizza toppings / stuffed crust).
       const delta = `<span class="opt-delta">${c.price ? '+' + fmt(c.price) : ''}</span>`;

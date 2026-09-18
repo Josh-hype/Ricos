@@ -143,7 +143,18 @@ export function deriveVisualMenu(doc) {
           if (Number.isFinite(g.min)) grp.min = g.min;
           if (Number.isFinite(g.max)) grp.max = g.max;
           if (g.whenMeal) grp.whenMeal = true;
-          grp.choices = (g.choices || []).map((ch) => ({ id: ch.id, label: ch.label, price: p2f(ch.priceP) }));
+          // default / posDefault are pre-selection flags and they must survive the
+          // editor, for the same reason noPromo had to: they only exist in the
+          // static files, the KV doc becomes authoritative on the first save, and
+          // silently losing them turns a one-tap order back into three taps with
+          // nothing to say why. `default` pre-selects everywhere; `posDefault` is
+          // TILL-ONLY, so a shop can open the till on its usual choice while the
+          // website still makes the customer pick.
+          grp.choices = (g.choices || []).map((ch) => ({
+            id: ch.id, label: ch.label, price: p2f(ch.priceP),
+            ...(ch.default ? { default: true } : {}),
+            ...(ch.posDefault ? { posDefault: true } : {}),
+          }));
           return grp;
         });
       }
@@ -213,7 +224,11 @@ export function unifyStatic(serverMenu, visual) {
             ...(Number.isFinite(g.min) ? { min: g.min } : {}),
             ...(Number.isFinite(g.max) ? { max: g.max } : {}),
             ...(g.whenMeal ? { whenMeal: true } : {}),
-            choices: (g.choices || []).map((ch) => ({ id: ch.id, label: ch.label, priceP: Math.round((ch.price || 0) * 100) })),
+            choices: (g.choices || []).map((ch) => ({
+              id: ch.id, label: ch.label, priceP: Math.round((ch.price || 0) * 100),
+              ...(ch.default ? { default: true } : {}),
+              ...(ch.posDefault ? { posDefault: true } : {}),
+            })),
           }));
         } else if (Array.isArray(mi.modifiers) && mi.modifiers.length) {
           it.options = [{
@@ -305,7 +320,12 @@ export function validateUnified(input) {
             if (!SLUG_RE.test(chid)) chid = `${grp.id}-${ci}`;
             if (choiceIds.has(chid)) { errors.push(`Duplicate option id "${chid}" on "${name}".`); }
             choiceIds.add(chid);
-            return { id: chid, label: str(ch.label, 60) || 'Option', priceP: priceP(ch.priceP, `Option "${str(ch.label, 30)}" on "${name}"`) };
+            return {
+              id: chid, label: str(ch.label, 60) || 'Option',
+              priceP: priceP(ch.priceP, `Option "${str(ch.label, 30)}" on "${name}"`),
+              ...(ch.default ? { default: true } : {}),
+              ...(ch.posDefault ? { posDefault: true } : {}),
+            };
           }).filter((ch) => ch.label);
           return grp;
         }).filter((g) => g.choices.length);

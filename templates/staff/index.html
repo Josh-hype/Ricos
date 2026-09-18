@@ -6385,7 +6385,26 @@ function optionGroupHTML(g, canonical) {
   // a `default:true` choice or a lone choice; otherwise show "Choose…" and force
   // a pick. Multi-select stays as tappable checkboxes (a dropdown can't multi-pick).
   if (g.select !== 'multi') {
-    const autoId = choices.length === 1 ? choices[0].id : (choices.find(c => c.default === true)?.id || null);
+    /* Pre-selection, in order: a lone choice, a TILL-ONLY `posDefault`, then a
+       `default` that applies everywhere.
+
+       posDefault exists because the two audiences want opposite things from the
+       same menu. Staff take the same order fifty times a night and tapping
+       11" + Thick on every pizza is pure friction; a customer choosing a pizza
+       should be asked, because a size and a crust they did not pick is a
+       complaint waiting to happen. order.html honours `default` and knows
+       nothing about this one, so the website still shows "Choose…".
+
+       Whether defaulting is SAFE is a property of the data, not of this code:
+       both flags jump the group straight past its "Choose…" placeholder, so a
+       choice that costs money becomes money nobody consciously agreed to. See
+       POS_DEFAULTS in tools/_gen-dominic-menu.py, which only ever points at a
+       £0.00 choice. */
+    const autoId = choices.length === 1
+      ? choices[0].id
+      : (choices.find(c => c.posDefault === true)?.id
+         || choices.find(c => c.default === true)?.id
+         || null);
     const opts = (autoId ? '' : '<option value="">Choose…</option>') + choices.map(c => {
       const d = choiceDeltaP(c, canonical);
       const label = `${c.label}${d ? ` (+£${(d / 100).toFixed(2)})` : ''}`;

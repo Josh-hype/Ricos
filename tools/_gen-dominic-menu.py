@@ -69,21 +69,31 @@ ICONS = {
 # an oversight. Put 'Special Offers' back in this set to reverse it.
 NO_PROMO_CATEGORIES = set()
 
-# Pre-selected choice for a required single-select group: {group label: choice label},
-# both matched lowercased. Emitted as `default: true` on that choice, which BOTH
-# the till (optionGroupHTML) and the order page already honour — a group with a
-# default opens on it instead of "Choose…".
+# TILL-ONLY pre-selected choices: {category: {group label: choice label}}, all
+# matched lowercased. Emitted as `posDefault: true`, which only the till honours
+# (optionGroupHTML in templates/staff/index.html) — the order page knows nothing
+# about it, so a CUSTOMER still gets "Choose…" and has to pick.
 #
-# OWNER'S DECISION, 18 Sep 2026: every pizza opens on THICK crust, because that is
-# what nearly every customer has and staff were tapping it on every single pizza
-# order. It is also the £0.00 choice — the two stuffed crusts are +£2.10 and
-# +£2.70 — so a default can only ever UNDERSTATE the price, never overstate it,
-# and staff change it when someone asks for stuffed.
+# OWNER'S DECISION, 18 Sep 2026: on the till, pizzas and garlic breads open on
+# 11" and Thick. Staff take the same order fifty times a night and were tapping
+# both on every single one. On the website the customer is still asked, because a
+# size and a crust they did not choose is a complaint waiting to happen.
 #
-# Keep that property in mind before adding entries here: default to the cheapest
-# choice in a group, never a paid upgrade, or the till quietly starts adding money
-# nobody chose.
-DEFAULT_CHOICES = {'crust': 'thick'}
+# ⚠️ ONLY EVER POINT THIS AT A £0.00 CHOICE. A default jumps the group past its
+# "Choose…" placeholder, so a paid choice here becomes money nobody consciously
+# agreed to — and staff would not see it any more than the customer. Every entry
+# below is the base option: 11" is the price in menu.json (13" is +£1.70 and 15"
+# +£4.00 on a pizza) and Thick is £0.00 against +£2.10 / +£2.70 for the stuffed
+# crusts. The generator asserts this and refuses to write a priced default.
+#
+# Scoped BY CATEGORY on purpose: "Size" also exists on Burgers (1/4lb, 1/2lb) and
+# Kebabs (Medium, Large), where an 11" rule is meaningless, and "Crust" appears on
+# Special Offers, where the owner did not ask for it.
+POS_DEFAULTS = {
+    'pizza':        {'size': '11"', 'crust': 'thick'},
+    'vegan pizzas': {'size': '11"', 'crust': 'thick'},
+    'garlic bread': {'size': '11"', 'crust': 'thick'},
+}
 
 
 def slug(s, maxlen=48):
@@ -91,6 +101,15 @@ def slug(s, maxlen=48):
     s = s.encode('ascii', 'ignore').decode('ascii').lower()
     s = re.sub(r'[^a-z0-9]+', '-', s).strip('-')
     return s[:maxlen].strip('-') or 'x'
+
+
+def pos_default_for(category, group, choice):
+    """Is this the till's pre-selected choice for that category's group?"""
+    rules = POS_DEFAULTS.get(str(category or '').strip().lower())
+    if not rules:
+        return False
+    want = rules.get(str(group or '').strip().lower())
+    return want is not None and want == str(choice or '').strip().lower()
 
 
 def pence(v):
@@ -155,7 +174,7 @@ def build(path):
     cats_menu, cats_visual = OrderedDict(), OrderedDict()
     skipped, seen_ids = [], {}
     stats = {'items': 0, 'mods': 0, 'by_size': 0, 'sized_items': 0, 'no_promo': 0,
-             'dropped_size_groups': 0}
+             'dropped_size_groups': 0, 'pos_defaults': 0}
 
     for r in menu_rows:
         iid, cat, name = cell(r, mi, 'Item ID'), cell(r, mi, 'Category'), cell(r, mi, 'Item')
@@ -186,7 +205,13 @@ def build(path):
             for lbl, p in vs:
                 d = pence(p) - pence(base_price)
                 mods.append({'id': size_ids[lbl], 'label': lbl, 'priceDeltaP': d})
-                ch.append({'id': size_ids[lbl], 'label': lbl, 'price': round(d / 100, 2)})
+                cho = {'id': size_ids[lbl], 'label': lbl, 'price': round(d / 100, 2)}
+                if pos_default_for(cat, 'Size', lbl):
+                    assert d == 0, ('POS_DEFAULTS points at a PRICED size: %s / %s (+%dp)'
+                                    % (cat, lbl, d))
+                    cho['posDefault'] = True
+                    stats['pos_defaults'] += 1
+                ch.append(cho)
             opts.append({'id': 'size', 'label': 'Size', 'select': 'single',
                          'required': True, 'choices': ch})
 
@@ -226,12 +251,14 @@ def build(path):
                            if c in size_ids and c != base_ctx and pence(s) != base_s}
                 mod = {'id': cid, 'label': label, 'priceDeltaP': base_s}
                 cho = {'id': cid, 'label': label, 'price': round(base_s / 100, 2)}
-                # Pre-select this choice? Display-only, so it goes on the visual
+                # Pre-select on the till? Display-only, so it goes on the visual
                 # side only — menu.json prices whatever ids are submitted and has
                 # no concept of a default.
-                if DEFAULT_CHOICES.get(str(gname).strip().lower()) == str(label).strip().lower():
-                    cho['default'] = True
-                    stats['defaults'] = stats.get('defaults', 0) + 1
+                if pos_default_for(cat, gname, label):
+                    assert base_s == 0, ('POS_DEFAULTS points at a PRICED choice: %s / %s / %s (+%dp)'
+                                         % (cat, gname, label, base_s))
+                    cho['posDefault'] = True
+                    stats['pos_defaults'] += 1
                 if by_size:
                     mod['priceDeltaPBySize'] = by_size
                     cho['priceBySize'] = {k: round(v / 100, 2) for k, v in by_size.items()}

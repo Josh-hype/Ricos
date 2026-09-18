@@ -155,6 +155,8 @@
     }
   },
   "ordering": {
+    "_comment_forceRequiredChoice": "OWNER'S DECISION, 18 Sep 2026. A required single-select normally auto-checks its FIRST choice, so a pizza opened with 11\" and Thick already ticked — a size and a crust the customer never actually picked. With this on, the customer chooses deliberately. Deliberately the OPPOSITE of the till, where pizzas and garlic breads DO open on 11\" and Thick (posDefault in menu-visual.json, set by tools/_gen-dominic-menu.py): staff take the same order fifty times a night and should not tap both every time, while a customer handed a size they did not choose is a complaint. Absent on every other shop, which keeps the auto-check.",
+    "forceRequiredChoice": true,
     "timezone": "Europe/London",
     "_comment_businessDayStartHour": "Trading-day rollover hour (0–23, shop local time). 4 = the day's orders / takings / Z-report run 4am-to-4am, so a late-night shop's orders taken after midnight still count toward the day it opened. Set 0 for a plain midnight-to-midnight day. Safe to leave at 4 even for daytime shops (if you close before midnight there's nothing in the 0–4am window to reclassify).",
     "businessDayStartHour": 4,
