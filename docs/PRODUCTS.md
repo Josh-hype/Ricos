@@ -238,6 +238,45 @@ A withheld number arrives as an empty field and is ignored rather than opening
 an empty bar. The socket reconnects with a backoff, because the router drops
 every connection when it reboots.
 
+### Big Bites: caller ID is UNRESOLVED, and why
+
+Recording this because it was lost once and cost an argument. Big Bites took the
+caller-ID APK on **9 Sep 2026** (`docs/TODO.md`, the keystore migration), which
+at that date carried exactly **one** source: a USB modem. That build's own
+commit says it was "still unproven against hardware" and "may still not be
+enough" — the chipset was never confirmed, because the T2 has no Play Store to
+install a terminal app on.
+
+It did not produce a number, and the investigation went to the router and
+stopped at not being able to log in. **That was the wrong thing to be stuck on.**
+The question that decides this shop was never asked:
+
+> **What router is on the wall, and where does the handset plug in?**
+
+Nothing that followed can be settled without it, and the answer takes a photo.
+
+What has changed since, and it is not small:
+
+- **The FRITZ!Box route did not exist in September.** It was written on 17 Sep
+  (`e1f746b`) for Dominic Pizza. On 9 Sep there was nothing to try but the modem.
+- **`#96*5*` is dialled on a handset**, so the router login that blocked Big
+  Bites is not needed at all — on a FRITZ!Box.
+- **The on-till diagnostic did not exist.** Dominic would have failed the same
+  way without it: working router, open port, correct APK, nothing on screen. One
+  read of that panel named the cause (`ACCESS_WIFI_STATE`).
+
+So it was a real wall, made of code that had not been written and a device
+nobody could see inside. Both are fixed. What remains is a fact about their
+building:
+
+| If Big Bites has… | Then |
+|---|---|
+| a **FRITZ!Box** | exactly what Dominic has. Needs a **new APK** — the call monitor is native and their build predates it. A fresh build also carries the `ACCESS_WIFI_STATE` fix, so the gateway fallback works first time |
+| an **analogue line with CLI** | the USB modem, which is what was already tried. Confirm the line carries CLI *and* that the device has a spare USB host port before buying anything |
+| an **ISP router doing VoIP** (BT / Sky / Virgin / EE) | **neither route exists.** The call monitor is an AVM feature, not a standard. This would need a different approach entirely |
+
+Do not attempt this shop again without answering the router question first.
+
 ### When it doesn't pop up
 
 **Read it on the till: Back Office → Caller ID.** Configured source, whether
@@ -284,7 +323,7 @@ takeaway's network.
 | Shop | Slug | Product | Weekly | Device |
 |---|---|---|---|---|
 | Rico's Peri Peri | `ricos` | LumiPOS | £35 (itemised) | Sunmi T2s |
-| Big Bites, Easingwold | `food-station` | LumiPOS (all-in rate) | £19 | on site — **model not recorded, confirm and fill in** |
+| Big Bites, Easingwold | `food-station` | LumiPOS (all-in rate) | £19 | on site — **model not recorded, confirm and fill in.** Caller ID unresolved, see below |
 | Mega Chippy, Acomb | `mega-chippy` | **LumiWEB** | £19 | ZCS Z93 |
 | One Sip | `one-sip` | LumiPOS, till-only (no website, no Stripe) | £0 — family venue, provided free | not provisioned in `provision.js` |
 | The Grub Hub | `grub-hub` | LumiPOS | £35 | pre-launch |
