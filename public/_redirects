@@ -25,6 +25,16 @@ https://www.ricosyork.co.uk/*  https://ricosyork.co.uk/:splat  301
 # every other shop's deploy.
 https://www.bigbiteseasingwold.co.uk/*  https://bigbiteseasingwold.co.uk/:splat  301
 
+# Canonical host: www.dominicpizza-york.co.uk -> dominicpizza-york.co.uk (apex).
+# Both are attached to the Dominic Pages project. Beyond the SEO split, this one
+# decides whether the WALLETS appear: /api/staff/wallet-domain registers
+# config.business.domain, which is the apex, and Stripe registers a payment
+# method domain per EXACT host — so Apple Pay and Google Pay would be missing for
+# anyone who arrived on www. Same shape as the two above: the apex must be the
+# host that does NOT redirect, because a 301 in front of /api would drop POST
+# bodies and break the till.
+https://www.dominicpizza-york.co.uk/*  https://dominicpizza-york.co.uk/:splat  301
+
 # Rico's .com is a redirect-only domain — send it (and its www) to the canonical
 # .co.uk so there's ONE address for SEO. Matches only ricosyork.com, so it's a
 # no-op on the Food Station deploy. (Needs ricosyork.com + www.ricosyork.com added
