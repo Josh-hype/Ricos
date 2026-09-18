@@ -271,29 +271,43 @@ splitter, on the assumption that BT Digital Voice terminates to analogue in the
 hub. **That is wrong for this shop** and is recorded here so nobody re-derives
 it: a DECT IP base station makes the whole question moot. Do not buy a splitter.
 
-**The way in is the Yealink itself.** Yealink devices support **Action URL** —
-on an incoming call the base station fires an HTTP request at a URL you
-configure, with the caller's number substituted in (`$remote_number`). That is a
-THIRD source, and the best-shaped one we have: no analogue line, **no native
-code and no APK**, so it would work on a Z93 as readily as a T2, and everything
-downstream — the dialog, the lookup, the "Who's calling?" chooser — is unchanged
-because it would fire the same `epos:callerid` event.
+### The fix: BT is sending an ATA (18 Sep 2026)
 
-Not yet built, and two things to confirm on the hardware first:
+BT confirmed the account is **Cloud Voice Express**, and the answer is an **ATA**
+— an Analogue Telephone Adapter. It sits on the LAN and presents a **real
+analogue phone port**, which is how a VoIP account keeps working with ordinary
+analogue phones. Three lights: power, internet, phone.
 
-1. **Does the W70B's web UI have it?** Its IP is on the hub's device list (or
-   the handset's status menu); the setting lives under Features → Action URL on
-   the models that have it. Documented on the W60B; the W70B is its successor
-   and should match, but confirm before designing around it.
-2. **Can it post to HTTPS?** Pages is HTTPS-only. Some older Yealink firmware
-   does plain HTTP for action URLs.
+**That makes the EXISTING USB modem route work.** No new code, no APK, no Action
+URL, no Yealink password. The September build was never wrong — it was waiting
+for an analogue port that did not exist in that building.
 
-Sketch, if it goes ahead: `pos.callerId.mode: "webhook"`, an endpoint that takes
-the number plus a per-shop shared secret and parks it in KV for ~60s, and a
-small fast poll on the till while that mode is set — the existing order poll
-backs off to 30 minutes when idle, which is useless for a ringing phone. The
-secret matters: without one, anyone who found the URL could pop arbitrary
-numbers onto a shop's till.
+⚠️ **The one thing that decides whether this works: the ATA must ring on the
+shop's MAIN number**, alongside the DECT handsets. Provisioned with a number of
+its own it will never ring for a customer and the whole exercise is wasted. Ask
+BT to add it to the same number / hunt group.
+
+Wiring when it arrives: ATA phone port → USB caller-ID modem → the till's USB
+port. A splitter is only needed if a handset shares that port; the modem is
+happy alone on it.
+
+Then read Back Office → Caller ID and ring the shop. Expect `NMBR=` lines. If
+the modem is not detected at all, that is the unresolved chipset question from
+September (CDC-ACM is handled cleanly; FTDI/Prolific/Silabs/CH340 bridges only
+partly, because their baud setup is chip-specific and is not sent). If the modem
+is running but the log stays empty, the ATA is not ringing for that number —
+back to BT, not to the code.
+
+**The Yealink Action URL route is therefore NOT being built**, and is recorded
+here only so nobody re-derives it: Yealink devices can fire an HTTP request with
+the caller's number on an incoming call, which would need no native code and
+would work on a Z93 as readily as a T2. It was the plan until BT offered the
+ATA, and it stays the fallback if the ATA route fails. Two things would need
+confirming first — whether the W70B's firmware exposes Action URL at all, and
+whether it can post to HTTPS — and BT holds the base station's admin password,
+which is what blocked Big Bites in the first place. An endpoint like that would
+also need a per-shop shared secret: without one, anyone who found the URL could
+pop arbitrary numbers onto a shop's till.
 
 What has changed since, and it is not small:
 
