@@ -69,6 +69,22 @@ ICONS = {
 # an oversight. Put 'Special Offers' back in this set to reverse it.
 NO_PROMO_CATEGORIES = set()
 
+# Pre-selected choice for a required single-select group: {group label: choice label},
+# both matched lowercased. Emitted as `default: true` on that choice, which BOTH
+# the till (optionGroupHTML) and the order page already honour — a group with a
+# default opens on it instead of "Choose…".
+#
+# OWNER'S DECISION, 18 Sep 2026: every pizza opens on THICK crust, because that is
+# what nearly every customer has and staff were tapping it on every single pizza
+# order. It is also the £0.00 choice — the two stuffed crusts are +£2.10 and
+# +£2.70 — so a default can only ever UNDERSTATE the price, never overstate it,
+# and staff change it when someone asks for stuffed.
+#
+# Keep that property in mind before adding entries here: default to the cheapest
+# choice in a group, never a paid upgrade, or the till quietly starts adding money
+# nobody chose.
+DEFAULT_CHOICES = {'crust': 'thick'}
+
 
 def slug(s, maxlen=48):
     s = unicodedata.normalize('NFKD', str(s or ''))
@@ -210,6 +226,12 @@ def build(path):
                            if c in size_ids and c != base_ctx and pence(s) != base_s}
                 mod = {'id': cid, 'label': label, 'priceDeltaP': base_s}
                 cho = {'id': cid, 'label': label, 'price': round(base_s / 100, 2)}
+                # Pre-select this choice? Display-only, so it goes on the visual
+                # side only — menu.json prices whatever ids are submitted and has
+                # no concept of a default.
+                if DEFAULT_CHOICES.get(str(gname).strip().lower()) == str(label).strip().lower():
+                    cho['default'] = True
+                    stats['defaults'] = stats.get('defaults', 0) + 1
                 if by_size:
                     mod['priceDeltaPBySize'] = by_size
                     cho['priceBySize'] = {k: round(v / 100, 2) for k, v in by_size.items()}
