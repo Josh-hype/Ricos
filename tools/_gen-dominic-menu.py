@@ -157,6 +157,13 @@ POS_DEFAULTS = {
     # The identical group also exists on Kebabs (5 items), Wraps (6), Special
     # Offers (4) and Specials (1); the owner asked for burgers, so only burgers.
     'burgers':      {'size': '1/4lb', 'salad': 'salad'},   # 1/2lb is +£1.00 to +£1.50
+    # A meal deal carries ONE Crust group PER PIZZA — "Meal Deal 4" has two, at
+    # positions 2 and 5 — and the rule matches on the group's LABEL, so every one
+    # of them gets the default. Staff were having to set the second by hand.
+    # Thick is £0.00 in the deals too; the stuffed crusts are +£3.80 / +£4.90
+    # there, dearer than on a single pizza, which is exactly why a default must
+    # never point at them.
+    'special offers': {'crust': 'thick'},
     'kebabs':       {'size': 'medium'},         # Large is +£1.40 / +£2.00
 }
 # Left on "Choose…" deliberately: Specials, whose Size is 6pcs (£0.00) / 10pcs

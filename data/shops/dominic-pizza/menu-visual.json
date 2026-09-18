@@ -23424,7 +23424,8 @@
               {
                 "id": "g2-thick",
                 "label": "Thick",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g2-cheese-stuffed-crust",
@@ -23828,7 +23829,8 @@
               {
                 "id": "g5-thick",
                 "label": "Thick",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g5-cheese-stuffed-crust",
@@ -24391,7 +24393,8 @@
               {
                 "id": "g3-thick",
                 "label": "Thick",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g3-cheese-stuffed-crust",
@@ -24767,7 +24770,8 @@
               {
                 "id": "g2-thick",
                 "label": "Thick",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g2-cheese-stuffed-crust",
@@ -25281,7 +25285,8 @@
               {
                 "id": "g2-thick",
                 "label": "Thick",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g2-cheese-stuffed-crust",
@@ -25685,7 +25690,8 @@
               {
                 "id": "g5-thick",
                 "label": "Thick",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g5-cheese-stuffed-crust",
@@ -26070,7 +26076,8 @@
               {
                 "id": "g2-thick",
                 "label": "Thick",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g2-cheese-stuffed-crust",
@@ -26474,7 +26481,8 @@
               {
                 "id": "g5-thick",
                 "label": "Thick",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g5-cheese-stuffed-crust",
@@ -26878,7 +26886,8 @@
               {
                 "id": "g8-thick",
                 "label": "Thick",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g8-cheese-stuffed-crust",
@@ -27437,7 +27446,8 @@
               {
                 "id": "g2-thick",
                 "label": "Thick",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g2-cheese-stuffed-crust",
@@ -27841,7 +27851,8 @@
               {
                 "id": "g5-thick",
                 "label": "Thick",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g5-cheese-stuffed-crust",
@@ -28226,7 +28237,8 @@
               {
                 "id": "g2-thick",
                 "label": "Thick",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g2-cheese-stuffed-crust",
@@ -28630,7 +28642,8 @@
               {
                 "id": "g5-thick",
                 "label": "Thick",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g5-cheese-stuffed-crust",
@@ -29149,7 +29162,8 @@
               {
                 "id": "g2-thick",
                 "label": "Thick",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g2-cheese-stuffed-crust",
@@ -29553,7 +29567,8 @@
               {
                 "id": "g5-thick",
                 "label": "Thick",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g5-cheese-stuffed-crust",

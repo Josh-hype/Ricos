@@ -70,27 +70,19 @@ export async function getUnified(env) {
    deleted on purpose is a different and worse risk than a missing flag. A shop in
    that position needs its menu re-saved from the back office — which now keeps
    these flags — or the override cleared. */
-function staticFlags() {
-  const items = new Map();       // item id -> noPromo
-  const choices = new Map();     // choice id -> { default, posDefault }
+function noPromoItemIds() {
+  const ids = new Set();
   for (const c of getMenu()) {
-    for (const it of (c.items || [])) {
-      if (it.noPromo) items.set(it.id, true);
-      for (const m of (it.modifiers || [])) {
-        // menu.json carries no pre-selection flags (they are display-only), so
-        // the ids come from here and the flags from the VISUAL side below.
-        if (!choices.has(m.id)) choices.set(m.id, {});
-      }
-    }
+    for (const it of (c.items || [])) if (it.noPromo) ids.add(it.id);
   }
-  return { items, choices };
+  return ids;
 }
 
 function healFlags(cats) {
-  const { items } = staticFlags();
+  const items = noPromoItemIds();
   for (const c of cats) {
     for (const it of (c.items || [])) {
-      if (!it.noPromo && items.get(it.id)) it.noPromo = true;
+      if (!it.noPromo && items.has(it.id)) it.noPromo = true;
     }
   }
   return cats;
@@ -99,15 +91,26 @@ function healFlags(cats) {
 /* The choice-level half. The pre-selection flags live only in menu-visual.json,
    which the build writes to public/ and is therefore not importable here — so it
    has to be fetched. Same origin, cached at the edge, and only on the path that
-   actually has a stored doc to repair. */
+   actually has a stored doc to repair.
+
+   KEYED BY ITEM **AND** CHOICE. Choice ids are only unique WITHIN an item: they
+   are generated as g<group position>-<label>, so the Crust group that sits second
+   on an ordinary pizza and the one that sits second on a two-pizza meal deal both
+   produce "g2-thick". A first version of this matched on choice id alone and
+   leaked the pizza's default onto the deal's FIRST crust while leaving its second
+   ("g5-thick") alone — which is precisely what Dominic's counter reported: one
+   pizza pre-selected, the other not. Every flagged id currently points at a £0.00
+   choice so nothing was mis-priced, but a leak like that is exactly how a paid
+   default would arrive somewhere nobody chose it. */
 function healChoiceFlags(cats, staticVisual) {
+  const key = (itemId, choiceId) => itemId + '\u0000' + choiceId;
   const flags = new Map();
   for (const c of (staticVisual || [])) {
     for (const it of (c.items || [])) {
       for (const g of (it.options || [])) {
         for (const ch of (g.choices || [])) {
           if (ch.default || ch.posDefault) {
-            flags.set(ch.id, {
+            flags.set(key(it.id, ch.id), {
               ...(ch.default ? { default: true } : {}),
               ...(ch.posDefault ? { posDefault: true } : {}),
             });
@@ -121,7 +124,7 @@ function healChoiceFlags(cats, staticVisual) {
     for (const it of (c.items || [])) {
       for (const g of (it.options || [])) {
         for (const ch of (g.choices || [])) {
-          const f = flags.get(ch.id);
+          const f = flags.get(key(it.id, ch.id));
           if (!f) continue;
           if (f.default && !ch.default) ch.default = true;
           if (f.posDefault && !ch.posDefault) ch.posDefault = true;

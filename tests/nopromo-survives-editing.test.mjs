@@ -130,3 +130,48 @@ test('a doc saved BEFORE the fix is healed on read', async () => {
   assert.equal(findItem(menu, plainId)?.noPromo, undefined,
     `${plainId} is an ordinary item and must not acquire noPromo`);
 });
+
+test('the heal does not leak a flag between items sharing a choice id', async () => {
+  /* Choice ids are only unique WITHIN an item — they are g<group position>-<label>
+     — so the Crust group second on a pizza and the one second on a two-pizza meal
+     deal both yield "g2-thick". The first version of healChoiceFlags keyed on the
+     choice id alone and pre-selected the DEAL's first crust (g2-thick) while
+     leaving its second (g5-thick) on "Choose…", which is exactly what the shop
+     reported. Nothing was mis-priced, because every flagged id happens to point
+     at a £0.00 choice — but that is luck, not design. */
+  const { resolveVisual } = await import('../functions/_lib/menu-store.js');
+
+  const flagged = {   // an ordinary pizza: g2-thick IS the default
+    id: 'pizza-margherita', name: 'Margherita', price: 8.2,
+    options: [{ id: 'g2-crust', label: 'Crust', select: 'single', required: true,
+      choices: [{ id: 'g2-thick', label: 'Thick', price: 0, posDefault: true },
+                { id: 'g2-stuffed', label: 'Stuffed', price: 2.1 }] }],
+  };
+  const deal = {      // a deal: same choice id, and it must NOT inherit the flag
+    id: 'special-offers-meal-deal-4', name: 'Meal Deal 4', price: 28,
+    options: [{ id: 'g2-crust', label: 'Crust', select: 'single', required: true,
+      choices: [{ id: 'g2-thick', label: 'Thick', price: 0 },
+                { id: 'g2-stuffed', label: 'Stuffed', price: 3.8 }] }],
+  };
+  const staticVisual = [{ id: 'pizza', name: 'Pizza', items: [flagged] },
+                        { id: 'so', name: 'Special Offers', items: [deal] }];
+  // The stored doc: same shape, every flag stripped, as the old editor left it.
+  const stored = JSON.parse(JSON.stringify({ version: 1, categories: staticVisual }))
+    .categories.map((c) => ({ ...c, items: c.items.map((it) => ({
+      ...it, priceP: Math.round(it.price * 100),
+      options: it.options.map((g) => ({ ...g,
+        choices: g.choices.map(({ posDefault, ...ch }) => ({ ...ch, priceP: Math.round(ch.price * 100) })) })) })) }));
+
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async () => ({ ok: true, json: async () => staticVisual });
+  try {
+    const out = await resolveVisual(
+      { ORDERS_KV: { get: async () => JSON.stringify({ version: 1, categories: stored }), put: async () => {} } },
+      { url: 'https://example.co.uk/api/menu-visual' });
+    const pick = (id) => out.flatMap((c) => c.items).find((i) => i.id === id)
+      .options[0].choices.find((c) => c.id === 'g2-thick');
+    assert.equal(pick('pizza-margherita').posDefault, true, 'the pizza lost its own default');
+    assert.equal(pick('special-offers-meal-deal-4').posDefault, undefined,
+      'the deal INHERITED the pizza’s default via a shared choice id');
+  } finally { globalThis.fetch = realFetch; }
+});
