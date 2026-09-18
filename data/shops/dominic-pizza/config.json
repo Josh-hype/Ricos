@@ -72,6 +72,16 @@
       "areaDescription": "within 7 miles of the shop"
     }
   },
+  "seo": {
+    "_comment_seo": "Feeds the Restaurant JSON-LD, the canonical link and the OG/Twitter tags on the landing page (buildSeoHead in scripts/build-shop.js). Inherited from Acomb as ABSENT, which meant this shop shipped the thinnest schema the build can emit and no service-area circle at all. Added 18 Sep 2026.",
+    "cuisine": ["Pizza", "Kebab", "Calzone", "Burgers", "Parmesan"],
+    "priceRange": "££",
+    "addressRegion": "North Yorkshire",
+    "_comment_description": "The line Google shows under the result, written for a person. Leads with the exact phrase people search — \"Dominic Pizza York\" — because that adjacency is what a brand-name query matches on. Note the shop's brand is contested on Google by two OTHER domains (dominicpizzayork.com and dominicpizzayork.co.uk, both previous providers), so this wording matters more here than at a shop that owns its own name outright.",
+    "description": "Dominic Pizza York — pizza, kebabs, calzones and burgers on Lawrence Street. Open until 3am, seven days. Order online for collection or delivery across York.",
+    "_comment_geo": "⚠️ NOT SET YET, and must not be guessed — these coordinates decide where Google drops the pin AND the centre of the delivery GeoCircle in the schema. Get them from https://api.postcodes.io/postcodes/YO10%203BP (the shop's own postcode, matching business.address.postcode) and paste latitude/longitude here as { \"lat\": .., \"lng\": .. }. The build cannot fetch them itself: it runs on pure Node built-ins with no network, so a deploy must never depend on an external API being up. NOTE the delivery origin under fulfillment is a DIFFERENT number (53.9551430130456, -1.07015141349182) and is deliberately the owner's own zone centre, not the shop postcode — do not copy one into the other.",
+    "_comment_sameAs": "The shop's own social profiles, emitted as schema.org sameAs — how Google ties the website, the socials and the Google Business Profile together as ONE business. Worth more than usual here, given two other domains are ranking for this brand. Add the canonical profile URLs with tracking parameters stripped."
+  },
   "_comment_serviceFee": "Per-order platform fee in pence. Charged to the customer and kept by the platform.",
   "serviceFeePence": 50,
   "_comment_stripe": "Stripe Connect: this site's PaymentIntents are created on the venue's connected account. connectedAccountId is the venue's acct_xxx string from Stripe Connect.",

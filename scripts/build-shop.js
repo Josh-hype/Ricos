@@ -560,7 +560,11 @@ function buildSeoHead() {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Restaurant',
-    name, url, image: img,
+    // The same sentence the OG/Twitter cards use. It was computed for those and
+    // never put in the structured data, so every shop has been describing itself
+    // to social previews and saying nothing to Google's entity graph — the one
+    // place a local business most wants to be understood.
+    name, url, image: img, description: desc,
     ...(phone ? { telephone: phone } : {}),
     address: {
       '@type': 'PostalAddress',
