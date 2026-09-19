@@ -68,3 +68,59 @@ test('exactly one choice per group is defaulted', () => {
     assert.equal(n, 1, `${cat} · ${item.name} · ${group.label} has ${n} defaults`);
   }
 });
+
+/* ---- the two donner meal deals, added 19 Sep 2026 ---------------------- */
+
+const deal = (name) => VISUAL
+  .flatMap((c) => c.items || []).find((i) => i.name === name);
+const groupOf = (item, label) => (item.options || [])
+  .filter((g) => String(g.label).toLowerCase() === label);
+
+test('Meal Deal 2 and 3 open on Salad + Garlic Yogurt', () => {
+  // Deal 2 is a 13" pizza + donner meat and chips, Deal 3 a 15" + a medium
+  // donner kebab. Same donner, so the same two answers as a standalone kebab.
+  for (const name of ['Meal Deal 2', 'Meal Deal 3']) {
+    const item = deal(name);
+    assert.ok(item, `${name} has gone from the menu`);
+    for (const [label, want] of [['salad', 'Salad'], ['sauce', 'Garlic Yogurt']]) {
+      const gs = groupOf(item, label);
+      assert.equal(gs.length, 1, `${name} has ${gs.length} ${label} groups`);
+      const picked = (gs[0].choices || []).filter((c) => c.posDefault === true);
+      assert.deepEqual(picked.map((c) => c.label), [want],
+        `${name} · ${gs[0].label} should open on ${want}`);
+      assert.equal(Number(picked[0].price) || 0, 0, `${want} must be free`);
+      assert.ok(!picked[0].default, `${want} must not pre-select for WEBSITE customers`);
+    }
+  }
+});
+
+test('the deals keep the Crust default they already had', () => {
+  // The item rule names only salad and sauce, so every OTHER group must still
+  // fall through to POS_DEFAULTS['special offers'] in the generator. If that
+  // fall-through were lost, Crust would silently go back to "Choose..." — the
+  // exact complaint that started the meal-deal crust work.
+  for (const name of ['Meal Deal 2', 'Meal Deal 3']) {
+    for (const g of groupOf(deal(name), 'crust')) {
+      assert.deepEqual(
+        (g.choices || []).filter((c) => c.posDefault === true).map((c) => c.label),
+        ['Thick'], `${name} lost its Crust default`);
+    }
+  }
+});
+
+test('the burger deals were NOT swept up', () => {
+  // Meal Deal 5 and Student Deal A carry an IDENTICAL Salad/Sauce pair, but it
+  // belongs to their BURGER and the owner has not asked for it. A category-level
+  // rule would have defaulted these too; this is why the rule is item-scoped.
+  for (const name of ['Meal Deal 5', 'Student Deal A']) {
+    const item = deal(name);
+    assert.ok(item, `${name} has gone from the menu`);
+    for (const label of ['salad', 'sauce']) {
+      for (const g of groupOf(item, label)) {
+        assert.deepEqual(
+          (g.choices || []).filter((c) => c.posDefault || c.default).map((c) => c.label),
+          [], `${name} · ${g.label} was defaulted without being asked for`);
+      }
+    }
+  }
+});

@@ -24451,7 +24451,8 @@
               {
                 "id": "g5-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g5-no-salad",
@@ -24504,7 +24505,8 @@
               {
                 "id": "g6-garlic-yogurt",
                 "label": "Garlic Yogurt",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g6-plain-yogurt",
@@ -24966,7 +24968,8 @@
               {
                 "id": "g5-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g5-no-salad",
@@ -25019,7 +25022,8 @@
               {
                 "id": "g6-garlic-yogurt",
                 "label": "Garlic Yogurt",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g6-plain-yogurt",

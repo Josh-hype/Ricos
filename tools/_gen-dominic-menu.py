@@ -143,9 +143,26 @@ DEFAULT_CHOICES = {
 # at category level: Chicken Dippers shares the identical 6pcs/10pcs group and
 # was not asked for. 6pcs is the £0.00 choice (10pcs is +£3.30 on the wings,
 # +£4.60 on the dippers), so the assertion below passes either way.
+#
+# OWNER'S DECISION, 19 Sep 2026: Meal Deal 2 (13" pizza + donner meat and chips)
+# and Meal Deal 3 (15" pizza + medium donner kebab) carry the same Salad/Sauce
+# pair as a standalone kebab, for the donner half of the deal, so they open the
+# same way.
+#
+# ITEM-scoped and not 'special offers': {'salad': ...} on purpose. Meal Deal 5
+# and Student Deal A hold an IDENTICAL Salad/Sauce pair belonging to their
+# BURGER, and a category rule matches on the group's label, so it would default
+# those too. The owner asked for the two donner deals; Salad on a burger is the
+# same call but has not been made. Add them here if it is.
+#
+# The 'crust' default still comes from POS_DEFAULTS['special offers'] below:
+# pos_default_for() only takes the item rule for a group the item rule NAMES,
+# and falls through to the category for every other group.
 POS_DEFAULTS_ITEMS = {
     'spicy hot wings': {'size': '6pcs'},
     'bbq wings':       {'size': '6pcs'},
+    'meal deal 2':     {'salad': 'salad', 'sauce': 'garlic yogurt'},
+    'meal deal 3':     {'salad': 'salad', 'sauce': 'garlic yogurt'},
 }
 
 POS_DEFAULTS = {
