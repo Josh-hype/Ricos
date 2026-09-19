@@ -27131,7 +27131,8 @@
               {
                 "id": "g11-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g11-no-salad",
@@ -28887,7 +28888,8 @@
               {
                 "id": "g8-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g8-no-salad",

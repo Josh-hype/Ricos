@@ -149,11 +149,15 @@ DEFAULT_CHOICES = {
 # pair as a standalone kebab, for the donner half of the deal, so they open the
 # same way.
 #
-# ITEM-scoped and not 'special offers': {'salad': ...} on purpose. Meal Deal 5
-# and Student Deal A hold an IDENTICAL Salad/Sauce pair belonging to their
-# BURGER, and a category rule matches on the group's label, so it would default
-# those too. The owner asked for the two donner deals; Salad on a burger is the
-# same call but has not been made. Add them here if it is.
+# ITEM-scoped and not 'special offers': {'salad': ...} on purpose, because the
+# four deals do NOT want the same thing. Meal Deal 5 and Student Deal A hold an
+# identical Salad/Sauce pair belonging to their BURGER, and a category rule
+# matches on the group's label, so it could not tell the two apart.
+#
+# OWNER'S DECISION, 19 Sep 2026, on those two: SALAD ONLY, no sauce — matching
+# the standalone burgers above, where salad is defaulted and the sauce is left
+# to be asked. A burger's sauce is a choice the customer has a view on; the
+# donner deals take garlic yogurt because a kebab does.
 #
 # The 'crust' default still comes from POS_DEFAULTS['special offers'] below:
 # pos_default_for() only takes the item rule for a group the item rule NAMES,
@@ -163,6 +167,8 @@ POS_DEFAULTS_ITEMS = {
     'bbq wings':       {'size': '6pcs'},
     'meal deal 2':     {'salad': 'salad', 'sauce': 'garlic yogurt'},
     'meal deal 3':     {'salad': 'salad', 'sauce': 'garlic yogurt'},
+    'meal deal 5':     {'salad': 'salad'},      # burger deal: no sauce default
+    'student deal a':  {'salad': 'salad'},      # burger deal: no sauce default
 }
 
 POS_DEFAULTS = {

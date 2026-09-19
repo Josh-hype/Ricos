@@ -108,19 +108,28 @@ test('the deals keep the Crust default they already had', () => {
   }
 });
 
-test('the burger deals were NOT swept up', () => {
-  // Meal Deal 5 and Student Deal A carry an IDENTICAL Salad/Sauce pair, but it
-  // belongs to their BURGER and the owner has not asked for it. A category-level
-  // rule would have defaulted these too; this is why the rule is item-scoped.
+test('the burger deals get Salad but NOT a sauce', () => {
+  /* Meal Deal 5 and Student Deal A carry an identical Salad/Sauce pair, but it
+     belongs to their BURGER — so they follow the standalone burgers, where the
+     owner defaulted salad and left the sauce to be asked, rather than the
+     donner deals above. The four deals wanting two different things is exactly
+     why these rules are item-scoped: a 'special offers' category rule matches
+     on the group LABEL and could not tell a burger's Sauce from a kebab's. */
   for (const name of ['Meal Deal 5', 'Student Deal A']) {
     const item = deal(name);
     assert.ok(item, `${name} has gone from the menu`);
-    for (const label of ['salad', 'sauce']) {
-      for (const g of groupOf(item, label)) {
-        assert.deepEqual(
-          (g.choices || []).filter((c) => c.posDefault || c.default).map((c) => c.label),
-          [], `${name} · ${g.label} was defaulted without being asked for`);
-      }
+
+    const salad = groupOf(item, 'salad');
+    assert.equal(salad.length, 1, `${name} has ${salad.length} salad groups`);
+    const picked = (salad[0].choices || []).filter((c) => c.posDefault === true);
+    assert.deepEqual(picked.map((c) => c.label), ['Salad'], `${name} · Salad`);
+    assert.equal(Number(picked[0].price) || 0, 0);
+    assert.ok(!picked[0].default, `${name} · Salad must not pre-select for customers`);
+
+    for (const g of groupOf(item, 'sauce')) {
+      assert.deepEqual(
+        (g.choices || []).filter((c) => c.posDefault || c.default).map((c) => c.label),
+        [], `${name} · Sauce must stay on "Choose…" — a burger's sauce is asked`);
     }
   }
 });
