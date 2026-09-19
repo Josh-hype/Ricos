@@ -1915,6 +1915,15 @@ function optionGroupsHTML(item) {
        point of having two flags. */
     const forceChoice = !!(window.SHOP_CONFIG && window.SHOP_CONFIG.ordering
       && window.SHOP_CONFIG.ordering.forceRequiredChoice);
+    /* The same trap as the till, arriving differently: an optional single-select
+       renders as RADIOS, and a radio cannot be un-clicked. Nothing is
+       pre-checked here, so no charge appears uninvited — but a customer who
+       tapped "ADD CHEESE (+£1.50)" to see what it cost had no way back. An
+       explicit "None", checked unless a default says otherwise, is the way out.
+       readSelectedOptions skips the empty value, so it sends no modifier. */
+    const noneRow = (type === 'radio' && !g.required)
+      ? `<label class="opt-choice"><input type="radio" name="${gid}" value="" data-price="0" data-label="None"${hasDefault ? '' : ' checked'}/><span>None</span><span class="opt-delta"></span></label>`
+      : '';
     const rows = (g.choices || []).map((c, i) => {
       const autoFirst = type === 'radio' && g.required && !hasDefault && !forceChoice && i === 0;
       const checked = (c.default === true || autoFirst) ? 'checked' : '';
@@ -1933,7 +1942,7 @@ function optionGroupsHTML(item) {
       : (maxN !== null ? ` <span class="opt-hint">· up to ${maxN}</span>` : (minN !== null ? ` <span class="opt-hint">· at least ${minN}</span>` : ''));
     // whenMeal groups (e.g. cheese on the meal's chips) start hidden and only
     // appear — and only count — when the meal checkbox is ticked.
-    return `<fieldset class="opt-group" data-select="${type === 'checkbox' ? 'multi' : 'single'}" data-required="${g.required ? '1' : '0'}" data-min="${minN !== null ? minN : ''}" data-max="${maxN !== null ? maxN : ''}" data-label="${escapeHTML(g.label)}" data-when-meal="${g.whenMeal === true ? '1' : '0'}"${g.whenMeal === true ? ' style="display:none"' : ''}><legend>${escapeHTML(g.label)}${hint}</legend>${rows}<div class="opt-required-note" data-err></div></fieldset>`;
+    return `<fieldset class="opt-group" data-select="${type === 'checkbox' ? 'multi' : 'single'}" data-required="${g.required ? '1' : '0'}" data-min="${minN !== null ? minN : ''}" data-max="${maxN !== null ? maxN : ''}" data-label="${escapeHTML(g.label)}" data-when-meal="${g.whenMeal === true ? '1' : '0'}"${g.whenMeal === true ? ' style="display:none"' : ''}><legend>${escapeHTML(g.label)}${hint}</legend>${noneRow}${rows}<div class="opt-required-note" data-err></div></fieldset>`;
   }).join('');
 }
 
@@ -1969,6 +1978,9 @@ function readSelectedOptions(body, item) {
   const mealOn = !!(mealInput && mealInput.checked);
   const out = [];
   body.querySelectorAll('.opt-group input:checked').forEach(inp => {
+    // The "None" row on an optional single-select carries an empty value — it
+    // means "no modifier", so it must not reach the cart as one.
+    if (!inp.value) return;
     // Meal-only option groups don't count unless the meal is selected.
     const grp = inp.closest('.opt-group');
     if (grp && grp.dataset.whenMeal === '1' && !mealOn) return;

@@ -6400,12 +6400,25 @@ function optionGroupHTML(g, canonical) {
        choice that costs money becomes money nobody consciously agreed to. See
        POS_DEFAULTS in tools/_gen-dominic-menu.py, which only ever points at a
        £0.00 choice. */
-    const autoId = choices.length === 1
+    const autoId = (required && choices.length === 1)
       ? choices[0].id
       : (choices.find(c => c.posDefault === true)?.id
          || choices.find(c => c.default === true)?.id
          || null);
-    const opts = (autoId ? '' : '<option value="">Choose…</option>') + choices.map(c => {
+    /* The lone-choice shortcut is only safe on a REQUIRED group, where there is
+       no other answer to give. On an OPTIONAL one it is a charge nobody agreed
+       to: "optional" means the customer may decline, and a single choice with no
+       empty row left no way to. Dominic's Donner Meat And Chips opened with
+       ADD CHEESE (+£1.50) selected and unremovable — £11.40 rung up for a £9.90
+       item, on three kebabs.
+
+       So an optional group ALWAYS keeps a "None" row, even when something IS
+       pre-selected, so a default can be undone. optModIds ignores the empty
+       value, so choosing it sends no modifier at all. */
+    const emptyRow = (!required || !autoId)
+      ? `<option value=""${autoId ? '' : ' selected'}>${required ? 'Choose…' : 'None'}</option>`
+      : '';
+    const opts = emptyRow + choices.map(c => {
       const d = choiceDeltaP(c, canonical);
       const dt = deltaText(d);
       const label = `${c.label}${dt ? ` (${dt})` : ''}`;
