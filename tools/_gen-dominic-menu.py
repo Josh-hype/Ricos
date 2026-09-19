@@ -154,8 +154,8 @@ POS_DEFAULTS = {
     'garlic bread': {'size': '11"', 'crust': 'thick'},
     # Salad is a required single-select, Salad / No salad, BOTH £0.00 — so the
     # default costs nothing either way and staff untick it when someone says no.
-    # The identical group also exists on Kebabs (5 items), Wraps (6), Special
-    # Offers (4) and Specials (1); the owner asked for burgers, so only burgers.
+    # The identical group also exists on Special Offers (4 items) and Specials
+    # (1), which the owner has NOT asked for; Kebabs and Wraps are below.
     'burgers':      {'size': '1/4lb', 'salad': 'salad'},   # 1/2lb is +£1.00 to +£1.50
     # A meal deal carries ONE Crust group PER PIZZA — "Meal Deal 4" has two, at
     # positions 2 and 5 — and the rule matches on the group's LABEL, so every one
@@ -164,7 +164,19 @@ POS_DEFAULTS = {
     # there, dearer than on a single pizza, which is exactly why a default must
     # never point at them.
     'special offers': {'crust': 'thick'},
-    'kebabs':       {'size': 'medium'},         # Large is +£1.40 / +£2.00
+    # OWNER'S DECISION, 19 Sep 2026: kebabs and wraps open with Salad and Garlic
+    # Yogurt already on, the two things nearly every customer takes. Same
+    # reasoning as the burgers — it is the tap staff were making every time.
+    #
+    # Sauce is the first DEFAULT THAT EXPRESSES A PREFERENCE rather than just a
+    # base size: Garlic Yogurt is one of ten sauces, all £0.00, and the other
+    # nine include "No Sauce". That is fine on the till, where staff read the
+    # order back and change it on the spot, and is exactly why it stays out of
+    # DEFAULT_CHOICES — a website customer who wanted chilli sauce and did not
+    # notice a pre-filled dropdown has a wrong order, not a saved tap.
+    'kebabs':       {'size': 'medium',          # Large is +£1.40 / +£2.00
+                     'salad': 'salad', 'sauce': 'garlic yogurt'},
+    'wraps':        {'salad': 'salad', 'sauce': 'garlic yogurt'},
 }
 # Left on "Choose…" deliberately: Specials, whose Size is 6pcs (£0.00) / 10pcs
 # (+£3.30 or +£4.60). The owner has not asked for it, and a portion count is the

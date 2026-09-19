@@ -20552,7 +20552,8 @@
               {
                 "id": "g2-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g2-no-salad",
@@ -20605,7 +20606,8 @@
               {
                 "id": "g3-garlic-yogurt",
                 "label": "Garlic Yogurt",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g3-plain-yogurt",
@@ -20636,7 +20638,8 @@
               {
                 "id": "g1-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g1-no-salad",
@@ -20689,7 +20692,8 @@
               {
                 "id": "g3-garlic-yogurt",
                 "label": "Garlic Yogurt",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g3-plain-yogurt",
@@ -20752,7 +20756,8 @@
               {
                 "id": "g2-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g2-no-salad",
@@ -20805,7 +20810,8 @@
               {
                 "id": "g3-garlic-yogurt",
                 "label": "Garlic Yogurt",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g3-plain-yogurt",
@@ -20836,7 +20842,8 @@
               {
                 "id": "g1-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g1-no-salad",
@@ -20889,7 +20896,8 @@
               {
                 "id": "g2-garlic-yogurt",
                 "label": "Garlic Yogurt",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g2-plain-yogurt",
@@ -20933,7 +20941,8 @@
               {
                 "id": "g1-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g1-no-salad",
@@ -20986,7 +20995,8 @@
               {
                 "id": "g2-garlic-yogurt",
                 "label": "Garlic Yogurt",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g2-plain-yogurt",
@@ -22129,7 +22139,8 @@
               {
                 "id": "g1-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g1-no-salad",
@@ -22182,7 +22193,8 @@
               {
                 "id": "g2-garlic-yogurt",
                 "label": "Garlic Yogurt",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g2-plain-yogurt",
@@ -22213,7 +22225,8 @@
               {
                 "id": "g1-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g1-no-salad",
@@ -22238,7 +22251,8 @@
               {
                 "id": "g1-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g1-no-salad",
@@ -22291,7 +22305,8 @@
               {
                 "id": "g2-garlic-yogurt",
                 "label": "Garlic Yogurt",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g2-plain-yogurt",
@@ -22321,7 +22336,8 @@
               {
                 "id": "g1-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g1-no-salad",
@@ -22374,7 +22390,8 @@
               {
                 "id": "g2-garlic-yogurt",
                 "label": "Garlic Yogurt",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g2-plain-yogurt",
@@ -22404,7 +22421,8 @@
               {
                 "id": "g1-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g1-no-salad",
@@ -22457,7 +22475,8 @@
               {
                 "id": "g2-garlic-yogurt",
                 "label": "Garlic Yogurt",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g2-plain-yogurt",
@@ -22487,7 +22506,8 @@
               {
                 "id": "g1-salad",
                 "label": "Salad",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g1-no-salad",
@@ -22540,7 +22560,8 @@
               {
                 "id": "g2-garlic-yogurt",
                 "label": "Garlic Yogurt",
-                "price": 0.0
+                "price": 0.0,
+                "posDefault": true
               },
               {
                 "id": "g2-plain-yogurt",
